@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>interpolation.shapefile2NetCDF_2D &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">interpolation.shapefile2NetCDF_2D</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for interpolation.shapefile2NetCDF_2D</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This script needs a shapefile (Lambert 93 or (lat-lon) coordinates).</span>
+<span class="sd">This shapefile can be in .shp or .kml format.</span>
+<span class="sd">This shapefile is delimitating a 2D domain on which you want to make a SURFEX-Crocus simulation.</span>
+
+<span class="sd">If you want to do a simulation for several distincts differents points and not a domain:</span>
+<span class="sd">see shapefile2NetCDF.py instead.</span>
+
+<span class="sd">General documentation of shapefile2NetCDF_2D script</span>
+<span class="sd">---------------------------------------------------</span>
+<span class="sd">This script creates a NetCDF file using the shapefile.</span>
+<span class="sd">The NetCDF file is necessary to launch Surfex-Crocus 2D simulations.</span>
+<span class="sd">The NetCDF will define a rectangular 2D domain which contains your shapefile.</span>
+<span class="sd">If your 2D domain is belonging to several &quot;SAFRAN massif&quot;, by default:</span>
+<span class="sd">If more than 50% of points are in one massif, all the points are artificially associated with this massif</span>
+<span class="sd">After the execution you have some infos for the NAM_IGN part of the namelist.</span>
+
+<span class="sd">Options :</span>
+
+<span class="sd">.. code-block:: text</span>
+
+<span class="sd">   * -o Path to shapefile (with extension .kml or .shp)</span>
+<span class="sd">   * -rlon Longitude Resolution for 2D grid (250 or 30)</span>
+<span class="sd">   * -rlat Latitude Resolution for 2D grid (250 or 30)</span>
+<span class="sd">   * --MNT_alt Path for MNT altitude</span>
+<span class="sd">   * -m Massif number if you want to choose the massif that will be applied to your zone</span>
+<span class="sd">        (Massif number can be found in snowtools/DATA/METADATA.xml)</span>
+
+
+<span class="sd">EXAMPLES OF USE (script launch)</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   python3 shapefile2NetCDF_2D.py SP_Abries_Ristolas.kml -o NetCDF2D_Ristolas.nc</span>
+
+
+<span class="sd">EXAMPLES OF USE OF NETCDF FILE IN HPC SIMULATION</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">First, push on Belenos with scp:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   scp NetCDF2D_* fructusm@belenos:/home/fructusm/SIMU_TOP2D/.</span>
+
+<span class="sd">Then s2m command:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   s2m research --walltime=&#39;2:00:00&#39; -b 20190801 -e 20200801 -m s2m -f reanalysis2020.2@lafaysse</span>
+<span class="sd">                -r alp_flat:Aussois250:/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/NetCDF2D_Aussois.nc</span>
+<span class="sd">                -n /home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/Aussois.nam --geotype grid --ntasks=52</span>
+<span class="sd">                -g -o Aussois_2D</span>
+
+<span class="sd">.. warning::</span>
+<span class="sd">   DO NOT FORGET THE SPINUP</span>
+
+<span class="sd">Options:</span>
+
+<span class="sd">.. code-block:: text</span>
+
+<span class="sd">   * -m model</span>
+<span class="sd">   * -f forcing files -&gt; -f reanalysis in order to get the forcing from reanalysis</span>
+<span class="sd">   * -r région: add geometry in vortex/conf/geometries.ini</span>
+<span class="sd">   * -n namelist (get the same options than reanalysis)</span>
+<span class="sd">   * -g if you don&#39;t have a prep -&gt; a spinup has to be made</span>
+<span class="sd">   * -a 400 In order to limit Snow Water Equivalent to 400kg/m3 at the end of the year (1rst of august)</span>
+<span class="sd">   * --geotype grid Type of simulation geometry: grids must be defined in namelist while namelists are automatically</span>
+<span class="sd">                    updated for unstructured geometries according to the forcing file. (default:</span>
+<span class="sd">                    unstructured) (from s2m research -h)</span>
+<span class="sd">   * --ntasks 50 if 50 &lt; min(column, lines) of netcdf 2D domain</span>
+
+<span class="sd">File transfert from Belenos to sxcen:</span>
+<span class="sd">use get_reanalysis which is in snowtools/scripts/extract/vortex</span>
+
+<span class="sd">On SXCEN:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   python3 get_reanalysis.py --geometry=orchamp --snow --xpid=TEST_Raphaelle@fructusm</span>
+<span class="sd">                              -byear=2010 --eyear=2099</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>  <span class="c1"># Import pour les log</span>
+
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">shapefile</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">shape</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">transform</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">DIRDATADEM</span>
+
+<span class="c1">################################################################</span>
+<span class="c1"># DEFAULT VALUES (but can change with options):</span>
+<span class="c1"># MNT (30m) and name of the output NetCDF</span>
+<span class="c1">################################################################</span>
+<span class="n">NetCDF_out</span> <span class="o">=</span> <span class="s1">&#39;NetCDF2D_from_shapefile.nc&#39;</span>
+
+<span class="c1"># PATH_MNT</span>
+<span class="n">path_MNT_alti_30m</span> <span class="o">=</span> <span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/DEM_FRANCE_L93_30m_bilinear.tif&#39;</span>
+<span class="n">path_MNT_alti_250m</span> <span class="o">=</span> <span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/DEM_FRANCE_L93_250m_bilinear.tif&#39;</span>
+
+<span class="c1">################################################################</span>
+<span class="c1"># Infos shapefile massif, normally stable and durable</span>
+<span class="c1">################################################################</span>
+<span class="n">path_shapefile_massif</span> <span class="o">=</span> <span class="n">SNOWTOOLS_DIR</span> <span class="o">+</span> <span class="s1">&#39;/DATA/massifs&#39;</span>
+
+<span class="c1">################################################################</span>
+<span class="c1"># Log</span>
+<span class="c1">################################################################</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+<span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(levelname)s</span><span class="s1"> :: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 1: convert kml in shapefile in order to read it</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="convert_kml2shp">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.convert_kml2shp">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_kml2shp</span><span class="p">(</span><span class="n">path_shape_kml</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    kml files (Keyhole Markup Language, google format) are transform in .shp (format GIS Geographic</span>
+<span class="sd">    Information System from ESRI) in order to avoid imports from &quot;non standard&quot; librairies in CEN</span>
+<span class="sd">    actual configuration of PC.</span>
+
+<span class="sd">    :param path_shape_kml: path to kml shapefile</span>
+<span class="sd">    :type path_shape_kml: str</span>
+<span class="sd">    :return: a string: the path to the .shp file after conversion from the .kml file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_shape_shp</span> <span class="o">=</span> <span class="n">path_shape_kml</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;shp&#39;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ogr2ogr&#39;</span><span class="p">,</span> <span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;ESRI Shapefile&#39;</span><span class="p">,</span> <span class="n">path_shape_shp</span><span class="p">,</span> <span class="n">path_shape_kml</span><span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path_shape_shp</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 2: get boundaries of shapefile</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="get_bounds">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.get_bounds">[docs]</a>
+<span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    sf.bbox return [6.61446151100006, 45.189366518, 6.8154706149867, 45.2979826160001]</span>
+<span class="sd">    ie [lon_min, lat_min, lon_max, lat_max]</span>
+
+<span class="sd">    :param path_shape_shp: path to shapefile</span>
+<span class="sd">    :type path_shape_shp: str</span>
+<span class="sd">    :return: a list of 4 values [lon_min, lat_min, lon_max, lat_max]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sf</span> <span class="o">=</span> <span class="n">shapefile</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sf</span><span class="o">.</span><span class="n">bbox</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 2 bis: if (lat - lon), convert to L93</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="conversion_to_L93_if_lat_lon">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon">[docs]</a>
+<span class="k">def</span> <span class="nf">conversion_to_L93_if_lat_lon</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Idea: we have a list bbox [lon_min, lat_min, lon_max, lat_max]. We convert it in Lambert93</span>
+<span class="sd">    By default, we raise a little in case of</span>
+<span class="sd">    Criteria: if in bbox, this is not lower than 200, we are already in L93</span>
+<span class="sd">    Because coordinates are in WGS84 (ie lat-lon -&gt; everything below 200), or in L93</span>
+
+<span class="sd">    REMINDER:     L93 = EPSG 2154      WGS84 = EPSG 4326</span>
+
+<span class="sd">    :param list_of_four: list of 4 floats ([lon_min, lat_min, lon_max, lat_max])</span>
+<span class="sd">    :type list_of_four: list</span>
+<span class="sd">    :return: a list of 4 values: the same in L93 coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="n">Lower</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">Upper</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">project_from_WGS84_to_L93</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">pyproj</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="s1">&#39;epsg:4326&#39;</span><span class="p">),</span>
+                                            <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="s1">&#39;epsg:2154&#39;</span><span class="p">))</span>
+        <span class="n">Lower_L93</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">project_from_WGS84_to_L93</span><span class="p">,</span> <span class="n">Lower</span><span class="p">)</span>
+        <span class="n">Upper_L93</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">project_from_WGS84_to_L93</span><span class="p">,</span> <span class="n">Upper</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">Lower_L93</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">Lower_L93</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">Upper_L93</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">Upper_L93</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">list_of_four</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 3: clean shapefile</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="clean_the_mess">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.clean_the_mess">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_the_mess</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove all the temporary files created with the script</span>
+
+<span class="sd">    :param path_shape_shp: le chemin vers le fichier de shapefile</span>
+<span class="sd">    :type path_shape_shp: str</span>
+<span class="sd">    :return: In a pythonic point of view, nothing. Some files are deleted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">clean_all</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">suffixe</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;shp&#39;</span><span class="p">,</span> <span class="s1">&#39;prj&#39;</span><span class="p">,</span> <span class="s1">&#39;shx&#39;</span><span class="p">,</span> <span class="s1">&#39;dbf&#39;</span><span class="p">]:</span>
+            <span class="n">path_shape_rm</span> <span class="o">=</span> <span class="n">path_shape_shp</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">suffixe</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="n">path_shape_rm</span><span class="p">]</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;rm -f step1.tif&#39;</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 4: create grid (250m * 250m)</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="create_dict_all_infos">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_dict_all_infos">[docs]</a>
+<span class="k">def</span> <span class="nf">create_dict_all_infos</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">,</span> <span class="n">resol_x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">resol_y</span><span class="o">=</span><span class="mi">250</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a dictionnary with all the important information (coordinates of the lower-left and upper-right points,</span>
+<span class="sd">    number of pixel in x and y direction, resolution in x and y direction).</span>
+
+<span class="sd">    :param list_of_four: list of four coordinates in L93 format</span>
+<span class="sd">    :type list_of_four: list</span>
+<span class="sd">    :param resol_x: resolution in x direction</span>
+<span class="sd">    :type resol_x: int</span>
+<span class="sd">    :param resol_y: resolution in y direction</span>
+<span class="sd">    :type resol_y: int</span>
+<span class="sd">    :return: a dictionary with all the information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">XLL</span> <span class="o">=</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">YLL</span> <span class="o">=</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">XUR</span> <span class="o">=</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">YUR</span> <span class="o">=</span> <span class="n">list_of_four</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">Nb_pixel_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">XUR</span> <span class="o">-</span> <span class="n">XLL</span><span class="p">)</span><span class="o">/</span><span class="n">resol_x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">Nb_pixel_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">YUR</span> <span class="o">-</span> <span class="n">YLL</span><span class="p">)</span><span class="o">/</span><span class="n">resol_y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">new_XUR</span> <span class="o">=</span> <span class="n">XLL</span> <span class="o">+</span> <span class="n">resol_x</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nb_pixel_x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_YUR</span> <span class="o">=</span> <span class="n">YLL</span> <span class="o">+</span> <span class="n">resol_y</span> <span class="o">*</span> <span class="p">(</span><span class="n">Nb_pixel_y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;XLL&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">XLL</span><span class="p">),</span> <span class="s1">&#39;YLL&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">YLL</span><span class="p">),</span> <span class="s1">&#39;XUR&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_XUR</span><span class="p">),</span> <span class="s1">&#39;YUR&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_YUR</span><span class="p">),</span>
+            <span class="s1">&#39;Nb_pixel_x&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nb_pixel_x</span><span class="p">),</span> <span class="s1">&#39;Nb_pixel_y&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Nb_pixel_y</span><span class="p">),</span>
+            <span class="s1">&#39;resol_x&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">resol_x</span><span class="p">),</span> <span class="s1">&#39;resol_y&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">resol_y</span><span class="p">)}</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 4 bis: create .tif from grid</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="create_MNT_tif">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_MNT_tif">[docs]</a>
+<span class="k">def</span> <span class="nf">create_MNT_tif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">path_MNT_given</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use the dictionary with all the information (coordinates of the lower-left and upper-right points, number of pixel</span>
+<span class="sd">    in x and y direction, resolution in x and y direction) and and a MNT (with the good resolution) to create a .tif</span>
+<span class="sd">    file with altitude values on the grid define by the information.</span>
+
+<span class="sd">    :param dict_info: dictionary with all the information for the grid</span>
+<span class="sd">    :type dict_info: dict</span>
+<span class="sd">    :param path_MNT_given: optional, a path for the MNT (without a path, the standard MNT in cenfic3 is used)</span>
+<span class="sd">    :type path_MNT_given: str</span>
+<span class="sd">    :return: In a pythonic point of view, nothing. A .tif file is created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">250</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">250</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_alti_250m</span>
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">30</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">30</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_alti_30m</span>
+    <span class="k">elif</span> <span class="n">path_MNT_given</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_given</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PB: no MNT provided with this resolution, please have a look to the code&#39;</span><span class="p">)</span>
+        <span class="k">pass</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdalwarp&#39;</span><span class="p">,</span> <span class="s1">&#39;-te&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XUR&#39;</span><span class="p">]),</span>
+           <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YUR&#39;</span><span class="p">]),</span> <span class="s1">&#39;-tap&#39;</span><span class="p">,</span> <span class="s1">&#39;-tr&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]),</span> <span class="s1">&#39;-te_srs&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;EPSG:2154&#39;</span><span class="p">,</span> <span class="s1">&#39;-s_srs&#39;</span><span class="p">,</span> <span class="s1">&#39;EPSG:2154&#39;</span><span class="p">,</span> <span class="n">path_MNT</span><span class="p">,</span> <span class="s1">&#39;step1.tif&#39;</span><span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 5: most common massif</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="find_most_common_massif">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.find_most_common_massif">[docs]</a>
+<span class="k">def</span> <span class="nf">find_most_common_massif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use the grid info coming from the dictionary and the massif info coming from snowtools to detect what is the most</span>
+<span class="sd">    common massif on the grid. If there are more than 50% of points in the most common massif, all the points are</span>
+<span class="sd">    artificially associated with the most common massif. Otherwise, all the points in the grid keep the massif they</span>
+<span class="sd">    belong.</span>
+
+<span class="sd">    :param dict_info: dictionary with all the information for the grid</span>
+<span class="sd">    :type dict_info: dict</span>
+<span class="sd">    :return: an integer (the massif number of the most common massif) or a numpy array (if there is not common massif).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">massif_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_y&#39;</span><span class="p">],</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_x&#39;</span><span class="p">]))</span>
+    <span class="n">massif_num</span> <span class="o">=</span> <span class="n">massif_num</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">shapefile</span><span class="o">.</span><span class="n">Reader</span><span class="p">(</span><span class="n">path_shapefile_massif</span><span class="p">)</span>
+    <span class="n">shapes</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shapes</span><span class="p">()</span>
+    <span class="n">infos</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">shapeRecords</span><span class="p">()</span>
+    <span class="c1"># Enlève les massifs qui sont &quot;trop loin&quot; du shapefile d&#39;intérêt</span>
+    <span class="n">massif_potentiel</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">shape</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XUR&#39;</span><span class="p">]:</span>
+            <span class="n">massif_potentiel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">shape</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YUR&#39;</span><span class="p">]:</span>
+            <span class="n">massif_potentiel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">shape</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">]:</span>
+            <span class="n">massif_potentiel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">shape</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">]:</span>
+            <span class="n">massif_potentiel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># On remplit le tableau de numéro des massifs</span>
+    <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_x&#39;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">yj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_y&#39;</span><span class="p">]):</span>
+            <span class="n">abscisse</span> <span class="o">=</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]</span>
+            <span class="n">ordonnee</span> <span class="o">=</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">yj</span> <span class="o">*</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="n">abscisse</span><span class="p">,</span> <span class="n">ordonnee</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">massif_potentiel</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">polygon</span> <span class="o">=</span> <span class="n">shape</span><span class="p">(</span><span class="n">shapes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">massif_number</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">record</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">polygon</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                        <span class="n">massif_num</span><span class="p">[</span><span class="n">yj</span><span class="p">,</span> <span class="n">xi</span><span class="p">]</span> <span class="o">=</span> <span class="n">massif_number</span>
+
+    <span class="c1"># Les stats sur le tableau massif_num</span>
+    <span class="n">stat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">massif_num</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;le massif majoritaire est: &#39;</span><span class="p">,</span> <span class="n">stat</span><span class="o">.</span><span class="n">argmax</span><span class="p">())</span>
+    <span class="k">if</span> <span class="mf">100.</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">50.</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sa fréquence est: &#39;</span><span class="p">,</span> <span class="mf">100.</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">stat</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tous les points sont mis dans le même massif&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sa fréquence est: &#39;</span><span class="p">,</span> <span class="mf">100.</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">stat</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cette valeur est trop faible&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;on ne regroupe pas tous les points dans le même massif&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">massif_num</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 6: constraint altitudes between min and max of massif</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="create_netcdf">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_netcdf">[docs]</a>
+<span class="k">def</span> <span class="nf">create_netcdf</span><span class="p">(</span><span class="n">massif_number</span><span class="p">,</span> <span class="n">file_out</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creation of the 2D_NetCDF with 2 values: &#39;ZS&#39; for the altitude and &#39;Massif number&#39; for the massif number.</span>
+
+<span class="sd">    :param massif_number: an integer or a numpy array depending of the percentage of points in the most common massif</span>
+<span class="sd">    :param file_out: the name of the output for the netcdf file</span>
+<span class="sd">    :type file_out: str</span>
+<span class="sd">    :return: In a pythonic point of view, nothing. A .nc file is created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdal_translate&#39;</span><span class="p">,</span> <span class="s1">&#39;-of&#39;</span><span class="p">,</span> <span class="s1">&#39;netCDF&#39;</span><span class="p">,</span> <span class="s1">&#39;-co&#39;</span><span class="p">,</span> <span class="s1">&#39;FORMAT=NC4&#39;</span><span class="p">,</span> <span class="s1">&#39;step1.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;step1.nc&#39;</span><span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">alt_min_massif</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">alt_max_massif</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;else:</span>
+<span class="sd">        size_x = massif_number.shape[0]</span>
+<span class="sd">        size_y = massif_number.shape[1]</span>
+<span class="sd">        print(size_x)</span>
+<span class="sd">        print(size_y)</span>
+<span class="sd">        alt_min_massif = np.zeros(( size_x, size_y))</span>
+<span class="sd">        alt_max_massif = np.zeros(( size_x, size_y))</span>
+<span class="sd">        for i in range(size_x):</span>
+<span class="sd">            print(i)</span>
+<span class="sd">            for j in range(size_y):</span>
+<span class="sd">                alt_min_massif[i,j] = infomassifs().getAltMinMax(massif_number[i,j])[0]</span>
+<span class="sd">                alt_max_massif[i,j] = infomassifs().getAltMinMax(massif_number[i,j])[1]&quot;&quot;&quot;</span>
+    <span class="n">NetCDF_file</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s1">&#39;step1.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+    <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">renameVariable</span><span class="p">(</span><span class="s1">&#39;Band1&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">)</span>
+    <span class="n">ZS</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:]</span>
+    <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">ZS</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZS</span> <span class="o">&gt;</span> <span class="n">alt_min_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">alt_min_massif</span><span class="p">)</span>
+        <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZS</span> <span class="o">&lt;</span> <span class="n">alt_max_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">alt_max_massif</span><span class="p">)</span>
+    <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">ZS</span>
+    <span class="n">massif_num_nc</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span>
+                                               <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+    <span class="n">massif_num_nc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Massif number&#39;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">massif_num_nc</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">massif_number</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">massif_num_nc</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">massif_number</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NETCDF dimension:&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;mv step1.nc &#39;</span> <span class="o">+</span> <span class="n">file_out</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   STEP 7: infos for NAM_IGN part of namelist on screen</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="print_for_namelist">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.print_for_namelist">[docs]</a>
+<span class="k">def</span> <span class="nf">print_for_namelist</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">output_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Just to have a print on the screen in order to have all the relevant information for the namelist used later in the</span>
+<span class="sd">    Surfex simulations.</span>
+
+<span class="sd">    :param dict_info: dictionary with all the information for the grid</span>
+<span class="sd">    :type dict_info: dict</span>
+<span class="sd">    :param output_name: the name of the output for the netcdf file</span>
+<span class="sd">    :type output_name: str</span>
+<span class="sd">    :return: In a pythonic point of view, nothing. Some information are printed on the screen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;File: &#39;</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;In namelist &amp;NAM_IGN:&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;XCELLSIZE=&#39;</span><span class="p">,</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;XX_LLCORNER=&#39;</span><span class="p">,</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;XY_LLCORNER=&#39;</span><span class="p">,</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!! Check with NETCDF dimensions (gap of 1 possible):&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NCOLS=&#39;</span><span class="p">,</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_x&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NROWS=&#39;</span><span class="p">,</span> <span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;Nb_pixel_y&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!! For BELENOS, take ntasks &lt; min(NCOLS, NROWS)&#39;</span><span class="p">)</span></div>
+
+
+
+<span class="c1">################################################################</span>
+<span class="c1">#   Get arguments</span>
+<span class="c1">################################################################</span>
+<div class="viewcode-block" id="parseArguments">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.parseArguments">[docs]</a>
+<span class="k">def</span> <span class="nf">parseArguments</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parsing the arguments when you call the main program.</span>
+<span class="sd">    :param args: The list of arguments when you call the main program (typically sys.argv[1:] )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create argument parser</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="c1"># Mandatory argument</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;path_shape&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to shapefile (with extension .kml or .shp)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># Optional argument</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name for NetCDF file to save&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-rlon&quot;</span><span class="p">,</span> <span class="s2">&quot;--resol_lon&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Longitude Resolution for 2D grid (250 or 30)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-rlat&quot;</span><span class="p">,</span> <span class="s2">&quot;--resol_lat&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Latitude Resolution for 2D grid (250 or 30)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--MNT_alt&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path for MNT altitude&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--massif_number&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Massif number if you want to choose the massif that will be applied to your zone&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">args</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main program: parse argument then launch the creation of NetCDF</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">parseArguments</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># argument for command line call</span>
+        <span class="n">path_shapefile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">path_shape</span>
+        <span class="n">output_name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span>
+        <span class="n">resol_x</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">resol_lon</span>
+        <span class="n">resol_y</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">resol_lat</span>
+        <span class="n">path_MNT_alti</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">MNT_alt</span>
+        <span class="n">massif</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">massif_number</span>
+        <span class="c1"># Check if mandatory path for shapefile is OK</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">&#39;Provided path for shapefile file does not exist (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">clean_all</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">path_shapefile</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;kml&#39;</span><span class="p">:</span>
+            <span class="n">path_shapefile</span> <span class="o">=</span> <span class="n">convert_kml2shp</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">)</span>
+            <span class="n">clean_all</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">get_bounds</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">)</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">conversion_to_L93_if_lat_lon</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="n">dict_info</span> <span class="o">=</span> <span class="n">create_dict_all_infos</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">resol_x</span><span class="p">,</span> <span class="n">resol_y</span><span class="p">)</span>
+        <span class="n">create_MNT_tif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">path_MNT_alti</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">massif</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">massif_num</span> <span class="o">=</span> <span class="n">massif</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">massif_num</span> <span class="o">=</span> <span class="n">find_most_common_massif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">)</span>
+
+        <span class="c1">#massif_num = find_most_common_massif(dict_info)</span>
+        <span class="n">create_netcdf</span><span class="p">(</span><span class="n">massif_num</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
+        <span class="n">clean_the_mess</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">)</span>
+        <span class="n">print_for_namelist</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">interpolation.shapefile2NetCDF_2D</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

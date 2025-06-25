@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.sun &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.sun</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.sun</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">print_used_memory</span>
+
+<span class="c1"># L. Roussel dec. 2024 : modification start slope_aspect_correction when extracting dates</span>
+<span class="c1">#                        + write comprehensive commented code</span>
+
+<span class="k">def</span> <span class="nf">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the linear interpolation of y for the tab values of the x coordinate</span>
+<span class="sd">    Method designed to avoid the use of scipy.interpolate (avoid the dependency to an external module and environment problems on Bull)</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">       This is not relevant anymore</span>
+
+<span class="sd">    :meta private:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ind_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
+    <span class="n">ind_before</span> <span class="o">=</span> <span class="n">ind_after</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">x_before</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ind_before</span><span class="p">)</span>
+    <span class="n">x_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ind_after</span><span class="p">)</span>
+    <span class="n">y_before</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ind_before</span><span class="p">)</span>
+    <span class="n">y_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ind_after</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x_after</span> <span class="o">-</span> <span class="n">tab</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_before</span> <span class="o">+</span> <span class="p">(</span><span class="n">tab</span> <span class="o">-</span> <span class="n">x_before</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_after</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">x_after</span> <span class="o">-</span> <span class="n">x_before</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="sun">
+<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun">[docs]</a>
+<span class="k">class</span> <span class="nc">sun</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for computation around sun and radiations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">printmemory</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">missingvalue</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9999999.</span>
+
+<div class="viewcode-block" id="sun.slope_aspect_correction">
+<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.slope_aspect_correction">[docs]</a>
+    <span class="k">def</span> <span class="nf">slope_aspect_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direct</span><span class="p">,</span> <span class="n">diffus</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat_in</span><span class="p">,</span> <span class="n">lon_in</span><span class="p">,</span> <span class="n">aspect_in</span><span class="p">,</span> <span class="n">slope_in</span><span class="p">,</span> <span class="n">list_list_azim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_list_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lnosof_surfex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_time</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">return_angles</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This routine corrects the direct solar radiation because of explicit slope or surrounding masks</span>
+
+<span class="sd">        :param direct: array of direct solar radiation over an infinite flat surface (time,loc) or (time,x,y)</span>
+<span class="sd">        :param time: time vector</span>
+<span class="sd">        :param latitude: latitude vector</span>
+<span class="sd">        :param logitude: longitude vector</span>
+<span class="sd">        :param aspect: aspect vector</span>
+<span class="sd">        :param slope: slope vector</span>
+<span class="sd">        :param list_list_azim: list of azimuths of masks on each point(radian or degrees ?)</span>
+<span class="sd">        :param list_list_mask: list of heights of masks on each point(radian or degrees ?)</span>
+<span class="sd">        :param lnosof_surfex: (subgrid orography deactivated in Surfex)</span>
+<span class="sd">        :type lnosof_surfex: bool</span>
+<span class="sd">        :param convert_time: take time at the middle of the time step to compute angles more representative of the fluxes</span>
+<span class="sd">        :type convert_time: bool</span>
+<span class="sd">        :param return_angles: if True, also return the sun angle</span>
+<span class="sd">        :type return_angles: bool</span>
+
+<span class="sd">        :returns: corrected direct solar radiation and optionally, the angular positions of sun</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Docs about solar radiation :</span>
+        <span class="c1"># &quot;Basics in solar radiation at earth surface&quot; (L. Wald) : https://minesparis-psl.hal.science/hal-01676634</span>
+        <span class="c1"># &quot;Wikipedia: solar irradience&quot; : https://en.wikipedia.org/wiki/Solar_irradiance </span>
+        
+        <span class="n">tab_direct</span> <span class="o">=</span> <span class="n">direct</span><span class="p">[:]</span>
+        <span class="n">tab_diffus</span> <span class="o">=</span> <span class="n">diffus</span><span class="p">[:]</span>
+        <span class="n">tab_global</span> <span class="o">=</span> <span class="n">tab_direct</span> <span class="o">+</span> <span class="n">tab_diffus</span>
+
+        <span class="c1"># --------- Upscale tabs ---------</span>
+        <span class="c1"># (all tab will have the same size as input tab_direct)</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab</span><span class="p">(</span><span class="n">slope_in</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab</span><span class="p">(</span><span class="n">aspect_in</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">lon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab</span><span class="p">(</span><span class="n">lon_in</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab</span><span class="p">(</span><span class="n">lat_in</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># --------- Extraction of days and time ---------</span>
+        <span class="c1"># extraction of date and computation of fractional Julian day, j_2 (1 january is 0)</span>
+        <span class="k">if</span> <span class="n">convert_time</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># M. Lafaysse : convert date in date at the middle of the time step to compute angles more representative of the fluxes</span>
+            <span class="c1"># L. Roussel 2024 : SAFRAN gives the hourly solar radiation at hour-30 minutes,</span>
+            <span class="c1"># then SURFEX uses this flux between H-1 and H.</span>
+            <span class="n">deltatime</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tab_time_date</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">deltatime</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tab_time_date</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tab_time_date</span><span class="p">)):</span>
+            <span class="c1"># timetuple list description: </span>
+            <span class="c1"># j[0]: year, j[1]: month, j[2]: day, </span>
+            <span class="c1"># j[3]: hour, j[4]: minute, j[5]: second,</span>
+            <span class="c1"># j[6]: day of the week, j[7]: day of the year,</span>
+            <span class="c1"># j[8]: daylight saving time</span>
+            <span class="n">time_tuple</span> <span class="o">=</span> <span class="n">tab_time_date</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span>
+            <span class="n">julian_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_tuple</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>  <span class="c1"># extract Julian day (integer, 1st january is 1)</span>
+            <span class="c1"># L. Roussel: fix to decimal hour instead of integer hour</span>
+            <span class="n">decimal_hours</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">time_tuple</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">time_tuple</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># extrac time in hour</span>
+
+
+        <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">julian_days</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">decimal_hours</span><span class="p">,</span> <span class="n">tab_direct</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># all tabs now have the same dimension, which is that of tab_direct.</span>
+        <span class="c1"># method from crocus meteo.f90 original file (v2.4)</span>
+
+        <span class="c1"># --------- Math constants ---------</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.0001</span>
+        <span class="n">PI</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">DG2RD</span> <span class="o">=</span> <span class="n">PI</span> <span class="o">/</span> <span class="mf">180.</span> <span class="c1"># degree to radian</span>
+        <span class="n">RD2DG</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">PI</span> <span class="c1"># radian to degree</span>
+
+        <span class="c1"># --------- Convert to radian ---------</span>
+        <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">DG2RD</span><span class="p">,</span> <span class="n">aspect</span> <span class="o">*</span> <span class="n">DG2RD</span>
+
+        <span class="c1"># Later computations are almost all approximations used for engineering</span>
+
+        <span class="c1"># --------- Equation of Time --------- </span>
+        <span class="c1"># (time shift in minutes, take in account orbit eccentricity, and obliquity)</span>
+        <span class="n">eot</span> <span class="o">=</span> <span class="mf">9.9</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mf">101.4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span><span class="p">)</span> \
+            <span class="o">-</span> <span class="mf">7.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">j</span> <span class="o">-</span> <span class="mf">2.027</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span><span class="p">)</span>
+
+        <span class="c1"># --------- Sun declination (delta) ---------</span>
+        <span class="c1"># (angular distance of the sun&#39;s rays north (or south) of the equator)</span>
+        <span class="c1"># L. Roussel 03/2024, small changes here, but easier to understand:</span>
+        <span class="c1"># 81th days of the year is the spring equinox</span>
+        <span class="c1"># equivalent to : 0.4 * np.sin((0.999694 * j - 81.111) / 365 * 2 * PI) ~ 0.4 * sin((j - 81) / 365 * 2.PI) </span>
+        <span class="n">sin_delta</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="mf">0.986</span> <span class="o">*</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">80</span><span class="p">)</span> <span class="o">*</span> <span class="n">DG2RD</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_delta</span><span class="p">)</span>
+
+        <span class="c1"># --------- Solar angular time ---------</span>
+        <span class="c1"># Solar angle at time h of the day</span>
+        <span class="c1"># This do not take in account the shift from year to year (bissextil year and so on)</span>
+        <span class="c1"># h - 12: centered at noontime</span>
+        <span class="c1"># eot / 60: equation of time in hour</span>
+        <span class="c1"># lon / 15: position from Greenwhich (french Alps around 7° East, i.e ~30 min shift)</span>
+        <span class="c1"># / 24: in days</span>
+        <span class="c1"># * 2 * PI: to angle</span>
+        <span class="n">omega_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">eot</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">lon</span> <span class="o">/</span> <span class="mi">15</span><span class="p">)</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span>
+
+        <span class="c1"># --------- Solar angular height ---------</span>
+        <span class="c1"># cos(theta) = sin(gamma)</span>
+        <span class="c1">#</span>
+        <span class="c1">#   zenith, vertical</span>
+        <span class="c1">#   | </span>
+        <span class="c1">#   |  solar zenith angle, sza (theta)</span>
+        <span class="c1">#   |----&gt;x</span>
+        <span class="c1">#   |    x^</span>
+        <span class="c1">#   |   x |</span>
+        <span class="c1">#   |  x  | solar altitude angle (gamma)</span>
+        <span class="c1">#   | x   | ~ solar angular height</span>
+        <span class="c1">#   |x    |</span>
+        <span class="c1">#   +--------- horizon</span>
+        <span class="c1"># </span>
+        <span class="n">lat_radian</span> <span class="o">=</span> <span class="n">lat</span> <span class="o">*</span> <span class="n">DG2RD</span>
+        <span class="n">sin_gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_delta</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">omega_time</span><span class="p">)</span>
+        <span class="c1"># L. Roussel: set as 0 if negative (before 0.001)</span>
+        <span class="n">sin_gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sin_gamma</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">sin_gamma</span><span class="p">)</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_gamma</span><span class="p">)</span>
+        
+        <span class="c1"># M Lafaysse : remove this threshold because there are controls in SAFRAN and because there are numerical issues at sunset.</span>
+        <span class="c1"># --------- Theoretical maximum radiation ---------</span>
+        <span class="n">max_theor_radiation</span> <span class="o">=</span> <span class="mi">1370</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_delta</span> <span class="o">/</span> <span class="mf">11.7</span><span class="p">)</span>
+
+        <span class="c1"># F. Besson/M. Lafaysse : Threshold on ZSINPS (bug on some cells of SIM-FRANCE)</span>
+        <span class="c1"># solar zenith angle</span>
+        <span class="n">ZSINPS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="n">ZSINPS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZSINPS</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ZSINPS</span><span class="p">)</span>
+        <span class="n">ZSINPS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZSINPS</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">ZSINPS</span><span class="p">)</span>
+
+        <span class="c1"># Not used : ML comment this instruction</span>
+        <span class="c1"># ZCOSPS=(np.sin(ZLAT)*ZSINGA-ZSINDL)/(np.cos(ZLAT)*np.cos(ZGAMMA))</span>
+        <span class="c1"># !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+        <span class="c1"># Before summer 2017, we had this mistake :</span>
+        <span class="c1"># # # # ZPSI = np.arcsin(ZSINPS)  # solar azimuth, 0. is South # # # # # NEVER USE THIS WRONG FORMULA</span>
+        <span class="c1"># This gives a wrong trajectory in summer when the azimuth should be &lt;90° or &gt;270°</span>
+        <span class="c1"># !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+
+        <span class="c1"># The new computation of azimuth below is extracted from the theoricRadiation method</span>
+        <span class="c1"># Who knows where it comes from ?</span>
+
+        <span class="c1"># --------- Azimuth ---------</span>
+        <span class="c1"># L. Roussel 2024: precedent computation was fine, just rename variables</span>
+        <span class="c1"># component x of azimuth angle:</span>
+        <span class="n">x_azimuth_angle</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega_time</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="c1"># component y of azimuth angle:</span>
+        <span class="n">y_azimuth_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">omega_time</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>  
+        
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">x_azimuth_angle</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y_azimuth_angle</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">x_azimuth_angle</span> <span class="o">/</span> <span class="n">y_azimuth_angle</span><span class="p">))</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y_azimuth_angle</span> <span class="o">&lt;=</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">azimuth</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">)</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">azimuth</span> <span class="o">&gt;=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">azimuth</span> <span class="o">-</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">)</span> <span class="c1"># back into [0, 2 * PI]</span>
+
+        <span class="c1">##########################################</span>
+        <span class="c1">######## Recompute diffuse/direct ########</span>
+        <span class="c1"># diffuse/global theorical ratio for clear sky (SBDART modelling by M. Dumont for Col de Porte)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.243613</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">5.199838</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.472389</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.276815</span>
+
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">sin_gamma</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ratio_clearsky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">ratio_clearsky</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ratio_clearsky</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ratio_clearsky</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Note that it is not sufficient to apply the threshold on the ratio, it is necessary to apply a threshold to the direct radiation</span>
+        <span class="c1"># Compute theorical maximum global radiation (clear sky)</span>
+        <span class="n">a3</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.25070845442</span>
+        <span class="n">a2</span> <span class="o">=</span> <span class="mf">0.56643807637</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="mf">0.620060537777</span>
+        <span class="n">a0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.025767794921</span>
+
+        <span class="n">ZTHEOR</span> <span class="o">=</span> <span class="n">max_theor_radiation</span> <span class="o">*</span> <span class="p">(</span><span class="n">a3</span> <span class="o">*</span> <span class="n">mu</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">a1</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">a0</span><span class="p">)</span>
+        <span class="n">ZTHEOR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZTHEOR</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">ZTHEOR</span><span class="p">)</span>
+
+        <span class="c1"># Compute theorical components</span>
+        <span class="n">theor_diffus</span> <span class="o">=</span> <span class="n">ratio_clearsky</span> <span class="o">*</span> <span class="n">ZTHEOR</span>
+        <span class="n">theor_direct</span> <span class="o">=</span> <span class="n">ZTHEOR</span> <span class="o">-</span> <span class="n">theor_diffus</span>
+
+        <span class="c1"># Apply a threshold to the direct radiation (can not exceed the theorical direct component, otherwise, the projection can provide very strange values</span>
+        <span class="n">tab_direct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tab_direct</span> <span class="o">&lt;=</span> <span class="n">theor_direct</span><span class="p">,</span> <span class="n">tab_direct</span><span class="p">,</span> <span class="n">theor_direct</span><span class="p">)</span>
+
+        <span class="c1"># Conserve energy by a transfer to the diffuse component</span>
+        <span class="n">tab_diffus</span> <span class="o">=</span> <span class="n">tab_global</span> <span class="o">-</span> <span class="n">tab_direct</span>
+
+        <span class="c1"># direct incident radiation (maximum value authorized is the theoretical maximum radiation)</span>
+        <span class="n">direct_incident</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">tab_direct</span><span class="p">,</span> <span class="n">sin_gamma</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tab_direct</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">sin_gamma</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># M Lafaysse : remove this threshold because there are controls in SAFRAN and because there are numerical issues at sunset.</span>
+        <span class="c1"># L. Roussel 2024: this one looks useless, still keep it to control anyway</span>
+        <span class="n">direct_incident</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">direct_incident</span> <span class="o">&gt;=</span> <span class="n">max_theor_radiation</span><span class="p">,</span> <span class="n">max_theor_radiation</span><span class="p">,</span> <span class="n">direct_incident</span><span class="p">)</span>
+        
+        <span class="c1"># --------- Projection on slope/aspect surface --------- </span>
+        <span class="c1"># (note that aspect is taken from North)</span>
+        <span class="c1"># old code 1: ZRSIP=ZRSI*(np.cos(ZGAMMA)*np.sin(slope)*np.cos(ZPSI - (np.pi + aspect))+ZSINGA*np.cos(slope))</span>
+        <span class="c1"># old code 2: ZRSIP = ZRSI * (np.cos(ZGAMMA) * np.sin(slope) * np.cos(azimuth - aspect) + ZSINGA * np.cos(slope))</span>
+        <span class="n">direct_plane_projected</span> <span class="o">=</span> <span class="n">direct_incident</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azimuth</span> <span class="o">-</span> <span class="n">aspect</span><span class="p">)</span> <span class="o">+</span> <span class="n">sin_gamma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">slope</span><span class="p">))</span>
+        <span class="n">direct_plane_projected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">direct_plane_projected</span> <span class="o">&lt;=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">direct_plane_projected</span><span class="p">)</span>
+
+        <span class="c1"># --------- Solar masking ---------</span>
+        <span class="c1"># if mask are available, mask direct when relief between sun and location</span>
+        <span class="c1"># (S. Morin 2014/06/27, taken from meteo.f90 in Crocus)</span>
+        <span class="c1"># Matthieu 2014/09/16 : réécriture parce que les masques changent d&#39;un point à l&#39;autre</span>
+        <span class="n">direct_plane_projected_masked</span> <span class="o">=</span> <span class="n">direct_plane_projected</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">list_list_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># if mask are given</span>
+            <span class="n">simu_azimuth_degree</span> <span class="o">=</span> <span class="n">azimuth</span> <span class="o">*</span> <span class="n">RD2DG</span>  <span class="c1"># solar azimuths of the simulation, 0. is North</span>
+            <span class="n">simu_interp_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">simu_azimuth_degree</span><span class="p">)</span> <span class="c1"># init for computed solar mask (time, loc) or (time, x, y)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">list_azim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_list_azim</span><span class="p">):</span> <span class="c1"># for each point</span>
+                <span class="c1"># interp1d(x, y, interp_x)</span>
+                <span class="c1"># return interp_y with x, y and interp_x as arguments</span>
+                <span class="n">simu_interp_mask</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">list_azim</span><span class="p">,</span> <span class="n">list_list_mask</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">simu_azimuth_degree</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
+            
+            <span class="c1"># set to zero direct radiation values when solar angle is below mask angle</span>
+            <span class="n">direct_plane_projected_masked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">simu_interp_mask</span> <span class="o">&gt;</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">RD2DG</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">direct_plane_projected</span><span class="p">)</span>  
+            
+            
+        <span class="k">if</span> <span class="n">lnosof_surfex</span><span class="p">:</span>
+            <span class="c1"># Now this is the normal case</span>
+            <span class="n">tab_direct</span> <span class="o">=</span> <span class="n">direct_plane_projected_masked</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Not recommended</span>
+            <span class="c1"># put the result back on the horizontal ; surfex will carry out the inverse operation when lnosof=f.</span>
+            <span class="n">tab_direct</span> <span class="o">=</span> <span class="n">direct_plane_projected_masked</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">printmemory</span><span class="p">:</span>
+            <span class="n">print_used_memory</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">return_angles</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tab_direct</span><span class="p">,</span> <span class="n">tab_diffus</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">azimuth</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tab_direct</span><span class="p">,</span> <span class="n">tab_diffus</span></div>
+
+
+    <span class="c1"># The two following routines from JM Willemet should be rewritten without the loops</span>
+    <span class="k">def</span> <span class="nf">upscale_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
+
+        <span class="c1"># array var can be considered at the same shape than the other arrays (simplify matricial traitment)</span>
+        <span class="n">bigvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">missingvalue</span>
+
+        <span class="n">shapein</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">bigvar</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shapein</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ilat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">ilon</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">bigvar</span><span class="p">[:,</span> <span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">shapein</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">bigvar</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">bigvar</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ilat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">ilon</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">bigvar</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error on indices in upscale_tab&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">bigvar</span>
+
+    <span class="k">def</span> <span class="nf">upscale_tab_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
+
+        <span class="c1"># array slope can be considered at the same shape than the other arrays (simplify matricial traitment)</span>
+        <span class="n">bigvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theshape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">bigvar</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ilat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theshape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">ilon</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theshape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">bigvar</span><span class="p">[:,</span> <span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error on indices in upscale_tab_time&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">bigvar</span>
+
+<div class="viewcode-block" id="sun.coszenith">
+<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.coszenith">[docs]</a>
+    <span class="k">def</span> <span class="nf">coszenith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tab_time_date</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cosinus of solar zenith angle</span>
+<span class="sd">        (detailed explaination in function slope_aspect_correction)</span>
+
+<span class="sd">        :param tab_time_date: time</span>
+<span class="sd">        :param lat: latitude</span>
+<span class="sd">        :param lon: longitude</span>
+<span class="sd">        :param slope: slope (degrees)</span>
+<span class="sd">        :param aspect: aspect (degrees)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tab_time_date</span><span class="p">)):</span>
+            <span class="c1"># tab_time_date_2[i] = time_init + datetime.timedelta(seconds = tab_time_date[i])</span>
+            <span class="n">timetup</span> <span class="o">=</span> <span class="n">tab_time_date</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span>
+            <span class="n">julian_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>  <span class="c1"># extract Julian day (integer)</span>
+            <span class="c1"># L. Roussel: fix to decimal hour instead of integer hour</span>
+            <span class="n">decimal_hours</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># extrac time in hour</span>
+            
+        <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">julian_days</span><span class="p">,</span> <span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">decimal_hours</span><span class="p">,</span> <span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># all tabs now have the same dimension, which is that of tab_direct.</span>
+        <span class="c1"># method from crocus meteo.f90 original file (v2.4)</span>
+
+        <span class="c1"># Variables needed for solar computations:</span>
+        <span class="n">PI</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">DG2RD</span> <span class="o">=</span> <span class="n">PI</span> <span class="o">/</span> <span class="mf">180.</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.001</span>
+
+        <span class="c1"># --------- Convert to radian ---------</span>
+        <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span> <span class="o">=</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">DG2RD</span><span class="p">,</span> <span class="n">aspect</span> <span class="o">*</span> <span class="n">DG2RD</span>
+
+        <span class="c1"># --------- Equation of Time --------- </span>
+        <span class="n">eot</span> <span class="o">=</span> <span class="mf">9.9</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mf">101.4</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span><span class="p">)</span> \
+            <span class="o">-</span> <span class="mf">7.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">j</span> <span class="o">-</span> <span class="mf">2.027</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span><span class="p">)</span>
+
+        <span class="c1"># --------- Sun declination (delta) ---------</span>
+        <span class="n">sin_delta</span> <span class="o">=</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="mf">0.986</span> <span class="o">*</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">80</span><span class="p">)</span> <span class="o">*</span> <span class="n">DG2RD</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">sin_delta</span><span class="p">)</span>
+
+        <span class="c1"># --------- Solar angular time ---------</span>
+        <span class="n">omega_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">eot</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">lon</span> <span class="o">/</span> <span class="mi">15</span><span class="p">)</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span>
+
+        <span class="c1"># --------- Solar angular height ---------</span>
+        <span class="c1"># sza (solar zenith angle) = PI / 2 - gamma</span>
+        <span class="c1"># cos(sza) = sin(gamma)</span>
+        <span class="n">lat_radian</span> <span class="o">=</span> <span class="n">lat</span> <span class="o">*</span> <span class="n">DG2RD</span>
+        <span class="n">sin_gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_delta</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat_radian</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">omega_time</span><span class="p">)</span>
+        <span class="c1"># L. Roussel: set as 0 if negative (before 0.001)</span>
+        <span class="n">sin_gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sin_gamma</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sin_gamma</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sin_gamma</span></div>
+
+
+<div class="viewcode-block" id="sun.directdiffus">
+<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.directdiffus">[docs]</a>
+    <span class="k">def</span> <span class="nf">directdiffus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SWglo</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Separation of direct and diffuse  short wave radiations</span>
+
+<span class="sd">        :param SWglo: global short wave</span>
+<span class="sd">        :param time: time</span>
+<span class="sd">        :param lat: latitude</span>
+<span class="sd">        :param lon: longitude</span>
+<span class="sd">        :param slope: The slope angle (degrees)</span>
+<span class="sd">        :param aspect: The aspect (degrees)</span>
+<span class="sd">        :param site: The site code for clear sky decomposition. Must be one of wfj, snb, swa, sap, sod, rme, oas, obs, ojp or cdp)</span>
+
+<span class="sd">        :returns: direct short wave, diffuse short wave</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Clear sky decomposition by Marie Dumont</span>
+        <span class="k">if</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;wfj&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.449042</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.639542</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.745762</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.555133</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;snb&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.492804</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.743704</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.870253</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.464349</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;swa&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.481555</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.717005</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.838604</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.484631</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;sap&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.444924</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">3.506267</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.342956</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mf">0.050087</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;sod&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.171899</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.040324</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.335702</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.256246</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;rme&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.375236</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.481626</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.653772</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.421807</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;oas&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.252006</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.208891</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.443042</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.339813</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;obs&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.254170</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.213592</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.446855</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.340464</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;ojp&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.250787</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.205990</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.440420</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.339316</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;cdp&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.243613</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="mf">5.199838</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.472389</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.276815</span>
+
+        <span class="n">coszenith</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coszenith</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">coszenith</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="n">coszenith</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">coszenith</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+
+        <span class="n">SWdif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">SWglo</span><span class="p">,</span> <span class="n">SWglo</span><span class="p">)</span>
+        <span class="n">SWdir</span> <span class="o">=</span> <span class="n">SWglo</span> <span class="o">-</span> <span class="n">SWdif</span>
+
+    <span class="c1">#   for hour in range(1, 24):</span>
+    <span class="c1">#       print hour, coszenith[ndays * 24 + hour - 1], ratio[ndays * 24 + hour - 1], SWdir[ndays * 24 + hour - 1], SWdif[ndays * 24 + hour - 1], SWglo[ndays * 24 + hour - 1]</span>
+
+        <span class="k">return</span> <span class="n">SWdir</span><span class="p">,</span> <span class="n">SWdif</span></div>
+</div>
+
+    
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.sun</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

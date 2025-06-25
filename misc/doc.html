@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Snowtools code Documentation &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Testing" href="test.html" />
+    <link rel="prev" title="Contribute to snowtools" href="contribute.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="Testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contribute.html" title="Contribute to snowtools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Snowtools code Documentation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="snowtools-code-documentation">
+<span id="sec-doc"></span><h1>Snowtools code Documentation<a class="headerlink" href="#snowtools-code-documentation" title="Link to this heading">¶</a></h1>
+<p>The documentation is managed through <cite>Sphinx &lt;www.sphinx-doc.org&gt;</cite> documentation generator.</p>
+<section id="where-to-find-the-documentation">
+<h2>Where to find the documentation<a class="headerlink" href="#where-to-find-the-documentation" title="Link to this heading">¶</a></h2>
+<p>If you are reading these lines, you may have found the documentation. Anyway, snowtools documentation could be accessed in two ways:</p>
+<ul class="simple">
+<li><p>Get pre-generated documentation</p></li>
+<li><p>Generated through code source</p></li>
+</ul>
+<section id="documentation-access">
+<h3>Documentation access<a class="headerlink" href="#documentation-access" title="Link to this heading">¶</a></h3>
+<p>If you are at Meteo-France, Pre-generated documentation is accessible on <a class="reference external" href="http://intra.cnrm.meteo.fr/cen/snowtools/">http://intra.cnrm.meteo.fr/cen/snowtools/</a>.</p>
+</section>
+<section id="generate-documentation">
+<h3>Generate documentation<a class="headerlink" href="#generate-documentation" title="Link to this heading">¶</a></h3>
+<p>Documentation can be generated directly from source repository. It could be generated in two formats : HTML and PDF.</p>
+<p>To do so, go to the <code class="docutils literal notranslate"><span class="pre">doc</span></code> folder and use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">&lt;format&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;format&gt;</span></code> could be either <code class="docutils literal notranslate"><span class="pre">html</span></code> or <code class="docutils literal notranslate"><span class="pre">pdf</span></code>.
+The documentation will be generated in <code class="docutils literal notranslate"><span class="pre">doc/_build/&lt;format&gt;</span></code>.</p>
+<p>Note that this generation will require some packages to be installed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>all snowtools dependencies (this includes a correct installation of vortex)</p></li>
+<li><p>Python 3.7 or later</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sphinx</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">sphinx-fortran</span></code> extension (installable with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">sphinx-fortran</span></code> but the <code class="docutils literal notranslate"><span class="pre">pipy</span></code> version is quite old, so we encourage you to install the last version available at <a class="reference external" href="https://github.com/VACUMM/sphinx-fortran">https://github.com/VACUMM/sphinx-fortran</a> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/VACUMM/sphinx-fortran</span></code>)</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="code-documentation">
+<h2>Code documentation<a class="headerlink" href="#code-documentation" title="Link to this heading">¶</a></h2>
+<p>Each modification or code addition must be documented through docstrings. In python code, it should be inserted between <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code> immediately after function or class definition. As it will be parsed by sphinx for generation documentation, you are highly encouraged to use the reST/sphinx documentation format. You can add unit tests through doctests (see the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/doctest.html">corresponding documentation</a> for more details).</p>
+<p>Note that functions or classes without docstring will not appear in this documentation.</p>
+<section id="documentation-format">
+<h3>Documentation format<a class="headerlink" href="#documentation-format" title="Link to this heading">¶</a></h3>
+<p>The docstrings will be parsed by Sphinx as reStructuredText format. More details on the format could be found on the links below:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html">https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html</a></p></li>
+<li><p><a class="reference external" href="https://thomas-cokelaer.info/tutorials/sphinx/docstring_python.HTML">https://thomas-cokelaer.info/tutorials/sphinx/docstring_python.HTML</a></p></li>
+</ul>
+<p>Here is an example of documentation as it should take place in snowtools:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">prosimu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a useful class for doing a lot of things</span>
+<span class="sd">    It extends the :class:`utils.prosimu` class with</span>
+<span class="sd">    very useful functions.</span>
+
+<span class="sd">    :param fn: filename to read</span>
+<span class="sd">    :type fn: path-like (str)</span>
+<span class="sd">    :param n: an integer</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="k">def</span> <span class="nf">useful_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        My useful function. Do nothing.</span>
+
+<span class="sd">        :param n: an input parameter</span>
+<span class="sd">        :type n: int</span>
+<span class="sd">        :return: always 0</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+<section id="organize-the-documentation">
+<h3>Organize the documentation<a class="headerlink" href="#organize-the-documentation" title="Link to this heading">¶</a></h3>
+<p>The documentation is generated with sphinx automatically. However, it remains necessary to organize a little bit all the documentation we have. If you modify an existing module, don’t worry, the module should be already known by the documentation and your added code will be automatically taken into account.</p>
+<p>If you add a brand new module, you have to tell sphinx where to document this module. The structure is in the <code class="docutils literal notranslate"><span class="pre">doc/source</span></code> folder and you have to add an <code class="docutils literal notranslate"><span class="pre">automodule</span></code> directive where you want your module to be documented, with the following syntax:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span><span class="cp">.. automodule: utils.prosimu</span>
+<span class="cp">   :members:</span>
+</pre></div>
+</div>
+</section>
+<section id="scripts-documentation">
+<h3>Scripts documentation<a class="headerlink" href="#scripts-documentation" title="Link to this heading">¶</a></h3>
+<p>If you add a new script, documentation can be generated by running the script with <code class="docutils literal notranslate"><span class="pre">-h</span></code> option.</p>
+<p>To add a documented script :</p>
+<ol class="arabic simple">
+<li><p>Add script path to doc/scripts_list.txt (file path)</p></li>
+<li><p>Add an include directive where you want in the documentation pointing to <code class="docutils literal notranslate"><span class="pre">./autoscripts/&lt;fn&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;fn&gt;</span></code> is the script file path with <code class="docutils literal notranslate"><span class="pre">/</span></code> replaced by <code class="docutils literal notranslate"><span class="pre">--</span></code></p></li>
+</ol>
+</section>
+<section id="fortran-documentation">
+<h3>Fortran Documentation<a class="headerlink" href="#fortran-documentation" title="Link to this heading">¶</a></h3>
+<p>Fortran documentation is done through <a class="reference external" href="https://sphinx-fortran.readthedocs.io">sphinx-fortran</a> add-on. Folder containing Fortran files are set in the <code class="docutils literal notranslate"><span class="pre">doc/source/conf.py</span></code> file and then it is possible to document a whole file with:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">f:autosrcfile</span><span class="p">::</span> ../path/to/file.f90
+</pre></div>
+</div>
+<p>or specific elements (program, module, subroutine, function) giving their name (and possibly the module name):</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">f:autoprogram</span><span class="p">::</span> progname
+
+<span class="p">..</span> <span class="ow">f:automodule</span><span class="p">::</span> modname
+
+<span class="p">..</span> <span class="ow">f:autosubroutine</span><span class="p">::</span> [modname/]subrname
+
+<span class="p">..</span> <span class="ow">f:autofunction</span><span class="p">::</span> [modname/]funcname
+</pre></div>
+</div>
+<p>Note that elements included in programs, subroutine or functions are not documented
+(e.g. subroutine defined in a <code class="docutils literal notranslate"><span class="pre">CONTAINS</span></code> section of a program).
+Subroutines and functions that are placed inside a module are documented with the module
+documentation.</p>
+<p><strong>Warning:</strong> The modname has to be given in lower case letters, even if the original
+module name is written in upper case.</p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Snowtools code Documentation</a><ul>
+<li><a class="reference internal" href="#where-to-find-the-documentation">Where to find the documentation</a><ul>
+<li><a class="reference internal" href="#documentation-access">Documentation access</a></li>
+<li><a class="reference internal" href="#generate-documentation">Generate documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#code-documentation">Code documentation</a><ul>
+<li><a class="reference internal" href="#documentation-format">Documentation format</a></li>
+<li><a class="reference internal" href="#organize-the-documentation">Organize the documentation</a></li>
+<li><a class="reference internal" href="#scripts-documentation">Scripts documentation</a></li>
+<li><a class="reference internal" href="#fortran-documentation">Fortran Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="contribute.html"
+                          title="previous chapter">Contribute to snowtools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="test.html"
+                          title="next chapter">Testing</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/doc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="Testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="contribute.html" title="Contribute to snowtools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Snowtools code Documentation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

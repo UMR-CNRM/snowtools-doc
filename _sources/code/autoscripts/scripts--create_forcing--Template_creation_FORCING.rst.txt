@@ -1,0 +1,43 @@
+Script ``scripts/create_forcing/Template_creation_FORCING.py`` help:
+
+
+.. code-block:: none
+
+   usage: Template_creation_FORCING.py [-h] [-i INFILE] [-o OUTFILE] [--lon LON]
+                                       [--lat LAT] [--uref UREF] [--zref ZREF]
+                                       [--aspect ASPECT] [--slope SLOPE]
+                                       [--zs ZS] [--radpart RADPART]
+                                       [--radpart_params RADPART_PARAMS]
+                                       [--timestep FRC_TIME_STP]
+                                       [--meta METADATA]
+   
+   Create forcing file from txt or csv file. TXT/CSV --> PD.DATAFRAME --> NCF-
+   FILE The FORCING File has mandatory columns. Please note time column needs to
+   be first and timezone has to be UTC. [['time', 'CO2air', 'DIR_SWdown',
+   'HUMREL', 'LWdown', 'NEB', 'PSurf', 'Qair', 'Rainf', 'SCA_SWdown',
+   'Snowf','Tair', 'Wind', 'Wind_DIR']]
+   
+   options:
+     -h, --help            show this help message and exit
+     -i INFILE, --infile INFILE
+                           Input csv file
+     -o OUTFILE, --output OUTFILE
+                           Output netcdf file
+     --lon LON             station longitude
+     --lat LAT             station latitude
+     --uref UREF           height of wind measurements
+     --zref ZREF           height of temperature measurements
+     --aspect ASPECT       slope orientation
+     --slope SLOPE         slope angle
+     --zs ZS               station height
+     --radpart RADPART     logical: radiation partitioning global to direct and
+                           diffuse
+     --radpart_params RADPART_PARAMS
+                           reference parameters for radiation partitioning
+     --timestep FRC_TIME_STP
+                           Time step in seconds
+     --meta METADATA       add global attributes in form attname=attribute_text.
+                           Can be evoced multiple times
+
+
+

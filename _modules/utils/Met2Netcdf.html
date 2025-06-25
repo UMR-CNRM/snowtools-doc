@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.Met2Netcdf &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.Met2Netcdf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.Met2Netcdf</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This script creates FORCING files for the Col de Porte site.</span>
+<span class="sd">It uses MET files (ie meteorogical files) from 1993 and s2m reanalysis before.</span>
+
+<span class="sd">Values of MET files come from different sensor in the Col de Porte site and benefit from a human expertise.</span>
+
+<span class="sd">The FORCING files which is created is also use to complete the doi of the article &quot;57 years...&quot;</span>
+<span class="sd">(under the name CRYOBSCLIM.CDP.2018.MetInsitu.nc).</span>
+
+<span class="sd">What has to be controled in Met2Netcdf.py script</span>
+<span class="sd">------------------------------------------------</span>
+<span class="sd">This script completes the MET files with values coming from different sources: bdniv database, s2m reanalasys.</span>
+<span class="sd">The use of the different sources imply to define in the script some dates.</span>
+<span class="sd">Roughly, before one date, we use a data source and after, another data source.</span>
+<span class="sd">So, this is important to change dates inside the script before using it.</span>
+
+<span class="sd">HARD CODED PART OF THE CODE</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="sd">year of last MET file (to be changed each year)</span>
+
+<span class="sd">year of name changing for cdp60mn database (to be changed each year)</span>
+<span class="sd">(ie cdp60mn becomes cdp60mn_2223 for example)</span>
+
+<span class="sd">path to MET files (normally stable path)</span>
+<span class="sd">path to reanalysis files (normally stable path)</span>
+
+<span class="sd">EXAMPLES OF USE</span>
+<span class="sd">^^^^^^^^^^^^^^^</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   python3 Met2Netcdf.py -b 2000080106 -e 2001080106</span>
+<span class="sd">   python3 Met2Netcdf.py -b 1993080106 -e 2023080106 -o MAJ_MetInsitu.nc</span>
+<span class="sd">   python3 Met2Netcdf.py -b 2000080106 -e 2001080106 --one_file -p partial_MET.txt</span>
+
+<span class="sd">Options:</span>
+
+<span class="sd">* -o output.nc -&gt; The output file is named output.nc</span>
+<span class="sd">* -c ( for constant) -&gt; Avoid taking PSurf and Wind_DIR from cdp60mn. By default, -c is not activated.</span>
+<span class="sd">* -b -&gt; the starting date for the FORCING file</span>
+<span class="sd">* -e -&gt; the ending date for the FORCING file</span>
+<span class="sd">* -s -&gt; the number of the location site. By default &#39;38472401&#39; which is the Col de Porte site</span>
+<span class="sd">* --one_file -&gt; create a FORCING file only for a specific MET file</span>
+<span class="sd">* -p -&gt; the path for this only MET file (required when --one_file is activated)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.S2M_standard_file</span> <span class="kn">import</span> <span class="n">StandardCDP</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">get_file_period</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">get_list_dates_files</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span> <span class="nn">bronx.meteo.thermo</span> <span class="kn">import</span> <span class="n">Thermo</span>
+<span class="kn">from</span> <span class="nn">bronx.meteo.constants</span> <span class="kn">import</span> <span class="n">T0</span>
+
+<span class="c1">###########################################################################</span>
+<span class="c1"># MUST CHANGE EACH YEAR:</span>
+<span class="c1">#</span>
+<span class="c1"># year of last MET file</span>
+<span class="n">annee_last_MET</span> <span class="o">=</span> <span class="mi">2023</span>
+<span class="c1">#</span>
+<span class="c1"># END OF CHANGE</span>
+<span class="c1">###############</span>
+<span class="c1"># HARD CODE:</span>
+<span class="c1">#</span>
+<span class="c1"># CDP60mn starting day</span>
+<span class="n">annee_last_cdp60mn</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">annee_last_MET</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;080100&#39;</span>
+<span class="n">path_safran</span> <span class="o">=</span> <span class="s1">&#39;/rd/cenfic3/cenmod/era40/vortex/s2m/postes/reanalysis/meteo&#39;</span>
+<span class="n">path_met</span> <span class="o">=</span> <span class="s1">&#39;/rd/cenfic3/cenobs/mesure_data/col_de_porte/met/&#39;</span>
+<span class="n">pas_par_defaut</span> <span class="o">=</span> <span class="mi">3600</span>
+<span class="c1">#</span>
+<span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="recup_donnees_site">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_donnees_site">[docs]</a>
+<span class="k">def</span> <span class="nf">recup_donnees_site</span><span class="p">(</span><span class="n">numero_site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Give infos (Latitude, longitude, altitude, etc...) from a site (using site number)</span>
+<span class="sd">    More precisely, the infos are: [LAT, LON, UREF, ZREF, ZS, aspect, slope, site number], site name</span>
+
+<span class="sd">    :param numero_site: site of interest (number of 8 figures with string format)</span>
+<span class="sd">    :type numero_site: str</span>
+<span class="sd">    :returns: un tuple of 2 terms: one is the list of infos and other is the site name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">IM</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
+    <span class="n">LAT</span><span class="p">,</span> <span class="n">LON</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">UREF</span><span class="p">,</span> <span class="n">ZREF</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">IM</span><span class="o">.</span><span class="n">infoposte_extensive</span><span class="p">(</span><span class="n">numero_site</span><span class="p">)</span>
+    <span class="n">Tab_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">LAT</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">LON</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">UREF</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ZREF</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ZS</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">aspect</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
+    <span class="n">Tab_point</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numero_site</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Tab_point</span><span class="p">,</span> <span class="n">name</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">message_accueil</span><span class="p">(</span><span class="n">option_bool</span><span class="p">,</span> <span class="n">nom_site</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">option_bool</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Completion des donnees MET avec Pression et Direction du vent du site &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nom_site</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#########################################################&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# A verifier dans le code:&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# - chemin des MET: &#39;</span> <span class="o">+</span> <span class="n">path_met</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# - format des MET: MET_YYYY_YYYY+1_fmt (ex MET_2000_2001_fmt)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# - chemin des reanalyses SAFRAN: &#39;</span> <span class="o">+</span> <span class="n">path_safran</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;# A changer chaque année: année du dernier MET disponible&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#########################################################&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="decoupe_periode">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.decoupe_periode">[docs]</a>
+<span class="k">def</span> <span class="nf">decoupe_periode</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    split period of dates in yearly period and give the list of MET files</span>
+<span class="sd">    MET file name is supposed to be in a fix format: MET_1996_1997_fmt</span>
+
+<span class="sd">    :param date_entree_debut: starting date for the FORCING file</span>
+<span class="sd">    :type date_entree_debut: Date (extension of datetime.datetime)</span>
+<span class="sd">    :param date_entree_fin: ending date for the FORCING file</span>
+<span class="sd">    :type date_entree_fin: Date (extension of datetime.datetime)</span>
+<span class="sd">    :returns: un tuple of 3 lists: MET list, starting date list, ending date list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">list_date_debut</span> <span class="o">=</span> <span class="n">get_list_dates_files</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="s1">&#39;yearly&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">list_date_fin</span> <span class="o">=</span> <span class="n">get_list_dates_files</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="s1">&#39;yearly&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">list_path_met</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">debut</span><span class="p">,</span><span class="n">fin</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">list_date_debut</span><span class="p">,</span><span class="n">list_date_fin</span><span class="p">):</span>
+        <span class="n">list_path_met</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_met</span> <span class="o">+</span> <span class="s1">&#39;MET_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">debut</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_fmt&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">list_path_met</span><span class="p">,</span> <span class="n">list_date_debut</span><span class="p">,</span> <span class="n">list_date_fin</span></div>
+
+
+
+<div class="viewcode-block" id="read_info_met">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.read_info_met">[docs]</a>
+<span class="k">def</span> <span class="nf">read_info_met</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get informations for an annual MET file: size of the header, begin date, end date.</span>
+<span class="sd">    NB: we suppose that the lines of the header are beginning with a letter.</span>
+<span class="sd">    NB2: 2 date format: YYYYMMDDHH or DD/MM/YYYY HH:M</span>
+<span class="sd">    NB3: &quot;old&quot; MET doesn&#39;t have full yearly data -&gt; needs to complete -&gt; needs to know where to start and stop</span>
+
+<span class="sd">    :param filename: path to MET file</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: list: [number of lines in header, starting date for MET datas; ending date for MET datas]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">metfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">fileLines</span> <span class="o">=</span> <span class="n">metfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">metfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">last_line</span> <span class="o">=</span> <span class="n">fileLines</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">nb_ligne_entete</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Idée: regarder les 30 premières lignes pour compter les lignes d&#39;entêtes (qui ne commencent pas par un chiffre)</span>
+    <span class="c1"># Ensuite, repérer le format de la date en fonction de la présence d&#39;un &quot;/&quot; (format DD/MM/... au lieu de YYYYMM..)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fileLines</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">30</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]):</span>
+            <span class="n">nb_ligne_entete</span> <span class="o">=</span> <span class="n">nb_ligne_entete</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">):</span>
+            <span class="n">first_date_met</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="mi">13</span><span class="p">]</span>
+            <span class="n">last_date_met</span> <span class="o">=</span> <span class="n">last_line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="n">last_line</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">last_line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">last_line</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="mi">13</span><span class="p">]</span>
+            <span class="k">break</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">):</span>
+            <span class="n">first_date_met</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">11</span><span class="p">]</span>
+            <span class="n">last_date_met</span> <span class="o">=</span> <span class="n">last_line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">11</span><span class="p">]</span>
+            <span class="k">break</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">nb_ligne_entete</span><span class="p">),</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">first_date_met</span><span class="p">),</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">last_date_met</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">L</span></div>
+
+
+
+<div class="viewcode-block" id="recup_cdp">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_cdp">[docs]</a>
+<span class="k">def</span> <span class="nf">recup_cdp</span><span class="p">(</span><span class="n">date_time_deb</span><span class="p">,</span> <span class="n">date_time_fin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get field Wind Direction and Surface Pressure from cdp60mn database</span>
+
+<span class="sd">    :param date_time_deb: starting date</span>
+<span class="sd">    :type date_time_deb: datetime.datetime</span>
+<span class="sd">    :param date_time_fin: ending date</span>
+<span class="sd">    :type date_time_fin: datetime.datetime</span>
+<span class="sd">    :returns: np array of dimension (list_of_dates,3) [list_of_dates, pressure, wind dir]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Structure des bases: cdp60mn pour l&#39;année en cours et un peu plus. Ensuite, mis dans cdp9293, cdp9394 etc... jusqu&#39;à cdp1415</span>
+    <span class="c1"># A partir de la saison 15-16, chgt de nom de base cdp60mn_1516 et changement de nom des variables</span>
+    <span class="n">date_change_2015</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="mi">2015080100</span><span class="p">))</span>  <span class="c1"># EN DUR et fixe</span>
+    <span class="n">date_change_base60mn</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">annee_last_cdp60mn</span><span class="p">)</span>
+
+    <span class="c1">###############################################################################################</span>
+    <span class="c1"># A partir du MET_2015_2016, on a des années complètes 1er août 00h vers 1er août 00h pour les met</span>
+    <span class="c1"># Le stockage dans les bases de données cdp*** correspond</span>
+    <span class="c1"># Par contre, les FORCING sont du 1er août 6h vers 1er août 6h</span>
+    <span class="c1"># Il faut ainsi gérer le cas où la date fin du fichier MET dépasse le 1er août minuit (future norme ?)</span>
+    <span class="n">date_1er_aout</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Cas &quot;standards&quot;: date_time_fin avant le 1er aout 00h</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">date_change_2015</span> <span class="o">&gt;=</span> <span class="n">date_time_fin</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">date_time_fin</span> <span class="o">&lt;=</span> <span class="n">date_1er_aout</span><span class="p">):</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;baro,dvent&#39;</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">date_change_base60mn</span> <span class="o">&gt;=</span> <span class="n">date_time_fin</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">date_time_fin</span> <span class="o">&lt;=</span> <span class="n">date_1er_aout</span><span class="p">):</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;p_ptb330_v1,dd_meca_10mn_10m&#39;</span>
+    <span class="k">elif</span> <span class="n">date_time_fin</span> <span class="o">&lt;=</span> <span class="n">date_1er_aout</span><span class="p">:</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn&#39;</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;p_ptb330_v1,dd_meca_10mn_10m&#39;</span>
+    <span class="c1"># Cas où YYYY080106 =&gt; d&#39;abord récupérer les données sur l&#39;année passée</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">date_time_fin</span> <span class="o">&gt;</span> <span class="n">date_1er_aout</span><span class="p">)</span> <span class="ow">and</span> <span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;=</span> <span class="n">date_change_2015</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;baro,dvent&#39;</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">date_time_fin</span> <span class="o">&gt;</span> <span class="n">date_1er_aout</span><span class="p">)</span> <span class="ow">and</span> <span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;=</span> <span class="n">date_change_base60mn</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;p_ptb330_v1,dd_meca_10mn_10m&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn&#39;</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;p_ptb330_v1,dd_meca_10mn_10m&#39;</span>
+
+    <span class="c1"># command est une requete SQL (en string)</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;select dat,&quot;</span> <span class="o">+</span> <span class="n">nom_var</span> <span class="o">+</span> <span class="s2">&quot; from bdniv.&quot;</span> <span class="o">+</span> <span class="n">nom_base</span> <span class="o">+</span> <span class="s2">&quot; where dat between &#39;</span><span class="si">{0}</span><span class="s2">&#39; and &#39;</span><span class="si">{1}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">    order by dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date_time_deb</span><span class="p">,</span> <span class="n">date_time_fin</span><span class="p">)</span>
+
+    <span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;cenexp2.cen.meteo.fr&#39;</span>
+    <span class="n">database</span> <span class="o">=</span> <span class="s1">&#39;bdniv&#39;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;consult&#39;</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="s1">&#39;5433&#39;</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+
+    <span class="c1"># Cas où YYYY080106 =&gt; ensuite récupérer les données sur l&#39;année en cours</span>
+    <span class="c1"># a) récupérer dans la base de données d&#39;après les 5h manquantes</span>
+    <span class="c1"># b) concaténer les données.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">date_time_fin</span> <span class="o">&gt;</span> <span class="n">date_1er_aout</span> <span class="ow">and</span> <span class="n">nom_base</span> <span class="o">!=</span> <span class="s1">&#39;cdp60mn&#39;</span> <span class="ow">and</span> <span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="n">date_change_base60mn</span><span class="o">.</span><span class="n">year</span><span class="p">):</span>
+        <span class="n">nom_var</span> <span class="o">=</span> <span class="s1">&#39;p_ptb330_v1,dd_meca_10mn_10m&#39;</span>
+        <span class="k">if</span> <span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">&lt;</span> <span class="n">date_change_base60mn</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+            <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date_time_fin</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nom_base</span> <span class="o">=</span> <span class="s1">&#39;cdp60mn&#39;</span>
+
+        <span class="c1"># command est une requete SQL (en string)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;select dat,&quot;</span> <span class="o">+</span> <span class="n">nom_var</span> <span class="o">+</span> <span class="s2">&quot; from bdniv.&quot;</span> <span class="o">+</span> <span class="n">nom_base</span> <span class="o">+</span> <span class="s2">&quot; where dat between &#39;</span><span class="si">{0}</span><span class="s2">&#39; and &#39;</span><span class="si">{1}</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">        order by dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date_time_deb</span><span class="p">,</span> <span class="n">date_time_fin</span><span class="p">)</span>
+
+        <span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;cenexp2.cen.meteo.fr&#39;</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="s1">&#39;bdniv&#39;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;consult&#39;</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="s1">&#39;5433&#39;</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">=</span><span class="n">database</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">data_supp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+
+        <span class="c1"># concatenation en enlevant une ligne pour éviter de dupliquer la valeur YYYY080100</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">data_supp</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
+            <span class="n">data_supp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">data_supp</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:]))</span>
+
+    <span class="c1"># correction frustre des données pression + changement d&#39;unité (hPa en Pa)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[:])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">890</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">863.827</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">840</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">863.827</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">86382.7</span>
+            <span class="c1"># correction frustre des données de direction du vent</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">360</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">360</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="open_met_file_and_create_xr">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.open_met_file_and_create_xr">[docs]</a>
+<span class="k">def</span> <span class="nf">open_met_file_and_create_xr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all differents fields in MET file</span>
+
+<span class="sd">    :param filename: path to MET file</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param option_recup: if True, use database cdp60mn to complete PSurf and windDIR</span>
+<span class="sd">    :type option_recup: boolean</span>
+<span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
+<span class="sd">    :type site: str</span>
+<span class="sd">    :returns: an xarray with all the fields, indexed by dates of MET file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Les constantes à mettre:</span>
+    <span class="n">CO2air</span> <span class="o">=</span> <span class="mf">0.00062</span>
+    <span class="n">IM</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
+    <span class="n">LAT</span><span class="p">,</span> <span class="n">LON</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">UREF</span><span class="p">,</span> <span class="n">ZREF</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">IM</span><span class="o">.</span><span class="n">infoposte_extensive</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+
+    <span class="n">PSurf_cst</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">101325</span> <span class="o">*</span> <span class="p">((</span><span class="mi">288</span> <span class="o">-</span> <span class="mf">0.0065</span> <span class="o">*</span> <span class="n">ZS</span><span class="p">)</span> <span class="o">/</span> <span class="mi">288</span><span class="p">)</span> <span class="o">**</span> <span class="mf">5.255</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">nb_ligne_entete</span><span class="p">,</span> <span class="n">first_date</span><span class="p">,</span> <span class="n">last_date</span> <span class="o">=</span> <span class="n">read_info_met</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">metfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;input meteorological file &#39;</span> <span class="o">+</span> <span class="n">metfile</span> <span class="o">+</span> <span class="s1">&#39; not found&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="c1"># Les fichiers sont générés avec possiblement pas le bon nombre d&#39;espaces</span>
+    <span class="c1"># Les MET à partir de 2016_2017 =&gt; 10 champs</span>
+    <span class="c1"># date          tempe       wind     humrel   precip    phase    LWdown   DIR_SWdown  SCA_SWdown  NEB</span>
+    <span class="c1"># 2017080100      20.0       1.7        45      0.00      0.00    334.40      0.47      1.31      0.00</span>
+
+    <span class="c1"># Les MET de 2015_2016 =&gt; 12 champs</span>
+    <span class="c1">#  date (2 champs)    nrart     Tair        ff        RH        RR     phase        LW     SWdir     SWdif       Neb</span>
+    <span class="c1"># 01/08/2015 00:0         1      12.2       0.9        90       0.8       0.0     355.3       0.0       0.0       0.8</span>
+
+    <span class="c1"># Les MET avant 2014_2015 (inclus) =&gt; 11 champs</span>
+    <span class="c1"># Date          ART.  T   Vent Hum RRtot SS/RRtot IR  Soldr Soldf Neb</span>
+    <span class="c1"># 2014092000      1  12.8  0.6  95  0.80 0.00   357.8   0.0   0.0 0.79</span>
+    <span class="n">fileLines</span> <span class="o">=</span> <span class="n">metfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="n">nb_ligne_entete</span><span class="p">:]</span>
+    <span class="n">metfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">File_entree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">fileLines</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+
+    <span class="n">Tableau_retour_time_nbpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">),</span> <span class="mi">14</span><span class="p">))</span>
+    <span class="c1"># Dans l&#39;ordre: CO2air, DIR_SWdown, Flag_in_situ, Humrel, LWdown, NEB, PSurf, Qair, Rainf, SCA_SWdown, Snowf, Tair, Wind, Wind_DIR</span>
+
+    <span class="c1"># Construction Liste_date pour compléter éventuellement les data du cdp</span>
+    <span class="n">Liste_date</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">Liste_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">hour</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">hour</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">Liste_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+
+        <span class="c1"># Recuperation de PSurf et Wind_DIR sur table CdP, sinon, valeurs par défaut</span>
+        <span class="k">if</span> <span class="n">option_recup</span> <span class="ow">and</span> <span class="n">site</span> <span class="o">==</span> <span class="s1">&#39;38472401&#39;</span><span class="p">:</span>
+            <span class="n">data_cdp</span> <span class="o">=</span> <span class="n">recup_cdp</span><span class="p">(</span><span class="n">first_date</span><span class="p">,</span> <span class="n">last_date</span><span class="p">)</span>
+            <span class="c1"># traitement du cas où des valeurs sont absentes de la table CdP</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_cdp</span><span class="p">[:])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">Wind_DIR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)))</span>
+                <span class="n">PSurf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)))</span> <span class="o">*</span> <span class="n">PSurf_cst</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">):</span>
+                <span class="n">Tab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="n">Tab</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">PSurf_cst</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">Liste_date</span><span class="p">,</span> <span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+                <span class="n">Tab</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">Tab</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">PSurf</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">Wind_DIR</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">PSurf</span> <span class="o">=</span> <span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">Wind_DIR</span> <span class="o">=</span> <span class="n">data_cdp</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Wind_DIR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)))</span>
+            <span class="n">PSurf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">fileLines</span><span class="p">)))</span> <span class="o">*</span> <span class="n">PSurf_cst</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">Thermo</span><span class="p">([</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="n">PSurf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Huw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+                                                                            <span class="n">T</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">T0</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;qv&#39;</span><span class="p">)</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                            <span class="mi">1</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">]))</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">CO2air</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># flag à 1 dans ce cas-là</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">PSurf</span><span class="p">[:]</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">+</span> <span class="n">T0</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wind_DIR</span><span class="p">[:]</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">Thermo</span><span class="p">([</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="n">PSurf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Huw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span>
+                                                                            <span class="n">T</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">T0</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;qv&#39;</span><span class="p">)</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                            <span class="mi">1</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">]))</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+                <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">year</span> <span class="o">&lt;</span> <span class="mi">2010</span> <span class="ow">or</span> <span class="p">(</span><span class="n">year</span> <span class="o">==</span> <span class="mi">2010</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">11</span><span class="p">):</span>
+                    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="o">-</span> <span class="mf">10.0</span>
+                <span class="k">elif</span> <span class="n">year</span> <span class="o">&lt;</span> <span class="mi">2015</span> <span class="ow">or</span> <span class="p">(</span><span class="n">year</span> <span class="o">==</span> <span class="mi">2015</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">):</span>
+                    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="o">+</span> <span class="mf">10.0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">CO2air</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># flag à 1 dans ce cas-là</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">PSurf</span><span class="p">[:]</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">+</span> <span class="n">T0</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wind_DIR</span><span class="p">[:]</span>
+
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">Thermo</span><span class="p">([</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="n">PSurf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Huw</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
+                                                                            <span class="n">T</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">+</span> <span class="n">T0</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;qv&#39;</span><span class="p">)</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                            <span class="mi">1</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+                <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">File_entree</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span> <span class="o">/</span> <span class="n">pas_par_defaut</span>
+
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">CO2air</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># flag à 1 dans ce cas-là</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">PSurf</span><span class="p">[:]</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">+</span> <span class="n">T0</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="n">File_entree</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="n">Wind_DIR</span><span class="p">[:]</span>
+
+    <span class="n">Liste_field</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO2air&#39;</span><span class="p">,</span> <span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Flag_in_situ&#39;</span><span class="p">,</span> <span class="s1">&#39;Humrel&#39;</span><span class="p">,</span> <span class="s1">&#39;LWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;NEB&#39;</span><span class="p">,</span> <span class="s1">&#39;PSurf&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;Qair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;SCA_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span>
+    <span class="n">data_xr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Tableau_retour_time_nbpoint</span><span class="p">,</span>
+                           <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">Liste_date</span><span class="p">,</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="n">Liste_field</span><span class="p">},</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">data_xr</span><span class="p">,</span> <span class="n">Liste_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Liste_date</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="recup_safran">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_safran">[docs]</a>
+<span class="k">def</span> <span class="nf">recup_safran</span><span class="p">(</span><span class="n">date_1</span><span class="p">,</span> <span class="n">date_2</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete missing values of the MET file by Safran reanalysis</span>
+
+<span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
+<span class="sd">    :type site: str</span>
+<span class="sd">    :param date_1: starting date for getting fields</span>
+<span class="sd">    :type date_1: datetime.datetime</span>
+<span class="sd">    :param date_2: ending date for getting fields</span>
+<span class="sd">    :type date_2: datetime.datetime</span>
+<span class="sd">    :returns: an xarray with all fields of interest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Liste_date</span> <span class="o">=</span> <span class="p">[</span><span class="n">date_1</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">date_2</span> <span class="o">-</span> <span class="n">date_1</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()),</span>
+                  <span class="n">pas_par_defaut</span><span class="p">)]</span>
+    <span class="n">date_b</span><span class="p">,</span> <span class="n">date_e</span> <span class="o">=</span> <span class="n">get_file_period</span><span class="p">(</span><span class="s1">&#39;FORCING&#39;</span><span class="p">,</span> <span class="n">path_safran</span><span class="p">,</span> <span class="n">date_1</span><span class="p">,</span> <span class="n">date_2</span><span class="p">)</span>
+
+    <span class="n">forcing</span> <span class="o">=</span> <span class="n">path_safran</span> <span class="o">+</span> <span class="s1">&#39;/FORCING_&#39;</span> <span class="o">+</span> <span class="n">date_b</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">date_e</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.nc&#39;</span>
+    <span class="n">fic</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span>
+
+    <span class="n">Tableau_retour_time_nbpoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Liste_date</span><span class="p">),</span> <span class="mi">14</span><span class="p">))</span>
+    <span class="c1"># Dans l&#39;ordre: CO2air, DIR_SWdown, Flag_in_situ, Humrel, LWdown, NEB, PSurf,</span>
+    <span class="c1">#               Qair, Rainf, SCA_SWdown, Snowf, Tair, Wind, Wind_DIR</span>
+
+    <span class="n">index1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fic</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span> <span class="o">==</span> <span class="n">date_1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">index2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fic</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span> <span class="o">==</span> <span class="n">date_2</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;station&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">site</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;CO2air&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># flag à 0 dans ce cas-là</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;HUMREL&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;LWdown&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;NEB&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;PSurf&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Qair&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;SCA_SWdown&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">11</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">Tableau_retour_time_nbpoint</span><span class="p">[:,</span> <span class="mi">13</span><span class="p">]</span> <span class="o">=</span> <span class="n">fic</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;Wind_DIR&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">fic</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">Liste_field</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO2air&#39;</span><span class="p">,</span> <span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Flag_in_situ&#39;</span><span class="p">,</span> <span class="s1">&#39;Humrel&#39;</span><span class="p">,</span> <span class="s1">&#39;LWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;NEB&#39;</span><span class="p">,</span> <span class="s1">&#39;PSurf&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;Qair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;SCA_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span>
+    <span class="n">xr_safran</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">Tableau_retour_time_nbpoint</span><span class="p">,</span>
+                             <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">Liste_date</span><span class="p">,</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="n">Liste_field</span><span class="p">},</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">xr_safran</span></div>
+
+
+
+<div class="viewcode-block" id="complete_obs_with_model_1period">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.complete_obs_with_model_1period">[docs]</a>
+<span class="k">def</span> <span class="nf">complete_obs_with_model_1period</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a one year period (YYYY080106 - (YYYY+1)080106), return a complete file</span>
+<span class="sd">    This file is made from the MET informations + eventually Psurf and WindDIR from cdp60mn database.</span>
+<span class="sd">    Then, for the missing dates, this is completed with Safran reanalysis.</span>
+
+<span class="sd">    :param filename: path to the MET file which is going to be completed</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
+<span class="sd">    :type site: str</span>
+<span class="sd">    :param option_recup: PSurf et Wind DIR filled with database cdp60mn</span>
+<span class="sd">    :type option_recup: boolean</span>
+<span class="sd">    :param date_entree_debut: starting date of the year</span>
+<span class="sd">    :type date_entree_debut: datetime.datetime</span>
+<span class="sd">    :param date_entree_fin: ending date of the year</span>
+<span class="sd">    :type date_entree_fin: datetime.datetime</span>
+<span class="sd">    :returns: an xarray with all fields of interest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xr_MET</span><span class="p">,</span> <span class="n">first_date</span><span class="p">,</span> <span class="n">last_date</span> <span class="o">=</span> <span class="n">open_met_file_and_create_xr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">date_entree_debut</span> <span class="o">&lt;</span> <span class="n">first_date</span><span class="p">:</span>
+        <span class="n">xr_safran</span> <span class="o">=</span> <span class="n">recup_safran</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">first_date</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+        <span class="n">xr_MET</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">xr_safran</span><span class="p">,</span>  <span class="n">xr_MET</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">date_entree_fin</span> <span class="o">&gt;</span> <span class="n">last_date</span><span class="p">:</span>
+        <span class="n">xr_safran</span> <span class="o">=</span> <span class="n">recup_safran</span><span class="p">(</span><span class="n">last_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">pas_par_defaut</span><span class="p">),</span><span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+        <span class="n">xr_MET</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">xr_MET</span><span class="p">,</span>  <span class="n">xr_safran</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="n">xr_1period</span> <span class="o">=</span> <span class="n">xr_MET</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xr_1period</span></div>
+
+
+
+<div class="viewcode-block" id="compilation_ttes_periodes">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.compilation_ttes_periodes">[docs]</a>
+<span class="k">def</span> <span class="nf">compilation_ttes_periodes</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compilation of all the different one_year period</span>
+
+<span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
+<span class="sd">    :type site: str</span>
+<span class="sd">    :param option_recup: PSurf et Wind DIR filled with database cdp60mn</span>
+<span class="sd">    :type option_recup: boolean</span>
+<span class="sd">    :param date_entree_debut: starting date for the FORCING</span>
+<span class="sd">    :type date_entree_debut: datetime.datetime</span>
+<span class="sd">    :param date_entree_fin: ending date for the FORCING</span>
+<span class="sd">    :type date_entree_fin: datetime.datetime</span>
+<span class="sd">    :returns: an xarray with all fields of interest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">date_first_met</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1993</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  <span class="c1"># EN DUR et fixe</span>
+    <span class="n">date_last_met</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">annee_last_MET</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">list_path_met</span><span class="p">,</span> <span class="n">list_date_debut</span><span class="p">,</span> <span class="n">list_date_fin</span> <span class="o">=</span> <span class="n">decoupe_periode</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">)</span>
+    <span class="n">Liste_field</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO2air&#39;</span><span class="p">,</span> <span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Flag_in_situ&#39;</span><span class="p">,</span> <span class="s1">&#39;Humrel&#39;</span><span class="p">,</span> <span class="s1">&#39;LWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;NEB&#39;</span><span class="p">,</span> <span class="s1">&#39;PSurf&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;Qair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;SCA_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span>
+    <span class="n">xr_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">14</span><span class="p">)),</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;datetime64[ns]&#39;</span><span class="p">),</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="n">Liste_field</span><span class="p">},</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="s1">&#39;fields&#39;</span><span class="p">])</span>
+
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_path_met</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">list_date_debut</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_date_fin</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">list_date_debut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">date_first_met</span> <span class="ow">and</span> <span class="n">list_date_fin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">date_last_met</span><span class="p">:</span>
+            <span class="n">xr_loop</span> <span class="o">=</span> <span class="n">complete_obs_with_model_1period</span><span class="p">(</span><span class="n">list_path_met</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">option_recup</span><span class="p">,</span>
+                                                         <span class="n">list_date_debut</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">list_date_fin</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">site</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xr_loop</span> <span class="o">=</span> <span class="n">recup_safran</span><span class="p">(</span><span class="n">list_date_debut</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">list_date_fin</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">site</span><span class="p">)</span>
+        <span class="n">xr_out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">xr_out</span><span class="p">,</span> <span class="n">xr_loop</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="n">xr_out</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xr_out</span></div>
+
+
+
+<div class="viewcode-block" id="create_netcdf">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.create_netcdf">[docs]</a>
+<span class="k">def</span> <span class="nf">create_netcdf</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">Tableau_valeurs_nbpoint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create NetCDF output file</span>
+
+<span class="sd">    :param output: name of the output file</span>
+<span class="sd">    :type output: str</span>
+<span class="sd">    :param xr: fields of interest (PSurf, Rayt, Snowf, ...) </span>
+<span class="sd">    :type xr: xarray</span>
+<span class="sd">    :param Tableau_valeurs_nbpoint: fields defining the site (LAT, LON, ZS, ...) </span>
+<span class="sd">    :type Tableau_valeurs_nbpoint: np array</span>
+
+<span class="sd">    :returns: in a pythonic way, nothing (write a netCDF named out_met2netcdf.nc by default) </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">newname</span> <span class="o">=</span> <span class="n">output</span>
+    <span class="n">fic_forcing</span> <span class="o">=</span> <span class="n">StandardCDP</span><span class="p">(</span><span class="n">newname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">)</span>
+    <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">unit_time</span> <span class="o">=</span> <span class="s1">&#39;seconds since 1970-01-01 00:00&#39;</span>
+    <span class="c1"># conversion from xarray time format (np.datetime64 to datetime.datetime</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">check_and_convert_date</span><span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)[:</span><span class="mi">13</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">values</span><span class="p">))]</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">date2num</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">unit_time</span><span class="p">)</span>
+
+    <span class="n">time_nc</span> <span class="o">=</span> <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,),</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+    <span class="n">time_nc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">unit_time</span>
+    <span class="n">time_nc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">time</span>
+
+    <span class="n">frc_nc</span> <span class="o">=</span> <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;FRC_TIME_STP&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+    <span class="n">frc_nc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+    <span class="n">frc_nc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">pas_par_defaut</span>
+
+    <span class="n">Liste_nom_time_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CO2air&#39;</span><span class="p">,</span> <span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;flag&#39;</span><span class="p">,</span> <span class="s1">&#39;HUMREL&#39;</span><span class="p">,</span> <span class="s1">&#39;LWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;NEB&#39;</span><span class="p">,</span> <span class="s1">&#39;PSurf&#39;</span><span class="p">,</span> <span class="s1">&#39;Qair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;SCA_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span>
+
+    <span class="n">Liste_unite_time_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kg/m3&#39;</span><span class="p">,</span> <span class="s1">&#39;W/m2&#39;</span><span class="p">,</span> <span class="s1">&#39;0 or 1&#39;</span><span class="p">,</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span> <span class="s1">&#39;W/m2&#39;</span><span class="p">,</span> <span class="s1">&#39;between 0 and 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Pa&#39;</span><span class="p">,</span> <span class="s1">&#39;Kg/Kg&#39;</span><span class="p">,</span> <span class="s1">&#39;kg/m2/s&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;W/m2&#39;</span><span class="p">,</span> <span class="s1">&#39;kg/m2/s&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;m/s&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">]</span>
+
+    <span class="n">Liste_longname_time_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Near Surface CO2 Concentration&#39;</span><span class="p">,</span> <span class="s1">&#39;Surface Incident Direct Shortwave Radiation&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;in situ flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Relative Humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;Surface Incident Longwave Radiation&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;Nebulosity&#39;</span><span class="p">,</span> <span class="s1">&#39;Surface Pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;Near Surface Specific Humidity&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;Rainfall Rate&#39;</span><span class="p">,</span> <span class="s1">&#39;Surface Incident Diffuse Shortwave Radiation&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowfall Rate&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;Near Surface Air Temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind Speed&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind Direction&#39;</span><span class="p">]</span>
+
+    <span class="n">Liste_nom_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LAT&#39;</span><span class="p">,</span> <span class="s1">&#39;LON&#39;</span><span class="p">,</span> <span class="s1">&#39;UREF&#39;</span><span class="p">,</span> <span class="s1">&#39;ZREF&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="s1">&#39;station&#39;</span><span class="p">]</span>
+    <span class="n">Liste_unite_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;degrees_north&#39;</span><span class="p">,</span> <span class="s1">&#39;degrees_east&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;degrees from north&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;degrees from horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">Liste_longname_nbpoint</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;Reference_Height_for_Wind&#39;</span><span class="p">,</span> <span class="s1">&#39;Reference_Height&#39;</span><span class="p">,</span> <span class="s1">&#39;altitude&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;slope aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;slope angle&#39;</span><span class="p">,</span> <span class="s1">&#39;OMM code of the station&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Liste_nom_time_nbpoint</span><span class="p">)):</span>
+        <span class="n">fic_nc</span> <span class="o">=</span> <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">Liste_nom_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;Number_of_points&#39;</span><span class="p">),</span>
+                                            <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+        <span class="n">fic_nc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">Liste_unite_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">fic_nc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">Liste_longname_time_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">fic_nc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Liste_nom_nbpoint</span><span class="p">)):</span>
+        <span class="n">fic_nc</span> <span class="o">=</span> <span class="n">fic_forcing</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">Liste_nom_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">,),</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+        <span class="n">fic_nc</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">Liste_unite_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">fic_nc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">Liste_longname_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">fic_nc</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">Tableau_valeurs_nbpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">fic_forcing</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">parseArguments</span><span class="p">():</span>
+    <span class="c1"># Create argument parser</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="c1"># Optional arguments</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Name for output file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;out_met2netcdf.nc&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--constant&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;PSurf and Wind_DIR are constant&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;--begin&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Beginning date for nc file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;1993080106&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s1">&#39;--end&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ending date for nc file&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;2023080106&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--site&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Site location&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;38472401&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--one_file&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Create forcing for one MET file&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--path_MET&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="s1">&#39;--one_file&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path of the only MET&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># Print version</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(prog)s</span><span class="s1"> - Version 1.0&#39;</span><span class="p">)</span>
+    <span class="c1"># Parse arguments</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">args</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Recuperer les  arguments</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parseArguments</span><span class="p">()</span>
+    <span class="n">pathout</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span>
+    <span class="n">option_recup</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">constant</span> <span class="c1"># By default, we get PSurf and Wind DIR from cdp60mn database</span>
+    <span class="n">date_entree_debut</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">begin</span><span class="p">))</span>
+    <span class="n">date_entree_fin</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">end</span><span class="p">))</span>
+    <span class="n">site</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">site</span>
+    <span class="c1"># Construire les donnees et les editer</span>
+    <span class="n">Tab_point</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">recup_donnees_site</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+    <span class="n">message_accueil</span><span class="p">(</span><span class="n">option_recup</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">one_file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pathout</span> <span class="o">==</span> <span class="s1">&#39;out_met2netcdf.nc&#39;</span><span class="p">:</span>
+            <span class="n">pathout</span> <span class="o">=</span> <span class="s1">&#39;FORCING_&#39;</span><span class="o">+</span> <span class="n">date_beg</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">date_end</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s1">&#39;.nc&#39;</span>
+        <span class="n">xr</span><span class="p">,</span> <span class="n">date_beg</span><span class="p">,</span> <span class="n">date_end</span> <span class="o">=</span> <span class="n">open_met_file_and_create_xr</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">path_MET</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+        <span class="n">create_netcdf</span><span class="p">(</span><span class="n">pathout</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">Tab_point</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">xr_compil</span> <span class="o">=</span> <span class="n">compilation_ttes_periodes</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">)</span>
+        <span class="n">create_netcdf</span><span class="p">(</span><span class="n">pathout</span><span class="p">,</span> <span class="n">xr_compil</span><span class="p">,</span> <span class="n">Tab_point</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.Met2Netcdf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

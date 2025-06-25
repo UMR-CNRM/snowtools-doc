@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scores.deterministic &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scores.deterministic</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scores.deterministic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 20 March 2018</span>
+
+<span class="sd">@author: lafaysse</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+
+<span class="n">ESMSnowMIP_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snowdepth</span><span class="o">=</span><span class="s2">&quot;snd_auto&quot;</span><span class="p">,</span> <span class="n">snowswe</span><span class="o">=</span><span class="s2">&quot;snw_auto&quot;</span><span class="p">,</span> <span class="n">snowdepthman</span><span class="o">=</span><span class="s2">&quot;snd_man&quot;</span><span class="p">,</span>
+                              <span class="n">snowsweman</span><span class="o">=</span><span class="s2">&quot;snw_man&quot;</span><span class="p">,</span> <span class="n">tsurf</span><span class="o">=</span><span class="s2">&quot;ts&quot;</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="s2">&quot;albs&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping common variable names to ESMSnowMIP variable names</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">ESMSnowMIP_alternate_varnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snd_auto</span><span class="o">=</span><span class="s2">&quot;snd_can_auto&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping ESMSnowMIP_alternate_varnames</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">SURFEX_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snowdepth</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">snowswe</span><span class="o">=</span><span class="s2">&quot;WSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">snowdepthman</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span><span class="p">,</span>
+                          <span class="n">snowsweman</span><span class="o">=</span><span class="s2">&quot;WSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">tsurf</span><span class="o">=</span><span class="s2">&quot;TS_ISBA&quot;</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="s2">&quot;ASN_ISBA&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping common variable names to surfex variable names</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="DeterminsticScores">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores">[docs]</a>
+<span class="k">class</span> <span class="nc">DeterminsticScores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class for deterministic scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">startwinter</span> <span class="o">=</span> <span class="mi">10</span> 
+    <span class="n">endwinter</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="DeterminsticScores.nvalues">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.nvalues">[docs]</a>
+    <span class="k">def</span> <span class="nf">nvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of values accounted for in scores computation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeterminsticScores.diff">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.diff">[docs]</a>
+    <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Vector of difference between simulations and observations&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">diff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DeterminsticScores.squarediff">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.squarediff">[docs]</a>
+    <span class="k">def</span> <span class="nf">squarediff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Vector of square difference between simulations and observations&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">squarediff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">squarediff</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rmse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Root mean square error&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">squarediff_common</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Relative bias&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mae</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean absolute error&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">))</span>
+
+<div class="viewcode-block" id="DeterminsticScores.scores_all_values">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.scores_all_values">[docs]</a>
+    <span class="k">def</span> <span class="nf">scores_all_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculate scores (bias and RMSE) including cases of 0 values (no snow for example)</span>
+<span class="sd">        :return: number of values, bias, RMSE, mean value of simulations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pour calculer les scores en conservant les valeurs nulles&quot;&quot;&quot;</span>
+        <span class="n">nvalues</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nvalues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansim</span></div>
+
+
+<div class="viewcode-block" id="DeterminsticScores.scores_with_positive_values_only">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.scores_with_positive_values_only">[docs]</a>
+    <span class="k">def</span> <span class="nf">scores_with_positive_values_only</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculate scores (bias and RMSE) excluding cases where both the observation and the simulation</span>
+<span class="sd">        have a value of 0</span>
+<span class="sd">        :return: number of values, bias, RMSE, mean value of simulations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">nvalues</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">sim</span> <span class="o">-</span> <span class="n">obs</span>
+        <span class="n">bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+        <span class="n">squarediff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+        <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">squarediff</span><span class="p">))</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nvalues</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">rmse</span><span class="p">,</span> <span class="n">mean</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">meanobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean observation value over the common period.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">meansim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean simulation value over the common period.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeterminsticScores.read_var_ifpresent">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.read_var_ifpresent">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_var_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        read a given variable from a netcdf file if it is present in the file.</span>
+<span class="sd">        If the variable is not present under the given variable name, check if it</span>
+<span class="sd">        is present under an alternate name from ESMSnowMIP.</span>
+
+<span class="sd">        :param data_nc: dataset to read in</span>
+<span class="sd">        :type data_nc: prosimu</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param convert1d:</span>
+<span class="sd">        :return: Numpy data array containing the data of the selected variable,</span>
+<span class="sd">         or an array filled with `np.nan` if the requested variable was not present in the file.</span>
+<span class="sd">        :rtype: numpy array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_nc</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ESMSnowMIP_alternate_varnames</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">varname</span> <span class="o">=</span> <span class="n">ESMSnowMIP_alternate_varnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">data_nc</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">convert1d</span><span class="p">:</span>
+                <span class="n">array</span> <span class="o">=</span> <span class="n">data_nc</span><span class="o">.</span><span class="n">read1d</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array</span> <span class="o">&gt;</span> <span class="mf">273.16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">array</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mf">273.15</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="n">data_nc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span> <span class="o">+</span> <span class="n">delta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ntime_nc</span> <span class="o">=</span> <span class="n">data_nc</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="n">emptyvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntime_nc</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">)</span>
+            <span class="n">emptyvar</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">return</span> <span class="n">emptyvar</span></div>
+
+
+<div class="viewcode-block" id="DeterminsticScores.read_sim_ifpresent">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.read_sim_ifpresent">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_sim_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        read a variable from the simulation file if the variable is present in there.</span>
+<span class="sd">        :param data_nc: open netcdf dataset</span>
+<span class="sd">        :type data_nc: prosimu</span>
+<span class="sd">        :param varname: variable name of the variable to be read</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return: array with requested data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DeterministicScores_Homogeneous">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Homogeneous">[docs]</a>
+<span class="k">class</span> <span class="nc">DeterministicScores_Homogeneous</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for observations and simulations covering the same periods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">=</span> <span class="n">sim</span></div>
+
+
+
+<div class="viewcode-block" id="DeterministicScores_Mask">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Mask">[docs]</a>
+<span class="k">class</span> <span class="nc">DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for observations and simulations covering different periods, masks provided</span>
+<span class="sd">        :param mask_obs: mask array for observation</span>
+<span class="sd">        :type mask_obs: ndarray of bool</span>
+<span class="sd">        :param mask_sim: mask array for simulation</span>
+<span class="sd">        :type mask_sim: ndarray of bool</span>
+<span class="sd">        :param obs: array of observations</span>
+<span class="sd">        :param sim: array of simulations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelMask</span> <span class="o">=</span> <span class="n">mask_sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsMask</span> <span class="o">=</span> <span class="n">mask_obs</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obsMask</span><span class="p">]</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Extract obs array </span><span class="si">{0:f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">=</span> <span class="n">sim</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">modelMask</span><span class="p">]</span>
+        <span class="n">t3</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Extract sim array </span><span class="si">{0:f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t3</span><span class="o">-</span><span class="n">t2</span><span class="p">))</span>
+        <span class="c1"># self.extract_common_vectors(mask_obs, mask_sim, obs, sim)</span>
+
+<div class="viewcode-block" id="DeterministicScores_Mask.extract_common_vectors">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Mask.extract_common_vectors">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract common date between observations and simulations&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DeterministicScores_CommonObs">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_CommonObs">[docs]</a>
+<span class="k">class</span> <span class="nc">DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for observations and simulations covering different periods,</span>
+<span class="sd">         observations and simulation masks provided</span>
+
+<span class="sd">        :param obs_common: observations</span>
+<span class="sd">        :param mask_sim: mask for simulation data</span>
+<span class="sd">        :param sim: simulations data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs_common</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelMask</span> <span class="o">=</span> <span class="n">mask_sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">=</span> <span class="n">sim</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">modelMask</span><span class="p">]</span></div>
+
+        <span class="c1"># self.extract_common_vectors(maskSim, sim)</span>
+
+    <span class="c1"># def extract_common_vectors(self, maskSim, sim):</span>
+    <span class="c1">#     &#39;&#39;&#39;Extract common date between observations and simulations&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="DeterministicScores_Heterogeneous">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Heterogeneous">[docs]</a>
+<span class="k">class</span> <span class="nc">DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for observations and simulations covering different periods, times provided</span>
+
+<span class="sd">        :param time_obs: array of observation times</span>
+<span class="sd">        :param time_sim: array of simulation times</span>
+<span class="sd">        :param obs: array of observation values</span>
+<span class="sd">        :param sim: array of simulation values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs_unique</span><span class="p">,</span> <span class="n">sim_unique</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_common_vectors</span><span class="p">(</span><span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs_unique</span><span class="p">,</span> <span class="n">sim_unique</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeterministicScores_Heterogeneous.extract_common_vectors">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Heterogeneous.extract_common_vectors">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract common date between observations and simulations selecting only winter periods.</span>
+<span class="sd">        :param time_obs: array of observation times</span>
+<span class="sd">        :param time_sim: array of simulation times</span>
+<span class="sd">        :param obs: array of observation values</span>
+<span class="sd">        :param sim: array of simulation values</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Identify winter period</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">winter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">time_obs</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">time_obs</span><span class="p">):</span>
+            <span class="n">winter</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startwinter</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endwinter</span>
+
+        <span class="c1"># First reduce observation vector to available observations and winter</span>
+        <span class="n">ind_obs_ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">obs</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">winter</span>
+        <span class="n">time_obs_ok</span> <span class="o">=</span> <span class="n">time_obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
+        <span class="n">obs_ok</span> <span class="o">=</span> <span class="n">obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
+
+        <span class="n">time_obs_unique</span><span class="p">,</span> <span class="n">ind_obs_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">time_obs_ok</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">obs_unique</span> <span class="o">=</span> <span class="n">obs_ok</span><span class="p">[</span><span class="n">ind_obs_unique</span><span class="p">]</span>
+
+        <span class="n">ind_sim_ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">sim</span><span class="p">))</span>
+
+        <span class="n">time_sim_ok</span> <span class="o">=</span> <span class="n">time_sim</span><span class="p">[</span><span class="n">ind_sim_ok</span><span class="p">]</span>
+        <span class="n">sim_ok</span> <span class="o">=</span> <span class="n">sim</span><span class="p">[</span><span class="n">ind_sim_ok</span><span class="p">]</span>
+
+        <span class="n">time_sim_unique</span><span class="p">,</span> <span class="n">ind_sim_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">time_sim_ok</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sim_unique</span> <span class="o">=</span> <span class="n">sim_ok</span><span class="p">[</span><span class="n">ind_sim_unique</span><span class="p">]</span>
+
+        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_sim_unique</span><span class="p">,</span> <span class="n">time_obs_unique</span><span class="p">)</span>
+        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_obs_unique</span><span class="p">,</span> <span class="n">time_sim_unique</span><span class="p">)</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compute masks in </span><span class="si">{0:f}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs_unique</span><span class="p">,</span> <span class="n">sim_unique</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="S2M_Score">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score">[docs]</a>
+<span class="k">class</span> <span class="nc">S2M_Score</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class for Surfex scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="S2M_Score.varsimname">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score.varsimname">[docs]</a>
+    <span class="k">def</span> <span class="nf">varsimname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get surfex variable name given a variable name from `SURFEX_dicvarnames.keys()`</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return: surfex variable name</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SURFEX_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="S2M_Score.varobsname">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score.varobsname">[docs]</a>
+    <span class="k">def</span> <span class="nf">varobsname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get ESMSnowMIP variable name given a variable name from `ESMSnowMIP_dicvarnames.keys()`</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return: ESMSnowMIP variable name</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ESMSnowMIP_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="S2M_DeterministicScores_Heterogeneous">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Heterogeneous">[docs]</a>
+<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param profile: surfex output file name containing the simulations</span>
+<span class="sd">        :param obsfile: netcdf file name containing the observations (will be read by prosimu)</span>
+<span class="sd">        :param varname: name of the variable to be analysed, one of `SURFEX_dicvarnames.keys()`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="n">data_sim</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+        <span class="n">time_sim</span> <span class="o">=</span> <span class="n">data_sim</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">var_sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sim_ifpresent</span><span class="p">(</span><span class="n">data_sim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varsimname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">data_obs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">time_obs</span> <span class="o">=</span> <span class="n">data_obs</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">var_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">data_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varobsname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_obs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeSim</span> <span class="o">=</span> <span class="n">time_sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeObs</span> <span class="o">=</span> <span class="n">time_obs</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">var_obs</span><span class="p">,</span> <span class="n">var_sim</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="S2M_DeterministicScores_CommonObs">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_CommonObs">[docs]</a>
+<span class="k">class</span> <span class="nc">S2M_DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterministicScores_CommonObs</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param profile: surfex output file name containing the simulations</span>
+<span class="sd">        :param varname: name of the variable to be analysed, one of `SURFEX_dicvarnames.keys()`</span>
+<span class="sd">        :param obs_common: observations</span>
+<span class="sd">        :param mask_sim: simulation mask</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data_sim</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+        <span class="n">var_sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sim_ifpresent</span><span class="p">(</span><span class="n">data_sim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varsimname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">S2M_DeterministicScores_CommonObs</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">var_sim</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="S2M_DeterministicScores_Mask">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Mask">[docs]</a>
+<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param profile: surfex output file name containing the simulations</span>
+<span class="sd">        :param obsfile: netcdf file name containing the observations (will be read by prosimu)</span>
+<span class="sd">        :param varname: name of the variable to be analysed, one of `SURFEX_dicvarnames.keys()`</span>
+<span class="sd">        :param mask_sim: simulation mask</span>
+<span class="sd">        :param mask_obs: observation mask</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data_sim</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+        <span class="n">var_sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sim_ifpresent</span><span class="p">(</span><span class="n">data_sim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varsimname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">data_obs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">var_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">data_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varobsname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_obs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Mask</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">var_obs</span><span class="p">,</span> <span class="n">var_sim</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="S2M_DeterministicScores_Time">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Time">[docs]</a>
+<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Time</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param profile: surfex output file name containing the simulations</span>
+<span class="sd">        :param obsfile: netcdf file name containing the observations (will be read by prosimu)</span>
+<span class="sd">        :param varname: name of the variable to be analysed, one of `SURFEX_dicvarnames.keys()`</span>
+<span class="sd">        :param time_sim: simulation times</span>
+<span class="sd">        :param time_obs: observation times</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data_sim</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+        <span class="n">var_sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sim_ifpresent</span><span class="p">(</span><span class="n">data_sim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varsimname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">data_obs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">var_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">data_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varobsname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_obs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Time</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">var_obs</span><span class="p">,</span> <span class="n">var_sim</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ESMSnowMIP">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP">[docs]</a>
+<span class="k">class</span> <span class="nc">ESMSnowMIP</span><span class="p">(</span><span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+    <span class="c1"># def varobsname(self, varname):</span>
+    <span class="c1">#     return ESMSnowMIP_dicvarnames[varname]</span>
+
+
+<div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Mask">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Mask">[docs]</a>
+<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Mask</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Mask</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Time">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Time">[docs]</a>
+<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Time</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Time</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Heterogeneous">
+<a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Heterogeneous">[docs]</a>
+<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scores.deterministic</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

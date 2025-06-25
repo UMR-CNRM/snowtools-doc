@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scripts.extract.vortex.get_reforecast &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/nature.css?v=d152c80f" />
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.extract.vortex.get_reforecast</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scripts.extract.vortex.get_reforecast</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on dec. 2018</span>
+<span class="sd">@author: Vernay</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">vortex</span>
+
+<span class="kn">import</span> <span class="nn">footprints</span>
+<span class="kn">from</span> <span class="nn">vortex</span> <span class="kn">import</span> <span class="n">toolbox</span>
+<span class="kn">from</span> <span class="nn">vortex.layout.nodes</span> <span class="kn">import</span> <span class="n">Task</span>
+<span class="kn">from</span> <span class="nn">cen.layout.nodes</span> <span class="kn">import</span> <span class="n">S2MTaskMixIn</span>
+
+<span class="kn">from</span> <span class="nn">bronx.stdtypes.date</span> <span class="kn">import</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">LUSTRE_NOSAVE_USER_DIR</span>
+
+<span class="n">toolbox</span><span class="o">.</span><span class="n">active_now</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="ReforecastExtractor">
+<a class="viewcode-back" href="../../../../code/scripts-extract-vortex.html#scripts.extract.vortex.get_reforecast.ReforecastExtractor">[docs]</a>
+<span class="k">class</span> <span class="nc">ReforecastExtractor</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">S2MTaskMixIn</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_list_dates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">list_dates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1994</span><span class="p">,</span> <span class="mi">2017</span><span class="p">):</span>
+            <span class="n">list_dates</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">Date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Date</span><span class="p">(</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+        <span class="c1"># for year in [2017]:</span>
+        <span class="c1">#     list_dates.append([Date(year, 12, 6, 6, 0, 0), Date(year + 1, 4, 30, 6, 0, 0)])</span>
+        <span class="k">return</span> <span class="n">list_dates</span>
+
+<div class="viewcode-block" id="ReforecastExtractor.process">
+<a class="viewcode-back" href="../../../../code/scripts-extract-vortex.html#scripts.extract.vortex.get_reforecast.ReforecastExtractor.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">xpid</span>     <span class="o">=</span> <span class="s1">&#39;reforecast@lafaysse&#39;</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="s1">&#39;postes&#39;</span>
+<span class="c1">#        members  = footprints.util.rangex(0, 35)</span>
+        <span class="n">members</span>  <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">rangex</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">vapp</span>     <span class="o">=</span> <span class="s1">&#39;s2m&#39;</span>
+        <span class="n">cutoff</span>   <span class="o">=</span> <span class="s1">&#39;production&#39;</span>
+
+        <span class="n">list_dates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_dates</span><span class="p">()</span>
+
+        <span class="n">missing_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># pylint: disable=possibly-unused-variable</span>
+        <span class="k">for</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span> <span class="ow">in</span> <span class="n">list_dates</span><span class="p">:</span>
+            <span class="n">rundate</span> <span class="o">=</span> <span class="n">datebegin</span>
+
+            <span class="k">while</span> <span class="n">rundate</span> <span class="o">&lt;=</span> <span class="n">dateend</span><span class="p">:</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running date </span><span class="si">{0:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundate</span><span class="o">.</span><span class="n">ymdh</span><span class="p">))</span>
+
+                <span class="c1"># tb01 = toolbox.input(  # pylint: disable=possibly-unused-variable</span>
+                <span class="c1">#     local          = &#39;meteo/mb[member%03d]/FORCING_[datebegin:ymdh]_[dateend:ymdh].nc&#39;,</span>
+                <span class="c1">#     experiment     = &#39;reforecast@lafaysse&#39;,</span>
+                <span class="c1">#     block          = &#39;meteo&#39;,</span>
+                <span class="c1">#     geometry       = geometry,</span>
+                <span class="c1">#     date           = &#39;[datebegin]&#39;,</span>
+                <span class="c1">#     datebegin      = rundate.ymdh,</span>
+                <span class="c1">#     dateend        = &#39;[datebegin]/+PT96H&#39;,</span>
+                <span class="c1">#     member         = members,</span>
+                <span class="c1">#     nativefmt      = &#39;netcdf&#39;,</span>
+                <span class="c1">#     kind           = &#39;MeteorologicalForcing&#39;,</span>
+                <span class="c1">#     model          = &#39;s2m&#39;,</span>
+                <span class="c1">#     namespace      = &#39;vortex.archive.fr&#39;,</span>
+                <span class="c1">#     cutoff         = cutoff,</span>
+                <span class="c1">#     vapp           = vapp,</span>
+                <span class="c1">#     vconf          = &#39;[geometry::area]&#39;,</span>
+                <span class="c1">#     fatal          = False</span>
+                <span class="c1"># ),</span>
+<span class="c1">#                 print(&#39;DBUG&#39;, tb01, tb01[0])</span>
+<span class="c1">#                 for forcing in tb01[0]:</span>
+<span class="c1">#                     if not forcing.check():</span>
+<span class="c1">#                         missing_files.append(forcing)</span>
+<span class="c1">#                     else:</span>
+<span class="c1">#                          forcing.get()</span>
+
+<span class="c1">#                 tb02 = toolbox.output(</span>
+<span class="c1">#                     local          = &#39;mb[member%03d]/FORCING_[datebegin:ymdh]_[dateend:ymdh].nc&#39;,</span>
+<span class="c1">#                     remote         = &#39;/manto/nousuj/reforecast/forcing/[local]&#39;,</span>
+<span class="c1">#                     date           = &#39;[datebegin]&#39;,</span>
+<span class="c1">#                     datebegin      = rundate.ymdh,</span>
+<span class="c1">#                     dateend        = &#39;[datebegin]/+PT96H&#39;,</span>
+<span class="c1">#                     member         = members,</span>
+<span class="c1">#                     geometry       = geometry,</span>
+<span class="c1">#                     nativefmt      = &#39;netcdf&#39;,</span>
+<span class="c1">#                     kind           = &#39;MeteorologicalForcing&#39;,</span>
+<span class="c1">#                     model          = &#39;s2m&#39;,</span>
+<span class="c1">#                     cutoff         = cutoff,</span>
+<span class="c1">#                     fatal          = False</span>
+<span class="c1">#                 ),</span>
+
+<span class="c1">#                 for forcing in tb02[0]:</span>
+<span class="c1">#                     forcing.put()</span>
+
+                <span class="n">tb03</span> <span class="o">=</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>  <span class="c1"># pylint: disable=possibly-unused-variable</span>
+                    <span class="n">local</span>          <span class="o">=</span> <span class="s1">&#39;pro/mb[member</span><span class="si">%03d</span><span class="s1">]/PRO_[datebegin:ymdh]_[dateend:ymdh].nc&#39;</span><span class="p">,</span>
+                    <span class="n">experiment</span>     <span class="o">=</span> <span class="n">xpid</span><span class="p">,</span>
+                    <span class="n">block</span>          <span class="o">=</span> <span class="s1">&#39;pro&#39;</span><span class="p">,</span>
+                    <span class="n">geometry</span>       <span class="o">=</span> <span class="n">geometry</span><span class="p">,</span>
+                    <span class="n">date</span>           <span class="o">=</span> <span class="s1">&#39;[datebegin]&#39;</span><span class="p">,</span>
+                    <span class="n">datebegin</span>      <span class="o">=</span> <span class="n">rundate</span><span class="o">.</span><span class="n">ymdh</span><span class="p">,</span>
+                    <span class="n">dateend</span>        <span class="o">=</span> <span class="s1">&#39;[datebegin]/+PT96H&#39;</span><span class="p">,</span>
+                    <span class="n">member</span>         <span class="o">=</span> <span class="n">members</span><span class="p">,</span>
+                    <span class="n">nativefmt</span>      <span class="o">=</span> <span class="s1">&#39;netcdf&#39;</span><span class="p">,</span>
+                    <span class="n">kind</span>           <span class="o">=</span> <span class="s1">&#39;SnowpackSimulation&#39;</span><span class="p">,</span>
+                    <span class="n">model</span>          <span class="o">=</span> <span class="s1">&#39;surfex&#39;</span><span class="p">,</span>
+                    <span class="n">namespace</span>      <span class="o">=</span> <span class="s1">&#39;vortex.archive.fr&#39;</span><span class="p">,</span>
+                    <span class="n">cutoff</span>         <span class="o">=</span> <span class="n">cutoff</span><span class="p">,</span>
+                    <span class="n">fatal</span>          <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">vapp</span>           <span class="o">=</span> <span class="n">vapp</span><span class="p">,</span>
+                    <span class="n">vconf</span>          <span class="o">=</span> <span class="s1">&#39;[geometry::area]&#39;</span><span class="p">,</span>
+                <span class="p">),</span>
+<span class="c1">#                 for pro in tb03[0]:</span>
+<span class="c1">#                     if not pro.check():</span>
+<span class="c1">#                         missing_files.append(pro)</span>
+<span class="c1">#                     else:</span>
+<span class="c1">#                         pro.get()</span>
+
+<span class="c1">#                 tb04 = toolbox.output(</span>
+<span class="c1">#                     local          = &#39;mb[member%03d]/PRO_[datebegin:ymdh]_[dateend:ymdh].nc&#39;,</span>
+<span class="c1">#                     remote         = &#39;/manto/nousuj/reforecast/pro/[local]&#39;,</span>
+<span class="c1">#                     date           = &#39;[datebegin]&#39;,</span>
+<span class="c1">#                     datebegin      = rundate.ymdh,</span>
+<span class="c1">#                     dateend        = &#39;[datebegin]/+PT96H&#39;,</span>
+<span class="c1">#                     member         = members,</span>
+<span class="c1">#                     geometry       = geometry,</span>
+<span class="c1">#                     nativefmt      = &#39;netcdf&#39;,</span>
+<span class="c1">#                     kind           = &#39;SnowpackSimulation&#39;,</span>
+<span class="c1">#                     model          = &#39;surfex&#39;,</span>
+<span class="c1">#                     cutoff         = cutoff,</span>
+<span class="c1">#                     fatal          = False</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 for pro in tb04[0]:</span>
+<span class="c1">#                     pro.put()</span>
+
+                <span class="n">rundate</span> <span class="o">=</span> <span class="n">rundate</span> <span class="o">+</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># os.chdir(&#39;/home/vernaym/workdir&#39;)</span>
+    <span class="c1"># os.chdir(&#39;/manto/nousuj/reforecast&#39;)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LUSTRE_NOSAVE_USER_DIR</span><span class="p">,</span> <span class="s1">&#39;Reforecasts&#39;</span><span class="p">))</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span>
+
+    <span class="n">RFE</span> <span class="o">=</span> <span class="n">ReforecastExtractor</span><span class="p">(</span><span class="n">ticket</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">RFE</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.extract.vortex.get_reforecast</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

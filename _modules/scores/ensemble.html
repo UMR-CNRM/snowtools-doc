@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scores.ensemble &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scores.ensemble</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scores.ensemble</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 20 March 2018</span>
+
+<span class="sd">@author: lafaysse</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+
+<span class="n">ESMSnowMIP_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snowdepth</span><span class="o">=</span><span class="s2">&quot;snd_auto&quot;</span><span class="p">,</span> <span class="n">snowswe</span><span class="o">=</span><span class="s2">&quot;snw_auto&quot;</span><span class="p">,</span> <span class="n">snowdepthman</span><span class="o">=</span><span class="s2">&quot;snd_man&quot;</span><span class="p">,</span>
+                              <span class="n">snowsweman</span><span class="o">=</span><span class="s2">&quot;snw_man&quot;</span><span class="p">,</span> <span class="n">tsurf</span><span class="o">=</span><span class="s2">&quot;ts&quot;</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="s2">&quot;albs&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping common variable names to ESMSnowMIP variable names</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">ESMSnowMIP_alternate_varnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snd_auto</span><span class="o">=</span><span class="s2">&quot;snd_can_auto&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping ESMSnowMIP_alternate_varnames</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">SURFEX_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snowdepth</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">snowswe</span><span class="o">=</span><span class="s2">&quot;WSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">snowdepthman</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span><span class="p">,</span>
+                          <span class="n">snowsweman</span><span class="o">=</span><span class="s2">&quot;WSN_T_ISBA&quot;</span><span class="p">,</span> <span class="n">tsurf</span><span class="o">=</span><span class="s2">&quot;TS_ISBA&quot;</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="s2">&quot;ASN_ISBA&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">dict mapping common variable names to surfex variable names</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="EnsembleScores">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.EnsembleScores">[docs]</a>
+<span class="k">class</span> <span class="nc">EnsembleScores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ensemble scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">startwinter</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">endwinter</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param timeObs:</span>
+<span class="sd">        :param timeSim:</span>
+<span class="sd">        :param obs: array of observations dimension : time</span>
+<span class="sd">        :param ensemble: array of forecasts dimensions (member, time)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span> <span class="o">=</span> <span class="n">ensemble</span>
+
+<div class="viewcode-block" id="EnsembleScores.CRPS">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.EnsembleScores.CRPS">[docs]</a>
+    <span class="k">def</span> <span class="nf">CRPS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CRPS is computed from</span>
+<span class="sd">        https://pypi.python.org/pypi/properscoring#downloads</span>
+<span class="sd">        :return: mean CRPS over the data period</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># for each date, sort members (increasingly)</span>
+        <span class="c1"># one line is not anymore one single member</span>
+        <span class="n">ens_common</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">evenement</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># compute the integral for each obs</span>
+        <span class="n">CRPSVector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">:</span>
+            <span class="c1"># cumulated distribution function</span>
+            <span class="c1"># Heaviside function for obs</span>
+            <span class="n">obsCDF</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">ensembleCDF</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">precPrevision</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">integrale</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># Number of valid members at this date</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">ens_common</span><span class="p">[:,</span> <span class="n">evenement</span><span class="p">])</span>
+
+            <span class="n">n_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_valid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">prevision</span> <span class="ow">in</span> <span class="n">valid</span><span class="o">.</span><span class="n">compressed</span><span class="p">():</span>
+<span class="w">                    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    if np.isnan(prevision):</span>
+<span class="sd">                        #If the first forecast is nan, they all are</span>
+<span class="sd">                        # (nan at the end in the sort step)</span>
+<span class="sd">                        # --&gt; do not compute crps</span>
+<span class="sd">                        if  n==0:</span>
+<span class="sd">                            integral=np.nan</span>
+<span class="sd">                        #otherwise</span>
+<span class="sd">                        prevision = precPrevision</span>
+<span class="sd">                        break</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
+                    <span class="c1"># immediately after obs</span>
+                    <span class="k">if</span> <span class="n">obsCDF</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">obs</span> <span class="o">&lt;</span> <span class="n">prevision</span><span class="p">:</span>
+                        <span class="n">integrale</span> <span class="o">+=</span> <span class="p">(</span><span class="n">obs</span> <span class="o">-</span> <span class="n">precPrevision</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ensembleCDF</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="n">integrale</span> <span class="o">+=</span> <span class="p">(</span><span class="n">prevision</span> <span class="o">-</span> <span class="n">obs</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ensembleCDF</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+                        <span class="n">obsCDF</span> <span class="o">=</span> <span class="mf">1.</span>
+                    <span class="c1"># otherwise</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">integrale</span> <span class="o">+=</span> <span class="p">((</span><span class="n">prevision</span> <span class="o">-</span> <span class="n">precPrevision</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ensembleCDF</span> <span class="o">-</span> <span class="n">obsCDF</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="c1"># add 1/Ndate to CDF ensemble</span>
+                    <span class="n">ensembleCDF</span> <span class="o">+=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_valid</span><span class="p">)</span>
+                    <span class="n">precPrevision</span> <span class="o">=</span> <span class="n">prevision</span>
+                    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># if obs &gt; all forecasts</span>
+                <span class="k">if</span> <span class="n">obsCDF</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">integrale</span> <span class="o">+=</span> <span class="n">obs</span> <span class="o">-</span> <span class="n">prevision</span>
+
+                <span class="n">CRPSVector</span><span class="p">[</span><span class="n">evenement</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrale</span>
+
+            <span class="c1"># if no simulations for this obs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">CRPSVector</span><span class="p">[</span><span class="n">evenement</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">evenement</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">CRPS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">CRPSVector</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">CRPS</span></div>
+
+
+<div class="viewcode-block" id="EnsembleScores.CRPS_decomp">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.EnsembleScores.CRPS_decomp">[docs]</a>
+    <span class="k">def</span> <span class="nf">CRPS_decomp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        BC implementing the Hersbach et al. formulation for decomposition.</span>
+<span class="sd">        inspired on https://github.com/brankart/ensdam/blob/master/src/EnsScores/score_crps.F90</span>
+<span class="sd">        aggregated assuming that realizations are independant.</span>
+<span class="sd">        :return: CRPS, Reliability, potential CRPS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ens_common</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">nbmb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ens_common</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">ai</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbmb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,))</span>
+        <span class="n">bi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbmb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,))</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nbmb</span> <span class="o">+</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">/</span> <span class="n">nbmb</span>
+        <span class="n">oi_0</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">oi_nbmb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+        <span class="n">evenement</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">obs</span><span class="p">):</span>
+                <span class="c1"># Number of valid members at this date</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">ens_common</span><span class="p">[:,</span> <span class="n">evenement</span><span class="p">])</span>
+                <span class="n">ens</span> <span class="o">=</span> <span class="n">valid</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+                <span class="n">n_valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">valid</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">n_valid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># obs smaller than all</span>
+                    <span class="k">if</span> <span class="n">obs</span> <span class="o">&lt;</span> <span class="n">ens</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">ai</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.</span>
+                        <span class="n">bi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">obs</span>
+                        <span class="n">oi_0</span> <span class="o">+=</span> <span class="mf">1.</span>
+                    <span class="c1"># obs bigger than all</span>
+                    <span class="k">elif</span> <span class="n">obs</span> <span class="o">&gt;</span> <span class="n">ens</span><span class="p">[</span><span class="n">nbmb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">ai</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">+=</span> <span class="n">obs</span> <span class="o">-</span> <span class="n">ens</span><span class="p">[</span><span class="n">nbmb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="n">bi</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.</span>
+                        <span class="n">oi_nbmb</span> <span class="o">-=</span> <span class="mf">1.</span>
+                    <span class="c1"># obs within</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbmb</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">obs</span> <span class="o">&gt;=</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                            <span class="n">ai</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">bi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.</span>
+                        <span class="k">elif</span> <span class="p">(</span><span class="n">ens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">obs</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obs</span> <span class="o">&gt;=</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]):</span>
+                            <span class="n">ai</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">obs</span> <span class="o">-</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">bi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">obs</span>
+                        <span class="k">elif</span> <span class="n">obs</span> <span class="o">&lt;</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">ai</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.</span>
+                            <span class="n">bi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ens</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">Exception</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span>
+            <span class="n">evenement</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">ai_avg</span> <span class="o">=</span> <span class="n">ai</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+        <span class="n">bi_avg</span> <span class="o">=</span> <span class="n">bi</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+        <span class="n">gi_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ai_avg</span><span class="p">))</span>
+        <span class="n">oi_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ai_avg</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nbmb</span><span class="p">):</span>
+            <span class="n">gi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ai_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">bi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">gi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="n">oi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">bi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">gi_avg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">oi_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">oi_0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+        <span class="n">oi_avg</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">=</span> <span class="n">oi_nbmb</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">oi_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.</span><span class="p">:</span>
+            <span class="n">gi_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">bi_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">oi_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">oi_avg</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">gi_avg</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">=</span> <span class="n">ai_avg</span><span class="p">[</span><span class="n">nbmb</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">oi_avg</span><span class="p">[</span><span class="n">nbmb</span><span class="p">])</span>
+        <span class="n">CRPS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">ai_avg</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">bi_avg</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Reli</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">gi_avg</span> <span class="o">*</span> <span class="p">(</span><span class="n">oi_avg</span> <span class="o">-</span> <span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">CRPS_pot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">gi_avg</span> <span class="o">*</span> <span class="n">oi_avg</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">oi_avg</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">CRPS</span><span class="p">,</span> <span class="n">Reli</span><span class="p">,</span> <span class="n">CRPS_pot</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">meanEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ensemble mean, dealing with only some members valid</span>
+<span class="sd">        :return: ensemble mean for every date</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnsembleScores.dispersionEnsemble">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.EnsembleScores.dispersionEnsemble">[docs]</a>
+    <span class="k">def</span> <span class="nf">dispersionEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculate ensemble spread, the RMSE of the ensemble mean and the spread/skill relationship</span>
+<span class="sd">        :return: spread, RMSE of ensemble mean, spread/skill</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># bc 21/10/19 code optim</span>
+        <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">meanEnsemble</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span><span class="p">]))</span>
+        <span class="n">rmse_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meanEnsemble</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">disp</span><span class="p">,</span> <span class="n">rmse_mean</span><span class="p">,</span> <span class="n">disp</span> <span class="o">/</span> <span class="n">rmse_mean</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores">[docs]</a>
+<span class="k">class</span> <span class="nc">ESCROC_EnsembleScores</span><span class="p">(</span><span class="n">EnsembleScores</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param profiles: list of simulation files (one per ensemble member</span>
+<span class="sd">        :param obsfile: observation file (netCDF format)</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">profiles</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores.read_var_ifpresent">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores.read_var_ifpresent">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_var_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataNc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        read a variable if present in file else return an empty numpy array.</span>
+
+<span class="sd">        convert degrees C to Kelvin if the variable name is Ts and convert1d=False.</span>
+<span class="sd">        :param dataNc: dataset</span>
+<span class="sd">        :type dataNc: prosimu</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param convert1d:</span>
+<span class="sd">        :type convert1d: bool</span>
+<span class="sd">        :return: data array</span>
+<span class="sd">        :rtype: np.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dataNc</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ESMSnowMIP_alternate_varnames</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">varname</span> <span class="o">=</span> <span class="n">ESMSnowMIP_alternate_varnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">dataNc</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">convert1d</span><span class="p">:</span>
+                <span class="n">array</span> <span class="o">=</span> <span class="n">dataNc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">array</span> <span class="o">&gt;</span> <span class="mf">273.16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">array</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="s2">&quot;ts&quot;</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mf">273.15</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="n">dataNc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span> <span class="o">+</span> <span class="n">delta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ntime_nc</span> <span class="o">=</span> <span class="n">dataNc</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="n">emptyvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntime_nc</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">)</span>
+            <span class="n">emptyvar</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">return</span> <span class="n">emptyvar</span></div>
+
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores.read_sim_ifpresent">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores.read_sim_ifpresent">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_sim_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataNc</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        read a variable from simulation file</span>
+<span class="sd">        :param dataNc: dataset</span>
+<span class="sd">        :type dataNc: prosimu</span>
+<span class="sd">        :param varname: variable name to read</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">dataNc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores.varsimname">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores.varsimname">[docs]</a>
+    <span class="k">def</span> <span class="nf">varsimname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert variable name to variable name in SURFEX output</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return: corresponding value from `SURFEX_dicvarnames`</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SURFEX_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores.varobsname">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores.varobsname">[docs]</a>
+    <span class="k">def</span> <span class="nf">varobsname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert variable name to ESMSnowMIP variable name</span>
+<span class="sd">        :param varname: variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :return: corresponding value from `ESMSnowMIP_dicvarnames`</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ESMSnowMIP_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ESCROC_EnsembleScores.read">
+<a class="viewcode-back" href="../../code/scores.html#scores.ensemble.ESCROC_EnsembleScores.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        read simulation files and observation file and extract dates with available observations in winter.</span>
+<span class="sd">        sets self.obsCommon and self.ensCommon</span>
+<span class="sd">        :param profiles: list of simulation files (one per ensemble member, netCDF format)</span>
+<span class="sd">        :type profiles: list of path-likes</span>
+<span class="sd">        :param obsfile: observation file in NetCDF format</span>
+<span class="sd">        :type obsfile: pathlike</span>
+<span class="sd">        :param varname: variable to be read</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">profile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">profiles</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;open file &quot;</span> <span class="o">+</span> <span class="n">profile</span><span class="p">)</span>
+            <span class="n">data_sim</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">time_sim</span> <span class="o">=</span> <span class="n">data_sim</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+                <span class="n">ensemble</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">profiles</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_sim</span><span class="p">)),</span> <span class="s2">&quot;float&quot;</span><span class="p">)</span>
+
+            <span class="n">var_sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sim_ifpresent</span><span class="p">(</span><span class="n">data_sim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varsimname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+            <span class="n">ensemble</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">var_sim</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close file&quot;</span><span class="p">)</span>
+            <span class="n">data_sim</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;open obs&quot;</span><span class="p">)</span>
+        <span class="n">data_obs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">time_obs</span> <span class="o">=</span> <span class="n">data_obs</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">var_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_var_ifpresent</span><span class="p">(</span><span class="n">data_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">varobsname</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+        <span class="n">data_obs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close obs&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">var_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Extract common date between observations and simulations&#39;&#39;&#39;</span>
+        <span class="c1"># Identify winter period</span>
+        <span class="n">winter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">time_obs</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">time_obs</span><span class="p">):</span>
+            <span class="n">winter</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startwinter</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endwinter</span>
+
+        <span class="c1"># First reduce observation vector to available observations and winter</span>
+        <span class="n">ind_obs_ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">var_obs</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">winter</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of valid obs in winter&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ind_obs_ok</span><span class="p">))</span>
+        <span class="n">time_obs_ok</span> <span class="o">=</span> <span class="n">time_obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
+        <span class="n">obs_ok</span> <span class="o">=</span> <span class="n">var_obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
+
+        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs_ok</span><span class="p">)</span>
+        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_obs_ok</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs_ok</span><span class="p">[</span><span class="n">mask_obs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span> <span class="o">=</span> <span class="n">ensemble</span><span class="p">[:,</span> <span class="n">mask_sim</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scores.ensemble</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Map plotting tools for gridded data &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Temporal plots" href="plots-temporal.html" />
+    <link rel="prev" title="Map plotting tools for data at Massif scale" href="plots-maps.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots-temporal.html" title="Temporal plots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plots-maps.html" title="Map plotting tools for data at Massif scale"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="plots.html" accesskey="U">Plotting tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Map plotting tools for gridded data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="map-plotting-tools-for-gridded-data">
+<span id="plots-maps-grid"></span><h1>Map plotting tools for gridded data<a class="headerlink" href="#map-plotting-tools-for-gridded-data" title="Link to this heading">¶</a></h1>
+<p id="module-plots.maps.quicklookmap">Created on 24 Mai 2025</p>
+<dl class="field-list">
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
+<dd class="field-odd"><p>radanovics</p>
+<p>largely copied from epygram epy_cartoplot.py</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.quicklookmap.difference_map">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.quicklookmap.</span></span><span class="sig-name descname"><span class="pre">difference_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/quicklookmap.html#difference_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.quicklookmap.difference_map" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a difference map between two fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<em>epygram H2D field</em>) – first scalar field</p></li>
+<li><p><strong>ref_field</strong> (<em>epygram H2D field</em>) – reference field to substract.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>plot_kwargs</strong> – every other argument that can be passed to the cartoplot method of an epygram H2D field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with plot elements: ‘fig’, ‘ax’, potentially ‘colorbar’ etc.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<figure class="align-center">
+<img alt="../_images/20150301T06_snowheight_diff.png" src="../_images/20150301T06_snowheight_diff.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.quicklookmap.read_and_preprocess">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.quicklookmap.</span></span><span class="sig-name descname"><span class="pre">read_and_preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_shift_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/quicklookmap.html#read_and_preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.quicklookmap.read_and_preprocess" title="Link to this definition">¶</a></dt>
+<dd><p>Read field in resource, and preprocess if requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resource</strong> (<em>epygram.resource</em>) – epygram resource to read data from</p></li>
+<li><p><strong>fid</strong> (<em>epygram field idenifier depending on the resource type. for example str for NetCDF files</em><em> or </em><em>a dict for grib files</em>) – field identifier</p></li>
+<li><p><strong>date</strong> (<em>bronx.Date</em>) – date (with time)</p></li>
+<li><p><strong>operation</strong> (<em>dict</em>) – makes the requested operation
+(e.g. {‘operation’:’-‘,’operand’:273.15} or
+{‘operation’:’exp’}) on the field before plot. default=None</p></li>
+<li><p><strong>global_shift_center</strong> – for global lon/lat grids, shift the center by the
+requested angle (in degrees). Enables a [0,360] grid
+to be shifted to a [-180,180] grid, for instance (with -180 argument).</p></li>
+<li><p><strong>zoom</strong> (<em>dict</em>) – a dict(lonmin, lonmax, latmin, latmax) on which to build the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>field</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>epygram.field</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.quicklookmap.scalar_map">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.quicklookmap.</span></span><span class="sig-name descname"><span class="pre">scalar_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/quicklookmap.html#scalar_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.quicklookmap.scalar_map" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<em>epygram H2DField</em><em> or </em><em>H2DVectorField</em>) – field to plot</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>plot_kwargs</strong> – every other argument that can be passed to the cartoplot method of an epygram H2D field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with plot elements: ‘fig’, ‘ax’, potentially ‘colorbar’ etc.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<figure class="align-center">
+<img alt="../_images/20190513T10_snowheight.png" src="../_images/20190513T10_snowheight.png" />
+</figure>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.quicklookmap.wind_map">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.quicklookmap.</span></span><span class="sig-name descname"><span class="pre">wind_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_factor_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors_subsampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_components_are_projected_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quiver'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiverkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/quicklookmap.html#wind_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.quicklookmap.wind_map" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a map of a vector field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<em>epygram vector field</em>) – vector field to plot</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>map_factor_correction</strong> (<em>bool</em>) – if True, applies a correction of magnitude
+to vector due to map factor.</p></li>
+<li><p><strong>vectors_subsampling</strong> (<em>int</em>) – subsampling ratio of vectors plots. for example: 1 for a vector at every gridpoint,
+10 for a vector every 10 grid points.</p></li>
+<li><p><strong>wind_components_are_projected_on</strong> – inform the plot on which axes the
+vector components are projected on (‘grid’ or ‘lonlat’).
+If None (default), look for information in the field, or raise error.</p></li>
+<li><p><strong>vector_plot_method</strong> – among (‘quiver’, ‘barbs’, ‘streamplot’) for vector plots. default is ‘quiver’.</p></li>
+<li><p><strong>quiverkey</strong> – options to be passed to plotfield to activate a quiver key
+(cf. pyplot.quiverkey).</p></li>
+<li><p><strong>plot_kwargs</strong> – every other argument that can be passed to the cartoplot method of an epygram H2D field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with plot elements: ‘fig’, ‘ax’, potentially ‘colorbar’ etc.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<figure class="align-center">
+<img alt="../_images/20150405T06_pseudo_wind_map.png" src="../_images/20150405T06_pseudo_wind_map.png" />
+</figure>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Map plotting tools for gridded data</a><ul>
+<li><a class="reference internal" href="#plots.maps.quicklookmap.difference_map"><code class="docutils literal notranslate"><span class="pre">difference_map()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.quicklookmap.read_and_preprocess"><code class="docutils literal notranslate"><span class="pre">read_and_preprocess()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.quicklookmap.scalar_map"><code class="docutils literal notranslate"><span class="pre">scalar_map()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.quicklookmap.wind_map"><code class="docutils literal notranslate"><span class="pre">wind_map()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="plots-maps.html"
+                          title="previous chapter">Map plotting tools for data at Massif scale</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="plots-temporal.html"
+                          title="next chapter">Temporal plots</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/plots-maps-grid.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots-temporal.html" title="Temporal plots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plots-maps.html" title="Map plotting tools for data at Massif scale"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="plots.html" >Plotting tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Map plotting tools for gridded data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

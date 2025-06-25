@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.perturb_forcing &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.perturb_forcing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tools.perturb_forcing</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 3 Aug. 2022</span>
+
+<span class="sd">@author: M Lafaysse, from B. Cluzet methods</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.tools.change_forcing</span> <span class="kn">import</span> <span class="n">forcinput_tomodify</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DATA</span>
+
+
+<div class="viewcode-block" id="gener_random_serie_autocorr">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.gener_random_serie_autocorr">[docs]</a>
+<span class="k">def</span> <span class="nf">gener_random_serie_autocorr</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a serie perturbation_vector of random temporally correlated values, centered on fsys of std sigma and</span>
+<span class="sd">    temporal correlation tau.</span>
+
+<span class="sd">    :param nt: time dimension length</span>
+<span class="sd">    :type nt: int</span>
+<span class="sd">    :param sigma: standard deviation of the random perturbation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param tau:  temporal correlation length of the random perturbation (hours)</span>
+<span class="sd">    :type tau: int</span>
+<span class="sd">    :param dt: time step (hours)</span>
+<span class="sd">    :type dt: int</span>
+<span class="sd">    :param fsys: value of the systematic perturbation</span>
+<span class="sd">    :type fsys: float</span>
+<span class="sd">    :param semiDistrib: flag if var in SAFRAN geometry or semi-distributed geometry</span>
+<span class="sd">    :type semiDistrib: bool</span>
+
+<span class="sd">    :return perturbation_vector: vector of the same size as var of perturbation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>  <span class="c1"># random part of the perturbation</span>
+
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma</span>  <span class="c1"># variance</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">tau</span><span class="p">)</span>
+    <span class="n">sig2</span> <span class="o">=</span> <span class="n">v2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">phi</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sig2</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nt</span><span class="p">):</span>
+        <span class="n">xx</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">xx</span><span class="p">[</span><span class="n">ii</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">epsilon</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>  <span class="c1"># phi ensures the temporal correlation, epsilon the random part</span>
+
+    <span class="c1"># add the random (perturbation_vector) and systematic (fsys) parts of the perturbation</span>
+    <span class="n">perturbation_vector</span> <span class="o">=</span> <span class="n">fsys</span> <span class="o">+</span> <span class="n">xx</span>
+    <span class="k">if</span> <span class="n">semiDistrib</span><span class="p">:</span>
+        <span class="n">perturbation_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">perturbation_vector</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">perturbation_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">perturbation_vector</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">perturbation_vector</span></div>
+
+
+
+<div class="viewcode-block" id="convertPrecipPhase">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.convertPrecipPhase">[docs]</a>
+<span class="k">def</span> <span class="nf">convertPrecipPhase</span><span class="p">(</span><span class="n">Tair</span><span class="p">,</span> <span class="n">precip</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="mf">272.65</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">274.05</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert precipitation to solid or liquid according to the disturbed temperature.</span>
+
+<span class="sd">    :param Tair: air temperature data (K)</span>
+<span class="sd">    :param precip: precip data</span>
+<span class="sd">    :param Tmin: minimum temperature for liquid precip (K)</span>
+<span class="sd">    :param Tmax: maximum temperature for solid precip (K)</span>
+
+<span class="sd">    :return: list [Rain, Snow]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">frac_liquid</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tair</span> <span class="o">-</span> <span class="n">Tmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Tmax</span> <span class="o">-</span> <span class="n">Tmin</span><span class="p">)</span>  <span class="c1"># mix of liquid and solid precip if Tair within [Tmin,Tmax]</span>
+    <span class="n">frac_liquid</span><span class="p">[</span><span class="n">Tair</span> <span class="o">&lt;</span> <span class="n">Tmin</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># solid precip if Tair &lt; Tmin</span>
+    <span class="n">frac_liquid</span><span class="p">[</span><span class="n">Tair</span> <span class="o">&gt;</span> <span class="n">Tmax</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># liquid precip if Tair &gt; Tmax</span>
+
+    <span class="c1"># Write Rainf, Snowf</span>
+    <span class="n">Rainfout</span> <span class="o">=</span> <span class="n">frac_liquid</span> <span class="o">*</span> <span class="n">precip</span>
+    <span class="n">Snowfout</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">frac_liquid</span><span class="p">)</span> <span class="o">*</span> <span class="n">precip</span>
+
+    <span class="k">return</span> <span class="n">Rainfout</span><span class="p">,</span> <span class="n">Snowfout</span></div>
+
+
+
+<div class="viewcode-block" id="addNoiseMultiplicative">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoiseMultiplicative">[docs]</a>
+<span class="k">def</span> <span class="nf">addNoiseMultiplicative</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply multiplicative perturbation (sigma=std of random perturbation, tau=temporal correlation, fsys=systematic</span>
+
+<span class="sd">    :param var: data to be pertubed</span>
+<span class="sd">    :type var: numpy.array</span>
+<span class="sd">    :param sigma: standard deviation of the random perturbation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param tau:  temporal correlation length of the random perturbation (hours)</span>
+<span class="sd">    :type tau: float</span>
+<span class="sd">    :param dt: time step (hour)</span>
+<span class="sd">    :type dt: int</span>
+<span class="sd">    :param fsys: value of the systematic perturbation</span>
+<span class="sd">    :type fsys: float</span>
+<span class="sd">    :param semiDistrib: flag if var in SAFRAN geometry or semi-distributed geometry</span>
+<span class="sd">    :type semiDistrib: bool</span>
+
+<span class="sd">    :return perturbed variable, same type and shape as var</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">var</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># time length</span>
+    <span class="c1"># generates random perturbation factor vector</span>
+    <span class="n">perturbation_vector</span> <span class="o">=</span> <span class="n">gener_random_serie_autocorr</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="n">fsys</span><span class="p">)</span>
+    <span class="c1"># perturbation cannot be negative !! this will introduce a positive bias in the forcings,</span>
+    <span class="c1"># especially if fsys&lt;1 or sigma&gt;&gt;mean(var)</span>
+    <span class="n">perturbation_vector</span><span class="p">[</span><span class="n">perturbation_vector</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">varout</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span> <span class="o">*</span> <span class="n">perturbation_vector</span>  <span class="c1"># multiplicative perturbation of the variable</span>
+    <span class="k">return</span> <span class="n">varout</span></div>
+
+
+
+<div class="viewcode-block" id="addNoiseAdditive">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoiseAdditive">[docs]</a>
+<span class="k">def</span> <span class="nf">addNoiseAdditive</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply additive perturbation (sigma=std of random perturbation, tau=temporal correlation, fsys=systematic</span>
+<span class="sd">    perturbation) to a time serie.</span>
+
+<span class="sd">    :param var: data to be pertubed</span>
+<span class="sd">    :type var: numpy.array</span>
+<span class="sd">    :param sigma: standard deviation of the random perturbation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param tau:  temporal correlation length of the random perturbation (hours)</span>
+<span class="sd">    :type tau: float</span>
+<span class="sd">    :param dt: time step (hour)</span>
+<span class="sd">    :type dt: int</span>
+<span class="sd">    :param fsys: value of the systematic perturbation</span>
+<span class="sd">    :type fsys: float</span>
+<span class="sd">    :param semiDistrib: flag if var in SAFRAN geometry or semi-distributed geometry</span>
+<span class="sd">    :type semiDistrib: bool</span>
+
+<span class="sd">    :return perturbed variable, same type and shape as var</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">var</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># time length</span>
+    <span class="c1"># generates random perturbation factor vector</span>
+    <span class="n">perturbation_vector</span> <span class="o">=</span> <span class="n">gener_random_serie_autocorr</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="n">fsys</span><span class="p">)</span>
+    <span class="c1"># print(&#39;ppp&#39;, perturbation_vector.shape)</span>
+    <span class="n">varout</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span> <span class="o">+</span> <span class="n">perturbation_vector</span>  <span class="c1"># additive perturbation of the variable</span>
+    <span class="k">return</span> <span class="n">varout</span></div>
+
+
+
+<div class="viewcode-block" id="addNoise2Impur">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoise2Impur">[docs]</a>
+<span class="k">def</span> <span class="nf">addNoise2Impur</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">varName</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">brutal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add noise with temporal correlation.</span>
+
+<span class="sd">    :param var: data to be pertubed</span>
+<span class="sd">    :type var: numpy.array</span>
+<span class="sd">    :param varName: name of the variable</span>
+<span class="sd">    :type varName: str</span>
+<span class="sd">    :param sigma: standard deviation of the random perturbation</span>
+<span class="sd">    :type sigma: float</span>
+<span class="sd">    :param tau:  temporal correlation length of the random perturbation (hours)</span>
+<span class="sd">    :type tau: float</span>
+<span class="sd">    :param dt: time step (hour)</span>
+<span class="sd">    :type dt: int</span>
+<span class="sd">    :param semiDistrib: flag if var in SAFRAN geometry or semi-distributed geometry</span>
+<span class="sd">    :type semiDistrib: bool</span>
+<span class="sd">    :param brutal: multiply all timesteps by a random factor following a lognormal law</span>
+<span class="sd">    :type brutal: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">brutal</span><span class="p">:</span>
+        <span class="n">varout</span> <span class="o">=</span> <span class="n">addNoiseMultiplicative</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">semiDistrib</span> <span class="o">=</span> <span class="n">semiDistrib</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># brutal : multiply all timesteps by a random factor following a lognormal law</span>
+        <span class="n">nt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">var</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># time length</span>
+        <span class="k">if</span> <span class="s1">&#39;1&#39;</span> <span class="ow">in</span> <span class="n">varName</span><span class="p">:</span>  <span class="c1"># case for BC</span>
+            <span class="c1"># /100 x1 (too much BC in MOCAGE)</span>
+            <span class="n">logstdFact</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">meanFact</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Case for Dust</span>
+            <span class="c1"># /10*10 (no clue about Dust) -&gt; (1,0),</span>
+            <span class="n">logstdFact</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">meanFact</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fact</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">meanFact</span><span class="p">,</span> <span class="n">logstdFact</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># BC 24/10/19 toggle on the following line for baseline experiment.</span>
+        <span class="c1"># fact = meanFact</span>
+        <span class="n">YY</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="n">fact</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">semiDistrib</span><span class="p">:</span>
+            <span class="n">YY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">YY</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">var</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">YY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">YY</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">var</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">varout</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span> <span class="o">*</span> <span class="n">YY</span>
+
+    <span class="k">return</span> <span class="n">varout</span></div>
+
+
+
+<div class="viewcode-block" id="forcinput_perturb">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.forcinput_perturb">[docs]</a>
+<span class="k">class</span> <span class="nc">forcinput_perturb</span><span class="p">(</span><span class="n">forcinput_tomodify</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stochastically perturbed meterological forcing file for assimilation purpose</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">seuilmin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Tair</span> <span class="o">=</span> <span class="mf">200.</span><span class="p">,</span>
+                    <span class="n">LWdown</span> <span class="o">=</span> <span class="mf">100.</span><span class="p">,</span>
+                    <span class="n">DIR_SWdown</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
+                    <span class="n">SCA_LWdown</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    
+    <span class="n">seuilmax</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Tair</span> <span class="o">=</span> <span class="mf">330.</span><span class="p">,</span>
+                    <span class="n">LWdown</span> <span class="o">=</span> <span class="mf">450.</span><span class="p">,</span>
+                    <span class="n">DIR_SWdown</span> <span class="o">=</span> <span class="mf">1500.</span><span class="p">,</span>
+                    <span class="n">SCA_LWdown</span> <span class="o">=</span> <span class="mf">800.</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    
+
+<div class="viewcode-block" id="forcinput_perturb.modify">
+<a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.forcinput_perturb.modify">[docs]</a>
+    <span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_forcing_file</span><span class="p">,</span> <span class="n">new_forcing_file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add stochastic perturbations to a meterological forcing file</span>
+
+<span class="sd">        :param init_forcing_file: Input file object</span>
+<span class="sd">        :type init_forcing_file: :class:`utils.prosimu.prosimu`</span>
+<span class="sd">        :param new_forcing_file: Output file object</span>
+<span class="sd">        :type new_forcing_file: :class:`utils.prosimu.prosimu`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+
+        <span class="n">po</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNOWTOOLS_DATA</span><span class="p">,</span> <span class="s1">&#39;perturbations_param.txt&#39;</span><span class="p">)</span>
+        <span class="n">brutal</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># read parameters: sigma and tau for each disturbed variable from a csv file</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">po</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Param value&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="c1"># fsys is an optional argument. if not prescribed, set to 0 for additive perts, and 1 for multiplicative</span>
+                <span class="k">if</span> <span class="s1">&#39;fsys&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">fsysparam</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;fsys&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Lwdown&#39;</span><span class="p">]:</span>
+                        <span class="n">fsysparam</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">fsysparam</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">param</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]),</span> <span class="n">fsysparam</span><span class="p">]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; | std : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; | tau : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">param</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; | bias factor : &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]][</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="n">time</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">delta</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="mi">3600</span>
+
+        <span class="n">new_forcing_file</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">dictdim</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">listdim</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">dictdim</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+        <span class="n">semiDistrib</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">pointsdim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">dimname</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">dictdim</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Create dimension &quot;</span> <span class="o">+</span> <span class="n">dimname</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dim</span><span class="p">)))</span>
+            <span class="n">new_forcing_file</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">dimname</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+
+        <span class="n">listvar</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">listvar</span><span class="p">:</span>
+
+            <span class="n">vartype</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">array_dim</span><span class="p">,</span> <span class="n">varFillvalue</span><span class="p">,</span> <span class="n">var_attrs</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">infovar</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+            <span class="n">newvar</span> <span class="o">=</span> <span class="n">new_forcing_file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">vartype</span><span class="p">,</span> <span class="n">array_dim</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">varFillvalue</span><span class="p">)</span>
+
+            <span class="c1"># Determine whether the variable should be disturbed or not</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;Precip&#39;</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># Specific case for precip</span>
+                <span class="n">modifyvar</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;Precip&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">modifyvar</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">modifyvar</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Read initial variable</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modifyvar</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Disturb &quot;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                <span class="c1"># Variable-dependent disturbance before writing new variable</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;LWdown&#39;</span><span class="p">]:</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">addNoiseAdditive</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dt</span><span class="p">,</span>
+                                                 <span class="n">fsys</span><span class="o">=</span><span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;DIR_SWdown&#39;</span><span class="p">,</span> <span class="s1">&#39;Wind&#39;</span><span class="p">]:</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">addNoiseMultiplicative</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dt</span><span class="p">,</span>
+                                                       <span class="n">fsys</span><span class="o">=</span><span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Rainf&#39;</span><span class="p">]:</span>
+                    <span class="n">Precip</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;Snowf&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;Rainf&#39;</span><span class="p">)</span>
+                    <span class="n">Precip</span> <span class="o">=</span> <span class="n">addNoiseMultiplicative</span><span class="p">(</span><span class="n">Precip</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;Precip&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;Precip&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dt</span><span class="p">,</span>
+                                                    <span class="n">fsys</span><span class="o">=</span><span class="n">param</span><span class="p">[</span><span class="s1">&#39;Precip&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">)</span>
+                    <span class="n">Tair</span> <span class="o">=</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;Tair&#39;</span><span class="p">)</span>
+                    <span class="n">tempvar</span><span class="p">[:],</span> <span class="n">snowf</span>  <span class="o">=</span> \
+                        <span class="n">convertPrecipPhase</span><span class="p">(</span><span class="n">Tair</span><span class="p">,</span> <span class="n">Precip</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="mf">272.65</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">274.05</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Snowf&#39;</span><span class="p">]:</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">snowf</span>
+                <span class="k">elif</span> <span class="n">varname</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;IMPWET1&#39;</span><span class="p">,</span> <span class="s1">&#39;IMPWET2&#39;</span><span class="p">,</span> <span class="s1">&#39;IMPDRY1&#39;</span><span class="p">,</span> <span class="s1">&#39;IMPDRY2&#39;</span><span class="p">]:</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">addNoise2Impur</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">param</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dt</span><span class="p">,</span>
+                                               <span class="n">semiDistrib</span><span class="o">=</span><span class="n">semiDistrib</span><span class="p">,</span> <span class="n">brutal</span><span class="o">=</span><span class="n">brutal</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Perturbation prescribed in the parameter file but unknown method for this variable</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Undefined perturbation method for variable &#39;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                    
+                <span class="c1"># Apply thresholds to avoid unrealistic values</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmax</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Apply max threshold for &#39;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tempvar</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmax</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmax</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">tempvar</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmin</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Apply min threshold for &#39;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                    <span class="n">tempvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tempvar</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmin</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seuilmin</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">tempvar</span><span class="p">)</span>
+                
+                <span class="n">newvar</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tempvar</span>
+                
+                <span class="c1"># Specify that this is a disturbed variable</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">newvar</span><span class="p">,</span> <span class="s1">&#39;disturbed&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Copy &quot;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                <span class="n">newvar</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
+
+            <span class="c1"># Copy attributes from input to output file</span>
+            <span class="k">for</span> <span class="n">attname</span> <span class="ow">in</span> <span class="n">var_attrs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">attname</span> <span class="o">==</span> <span class="s1">&#39;_FillValue&#39;</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">newvar</span><span class="p">,</span> <span class="n">attname</span><span class="p">,</span> <span class="n">init_forcing_file</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">attname</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">forcinput_perturb</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.perturb_forcing</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

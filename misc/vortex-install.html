@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Install VORTEX &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Install VORTEX</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="install-vortex">
+<span id="id1"></span><h1>Install VORTEX<a class="headerlink" href="#install-vortex" title="Link to this heading">¶</a></h1>
+<p><strong>External users do not need to install the vortex package (and they are not allowed to do it). Météo-France users who need to either extract operational S2M files either to run their own experiments on the HPC system need to install the vortex package.</strong></p>
+<p>In the general case, you have to use a pre-installed version of Vortex.</p>
+<section id="use-a-pre-installed-version-of-vortex">
+<h2>Use a pre-installed version of vortex<a class="headerlink" href="#use-a-pre-installed-version-of-vortex" title="Link to this heading">¶</a></h2>
+<p>For standard users who do not need to implement modifications in vortex code, it is recommended to directly use the pre-installed stable version of vortex cen_dev branch. For that purpose, you need to add the following items to your .bash_profile (and run it):</p>
+<p>On a CEN machine (including your laptop):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VORTEX</span><span class="o">=</span>/rd/cenfic3/cenmod/home/lafaysse/common/vortex/vortex-cen
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>/site:<span class="nv">$VORTEX</span>/src:<span class="nv">$VORTEX</span>/project
+<span class="nb">export</span><span class="w"> </span><span class="nv">MTOOLDIR</span><span class="o">=</span><span class="nv">$HOME</span>
+</pre></div>
+</div>
+<p>On belenos:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VORTEX</span><span class="o">=</span>~verolive/vortex/vortex-cen
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>/site:<span class="nv">$VORTEX</span>/src:<span class="nv">$VORTEX</span>/project
+<span class="nb">export</span><span class="w"> </span><span class="nv">MTOOLDIR</span><span class="o">=</span><span class="nv">$WORKDIR</span>
+</pre></div>
+</div>
+<p>On sxcen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">VORTEX</span><span class="o">=</span>~verolive/vortex/vortex-cen
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>/site:<span class="nv">$VORTEX</span>/src:<span class="nv">$VORTEX</span>/project
+<span class="w">  </span><span class="nb">export</span><span class="w"> </span><span class="nv">MTOOLDIR</span><span class="o">=</span>/cnrm/cen/users/NO_SAVE/&lt;login&gt;
+
+On<span class="w"> </span>other<span class="w"> </span>CNRM<span class="w"> </span>machines:
+
+..<span class="w"> </span>code-block::<span class="w"> </span>bash
+
+<span class="w">   </span><span class="nb">export</span><span class="w"> </span><span class="nv">VORTEX</span><span class="o">=</span>/d0/sync/vortex/vortex-cen
+<span class="w">   </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>/site:<span class="nv">$VORTEX</span>/src:<span class="nv">$VORTEX</span>/project
+<span class="w">   </span><span class="nb">export</span><span class="w"> </span><span class="nv">MTOOLDIR</span><span class="o">=</span>/cnrm/cen/users/NO_SAVE/&lt;login&gt;
+</pre></div>
+</div>
+<p>Note: Make sure that the folder <code class="docutils literal notranslate"><span class="pre">/cnrm/cen/users/NO_SAVE/&lt;login&gt;</span></code> exist for sxcen.</p>
+<p>Then, go the last section of this documentation (<a class="reference internal" href="#vortex-file-transfer"><span class="std std-ref">File transfers with hendrix archive and sxcen</span></a>).</p>
+</section>
+<section id="install-your-own-vortex-code">
+<h2>Install your own vortex code<a class="headerlink" href="#install-your-own-vortex-code" title="Link to this heading">¶</a></h2>
+<p>For users who need to implement new algorithms or resources in the vortex code, it is necessary to install vortex from the git repository.</p>
+<p>We recommend to download it locally on your machine with git pull and synchronize it remotely using <code class="docutils literal notranslate"><span class="pre">put</span></code> command provided by snowtools.</p>
+<p>For a first install, you must belong to the vortex opensource project. For that, ask vortex dot support at meteo dot fr to give you access to the project, specifying that you need to implement new developments (and copy to crocus at meteo dot fr).</p>
+<p>You do not need to provide again your ssh key if you have already done it for the other projects.</p>
+<p>Then, you’ll find more information (install, doc) on : <a class="reference external" href="https://opensource.umr-cnrm.fr/projects/vortex?jump=wiki">https://opensource.umr-cnrm.fr/projects/vortex?jump=wiki</a>.</p>
+<p>You must choose the cen_dev branch.</p>
+<p>Basically, installing requires to download the git repo. and add a few vortex paths to your PYTHONPATH.</p>
+<p>First, add the following items to your .bash_profile (and run it):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VORTEX</span><span class="o">=</span>&lt;your_path_to_vortex&gt;
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>/site:<span class="nv">$VORTEX</span>/src:<span class="nv">$VORTEX</span>/project
+<span class="nb">export</span><span class="w"> </span><span class="nv">MTOOLDIR</span><span class="o">=</span><span class="nv">$WORKDIR</span>
+</pre></div>
+</div>
+<p>Attention: for a local installation WORKDIR and therefore MTOOLDIR might be undefined. In this case MTOOLDIR has to be set before executing a task that fetches data.</p>
+</section>
+<section id="file-transfers-with-hendrix-archive-and-sxcen">
+<span id="vortex-file-transfer"></span><h2>File transfers with hendrix archive and sxcen<a class="headerlink" href="#file-transfers-with-hendrix-archive-and-sxcen" title="Link to this heading">¶</a></h2>
+<p>When a simulation is launched on belenos or taranis, Vortex automatically downloads input files from hendrix or the belenos/taranis cache (/scratch/mtool/&lt;yourname&gt;/cache/vortex/), and uploads the output of the simulations on hendrix and the cache. To allow Vortex to use ftserv from belenos/taranis to hendrix, it is necessary to register your password by running the following command on belenos/taranis:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse<span class="w"> </span>-h<span class="w"> </span>hendrix.meteo.fr<span class="w"> </span>-u<span class="w"> </span>&lt;yourname&gt;
+</pre></div>
+</div>
+<p>The same procedure applies if you’d like to upload light output data to your laptop or any server other than hendrix, e.g. sxcen.cnrm.meteo.fr :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse<span class="w"> </span>-h<span class="w"> </span>sxcen.cnrm.meteo.fr<span class="w"> </span>-u<span class="w"> </span>&lt;yourname&gt;
+</pre></div>
+</div>
+<p>Do not forget to re-run these commands every time you change your password (as Météo-France asks you on a 6-month basis). Otherwise, the authentication for the transfer of outputs will fail.</p>
+</section>
+<section id="file-transfers-to-a-local-machine">
+<h2>File transfers to a local machine<a class="headerlink" href="#file-transfers-to-a-local-machine" title="Link to this heading">¶</a></h2>
+<p>Make sure that your user creditals for hendrix are stored in your .netrc file (in the home directory). There should be a line like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">machine</span> <span class="n">hendrix</span><span class="o">.</span><span class="n">meteo</span><span class="o">.</span><span class="n">fr</span> <span class="n">login</span> <span class="o">&lt;</span><span class="n">yourusername</span><span class="o">&gt;</span> <span class="n">password</span> <span class="o">&lt;</span><span class="n">yourpassword</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and that only the user has read and write permissions for the .netrc file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chmod</span> <span class="n">og</span><span class="o">-</span><span class="n">rw</span> <span class="o">.</span><span class="n">netrc</span>
+</pre></div>
+</div>
+<p>(removes read and write permissions for group and other).</p>
+<p>That’s it !</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Install VORTEX</a><ul>
+<li><a class="reference internal" href="#use-a-pre-installed-version-of-vortex">Use a pre-installed version of vortex</a></li>
+<li><a class="reference internal" href="#install-your-own-vortex-code">Install your own vortex code</a></li>
+<li><a class="reference internal" href="#file-transfers-with-hendrix-archive-and-sxcen">File transfers with hendrix archive and sxcen</a></li>
+<li><a class="reference internal" href="#file-transfers-to-a-local-machine">File transfers to a local machine</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/vortex-install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Install VORTEX</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

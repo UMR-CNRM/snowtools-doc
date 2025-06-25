@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The s2m command &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tools for simulations" href="tools.html" />
+    <link rel="prev" title="Testing" href="../misc/test.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools for simulations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../misc/test.html" title="Testing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The s2m command</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-s2m-command">
+<span id="s2m-command"></span><h1>The s2m command<a class="headerlink" href="#the-s2m-command" title="Link to this heading">¶</a></h1>
+<p>Basic usage of s2m is the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span>begin_date<span class="w"> </span>-e<span class="w"> </span>end_date<span class="w"> </span>-f<span class="w"> </span>forcing<span class="w"> </span><span class="o">[</span>-o<span class="w"> </span>path_output<span class="o">]</span><span class="w"> </span><span class="o">[</span>-n<span class="w"> </span>namelist<span class="o">]</span><span class="w"> </span><span class="o">[</span>-g<span class="o">]</span><span class="w"> </span><span class="o">[</span>-G<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>surfex_exe_directory<span class="o">]</span>
+</pre></div>
+</div>
+<p>On HPC (vortex run), more options are required and a basic use is as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span>begin_date<span class="w"> </span>-e<span class="w"> </span>end_date<span class="w"> </span>-m<span class="w"> </span>model<span class="w"> </span>-f<span class="w"> </span>forcing<span class="w"> </span>-r<span class="w"> </span>region<span class="w"> </span><span class="o">[</span>-o<span class="w"> </span>output_xpid<span class="o">]</span><span class="w"> </span><span class="o">[</span>-n<span class="w"> </span>namelist<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>surfex_exe_directory<span class="o">]</span><span class="w"> </span><span class="o">[</span>--walltime<span class="o">=</span>h:mm:ss<span class="o">]</span>
+</pre></div>
+</div>
+<p>Full documentation is available with <code class="docutils literal notranslate"><span class="pre">s2m</span> <span class="pre">research</span> <span class="pre">--help</span></code> and is reported below:</p>
+<p>s2m command help:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: s2m research [-h] -b DATEDEB -e DATEFIN [-o DIROUTPUT] [-f FORCING]
+                    [-n NAMELIST] [-G] [-g] [-x DATESPINUP] [-a THRESHOLD]
+                    [-r REGION] [-L MINLEVEL] [-U MAXLEVEL] [-c ASPECTS]
+                    [-l SLOPES] [-E] [--addmask] [-s EXESURFEX] [-w WORKDIR]
+                    [--geotype {unstructured,grid}]
+                    [--veg {namelist,ecoclimap}] [--hydro HYDRO]
+                    [--hydrovar HYDROVAR] [--uenv UENV] [-m MODEL]
+                    [-p PREP_XPID] [--obsxpid OBSXPID] [--nnodes NNODES]
+                    [--ntasks NTASKS] [--walltime WALLTIME] [--writesx]
+                    [--save-pro {none,cache,archive,multi}]
+                    [--postprocess POSTPROCESS_EXE] [--drhook]
+                    [--task {surfex,surfex_dailyprep,escroc,escroc_scores,croco,croco_perturb,reforecast,debug,refill,interpol}]
+                    [--escroc ESCROC] [--croco {openloop,synth,real}]
+                    [--conf CONF] [--synthmember SYNTHMEMBER]
+                    [--nforcing NFORCING] [--nmembers NMEMBERS]
+                    [--startmember STARTMEMBER] [--sensor SENSOR]
+                    [--interpol_blocks {meteo,pro,meteo,pro,pro,meteo}]
+
+The command to be used for research tasks to launch SAFRAN-SURFEX-Crocus or
+EDELWEISS simulations. s2m simulations need ground temperature to be
+initialized. If initial conditions are not known (PREP file not available for
+the starting date), then an init_TG.nc file is expected to be found in the
+prep directory. It must contain an initial ground temperature variable called
+TG with dimension (Number_of_points). The init_TG.nc file can be generated
+using -G or -g options (see their description). Otherwise, the command will
+crash.
+
+options:
+  -h, --help            show this help message and exit
+
+Main arguments:
+  -b DATEDEB, --begin DATEDEB
+                        Date of the beginning of the simulation. (default:
+                        None)
+  -e DATEFIN, --end DATEFIN
+                        Date of the end of the simulation (default: None)
+  -o DIROUTPUT, --output DIROUTPUT
+                        Name of the output directory (default: output)
+  -f FORCING, --forcing FORCING
+                        Standard use : Path of the forcing file or of the
+                        directory with the forcing files. Vortex use : xpid or
+                        xpid@login of forcing data (default: None)
+  -n NAMELIST, --namelist NAMELIST
+                        Path of the mother namelist (default: /home/viallonl/o
+                        pt/snowtools/snowtools/DATA/OPTIONS_V8.1_NEW_OUTPUTS_N
+                        C.nam)
+
+Initialization set up:
+  -G                    Generate a ground initialization file by computing a
+                        climatological average of air temperature on the
+                        provided period. With this option, the simulation is
+                        not run, the user can use -g instead to combine the
+                        ground temperature initialization and running the
+                        simulation. (default: False)
+  -g                    Combines -G option and run the simulation aftterwards.
+                        (default: False)
+  -x DATESPINUP, --spinupdate DATESPINUP
+                        Date of validity of the spinup file (default: None)
+  -a THRESHOLD, --august_threshold THRESHOLD
+                        Limit the snow water equivalent each 1st August to the
+                        provided value in kg/m2 (default: -999)
+
+Forcing pre-processing:
+  -r REGION, --region REGION, --geometry REGION
+                        The geometry to use for SURFEX simulation. This option
+                        is also used for pre-processing of the FORCING file by
+                        extracting data or interpolating forcing files into a
+                        new geometry Standard use: - If region is a single
+                        massif number or a list of massif numbers separated by
+                        comas or a generic name for a group of massifs,
+                        extract the corresponding massifs. - If region is a
+                        netcdf file describing the target geometry,
+                        interpolate SAFRAN fields on this geometry. The netcdf
+                        file describing the geometry must contain the
+                        massif_number and ZS variables. It can be 1d
+                        (Number_of_points) or 2d (y, x) in Lambert93 or 2d
+                        (latitude, longitude). 1d files can optionnally
+                        provide aspect and slope. These variables will be
+                        computed by the software for 2d files. Note that you
+                        need to compile the fortran interpolator to use this
+                        extended option. Vortex use: - region must be a well-
+                        defined geometry either in vortex either
+                        in.vortexrc/geometries.ini - In case of a geometry
+                        change, the syntax is -r
+                        geometry_in:geometry_out:GRID.nc where GRID.nc is the
+                        netcdf file describing the target geometry. Both
+                        geometry_in and geometry_out must be defined either in
+                        vortex either in.vortexrc/geometries.ini (default:
+                        None)
+  -L MINLEVEL, --lowest MINLEVEL
+                        Eliminate elevations lower than this level in FORCING
+                        files (in meters) (default: None)
+  -U MAXLEVEL, --upper MAXLEVEL
+                        Eliminate elevations above this level in FORCING files
+                        (in meters) (default: None)
+  -c ASPECTS, --classes_aspect ASPECTS
+                        Specify the number of aspect classes to extract or
+                        generate. Default: 8 -c 8 : N, NE, E, SE, S, SW, W, NW
+                        -c 4 : N, E, S, W -c 2 : N, S -c 135 : specify only 1
+                        aspect in ° if multiple of 45° (default: None)
+  -l SLOPES, --list_slopes SLOPES
+                        Extract a reduced number of slope angles in FORCING
+                        files, or generate a larger number of slope angles for
+                        a flat FORCING file (default: None)
+  -E, --extractforcing  Only extract meteorological forcing (default: False)
+  --addmask             Apply shadows on solar radiation from surrounding
+                        masks (default: False)
+
+Optional path definitions:
+  -s EXESURFEX, --surfexexec EXESURFEX
+                        Specify the directory where to find SURFEX binaries.
+                        (Must contains PGD, PREP, OFFLINE) If None, EXESURFEX
+                        environment variable is used. (default: None)
+  -w WORKDIR, --workdir WORKDIR
+                        Name of the running directory (workdir) (default:
+                        None)
+
+Other arguments:
+  --geotype {unstructured,grid}
+                        Type of simulation geometry: grids must be defined in
+                        namelist while namelists are automatically updated for
+                        unstructured geometries according to the forcing file.
+                        (default: unstructured)
+  --veg {namelist,ecoclimap}
+                        When vegetation is extracted from ECOCLIMAP database,
+                        the corresponding files are downloaded in the working
+                        directory. Default is namelist when
+                        --geotype=unstructured. Default is eoclimap when
+                        --geotype=grid. (default: None)
+  --hydro HYDRO         Netcdf file of areas describing the repartition of S2M
+                        units for a listhydrological basins. If provided,
+                        hydrological diagnostics are provided in a dedicated
+                        output file for the variables listed by --hydrovar
+                        (default: None)
+  --hydrovar HYDROVAR   List of FORCING or PRO diagnostics separated by coma
+                        that should be spatially aggregated at the scale of
+                        hydrological basins. The basins are described in the
+                        file provided with the --hydro option (default: None)
+  --uenv UENV           In cases when additionnal input files are necessary,
+                        use this option to define the absolute path of the
+                        repository where those files are stored.This option
+                        works for both Vortex/HPC and local executions.In a
+                        Vortex execution, it is also possible (and advised) to
+                        provide a an existing uenv using the followong syntax
+                        : &#39;--uenv=uenv:{uenv_name}@{username}&#39;. (default:
+                        None)
+
+Vortex options (available only on Meteo-France supercomputers):
+  -m MODEL, --model MODEL
+                        Meteorological forcing format: s2m for ready-to-use
+                        s2m-generated FORCING and safran for raw SAFRAN files.
+                        (default: None)
+  -p PREP_XPID, --prep_xpid PREP_XPID
+                        xpid in wich are the PREP files to be used (default:
+                        None)
+  --obsxpid OBSXPID     xpid of the obs you want to assimilate (default: None)
+  --nnodes NNODES       Total number of nodes requested by the s2m command
+                        (can be split between several jobs or not). Take care,
+                        this is not the number of nodes per job if several
+                        jobs !!! (default: 1)
+  --ntasks NTASKS       Number of tasks (and procs) per node. (default: None)
+  --walltime WALLTIME   specify your job walltime (format hh:mm:ss) (default:
+                        None)
+  --writesx             Optionnaly transfer the PRO files towards sxcen
+                        (default: False)
+  --save-pro {none,cache,archive,multi}
+                        Wheteher and where to save PRO_ output files. multi is
+                        the default and store both in cache and in archive.
+                        Use none not to save the PRO_ files at all. (default:
+                        multi)
+  --postprocess POSTPROCESS_EXE
+                        Postprocessing of PRO file. Provide executable path
+                        (absolute) and its options as a single string. Will be
+                        executed after aSURFEX execution in the working
+                        directory. If you want anythingto be saved, please
+                        write in commonly used files (PRO, DIAG, CUMUL).Please
+                        ensure yourself that your algorithm is correctly
+                        parallelized. (default: None)
+  --drhook              Profiling MPI task with DRHOOK (default: False)
+  --task {surfex,surfex_dailyprep,escroc,escroc_scores,croco,croco_perturb,reforecast,debug,refill,interpol}
+                        The task, if not the default one. (default: surfex)
+  --escroc ESCROC       ESCROC subensemble in case --task=escroc (default: E2)
+  --croco {openloop,synth,real}
+                        assimilation mode in case --task=croco (default:
+                        openloop)
+  --conf CONF           configuration file in case --task=croco (default:
+                        None)
+  --synthmember SYNTHMEMBER
+                        synthetic member if --croco=synth (default: 1)
+  --nforcing NFORCING   Number of members of forcing files in Croco task only
+                        (default: 1)
+  --nmembers NMEMBERS   Total number of executions of the binary or script
+                        associatedwith the main algocomponent of the task.
+                        (default: None)
+  --startmember STARTMEMBER
+                        Number of first member (default: None)
+  --sensor SENSOR       specify the sensor name of the obs you want to
+                        assimilate (default: MODIS)
+  --interpol_blocks {meteo,pro,meteo,pro,pro,meteo}
+                        List of blocks to interpol --task=interpol (default: )
+</pre></div>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../misc/test.html"
+                          title="previous chapter">Testing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="tools.html"
+                          title="next chapter">Tools for simulations</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/s2m.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools for simulations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../misc/test.html" title="Testing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The s2m command</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

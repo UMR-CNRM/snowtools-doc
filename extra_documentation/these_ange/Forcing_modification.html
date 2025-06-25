@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Blowing snow simulation preparation &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Pleiades observation" href="Pleiades.html" />
+    <link rel="prev" title="Documentations from Ange’s PhD (Blowing snow)" href="these_ange_index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Pleiades.html" title="Pleiades observation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="these_ange_index.html" accesskey="U">Documentations from Ange’s PhD (Blowing snow)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Blowing snow simulation preparation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="blowing-snow-simulation-preparation">
+<h1>Blowing snow simulation preparation<a class="headerlink" href="#blowing-snow-simulation-preparation" title="Link to this heading">¶</a></h1>
+<div class="line-block">
+<div class="line">During my PhD, we developped with Matthieu Baron <strong>SnowPappus</strong> <a class="footnote-reference brackets" href="#f0" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, a distributed blowing snow model. :)</div>
+<div class="line">For blowing snow transport simulations, having a realistic wind is essential. In our simulations we used Louis’ DEVINE high resolution wind.</div>
+<div class="line">To proceed to our simulations we therefore had to hand-cook wind modified simulation forcings.</div>
+</div>
+<section id="typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos">
+<span id="simscratch"></span><h2>Typical workflow for a blowing snow experiment from scratch on Belenos :<a class="headerlink" href="#typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><a class="reference internal" href="#geom"><span class="std std-ref">S2M Geometry creation</span></a></p></li>
+<li><p><a class="reference internal" href="#spinup"><span class="std std-ref">Spinup creation</span></a> (PREP + PGD + raw forcings (SAFRAN))</p></li>
+<li><p>Forcing modification :</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference internal" href="#louis"><span class="std std-ref">High resolution wind resampling</span></a></p></li>
+<li><p><a class="reference internal" href="#fmod"><span class="std std-ref">Forcing wind modification</span></a> (or any other field)</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p><a class="reference internal" href="../../code/s2m.html#s2m-command"><span class="std std-ref">Simulation launch with S2M</span></a></p>
+<blockquote>
+<div><p>Don’t forget to remove the <code class="file docutils literal notranslate"><span class="pre">-g</span></code> option for classical S2M launch with precomputed spinup.</p>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not forget to clean the vortex cache before launching simulation with modified forcings to <strong>override the previous cached forcing files</strong>.</p>
+</div>
+<section id="s2m-geometry-creation-from-scratch">
+<span id="geom"></span><h3>1. S2M geometry creation from scratch:<a class="headerlink" href="#s2m-geometry-creation-from-scratch" title="Link to this heading">¶</a></h3>
+<p>To generate a simulation geometry from scratch, the first step is to determine the simulation area.
+I suggest to use the following workflow:</p>
+<ol class="arabic">
+<li><p>Generate a shapefile of the simulation area</p>
+<blockquote>
+<div><p>The shapefile need to be a rectangle in the EPSG:2154 projection and can be made using QGIS <a class="reference internal" href="https://i.ibb.co/KrtJCMV/Capture-d-cran-2024-06-19-10-36-19-copie.png"><img alt="shapefile" src="https://i.ibb.co/KrtJCMV/Capture-d-cran-2024-06-19-10-36-19-copie.png" style="width: 50px;" /></a> and the rectangle creation tool from center <a class="reference internal" href="https://i.ibb.co/GFk7mZJ/Capture-d-cran-2024-06-19-10-36-40.png"><img alt="rectangle" src="https://i.ibb.co/GFk7mZJ/Capture-d-cran-2024-06-19-10-36-40.png" style="width: 50px;" /></a> (to get target aligned pixels).</p>
+</div></blockquote>
+</li>
+<li><p>Create the S2M geometry definition file using the <code class="file docutils literal notranslate"><span class="pre">/snowtools/interpolation/shapefile2NetCDF_2D.py</span></code> script.</p>
+<blockquote>
+<div><p>This command create a NetCDF geometry definition file containing the DEM and massif number values needed for the spinup creation.
+An example of command to create this file can be found bellow. Option <code class="file docutils literal notranslate"><span class="pre">-rlon</span> <span class="pre">-rlat</span></code> for resolution, <code class="file docutils literal notranslate"><span class="pre">--MNT_alt</span></code> to get different path for the DEM file and <code class="file docutils literal notranslate"><span class="pre">-m</span></code> to precribe a massif number for the entire area.</p>
+<p>A list of CEN MNT/DEM files can be found on <a class="reference external" href="http://confluence.meteo.fr/pages/viewpage.action?pageId=276547824">confluence</a></p>
+<p><code class="file docutils literal notranslate"><span class="pre">python</span> <span class="pre">shapefile2NetCDF_2D.py</span> <span class="pre">~/Téléchargements/eaudolle&#64;gdmaison/domaineEAUDOLLE.shp</span> <span class="pre">-m</span> <span class="pre">12</span> <span class="pre">-rlon</span> <span class="pre">250</span> <span class="pre">-rlat</span> <span class="pre">250</span> <span class="pre">-o</span> <span class="pre">eaudolle_250m.nc</span></code></p>
+<p>This command also output the geometry specific description that need to be added the namelist:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>In namelist &amp;NAM_IGN:
+XCELLSIZE= 250
+XX_LLCORNER= 929876
+XY_LLCORNER= 6445476
+!! Check with NETCDF dimensions (gap of 1 possible):
+NCOLS= 127
+NROWS= 129
+!! For BELENOS, take ntasks &lt; min(NCOLS, NROWS)
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To get more uniform forcings in the Grandes Rousses domain, we did choose a single massif number for the entire domain. This might need DEM alteration for the step of forcing interpolation as the MIN and MAX elevation need to be within the bound of the S2M reanalysis elevation.  Otherwise, the interpolation will crash.</p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Don’t forget to create or modify your namelist and move the geometry seed file and the namelist on Belenos HPC.</p></li>
+</ol>
+</section>
+<section id="spinup-creation-on-belenos">
+<span id="spinup"></span><h3>2. Spinup creation on BELENOS<a class="headerlink" href="#spinup-creation-on-belenos" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Name and add the new geometry info in the <code class="file docutils literal notranslate"><span class="pre">~/.vortexrc/geometries.ini</span></code> file on BELENOS server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">eaudolle250</span><span class="p">]</span>
+<span class="n">info</span> <span class="o">=</span> <span class="n">zone</span> <span class="n">de</span> <span class="n">simulation</span> <span class="n">pour</span> <span class="n">le</span> <span class="n">bassin</span> <span class="n">EDF</span> <span class="n">de</span> <span class="n">EAUDOLLE</span>
+<span class="n">kind</span> <span class="o">=</span> <span class="n">projected</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="mf">0.250</span>
+<span class="n">area</span> <span class="o">=</span> <span class="n">eaudolle250</span>
+<span class="n">runit</span> <span class="o">=</span> <span class="n">km</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use capital letter in the geometry and area name.</p>
+</div>
+<ol class="arabic" start="2">
+<li><p>Launch first simulation on Belenos to create SPINUP, PREP, PGD and forcings interpolation (SAFRAN) of the new geometry using a command like the folowing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">s2m</span> <span class="n">research</span> <span class="o">--</span><span class="n">ntasks</span><span class="o">=</span><span class="mi">60</span> <span class="o">--</span><span class="n">walltime</span><span class="o">=</span><span class="mi">23</span><span class="p">:</span><span class="mi">59</span><span class="p">:</span><span class="mi">00</span> <span class="o">-</span><span class="n">b</span> <span class="mi">20070801</span> <span class="o">-</span><span class="n">e</span> <span class="mi">20170801</span> <span class="o">-</span><span class="n">m</span> <span class="n">s2m</span> <span class="o">-</span><span class="n">f</span> <span class="n">reanalysis2020</span><span class="mf">.2</span><span class="nd">@lafaysse</span> <span class="o">-</span><span class="n">r</span> <span class="n">alp_flat</span><span class="p">:</span><span class="n">eaudolle250</span><span class="p">:</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">cnrm_other</span><span class="o">/</span><span class="n">cen</span><span class="o">/</span><span class="n">mrns</span><span class="o">/</span><span class="n">haddjeria</span><span class="o">/</span><span class="n">eaudolle_250m</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">n</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">cnrm_other</span><span class="o">/</span><span class="n">cen</span><span class="o">/</span><span class="n">mrns</span><span class="o">/</span><span class="n">haddjeria</span><span class="o">/</span><span class="n">git</span><span class="o">/</span><span class="n">namelist</span><span class="o">/</span><span class="n">GRID_EAUDOLLE_250</span><span class="o">.</span><span class="n">nam</span> <span class="o">-</span><span class="n">g</span> <span class="o">--</span><span class="n">geotype</span> <span class="n">grid</span> <span class="o">-</span><span class="n">o</span> <span class="n">spinup</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To have a correct ground temperature initialisation using the <code class="file docutils literal notranslate"><span class="pre">-g</span></code> S2M option, the good practice is to do a spinup over a period of 10 years or more before the target simulation date (to allow time for the soil temperature to stabilise).</p>
+</div>
+</section>
+</section>
+<section id="louis-devine-wind">
+<h2>Louis’ DEVINE wind<a class="headerlink" href="#louis-devine-wind" title="Link to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png"><img alt="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" src="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" style="width: 600px;" /></a>
+<p>Louis Le Toumelin developped a machine learning method to downscale the wind speed and direction for AROME coarse simulation model named <strong>DEVINE</strong>. <a class="footnote-reference brackets" href="#f1" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#f2" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
+If the simulation forcings and the wind are on the same grid (30m) the Wind and Wind_DIR forcing fields can be replaced in files transparently.
+If the two grid are different, the two wind fields (Wind and Wind_DIR) need to be resample to the simulation grid.</p>
+<section id="louis-wind-resampling">
+<span id="louis"></span><h3>3.1 Louis’ wind resampling<a class="headerlink" href="#louis-wind-resampling" title="Link to this heading">¶</a></h3>
+<p>This regridding workflow is based on the folowing functions defined by Louis in is <a class="reference external" href="https://github.com/louisletoumelin/bias_correction">github repo</a> &lt;3:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># source : https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L37</span>
+<span class="k">def</span> <span class="nf">wind2comp</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;radian&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts wind speed and direction from polar coordinates to rectangular components (u, v).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        uv (float): Wind speed magnitude.</span>
+<span class="sd">        dir (float): Wind direction in degrees or radians (depending on unit_direction).</span>
+<span class="sd">        unit_direction (str, optional): Unit of wind direction. Defaults to &quot;radian&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple containing two elements:</span>
+<span class="sd">            - u (float): Easting component of the wind (positive for eastward wind).</span>
+<span class="sd">            - v (float): Northing component of the wind (positive for northward wind).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert wind direction to radians if necessary</span>
+    <span class="k">if</span> <span class="n">unit_direction</span> <span class="o">==</span> <span class="s2">&quot;degree&quot;</span><span class="p">:</span>
+        <span class="nb">dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+    <span class="c1"># Calculate easting (u) and northing (v) components using trigonometric functions</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="o">*</span> <span class="n">uv</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="o">*</span> <span class="n">uv</span>
+
+    <span class="c1"># Return the calculated easting and northing components</span>
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
+
+
+<span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L48</span>
+<span class="k">def</span> <span class="nf">comp2dir</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates wind direction from rectangular components (u, v).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        u (float): Easting component of the wind.</span>
+<span class="sd">        v (float): Northing component of the wind.</span>
+<span class="sd">        unit_output (str, optional): Desired unit for the output wind direction.</span>
+<span class="sd">            Defaults to &quot;degree&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Wind direction in the specified unit (degrees or radians).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotImplementedError: If the desired unit_output is not &quot;degree&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check if desired output unit is degree</span>
+    <span class="k">if</span> <span class="n">unit_output</span> <span class="o">==</span> <span class="s2">&quot;degree&quot;</span><span class="p">:</span>
+        <span class="c1"># Calculate direction in radians using arctangent function</span>
+        <span class="n">direction_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="c1"># Convert direction to degrees and ensure it&#39;s between 0 and 360</span>
+        <span class="n">direction_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">direction_rad</span><span class="p">),</span> <span class="mi">360</span><span class="p">)</span>
+        <span class="c1"># Return wind direction in degrees</span>
+        <span class="k">return</span> <span class="n">direction_deg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Raise an error if the unit is not supported</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Wind direction calculation is only implemented for &#39;degree&#39; output unit.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L4</span>
+<span class="k">def</span> <span class="nf">comp2speed</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates wind speed from rectangular components (u, v) or (u, v, w).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        u (float): Easting component of the wind.</span>
+<span class="sd">        v (float): Northing component of the wind.</span>
+<span class="sd">        w (float, optional): Vertical component of the wind. Defaults to None</span>
+<span class="sd">            (assuming a 2D wind field).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Wind speed magnitude.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check if vertical wind component is provided</span>
+    <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Calculate speed for a 2D wind field using Pythagorean theorem</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Calculate speed for a 3D wind field using Pythagorean theorem</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">w</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Return the calculated wind speed</span>
+    <span class="k">return</span> <span class="n">speed</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To start regridding you will need the high resolution wind files and the target simulation grid.
+At the moment of the writing of this file, the high resolution wind database was located on sxcen server at <code class="file docutils literal notranslate"><span class="pre">/mnt/lfs/d10/mrns/users/NO_SAVE/gouttevini/ARCHIVE_LeToumelin_NOSAVE/letoumelinl/Wind_250m/</span>
+<span class="pre">latest/Wind_2017_08_02_to_2020_05_31.nc</span></code>
+but it is best to ask Hugo or Isabelle for the file.</p>
+</div>
+<section id="the-regridding-unfolds-in-tree-steps">
+<h4>The regridding unfolds in tree steps :<a class="headerlink" href="#the-regridding-unfolds-in-tree-steps" title="Link to this heading">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Convert Louis’ wind speed and direction to rectangular components (u,v) (<em>wind2comp</em>)</p></li>
+<li><p>Regrid the rectangular components (u,v) to the desired grid (<em>rio.reproject_match</em>)</p></li>
+<li><p>Convert back the rectangular components to the wind speed and direction format (<em>comp2dir</em>, <em>comp2speed</em>)</p></li>
+</ol>
+<p>The following code result in two files <em>devine_speed_250m_rioxarray.nc</em> and <em>devine_direction_250m_rioxarray.nc</em> containing the resampled wind speed and direction.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can find bellow a code example to regrid Louis’ wind to the 250m grid used in my paper.
+Please note that the path need to be changed. The regridding uses <em>rioxarray</em> library to average wind to the simulation grid <strong>(bilinear method is not recommended for resampling to coarser grid)</strong>.
+In this example, files are saved at each steps, the amount of intermediate files can be reduced for same results.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rioxarray</span>
+<span class="c1"># Load Louis&#39; wind data from Netcdf storage (sdir)</span>
+<span class="n">spd</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_wind.nc/&#39;</span><span class="p">)</span>
+<span class="c1"># Assuming &#39;spd&#39; contains wind data with a variable named &#39;Wind&#39; and &#39;Wind_DIR&#39;</span>
+
+<span class="c1"># Convert wind speed and direction to rectangular components (u, v)</span>
+<span class="c1"># using wind2comp function, specifying wind direction is in degrees</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind2comp</span><span class="p">(</span><span class="n">spd</span><span class="o">.</span><span class="n">Wind</span><span class="p">,</span> <span class="n">sdp</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+
+<span class="c1"># Save the calculated easting (u) and northing (v) components to netcdf storage</span>
+<span class="n">u</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_u.nc&#39;</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_v.nc&#39;</span><span class="p">)</span>
+
+<span class="c1"># Import rioxarray library for geospatial data handling</span>
+<span class="kn">import</span> <span class="nn">rioxarray</span>
+
+<span class="c1"># Reload the u and v components from netcdf storage</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_u.nc/&#39;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_v.nc/&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load reference wind speed data from netcdf storage (assuming it has a &#39;Wind&#39; variable)</span>
+<span class="n">ref</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_speed_250m.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Wind</span>
+
+<span class="c1"># Set the Coordinate Reference System (CRS) information for the reference data (likely EPSG:2154)</span>
+<span class="n">ref</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
+
+<span class="c1"># Set the CRS information for the u and v components to match the reference data (2154)</span>
+<span class="n">u</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
+
+<span class="c1"># Reproject u and v components to match the reference data&#39;s CRS (2154)</span>
+<span class="c1"># using average interpolation (resampling=&quot;average&quot;) not bilinear</span>
+<span class="n">u_250</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
+
+<span class="c1"># Delete the original u data after creating the reprojected version</span>
+<span class="k">del</span> <span class="n">u</span>
+
+<span class="c1"># Save the reprojected easting component (u_250) to netcdf storage</span>
+<span class="n">u_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_u_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+
+<span class="c1"># Similar process for the northing component (v)</span>
+<span class="n">v_250</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">v</span>
+<span class="n">v_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_v_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+
+<span class="c1"># Reload the reprojected u and v components</span>
+<span class="n">v_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_v_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">u_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_u_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+
+<span class="c1"># Calculate wind direction from reprojected components using comp2dir function</span>
+<span class="c1"># specifying degrees as the output unit</span>
+<span class="n">dir_250_rioxarray</span> <span class="o">=</span> <span class="n">comp2dir</span><span class="p">(</span><span class="n">u_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">v_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+
+<span class="c1"># Save the calculated wind direction to nectdf storage</span>
+<span class="n">dir_250_rioxarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_direction_250m_rioxarray.nc/&#39;</span><span class="p">)</span>
+
+<span class="c1"># Calculate wind speed from reprojected components using comp2speed function</span>
+<span class="n">speed_250_rioxarray</span> <span class="o">=</span> <span class="n">comp2speed</span><span class="p">(</span><span class="n">u_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">v_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Save the calculated wind speed to nectdf storage</span>
+<span class="n">speed_250_rioxarray</span><span class="o">.</span><span class="n">to_necdf</span><span class="p">(</span><span class="s1">&#39;devine_speed_250m_rioxarray.nc/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="forcing-modification">
+<span id="fmod"></span><h3>3.2 Forcing modification<a class="headerlink" href="#forcing-modification" title="Link to this heading">¶</a></h3>
+<p>You can find bellow an example to replace Wind and Wind_DIR forcing fields in forcings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example, already resampled 250m Louis’ wind is added to 250m SAFRAN forcing.
+<em>Same method can be applied to different fields and resolution.</em>
+Please note that the path need to be changed.</p>
+</div>
+<p>Imports:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import libraries for working with xarray data (xr)</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="c1"># Import NumPy for numerical operations</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Import garbage collector (gc)</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>  <span class="c1"># Collect garbage before starting further processing</span>
+</pre></div>
+</div>
+<p>Downloading wind and SAFRAN Forcing Data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load wind speed data from netcdf storage with a variable renamed to &#39;Wind&#39;</span>
+<span class="n">windlouis_speed</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/devine_speed_250m_rioxarray.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;__xarray_dataarray_variable__&#39;</span><span class="p">:</span><span class="s1">&#39;Wind&#39;</span><span class="p">})</span>
+
+<span class="c1"># Load wind direction data from netcdf storage with a variable renamed to &#39;Wind_DIR&#39;</span>
+<span class="n">windlouis_direction</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/devine_direction_250m_rioxarray.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;__xarray_dataarray_variable__&#39;</span><span class="p">:</span><span class="s1">&#39;Wind_DIR&#39;</span><span class="p">})</span>
+
+<span class="c1"># Download SAFRAN forcing data for a specific time range (2017-08-01 to 2018-08-01)</span>
+<span class="n">louismixtapesafran17</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">&quot;/scratch/mtool/haddjeria/hendrix/gr250ls/rawsafran/meteo/FORCING_2017080106_2018080106.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Time Series Generation (aim is to check for missing time steps):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an array of timestamps from the starting time of SAFRAN data with hourly intervals until the end time + 1 hour</span>
+<span class="n">a</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">))</span>
+
+<span class="c1"># Print the length of the generated time series (should match the expected number of time steps)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="n">a</span>
+</pre></div>
+</div>
+<p>Selecting Wind Data for Matching Time Range (aim is to check for missing time steps):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Select wind direction data for the same time range as SAFRAN data</span>
+<span class="n">wind_dir</span> <span class="o">=</span> <span class="n">windlouis_direction</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+<span class="c1"># Select wind speed data for the same time range as SAFRAN data</span>
+<span class="n">wind_speed</span> <span class="o">=</span> <span class="n">windlouis_speed</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+<span class="c1"># Check if the lengths of time series in wind data and SAFRAN data match</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_dir</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">wind_speed</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+<span class="c1"># Find any differences (exclusive OR) between time steps in wind data and SAFRAN data (should ideally be empty)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">wind_dir</span><span class="o">.</span><span class="n">time</span><span class="p">,</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Adding Wind Data to SAFRAN Dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check the wind direction data (Wind_DIR)</span>
+<span class="n">wind_dir</span><span class="o">.</span><span class="n">Wind_DIR</span>  <span class="c1"># likely for verification purposes</span>
+
+<span class="c1"># Add wind direction data as a variable named &#39;Wind_DIR&#39; to the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_dir</span><span class="o">.</span><span class="n">Wind_DIR</span>
+
+<span class="c1"># Add wind speed data as a variable named &#39;Wind&#39; to the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;Wind&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_speed</span><span class="o">.</span><span class="n">Wind</span>
+
+<span class="c1"># Set reference height (UREF) in the SAFRAN dataset to a constant value of 10 meters (assuming Arome model reference height)</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;UREF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">UREF</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span>
+
+<span class="c1"># Add attributes to the &#39;Wind&#39; variable in the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign</span>
+</pre></div>
+</div>
+<p>Adding Attributes to Variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add attributes to the &#39;Wind&#39; variable in the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Wind Speed&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;m/s&#39;</span><span class="p">,</span>               <span class="c1"># Units of the data (meters per second)</span>
+   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">,</span> <span class="c1"># Standard name for wind speed data in climate and forecasting models</span>
+   <span class="s1">&#39;origin&#39;</span> <span class="p">:</span> <span class="s1">&#39;Arome Wind downscaled with DEVINE2 by Louis&#39;</span>  <span class="c1"># Source of the data</span>
+<span class="p">})</span>
+
+<span class="c1"># Similarly, add attributes to the &#39;Wind_DIR&#39; variable</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind_DIR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Wind Direction&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span>                 <span class="c1"># Units of the data (degrees)</span>
+   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;wind_from_direction&#39;</span><span class="p">,</span>  <span class="c1"># Standard name for wind direction data</span>
+   <span class="s1">&#39;origin&#39;</span> <span class="p">:</span> <span class="s1">&#39;Arome Wind downscaled with DEVINE2 by Louis&#39;</span>  <span class="c1"># Source of the data</span>
+<span class="p">})</span>
+
+<span class="c1"># Add attributes to the &#39;time&#39; variable</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span>  <span class="c1"># Standard name for time data in climate and forecasting models</span>
+<span class="p">})</span>
+
+<span class="c1"># Print the modified SAFRAN dataset for inspection (likely commented out for brevity)</span>
+<span class="n">louismixtapesafran17</span>
+</pre></div>
+</div>
+<p>Encoding and saving:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that the generation of the final forcing file to be read by SURFEX need precised characteristics. File need to be in NETCDF4_CLASSIC format, the time dimension need to be UNLIMITED and encoded in int32.
+If the file is large, it can be compressed to reduce transfert time (at cost of small read overtime)</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compression settings for the NetCDF file</span>
+<span class="c1"># Enable zlib compression with compression level 5 (higher level means better compression but slower processing)</span>
+<span class="n">comp</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">zlib</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">complevel</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Create a dictionary to define encoding for each variable in the dataset</span>
+<span class="c1"># Apply the compression settings (comp dictionary) to all data variables (data_vars)</span>
+<span class="n">encoding</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="n">comp</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">data_vars</span><span class="p">}</span>
+
+<span class="c1"># Update the encoding dictionary specifically for the &#39;time&#39; variable</span>
+<span class="c1"># Set the data type to &#39;int32&#39; (hardcoded in Fortran SURFEX)</span>
+<span class="n">encoding</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;int32&quot;</span><span class="p">}})</span>
+
+<span class="c1"># Print the resulting encoding dictionary (likely for verification purposes)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+<span class="c1"># Define the path to save the NetCDF file</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/scratch/mtool/haddjeria/tc/forcing/250m/Safran/&#39;</span>
+<span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;FORCING_2017080106_2018080106.nc&#39;</span>
+
+<span class="c1"># Combine path and filename to create the full temporary filename</span>
+<span class="n">tempfile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file</span>
+
+<span class="c1"># Save the modified SAFRAN dataset as a NetCDF file (format=&#39;NETCDF4_CLASSIC&#39;)</span>
+<span class="c1"># Specify unlimited dimension for &#39;time&#39; to allow for future growth</span>
+<span class="c1"># Use the defined encoding dictionary for compression and data type settings</span>
+<span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">tempfile</span><span class="p">,</span> <span class="n">unlimited_dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Cleaning:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># to relieve RAM</span>
+<span class="k">del</span> <span class="n">louismixtapesafran17</span>
+<span class="k">del</span> <span class="n">a</span>
+<span class="k">del</span> <span class="n">wind_speed</span>
+<span class="k">del</span> <span class="n">wind_dir</span>
+<span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span> <span class="c1"># Collect garbage</span>
+</pre></div>
+</div>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f0" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://doi.org/10.5194/gmd-17-1297-2024">https://doi.org/10.5194/gmd-17-1297-2024</a></p>
+</aside>
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://doi.org/10.5194/npg-31-75-2024">https://doi.org/10.5194/npg-31-75-2024</a></p>
+</aside>
+<aside class="footnote brackets" id="f2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://doi.org/10.1175/AIES-D-22-0034.1">https://doi.org/10.1175/AIES-D-22-0034.1</a></p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Blowing snow simulation preparation</a><ul>
+<li><a class="reference internal" href="#typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos">Typical workflow for a blowing snow experiment from scratch on Belenos :</a><ul>
+<li><a class="reference internal" href="#s2m-geometry-creation-from-scratch">1. S2M geometry creation from scratch:</a></li>
+<li><a class="reference internal" href="#spinup-creation-on-belenos">2. Spinup creation on BELENOS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#louis-devine-wind">Louis’ DEVINE wind</a><ul>
+<li><a class="reference internal" href="#louis-wind-resampling">3.1 Louis’ wind resampling</a><ul>
+<li><a class="reference internal" href="#the-regridding-unfolds-in-tree-steps">The regridding unfolds in tree steps :</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#forcing-modification">3.2 Forcing modification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="these_ange_index.html"
+                          title="previous chapter">Documentations from Ange’s PhD (Blowing snow)</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Pleiades.html"
+                          title="next chapter">Pleiades observation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/extra_documentation/these_ange/Forcing_modification.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Pleiades.html" title="Pleiades observation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="these_ange_index.html" >Documentations from Ange’s PhD (Blowing snow)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Blowing snow simulation preparation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

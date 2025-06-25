@@ -1,0 +1,44 @@
+Script ``scripts/extract/vortex/get_reanalysis.py`` help:
+
+
+.. code-block:: none
+
+   
+   usage: get_reanalysis.py [-h] [--geometry GEOMETRY] [-b BEGIN] [-e END]
+                            [--meteo] [--prep] [--pgd] [--nativemeteo] [--snow]
+                            [--xpid XPID] [--xpid_native XPID_NATIVE]
+                            [--duration {yearly,monthly,full}]
+   
+   Get Simulation files storend on Meteo-France archive (hendrix) through the
+   vortex toolbox. Up to now, it is able to deal with PRO, PREP (final and/or
+   yearly prep only, not daily prep), PGD and meteorological files. Do not forget
+   to first have set your communication creedentials with hendrix (.netrc) and
+   correctly installed wortex toolbox (including definition of MTOOLDIR if you
+   are not on MF supercomputers).
+   
+   options:
+     -h, --help            show this help message and exit
+     --geometry GEOMETRY   geometry
+     -b BEGIN, --begin BEGIN, --byear BEGIN
+                           Date of begining of extraction (year of full date).
+     -e END, --end END, --eyear END
+                           Date of end of extraction (year or full date).
+     --meteo               Extract meteorological forcing files
+     --prep                Extract last PREP file
+     --pgd                 Extract PGD file
+     --nativemeteo         Extract native meteorological forcing files
+     --snow                Extract snowpack model output files
+     --xpid XPID           Specific xpid (except for nativemeteo, see
+                           --xpdi_native instead). Do not provide anything here
+                           if you want the current reanalysis.
+     --xpid_native XPID_NATIVE
+                           Specific xpid used for nativemeteo.
+     --duration {yearly,monthly,full}
+                           Duration of files. Default is yearly files. Use
+                           'monthly' for monthly files and 'full' for one sigle
+                           file that covers the whole period between --begin and
+                           --end
+   
+
+
+

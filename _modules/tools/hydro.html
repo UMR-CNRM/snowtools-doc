@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.hydro &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.hydro</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tools.hydro</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">snowtools contains hydrological routines designed to agregate S2M outputs into hydrological basins.</span>
+
+<span class="sd">Starting from a shapefile of hydrological basins and a digital elevation model including massif numbers, two</span>
+<span class="sd">preliminary steps are necessary:</span>
+
+<span class="sd">1. Rasterize the shapefile of basin on the same grid as the DEM using the following:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from snowtools.tools.hydro import rasterized_shapefile</span>
+<span class="sd">    from snowtools.DATA import TESTBASE_DIR</span>
+<span class="sd">    import os</span>
+
+<span class="sd">    dem = os.path.join(TESTBASE_DIR, &#39;hydro&#39;, &#39;/home/lafaysse/hydroMF/DEM_FRANCE_L93_250m_bilinear.nc&#39;)</span>
+<span class="sd">    shapefilebasin = os.path.join(TESTBASE_DIR, &#39;hydro&#39;, &#39;BVTopo_Topage2024_inmassifs.shp&#39;)</span>
+
+<span class="sd">    # Rasterize shapefilebasin on the same grid as dem using the value of the &#39;gid&#39; attribute in the shapefile</span>
+<span class="sd">    # Note that the attribute should be an integer in the shapefile.</span>
+<span class="sd">    # If not please use QGIS to previously add an integer id attribute in your basins shapefile.</span>
+
+<span class="sd">    rasterized_shapefile(shapefilebasin, &#39;gid&#39;, dem, output=&#39;raster_basins.nc&#39;)</span>
+
+<span class="sd">2. Compute the areas of S2M simulation units inside each basin using the following example where rasterbasin can be</span>
+<span class="sd">replaced by the file obtained at the previous step:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from snowtools.tools.hydro import basin_areas_file</span>
+<span class="sd">    from snowtools.DATA import TESTBASE_DIR</span>
+<span class="sd">    import os</span>
+
+<span class="sd">    dem = os.path.join(TESTBASE_DIR, &#39;hydro&#39;, &#39;/home/lafaysse/hydroMF/DEM_FRANCE_L93_250m_bilinear.nc&#39;)</span>
+<span class="sd">    rasterbasin = os.path.join(TESTBASE_DIR, &#39;hydro&#39;, &#39;BNBV_SCHAPI_FRANCE250m.nc&#39;)</span>
+<span class="sd">    listpro = [os.path.join(TESTBASE_DIR, &quot;PRO&quot;, &quot;pro_testhydro_alp_oper_2025031906_2025032306.nc&quot;)]</span>
+<span class="sd">    outputdir = &#39;.&#39;</span>
+
+<span class="sd">    # Compute the areas of basins in rasterbasin corresponding to the geometry of the pro file</span>
+<span class="sd">    # and store them in outputdir</span>
+<span class="sd">    b = basin_areas_file(dem, rasterbasin, listpro, outputdir)</span>
+
+<span class="sd">Once this areas file is available, the computation of hydrological diagnostics can be done using the following example</span>
+<span class="sd">where a list of variables are agregated and saved in the HYDRO.nc file</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">        from snowtools.tools.hydro import hydro</span>
+<span class="sd">        from snowtools.DATA import TESTBASE_DIR</span>
+<span class="sd">        import os</span>
+<span class="sd">        forcing = os.path.join(TESTBASE_DIR, &quot;FORCING&quot;, &quot;forcing_testhydro_alp_oper_2025031806_2025032306.nc&quot;)</span>
+<span class="sd">        pro = os.path.join(TESTBASE_DIR, &quot;PRO&quot;, &quot;pro_testhydro_alp_oper_2025031906_2025032306.nc&quot;)</span>
+<span class="sd">        areas = os.path.join(TESTBASE_DIR, &quot;hydro&quot;, &quot;areas_alp27_allslopes.nc&quot;)</span>
+<span class="sd">        with hydro([forcing, pro], areas, &#39;HYDRO.nc&#39;) as h:</span>
+<span class="sd">            h.integration([&#39;Tair&#39;, &#39;Rainf&#39;, &#39;Snowf&#39;, &#39;SNOMLT_ISBA&#39;, &#39;WSN_T_ISBA&#39;, &#39;DSN_T_ISBA&#39;], var_sca=&#39;WSN_T_ISBA&#39;)</span>
+
+<span class="sd">@author: Matthieu Lafaysse, March 2025</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.S2M_standard_file</span> <span class="kn">import</span> <span class="n">StandardHYDRO</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TimeListException</span><span class="p">,</span> <span class="n">VarNameException</span><span class="p">,</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">FileExistsException</span><span class="p">,</span>
+                                           <span class="n">FileExtensionException</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span> <span class="nn">snowtools.tools.execute</span> <span class="kn">import</span> <span class="n">printandcallSystemOrDie</span>
+
+
+<div class="viewcode-block" id="hydro">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro">[docs]</a>
+<span class="k">class</span> <span class="nc">hydro</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is an object designed to produce hydrological diagnostics of snow simulations.</span>
+<span class="sd">    It includes the diagnostic file and the methods to read the associated metadata.</span>
+
+<span class="sd">    :param profilename: FORCING or PRO file or list of addresses for FORCING + PRO</span>
+<span class="sd">    :type profilename: str or list of str</span>
+<span class="sd">    :param areasfile: Address of the file describing the areas of PRO units for different catchments</span>
+<span class="sd">    :type areasfile: str</span>
+<span class="sd">    :param hydrofile: Address of the outputfile</span>
+<span class="sd">    :type hydrofile: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profilename</span><span class="p">,</span> <span class="n">areasfile</span><span class="p">,</span> <span class="n">hydrofile</span><span class="p">):</span>
+
+        <span class="c1"># Convert profilename arg to list</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">profilename</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">profilename</span> <span class="o">=</span> <span class="p">[</span><span class="n">profilename</span><span class="p">]</span>
+
+        <span class="c1"># Check number of points between pro and areas file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkpoints</span><span class="p">(</span><span class="n">profilename</span><span class="p">,</span> <span class="n">areasfile</span><span class="p">)</span>
+
+        <span class="c1"># Open all PRO files, read and store metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">onepro</span> <span class="ow">in</span> <span class="n">profilename</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metaprosimu</span><span class="p">(</span><span class="n">onepro</span><span class="p">))</span>
+
+        <span class="c1"># Here, should check that all pro files share the same temporal axis or crash otherwise</span>
+        <span class="c1"># To be implemented</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeunits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">checktime</span><span class="p">(</span><span class="n">profilename</span><span class="p">)</span>
+
+        <span class="c1"># Read basins description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_basins</span><span class="p">(</span><span class="n">areasfile</span><span class="p">)</span>
+
+        <span class="c1"># Open output file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createhydrofile</span><span class="p">(</span><span class="n">hydrofile</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="hydro.close">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write global attributes and close the PRO and diagnostic files associated with this class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">onepro</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">:</span>
+            <span class="n">onepro</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="hydro.checktime">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.checktime">[docs]</a>
+    <span class="k">def</span> <span class="nf">checktime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profilename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if time vectors are compatible between the different input files and return time to copy in output file</span>
+
+<span class="sd">        :param profilename: list of pro file names (for error message)</span>
+<span class="sd">        :type profilename: str</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">arrayntime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">metapro</span><span class="o">.</span><span class="n">ntime</span> <span class="k">for</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">])</span>
+        <span class="n">uniquentime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">arrayntime</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uniquentime</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">:</span>
+                <span class="n">metapro</span><span class="o">.</span><span class="n">removefirsttime</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">readtime_for_copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">uniquentime</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">uniquentime</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">uniquentime</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Case with PRO and FORCING files with same time step but with initial value in FORCING file that must</span>
+                <span class="c1"># be removed</span>
+                <span class="n">ntime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">uniquentime</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">:</span>
+                    <span class="n">metapro</span><span class="o">.</span><span class="n">removefirsttime</span> <span class="o">=</span> <span class="n">metapro</span><span class="o">.</span><span class="n">ntime</span> <span class="o">&gt;</span> <span class="n">ntime</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">arrayntime</span><span class="p">)]</span><span class="o">.</span><span class="n">readtime_for_copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ntime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">uniquentime</span><span class="p">)</span>
+                <span class="n">timeshort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">arrayntime</span><span class="p">)]</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+                <span class="n">timelong</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">arrayntime</span><span class="p">)]</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+
+                <span class="c1"># Check if all dates of timeshort (e.g pro file) are included in timelong (e.g. forcing file)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">timeshort</span><span class="p">,</span> <span class="n">timelong</span><span class="p">)):</span>
+                    <span class="n">timestepshort</span> <span class="o">=</span> <span class="n">timeshort</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">timeshort</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">timesteplong</span> <span class="o">=</span> <span class="n">timelong</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">timelong</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">:</span>
+                        <span class="n">metapro</span><span class="o">.</span><span class="n">removefirsttime</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">if</span> <span class="n">metapro</span><span class="o">.</span><span class="n">ntime</span> <span class="o">&gt;</span> <span class="n">ntime</span><span class="p">:</span>
+                            <span class="n">metapro</span><span class="o">.</span><span class="n">ntimestep_integration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">timestepshort</span> <span class="o">/</span> <span class="n">timesteplong</span><span class="p">)</span>
+                            <span class="n">metapro</span><span class="o">.</span><span class="n">firsttimestep_integration</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">timelong</span> <span class="o">==</span> <span class="n">timeshort</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                                                                 <span class="o">-</span> <span class="n">metapro</span><span class="o">.</span><span class="n">ntimestep_integration</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">metapro</span><span class="o">.</span><span class="n">ntimestep_integration</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="n">metapro</span><span class="o">.</span><span class="n">firsttimestep_integration</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">arrayntime</span><span class="p">)]</span><span class="o">.</span><span class="n">readtime_for_copy</span><span class="p">()</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">TimeListException</span><span class="p">(</span><span class="n">profilename</span><span class="p">,</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">ntime</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TimeListException</span><span class="p">(</span><span class="n">profilename</span><span class="p">,</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">ntime</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="hydro.checkpoints">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.checkpoints">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">checkpoints</span><span class="p">(</span><span class="n">listprofilename</span><span class="p">,</span> <span class="n">areasfile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method raise an exception in case of inconsistent number of points between pro file and areas file</span>
+
+<span class="sd">        :param listprofilename: list of pro file name</span>
+<span class="sd">        :type listprofilename: list of str</span>
+<span class="sd">        :param areasfile: areas file name</span>
+<span class="sd">        :type areasfile: str</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">areasfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="n">npoints_area</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pro</span> <span class="ow">in</span> <span class="n">listprofilename</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">pro</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+                <span class="n">npoints_pro</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">npoints_pro</span> <span class="o">!=</span> <span class="n">npoints_area</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Inconsistent number of points between files&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hydro.get_basins">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.get_basins">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_basins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">areasfile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method reads the areas file describing the basins</span>
+
+<span class="sd">        :param areasfile: Path of the shapefile</span>
+<span class="sd">        :type areasfile: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">areasfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;areas&#39;</span><span class="p">)</span>
+            <span class="n">listvar</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basin_descriptors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attr_descriptors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">listvar</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;basin&#39;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">getdimvar</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">getrankvar</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">basin_descriptors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attr_descriptors</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">attrname</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">listattr</span><span class="p">(</span><span class="n">varname</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">attr_descriptors</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="n">attrname</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">attrname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hydro.createhydrofile">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.createhydrofile">[docs]</a>
+    <span class="k">def</span> <span class="nf">createhydrofile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hydrofilename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a catchment scale diagnostic file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span> <span class="o">=</span> <span class="n">StandardHYDRO</span><span class="p">(</span><span class="n">hydrofilename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4&#39;</span><span class="p">)</span>
+        <span class="c1"># Create time dimension and coordinate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,))</span>
+        <span class="n">timeout</span><span class="p">[:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[:]</span>
+        <span class="n">timeout</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeunits</span>
+
+        <span class="c1"># Create basin dimension and descriptors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basin_descriptors</span><span class="p">:</span>
+            <span class="n">basinid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">,))</span>
+            <span class="n">basinid</span><span class="p">[:]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">)[:]</span>
+
+            <span class="k">for</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attr_descriptors</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">basinid</span><span class="p">,</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hydro.integration">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.integration">[docs]</a>
+    <span class="k">def</span> <span class="nf">integration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listvarname</span><span class="p">,</span> <span class="n">agg_method</span> <span class="o">=</span> <span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="n">var_sca</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loop over a list of output variables to compute and write spatially aggregated diagnostics</span>
+
+<span class="sd">        :param listvarname: List of variables required in output</span>
+<span class="sd">        :type listvarname: list</span>
+<span class="sd">        :param agg_method: Method used for spatial aggregation: average (default), cumul</span>
+<span class="sd">        :type agg_method: str</span>
+<span class="sd">        :param var_sca: Variable to compute snow cover area (e.g. DSN_T_ISBA, WSN_T_ISBA)</span>
+<span class="sd">        :type var_sca: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check availability of aggregation method</span>
+        <span class="n">_dict_methods</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">average</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">average</span><span class="p">,</span> <span class="n">cumul</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cumul</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">agg_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_dict_methods</span><span class="p">:</span>
+            <span class="n">msg_error</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Incorrect method &#39;</span> <span class="o">+</span> <span class="n">aggregation_method</span> <span class="o">+</span>
+                         <span class="s1">&#39; should be chosen between:&#39;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_dict_methods</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_error</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">integre</span> <span class="o">=</span> <span class="n">_dict_methods</span><span class="p">[</span><span class="n">agg_method</span><span class="p">]</span>
+
+        <span class="c1"># Loop over all output variables</span>
+        <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">listvarname</span><span class="p">:</span>
+            <span class="n">varfound</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">varintegr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ntime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">var_sca</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="n">var_sca</span><span class="p">:</span>
+                    <span class="n">sca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ntime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span><span class="p">))</span>
+
+            <span class="c1"># Look for a file containing this variable to initialize fillvalue</span>
+            <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">metapro</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+                    <span class="n">fillvalue</span> <span class="o">=</span> <span class="n">metapro</span><span class="o">.</span><span class="n">getfillvalue</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+                    <span class="n">varfound</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+            <span class="c1"># Exit if variable not available in any file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">varfound</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">varname</span> <span class="o">+</span> <span class="s2">&quot; is not available in output files&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Initialize</span>
+            <span class="n">varintegr</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">fillvalue</span>
+
+            <span class="c1"># Loop over available FORCING or PRO files</span>
+            <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">):</span>
+                <span class="c1"># Read only once each variable</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">metapro</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Aggregate variable &#39;</span> <span class="o">+</span> <span class="n">varname</span> <span class="o">+</span> <span class="s2">&quot; in &quot;</span> <span class="o">+</span> <span class="n">metapro</span><span class="o">.</span><span class="n">filepath</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="n">metapro</span><span class="o">.</span><span class="n">removefirsttime</span><span class="p">:</span>
+                        <span class="n">varin</span> <span class="o">=</span> <span class="n">metapro</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)[</span><span class="mi">1</span><span class="p">:,</span> <span class="o">...</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">varin</span> <span class="o">=</span> <span class="n">metapro</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metapro</span><span class="p">,</span> <span class="s1">&#39;ntimestep_integration&#39;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">metapro</span><span class="o">.</span><span class="n">ntimestep_integration</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">varin</span> <span class="o">=</span> <span class="n">metapro</span><span class="o">.</span><span class="n">moytempo</span><span class="p">(</span><span class="n">varin</span><span class="p">,</span> <span class="n">metapro</span><span class="o">.</span><span class="n">ntimestep_integration</span><span class="p">,</span>
+                                                     <span class="n">metapro</span><span class="o">.</span><span class="n">firsttimestep_integration</span><span class="p">)</span>
+
+                    <span class="n">basinvalue</span> <span class="o">=</span> <span class="n">integre</span><span class="p">(</span><span class="n">varin</span><span class="p">)</span>
+                    <span class="c1"># Replace nan values by fillvalue</span>
+                    <span class="n">varintegr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">basinvalue</span><span class="p">),</span> <span class="n">fillvalue</span><span class="p">,</span> <span class="n">basinvalue</span><span class="p">)</span>
+
+                    <span class="c1"># Compute snow covered area</span>
+                    <span class="k">if</span> <span class="n">var_sca</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="n">var_sca</span><span class="p">:</span>
+                            <span class="n">sca</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">varin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Create variable in output file, write values and copy attributes from input file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;basin&#39;</span><span class="p">),</span>
+                                          <span class="n">fill_value</span><span class="o">=</span><span class="n">fillvalue</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">varintegr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copyvarattrs</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+            <span class="c1"># Create and write SCA variable</span>
+            <span class="k">if</span> <span class="n">var_sca</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="o">==</span> <span class="n">var_sca</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;SCA&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;basin&#39;</span><span class="p">),</span>
+                                                  <span class="n">fill_value</span><span class="o">=</span><span class="n">fillvalue</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;SCA&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">sca</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;SCA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Snow Covered Area&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;SCA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;0-1&#39;</span></div>
+
+
+<div class="viewcode-block" id="hydro.cumul">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.cumul">[docs]</a>
+    <span class="k">def</span> <span class="nf">cumul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varin</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method cumulates the diagnostic varname in pro file across the catchment</span>
+
+<span class="sd">        :param varin: Variable to cumulate spatially (time, Number_of_points)</span>
+<span class="sd">        :type varin: 2d array of any type with dimensions (time, Number_of_points) as read from a PRO file</span>
+<span class="sd">        :return: array of same type as varin with dimension (time, basin)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># varin (time, Number_of_points), self.areas (Number_of_points, basin)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">varin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hydro.average">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.average">[docs]</a>
+    <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varin</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method averages the diagnostic varname in pro file across the catchment</span>
+
+<span class="sd">        :param varin: Variable to average spatially (time, Number_of_points)</span>
+<span class="sd">        :type varin: 2d array of any type with dimensions (time, Number_of_points) as read from a PRO file</span>
+<span class="sd">        :return: array of same type as varin with dimension (time, basin)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># cumul (time, basin) self.total_area (basin)</span>
+        <span class="c1"># Divide each value along the last axis</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cumul</span><span class="p">(</span><span class="n">varin</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_area</span></div>
+
+
+<div class="viewcode-block" id="hydro.sca">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.sca">[docs]</a>
+    <span class="k">def</span> <span class="nf">sca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varin</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This methods return the surface of the catchment for which varin &gt; threshold</span>
+
+<span class="sd">        :param varin: Variable for which a surface of exceedance should be computed (snow depth, snow water equivalent)</span>
+<span class="sd">        :type varin: array of any type with time as first dimension as read from a PRO file</span>
+<span class="sd">        :param threshold: Threhold</span>
+<span class="sd">        :type threshold: int or float</span>
+<span class="sd">        :return: array of same type as varin with time dimension length</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">((</span><span class="n">varin</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_area</span></div>
+
+
+<div class="viewcode-block" id="hydro.copyvarattrs">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.hydro.copyvarattrs">[docs]</a>
+    <span class="k">def</span> <span class="nf">copyvarattrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy attributes from a variable in input file to a variable in output file</span>
+
+<span class="sd">        :param varname: variable name in input and output files</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Look for a file containing this variable to get attributes</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metaprolist</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">metapro</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">attrname</span> <span class="ow">in</span> <span class="n">metapro</span><span class="o">.</span><span class="n">listattr</span><span class="p">(</span><span class="n">varname</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">attrname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;_FillValue&quot;</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hydrofile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">attrname</span><span class="p">,</span> <span class="n">metapro</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">attrname</span><span class="p">))</span>
+                <span class="k">break</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="basin_areas_file">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file">[docs]</a>
+<span class="k">class</span> <span class="nc">basin_areas_file</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to provide a file describing the areas of S2M units for hydrological basins</span>
+<span class="sd">    :param demfilename: Digital elevation model including elevation, aspect, slope and massifs</span>
+<span class="sd">    :type demfilename: str</span>
+<span class="sd">    :param basinraster: Rasterized file of hydrological basins on the same grid as the dem file</span>
+<span class="sd">    :type basinraster: str</span>
+<span class="sd">    :param listprofilename: List of reference PRO files describing S2M geometry</span>
+<span class="sd">    :type listprofilename: list of str</span>
+<span class="sd">    :param outputdir: Directory where save output files are saved</span>
+<span class="sd">    :type outputdir: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demfilename</span><span class="p">,</span> <span class="n">basinraster</span><span class="p">,</span> <span class="n">listprofilename</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">):</span>
+        <span class="c1"># 1. Read topography and massifs in DEM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_dem</span><span class="p">(</span><span class="n">demfilename</span><span class="p">)</span>
+        <span class="c1"># 2. Read basin raster file on the same grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_rasterbasin</span><span class="p">(</span><span class="n">basinraster</span><span class="p">)</span>
+        <span class="c1"># 3. Check consistency of the grids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_coordinates</span><span class="p">()</span>
+        <span class="c1"># 4. Get list of basins id</span>
+        <span class="n">basins_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_basins</span><span class="p">()</span>
+        <span class="c1"># 5. Read available S2M units</span>
+        <span class="n">listmetapro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_s2m_units</span><span class="p">(</span><span class="n">listprofilename</span><span class="p">)</span>
+        <span class="c1"># 6. Compute areas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_areas</span><span class="p">(</span><span class="n">basins_list</span><span class="p">,</span> <span class="n">listmetapro</span><span class="p">)</span>
+        <span class="c1"># 7. Write areas in a file with the same geometry as profilename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_areas</span><span class="p">(</span><span class="n">listmetapro</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">)</span>
+
+<div class="viewcode-block" id="basin_areas_file.read_dem">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.read_dem">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_dem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demfilename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method reads the dem file</span>
+
+<span class="sd">        :param demfilename: Digital elevation model file</span>
+<span class="sd">        :type demfilename: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Read grid file, massif and topography</span>
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">demfilename</span><span class="p">)</span> <span class="k">as</span> <span class="n">dem</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">massif_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;massif_number&#39;</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># missing integers can not be np.nan</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zs_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;ZS&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aspect_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;aspect&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slope_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;slope&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_dem</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.read_rasterbasin">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.read_rasterbasin">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_rasterbasin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basinraster</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method reads the raster file of basins</span>
+
+<span class="sd">        :param basinraster: Raster file of basins in the same grid as the dem</span>
+<span class="sd">        :type basinraster: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">basinraster</span><span class="p">)</span> <span class="k">as</span> <span class="n">br</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basins_br</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># missing integers can not be np.nan</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_br</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_br</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.check_coordinates">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.check_coordinates">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method checks if grids are identical between dem and raster of basins</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_dem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_br</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_br</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.get_list_basins">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.get_list_basins">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_list_basins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of unique available basin identifiers&quot;&quot;&quot;</span>
+        <span class="c1"># 0 is used to identify missing values</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basins_br</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.read_s2m_units">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.read_s2m_units">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_s2m_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listprofilename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method reads available S2M spatial units</span>
+
+<span class="sd">        :param listprofilename: List of PRO reference files to describe S2M geometry</span>
+<span class="sd">        :type listprofilename: list of str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">listprofilename</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">listprofilename</span><span class="p">:</span>
+                <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_s2m_units</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">l</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">metaprosimu</span><span class="p">(</span><span class="n">listprofilename</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.compute_areas">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.compute_areas">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basins_list</span><span class="p">,</span> <span class="n">metaprolist</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method computes the areas of S2M units for each basin of the list.</span>
+
+<span class="sd">        :param basins_list: List of basin identifiers</span>
+<span class="sd">        :type basins_list: list of int</span>
+<span class="sd">        :param metaprolist: List of PRO reference files for S2M units</span>
+<span class="sd">        :type metaprolist: list of str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Apply a threshold on maximum slope to include all pixels even if &gt; 50°</span>
+        <span class="n">slopemax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">slope</span><span class="p">)</span>
+        <span class="n">slope_dem_threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slope_dem</span> <span class="o">&gt;</span> <span class="n">slopemax</span><span class="p">,</span> <span class="n">slopemax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slope_dem</span><span class="p">)</span>
+
+        <span class="c1"># Compute area of a DEM pixel</span>
+        <span class="n">area_pixel_dem</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_dem</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_dem</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dem</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_dem</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Definition</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="s1">&#39;basin&#39;</span><span class="p">,</span> <span class="s1">&#39;areas&#39;</span><span class="p">,</span> <span class="s1">&#39;total_area&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;min_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;max_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;nbasins&#39;</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="n">indexbasin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexmetapro</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmetapro</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">)</span>
+        <span class="n">nmaxbasins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">basins_list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">):</span>
+            <span class="n">indexbasin</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">metapro</span><span class="o">.</span><span class="n">nbpoints</span><span class="p">,</span> <span class="n">nmaxbasins</span><span class="p">),</span> <span class="s1">&#39;float&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basin</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmaxbasins</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_area</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmaxbasins</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mean_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmaxbasins</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmaxbasins</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nmaxbasins</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">basin</span> <span class="ow">in</span> <span class="n">basins_list</span><span class="p">:</span>
+
+            <span class="c1"># Extract dem for this basin to reduce computing time</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Basin &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">basin</span><span class="p">))</span>
+            <span class="n">isinsidebasin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basins_br</span> <span class="o">==</span> <span class="n">basin</span>
+            <span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span><span class="p">,</span> <span class="n">cmin</span><span class="p">,</span> <span class="n">cmax</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">(</span><span class="n">isinsidebasin</span><span class="p">)</span>
+
+            <span class="n">zs_dem_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs_dem</span><span class="p">[</span><span class="n">rmin</span><span class="p">:</span><span class="n">rmax</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmin</span><span class="p">:</span><span class="n">cmax</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">aspect_dem_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect_dem</span><span class="p">[</span><span class="n">rmin</span><span class="p">:</span><span class="n">rmax</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmin</span><span class="p">:</span><span class="n">cmax</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">slope_dem_basin</span> <span class="o">=</span> <span class="n">slope_dem_threshold</span><span class="p">[</span><span class="n">rmin</span><span class="p">:</span><span class="n">rmax</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmin</span><span class="p">:</span><span class="n">cmax</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">massif_dem_basin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_dem</span><span class="p">[</span><span class="n">rmin</span><span class="p">:</span><span class="n">rmax</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmin</span><span class="p">:</span><span class="n">cmax</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">isinsidebasin_zoom</span> <span class="o">=</span> <span class="n">isinsidebasin</span><span class="p">[</span><span class="n">rmin</span><span class="p">:</span><span class="n">rmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cmin</span><span class="p">:</span><span class="n">cmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">)</span>
+
+            <span class="c1"># List of massifs belonging to this basin</span>
+            <span class="n">massifs_basin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">massif_dem_basin</span><span class="p">[</span><span class="n">isinsidebasin_zoom</span><span class="p">]),</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Case for which the basin shape does not include any defined massif</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">massifs_basin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Identify metapro covering this basin</span>
+            <span class="n">availmassifs</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">massifs_basin</span><span class="p">,</span> <span class="n">metapro</span><span class="o">.</span><span class="n">avail_massifs</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">indexmetapro</span><span class="p">[</span><span class="n">basin</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span>
+                    <span class="n">indexbasin</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">availmassifs</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">availmassifs</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING : missing metapro for basin &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">basin</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Massifs :&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">massifs_basin</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="n">area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indexmetapro</span><span class="p">[</span><span class="n">basin</span><span class="p">]]</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span>
+
+            <span class="c1"># Loop over S2M points and count the number of points associated with the topographic class</span>
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">metapro</span><span class="o">.</span><span class="n">nbpoints</span><span class="p">):</span>
+                <span class="c1"># print (&#39;Point &#39; + str(point) + &#39;/&#39; + str(metapro.nbpoints))</span>
+                <span class="n">issamemassif</span> <span class="o">=</span> <span class="n">massif_dem_basin</span> <span class="o">==</span> <span class="n">metapro</span><span class="o">.</span><span class="n">massif</span><span class="p">[</span><span class="n">point</span><span class="p">]</span>
+                <span class="n">issameelevation</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">zs_dem_basin</span> <span class="o">-</span> <span class="n">metapro</span><span class="o">.</span><span class="n">zs</span><span class="p">[</span><span class="n">point</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">metapro</span><span class="o">.</span><span class="n">resol_zs</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">issameaspect</span> <span class="o">=</span> <span class="p">(</span><span class="n">diff_aspect</span><span class="p">(</span><span class="n">aspect_dem_basin</span><span class="p">,</span> <span class="n">metapro</span><span class="o">.</span><span class="n">aspect</span><span class="p">[</span><span class="n">point</span><span class="p">])</span>
+                                <span class="o">&lt;</span> <span class="n">metapro</span><span class="o">.</span><span class="n">resol_aspect</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">metapro</span><span class="o">.</span><span class="n">slope</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">&lt;</span>
+                                                               <span class="n">metapro</span><span class="o">.</span><span class="n">resol_slope</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">issameslope</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">slope_dem_basin</span> <span class="o">-</span> <span class="n">metapro</span><span class="o">.</span><span class="n">slope</span><span class="p">[</span><span class="n">point</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">metapro</span><span class="o">.</span><span class="n">resol_slope</span> <span class="o">/</span> <span class="mi">2</span>
+
+                <span class="n">issameunit</span> <span class="o">=</span> <span class="n">isinsidebasin_zoom</span> <span class="o">&amp;</span> <span class="n">issamemassif</span> <span class="o">&amp;</span> <span class="n">issameelevation</span> <span class="o">&amp;</span> <span class="n">issameaspect</span> <span class="o">&amp;</span> <span class="n">issameslope</span>
+
+                <span class="n">count</span><span class="p">[</span><span class="n">issameunit</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">area</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">issameunit</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_pixel_dem</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">massif_dem_basin</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">aspect_dem_basin</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">aspect_dem_basin</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">slope_dem_basin</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">slope_dem_basin</span><span class="p">))</span>
+
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;A zero area is obtained for this basin, this should not happen.&quot;</span><span class="p">)</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexmetapro</span><span class="p">[</span><span class="n">basin</span><span class="p">]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">indexbasin</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="n">m</span><span class="p">][:,</span> <span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">area</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basin</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">basin</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_area</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mean_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">[</span><span class="n">isinsidebasin_zoom</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">[</span><span class="n">isinsidebasin_zoom</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">zs_dem_basin</span><span class="p">[</span><span class="n">isinsidebasin_zoom</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmetapro</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">indexbasin</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="basin_areas_file.write_areas">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.basin_areas_file.write_areas">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metaprolist</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method writes the computed areas in as many output files as available PRO reference files</span>
+
+<span class="sd">        :param metaprolist: List of PRO reference files for S2M units</span>
+<span class="sd">        :type metaprolist: list of str</span>
+<span class="sd">        :param outputdir: Directory where save output files are saved</span>
+<span class="sd">        :type outputdir: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">metapro</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metaprolist</span><span class="p">):</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">operregionofmassifs</span><span class="p">[</span><span class="n">metapro</span><span class="o">.</span><span class="n">massif</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">auxfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputdir</span><span class="p">,</span> <span class="s1">&#39;areas_&#39;</span> <span class="o">+</span> <span class="n">region</span> <span class="o">+</span> <span class="s1">&#39;.nc&#39;</span><span class="p">)</span>
+            <span class="n">metapro</span><span class="o">.</span><span class="n">create_auxiliary_file</span><span class="p">(</span><span class="n">auxfile</span><span class="p">)</span>
+            <span class="n">nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbasins</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+            <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">auxfile</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">surffile</span><span class="p">:</span>
+                <span class="c1"># Create basin dimension</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;basin&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="s1">&#39;basin&#39;</span><span class="p">)</span>
+                <span class="c1"># Create output variables</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;areas&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">,</span> <span class="s1">&#39;basin&#39;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="s1">&#39;total_area&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;min_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;max_elevation&#39;</span><span class="p">:</span>
+                    <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="s1">&#39;basin&#39;</span><span class="p">)</span>
+
+                <span class="c1"># Define variables attributes</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;areas&#39;</span><span class="p">],</span> <span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Area of the topographic class in the basin&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;total_area&#39;</span><span class="p">],</span> <span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Total area of the basin&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;mean_elevation&#39;</span><span class="p">],</span> <span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Mean elevation of the basin &#39;</span>
+                                                                                   <span class="s1">&#39;from the provided DEM&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;min_elevation&#39;</span><span class="p">],</span> <span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Minimum elevation of the basin &#39;</span>
+                                                                                  <span class="s1">&#39;from the provided DEM&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;max_elevation&#39;</span><span class="p">],</span>  <span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Maximum elevation of the basin &#39;</span>
+                                                                                   <span class="s1">&#39;from the provided DEM&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="s1">&#39;areas&#39;</span><span class="p">,</span> <span class="s1">&#39;total_area&#39;</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;m2&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="s1">&#39;mean_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;min_elevation&#39;</span><span class="p">,</span> <span class="s1">&#39;max_elevation&#39;</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span>
+
+                <span class="c1"># Fill variables values</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;basin&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basin</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;areas&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">[</span><span class="n">m</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;total_area&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_area</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;mean_elevation&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;min_elevation&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span>
+                <span class="n">surffile</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;max_elevation&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_elevation</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">nb</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="rasterized_shapefile">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.rasterized_shapefile">[docs]</a>
+<span class="k">def</span> <span class="nf">rasterized_shapefile</span><span class="p">(</span><span class="n">shapefilepath</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">refraster</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rasterize the attribute value of the shapefile shapefilepath on the same grid as the refraster file</span>
+<span class="sd">    Dependencies on gdal and nco for this function</span>
+
+<span class="sd">    :param shapefilepath: path of the shapefile to rasterize (allowed format: shp)</span>
+<span class="sd">    :type shapefilepath: str</span>
+<span class="sd">    :param attribute: name of the attribute of polygons for which the value will be rasterized</span>
+<span class="sd">    :type attribute: str</span>
+<span class="sd">    :param refraster: reference file describing the grid  (allowed format: tif)</span>
+<span class="sd">    :type refraster: str</span>
+<span class="sd">    :param output: output file address (optional, if not available just change the extension of shapefilepath)</span>
+<span class="sd">    :type output: str</span>
+<span class="sd">    :return: True if all commands succeed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check availability of input files</span>
+    <span class="k">for</span> <span class="n">ficin</span> <span class="ow">in</span> <span class="n">shapefilepath</span><span class="p">,</span> <span class="n">refraster</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ficin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">ficin</span><span class="p">)</span>
+
+    <span class="c1"># Get extension of reference raster and root name of shapefile</span>
+    <span class="n">rasterfileName</span><span class="p">,</span> <span class="n">rasterfileExtension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">refraster</span><span class="p">)</span>
+    <span class="n">shapefileName</span><span class="p">,</span> <span class="n">shapefileExtension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">shapefilepath</span><span class="p">)</span>
+
+    <span class="c1"># Check extensions:</span>
+    <span class="k">if</span> <span class="n">rasterfileExtension</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;.nc&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">FileExtensionException</span><span class="p">(</span><span class="n">refraster</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shapefileExtension</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.shp&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">FileExtensionException</span><span class="p">(</span><span class="n">shapefilepath</span><span class="p">)</span>
+
+    <span class="c1"># NetCDF case: check if a ZS variable is available</span>
+    <span class="k">if</span> <span class="n">rasterfileExtension</span> <span class="o">==</span> <span class="s1">&#39;.nc&#39;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">refraster</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;ZS&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="n">refraster</span><span class="p">)</span>
+            <span class="n">varnamefromgdal</span> <span class="o">=</span> <span class="s1">&#39;ZS&#39;</span>
+    <span class="k">elif</span> <span class="n">rasterfileExtension</span> <span class="o">==</span> <span class="s1">&#39;.tif&#39;</span><span class="p">:</span>
+        <span class="n">varnamefromgdal</span> <span class="o">=</span> <span class="s1">&#39;Band1&#39;</span>
+
+    <span class="n">tmpraster</span> <span class="o">=</span> <span class="s1">&#39;temp.tif&#39;</span>
+
+    <span class="n">outputfile</span> <span class="o">=</span> <span class="n">output</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">shapefileName</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+
+    <span class="c1"># Check if outputfile does not already exists to not overwrite</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outputfile</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">FileExistsException</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span>
+
+    <span class="c1"># Copy reference raster if tif or convert it to tif</span>
+    <span class="k">if</span> <span class="n">rasterfileExtension</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.nc&#39;</span><span class="p">]:</span>
+        <span class="n">netcdf2tif</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gdal_translate NETCDF:</span><span class="si">{</span><span class="n">refraster</span><span class="si">}</span><span class="s1">:ZS </span><span class="si">{</span><span class="n">tmpraster</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">netcdf2tif</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">rasterfileExtension</span> <span class="o">==</span> <span class="s1">&#39;.tif&#39;</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">refraster</span><span class="p">,</span> <span class="n">tmpraster</span><span class="p">)</span>
+
+    <span class="c1"># Initialize to 0 all values outside the shapefile contours</span>
+    <span class="n">burncommand</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gdal_rasterize -i -burn 0 </span><span class="si">{</span><span class="n">shapefilepath</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">tmpraster</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="c1"># Rasterize the shapefile attribute on the grid</span>
+    <span class="n">rasterizecommand</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gdal_rasterize -a </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">shapefilepath</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">tmpraster</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">burncommand</span><span class="p">)</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">rasterizecommand</span><span class="p">)</span>
+
+    <span class="c1"># Convert tif file into netcdf, rename variable, convert to integer and set long_name attribute</span>
+    <span class="n">tif2netcdf</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gdal_translate -of NetCDF </span><span class="si">{</span><span class="n">tmpraster</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">outputfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">tif2netcdf</span><span class="p">)</span>
+    <span class="n">renamevar</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ncrename -v </span><span class="si">{</span><span class="n">varnamefromgdal</span><span class="si">}</span><span class="s1">,basin </span><span class="si">{</span><span class="n">outputfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">floattoint</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ncap2 -O -s basin=int(basin) </span><span class="si">{</span><span class="n">outputfile</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">outputfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="c1"># Due to the spaces in long_name attribute, we need to give directly a list to callSystemOrDie</span>
+    <span class="n">setlongname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ncatted -O -a long_name,basin,o,c,&quot;basin identifier </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s1">&quot; </span><span class="si">{</span><span class="n">outputfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">renamevar</span><span class="p">)</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">floattoint</span><span class="p">)</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">setlongname</span><span class="p">)</span>
+
+    <span class="c1"># Clean</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmpraster</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="metaprosimu">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.metaprosimu">[docs]</a>
+<span class="k">class</span> <span class="nc">metaprosimu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class adds topographic and time metadata to a prosimu instance</span>
+<span class="sd">    :param profilename: Path of the PRO.nc filename</span>
+<span class="sd">    :type profilename: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Correspondance between topo attributes and allowed varnames in PRO files</span>
+    <span class="n">allowedtopovarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">zs</span><span class="o">=</span><span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="n">massif</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;massif_number&#39;</span><span class="p">])</span>
+    <span class="n">reftopovarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profilename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">profilename</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">metaprosimu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">profilename</span><span class="p">)</span>
+        <span class="c1"># Read metadata of S2M file and store them in attributes</span>
+        <span class="k">for</span> <span class="n">topovar</span><span class="p">,</span> <span class="n">topovarnames</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowedtopovarnames</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">topovarnames</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">topovarnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">topovarnames</span><span class="p">]</span>
+            <span class="n">availtopovar</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">topovarnames</span><span class="p">:</span>
+                <span class="c1"># Test if variable is available in the file</span>
+                <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+                    <span class="n">availtopovar</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="c1"># Actual variable names available in PRO file</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reftopovarnames</span><span class="p">[</span><span class="n">topovar</span><span class="p">]</span> <span class="o">=</span> <span class="n">varname</span>
+                    <span class="c1"># Read the variable and store as attribute of the class</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topovar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+                    <span class="k">break</span>
+            <span class="c1"># Exception if topographic variable unavailable in the file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">availtopovar</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="c1"># Compute dimension lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbpoints</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntime</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timedim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeunits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readtime_for_copy</span><span class="p">()</span>
+
+        <span class="c1"># Compute resolution of topographic classes</span>
+        <span class="n">list_zs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span>
+        <span class="n">list_aspects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">)</span>
+        <span class="n">list_slopes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slope</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resol_zs</span> <span class="o">=</span> <span class="n">list_zs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">list_zs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resol_slope</span> <span class="o">=</span> <span class="n">list_slopes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">list_slopes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resol_aspect</span> <span class="o">=</span> <span class="n">list_aspects</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">list_aspects</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Available massifs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avail_massifs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massif</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Future method of netCDF4.Dataset with netcdf &gt;= 4.1.2</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+
+    <span class="k">def</span> <span class="nf">create_auxiliary_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">auxil</span><span class="p">:</span>
+            <span class="n">auxil</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbpoints</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;zs&#39;</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="s1">&#39;massif&#39;</span><span class="p">]:</span>
+                <span class="n">auxil</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gettypevar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reftopovarnames</span><span class="p">[</span><span class="n">var</span><span class="p">]),</span>
+                                             <span class="n">dimensions</span><span class="o">=</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">)</span>
+                <span class="n">auxil</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">)[</span><span class="o">...</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="diff_aspect">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.diff_aspect">[docs]</a>
+<span class="k">def</span> <span class="nf">diff_aspect</span><span class="p">(</span><span class="n">aspect1</span><span class="p">,</span> <span class="n">aspect2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the angle absolute difference between two aspects (0-360 degrees) or two arrays of aspects</span>
+
+<span class="sd">    :param aspect1: Aspect or array of aspect (0-360 degrees)</span>
+<span class="sd">    :type aspect1: int, float or array of float</span>
+<span class="sd">    :param aspect2: Aspect or array of aspect (0-360 degrees)</span>
+<span class="sd">    :type aspect2: int, float or array of float of same type as aspect1</span>
+<span class="sd">    :return: array of type of aspect1 and aspect2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Compute aspect angle absolute difference</span>
+    <span class="n">diffabs</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">aspect1</span> <span class="o">-</span> <span class="n">aspect2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">diffabs</span> <span class="o">&gt;</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">360</span> <span class="o">-</span> <span class="n">diffabs</span><span class="p">,</span> <span class="n">diffabs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="bbox">
+<a class="viewcode-back" href="../../code/tools.html#tools.hydro.bbox">[docs]</a>
+<span class="k">def</span> <span class="nf">bbox</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method provides the bounding box of True components of a given field</span>
+
+<span class="sd">    :param img: Field of logical values</span>
+<span class="sd">    :type img: 2d np.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rows</span><span class="p">)[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">cmin</span><span class="p">,</span> <span class="n">cmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cols</span><span class="p">)[</span><span class="mi">0</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span><span class="p">,</span> <span class="n">cmin</span><span class="p">,</span> <span class="n">cmax</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># Demonstrator for test purposes.</span>
+    <span class="c1"># Do not modify this example. This module is not designed to be called directly as a script</span>
+    <span class="c1"># Use s2m --hydro file.nc --hydrovar var1,var2... command or import this module in your own script.</span>
+
+    <span class="n">testrasterize</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">testareas</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">testhydro</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">dem</span> <span class="o">=</span> <span class="s1">&#39;/home/lafaysse/hydroMF/DEM_FRANCE_L93_250m_bilinear.nc&#39;</span>
+    <span class="n">shapefilebasin</span> <span class="o">=</span> <span class="s1">&#39;/home/lafaysse/hydroMF/BVTopo_Topage2024_inmassifs.shp&#39;</span>
+
+    <span class="k">if</span> <span class="n">testrasterize</span><span class="p">:</span>
+        <span class="n">rasterized_shapefile</span><span class="p">(</span><span class="n">shapefilebasin</span><span class="p">,</span> <span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="n">dem</span><span class="p">)</span>
+
+    <span class="n">rasterbasin</span> <span class="o">=</span> <span class="s1">&#39;/home/lafaysse/hydroMF/BVTopo_Topage2024_inmassifs.nc&#39;</span>
+
+    <span class="n">cache</span> <span class="o">=</span> <span class="s1">&#39;/home/lafaysse/cache/cache/vortex/s2m&#39;</span>
+    <span class="n">xpid</span> <span class="o">=</span> <span class="s1">&#39;reanalysis_era5.2024.1@lafaysse&#39;</span>
+    <span class="n">reffile</span> <span class="o">=</span> <span class="s1">&#39;pro/PRO_2020080106_2021080106.nc&#39;</span>
+    <span class="n">forcing</span> <span class="o">=</span> <span class="s1">&#39;meteo/dailyFORCING_2020080106_2021080106.nc&#39;</span>
+    <span class="n">listregions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alp27_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;pyr24_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;cor2_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;mac11_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;jur4_allslopes&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;vog3_allslopes&#39;</span><span class="p">]</span>
+
+    <span class="n">listpro</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">xpid</span><span class="p">,</span> <span class="n">reffile</span><span class="p">)</span> <span class="k">for</span> <span class="n">vconf</span> <span class="ow">in</span> <span class="n">listregions</span><span class="p">]</span>
+    <span class="n">listmeteo</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">xpid</span><span class="p">,</span> <span class="n">forcing</span><span class="p">)</span> <span class="k">for</span> <span class="n">vconf</span> <span class="ow">in</span> <span class="n">listregions</span><span class="p">]</span>
+
+    <span class="n">outputdir</span> <span class="o">=</span> <span class="s1">&#39;/home/lafaysse/hydroMF&#39;</span>
+
+    <span class="k">if</span> <span class="n">testareas</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">basin_areas_file</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">rasterbasin</span><span class="p">,</span> <span class="n">listpro</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">)</span>
+
+    <span class="n">listareas</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;/home/lafaysse/hydroMF/areas_&#39;</span> <span class="o">+</span> <span class="n">vconf</span> <span class="o">+</span> <span class="s1">&#39;.nc&#39;</span> <span class="k">for</span> <span class="n">vconf</span> <span class="ow">in</span> <span class="n">listregions</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">testhydro</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">hydro</span><span class="p">([</span><span class="n">listmeteo</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">listpro</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">listareas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;HYDRO.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">integration</span><span class="p">([</span><span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;Snowf&#39;</span><span class="p">,</span> <span class="s1">&#39;SNOMLT_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;WSN_T_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">],</span>
+                          <span class="n">var_sca</span><span class="o">=</span><span class="s1">&#39;WSN_T_ISBA&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Below is obsolete call of this module (previous version). To be removed by Dec 2025.</span>
+    <span class="c1"># dir_dem_bassins = os.path.join(&#39;/rd/cenfic3/cenmod/home/lafaysse&#39;, &#39;schapi2020.2&#39;, &#39;bassins_shp&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># shapefilebasin = os.path.join(dir_dem_bassins, &quot;BNBV_all.shp&quot;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># pro = [&#39;/rd/cenfic3/cenmod/era40/vortex/s2m/alp_allslopes/schapi2020.2/pro/PRO_2017080106_2018080106.nc&#39;,</span>
+    <span class="c1">#        &#39;/rd/cenfic3/cenmod/era40/vortex/s2m/pyr_allslopes/schapi2020.2/pro/PRO_2017080106_2018080106.nc&#39;,</span>
+    <span class="c1">#        &#39;/rd/cenfic3/cenmod/era40/vortex/s2m/alp_allslopes/reanalysis_2020.2/meteo/FORCING_2017080106_2018080106.nc&#39;,</span>
+    <span class="c1">#        &#39;/rd/cenfic3/cenmod/era40/vortex/s2m/pyr_allslopes/reanalysis_2020.2/meteo/FORCING_2017080106_2018080106.nc&#39;,</span>
+    <span class="c1">#        ]</span>
+    <span class="c1">#</span>
+    <span class="c1"># list_var = [&#39;Rainf&#39;, &#39;SNOMLT_ISBA&#39;]</span>
+    <span class="c1">#</span>
+    <span class="c1"># with hydro(shapefilebasin, dir_dem_bassins, pro, &#39;HYDRO.nc&#39;, &#39;w&#39;) as h:</span>
+    <span class="c1">#     h.integration(list_var)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.hydro</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

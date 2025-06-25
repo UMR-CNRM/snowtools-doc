@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Documentations from Ange’s PhD (Blowing snow) &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Blowing snow simulation preparation" href="Forcing_modification.html" />
+    <link rel="prev" title="0-Template for SURFEX-Crocus model development documentation" href="../../misc/surfex-dev-in-progress/template.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Forcing_modification.html" title="Blowing snow simulation preparation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../misc/surfex-dev-in-progress/template.html" title="0-Template for SURFEX-Crocus model development documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentations from Ange’s PhD (Blowing snow)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="documentations-from-ange-s-phd-blowing-snow">
+<h1>Documentations from Ange’s PhD (Blowing snow)<a class="headerlink" href="#documentations-from-ange-s-phd-blowing-snow" title="Link to this heading">¶</a></h1>
+<p>Below you can find a documentation (part of it formatted from my Jupyter notebooks) with the main information to reproduce my PhD simulations.</p>
+<div class="line-block">
+<div class="line">Have fun with all of this!</div>
+<div class="line">Cheer,</div>
+</div>
+<p>Ange</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Forcing_modification.html">Build snow simulation from scratch and modify wind forcings for blowing snow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pleiades.html">Pleiades observation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Sentinel_2.html">Theia Snow observations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Masks.html">Masks used in the experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Regridding.html">Methods for simulation and PGD regridding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uenv.html">Available User Environments (UEnv)</a></li>
+</ul>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<a class="reference internal image-reference" href="https://i.ibb.co/93t9ZvS/visu-these-ange.png"><img alt="Snow cover over Grandes Rousses" src="https://i.ibb.co/93t9ZvS/visu-these-ange.png" style="width: 100%;" /></a>
+<section id="additional-information">
+<h2>Additional information :<a class="headerlink" href="#additional-information" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is not recommended !</p>
+</div>
+<div class="line-block">
+<div class="line">How to connect to a Jupyter Notebook running on a Belenos computing nodes ?</div>
+<div class="line">(to avoid spending your life on Belenoslogin like I did)</div>
+</div>
+<ol class="arabic simple">
+<li><p>Connect to belenos and ask for a node in interactive mode</p></li>
+</ol>
+<blockquote>
+<div><p><code class="file docutils literal notranslate"><span class="pre">salloc</span></code></p>
+<div class="line-block">
+<div class="line">salloc: Pending job allocation 42337169</div>
+<div class="line">salloc: job 42337169 queued and waiting for resources</div>
+<div class="line">salloc: job 42337169 has been allocated resources</div>
+<div class="line">salloc: Granted job allocation 42337169</div>
+<div class="line">salloc: Waiting for resource configuration</div>
+<div class="line">salloc: Nodes belenos284 are ready for job</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Connect to node</p></li>
+</ol>
+<blockquote>
+<div><p><code class="file docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">belenos284</span></code></p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Start Notebook (will open port 8888 by default)</p></li>
+</ol>
+<blockquote>
+<div><p><code class="file docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">lab</span></code></p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>In a NEW terminal send the folowing command to foward ports from belenos284:8888 to your local computer localhost:8000 while bouncing on belenoslogin0.</p></li>
+</ol>
+<blockquote>
+<div><p><code class="file docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">-NL</span> <span class="pre">8000:localhost:8888</span> <span class="pre">-J</span> <span class="pre">belenoslogin0</span> <span class="pre">belenos284</span></code></p>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li><p>Dont forget to <code class="file docutils literal notranslate"><span class="pre">scancel</span></code> your node allocation once the job is done. :)</p></li>
+</ol>
+<p>Suggestion of shortcuts I used for belenos:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>in .bashrc
+
+alias golastdebug=$&#39;cd /scratch/mtool/haddjeria/depot; lstxp=(`ls|sort -r`); cd &quot;$lstxp&quot;;unset lstxp&#39;
+alias golastabort=$&#39;cd /scratch/mtool/haddjeria/abort; lstxp=(`ls|sort -r`); cd &quot;$lstxp&quot;;unset lstxp;cd root/surfex_vortex_task/&#39;
+alias golastspool=$&#39;cd /scratch/mtool/haddjeria/spool; lstxp=(`ls|sort -r`); cd &quot;$lstxp&quot;;unset lstxp;cd root/surfex_vortex_task/&#39;
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Documentations from Ange’s PhD (Blowing snow)</a><ul>
+<li><a class="reference internal" href="#additional-information">Additional information :</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../../misc/surfex-dev-in-progress/template.html"
+                          title="previous chapter">0-Template for SURFEX-Crocus model development documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Forcing_modification.html"
+                          title="next chapter">Blowing snow simulation preparation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/extra_documentation/these_ange/these_ange_index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Forcing_modification.html" title="Blowing snow simulation preparation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../../misc/surfex-dev-in-progress/template.html" title="0-Template for SURFEX-Crocus model development documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentations from Ange’s PhD (Blowing snow)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

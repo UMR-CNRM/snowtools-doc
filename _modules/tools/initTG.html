@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.initTG &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.initTG</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tools.initTG</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 5 Sept. 2017</span>
+
+<span class="sd">@author: lafaysse</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># General python modules</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+
+<span class="c1"># snowtools modules</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">get_file_period</span><span class="p">,</span> <span class="n">save_file_const</span>
+<span class="kn">from</span> <span class="nn">snowtools.tools.change_forcing</span> <span class="kn">import</span> <span class="n">forcinput_select</span><span class="p">,</span> <span class="n">forcinput_applymask</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">DirFileException</span>
+<span class="kn">from</span> <span class="nn">snowtools.tools.execute</span> <span class="kn">import</span> <span class="n">callSurfexOrDie</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
+
+
+<div class="viewcode-block" id="create_env">
+<a class="viewcode-back" href="../../code/tools.html#tools.initTG.create_env">[docs]</a>
+<span class="k">def</span> <span class="nf">create_env</span><span class="p">(</span><span class="n">diroutput</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create working directory and directories to save outputs</span>
+
+<span class="sd">    :param diroutput: output directory</span>
+<span class="sd">    :type diroutput: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Note that it is not necessary to remove any existing working directory as the working directory is always new</span>
+    <span class="c1"># (date in microseconds in the directory name)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">diroutput</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">DirFileException</span><span class="p">(</span><span class="n">diroutput</span><span class="p">)</span>
+    <span class="n">dirprep</span> <span class="o">=</span> <span class="n">diroutput</span> <span class="o">+</span> <span class="s2">&quot;/prep&quot;</span>
+    <span class="n">dirwork</span> <span class="o">=</span> <span class="n">diroutput</span> <span class="o">+</span> <span class="s2">&quot;/workClim&quot;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M%S</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Create all directories</span>
+    <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dirprep</span><span class="p">,</span> <span class="n">dirwork</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+    <span class="c1"># Change current directory to working directory</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">dirwork</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_meteo_for_clim">
+<a class="viewcode-back" href="../../code/tools.html#tools.initTG.get_meteo_for_clim">[docs]</a>
+<span class="k">def</span> <span class="nf">get_meteo_for_clim</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">geolist</span><span class="p">,</span> <span class="n">list_forcing</span><span class="o">=</span><span class="p">[]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the meteorological forcing files required to compute a climatology</span>
+<span class="sd">    This is a recursive function until all files are found.</span>
+
+<span class="sd">    :param forcingpath: directory where are stored the forcing files</span>
+<span class="sd">    :type forcingpath: str</span>
+<span class="sd">    :param datebegin: First date of the climatology period</span>
+<span class="sd">    :type datebegin: class:`datetime.datetime`</span>
+<span class="sd">    :param dateend: Last date of the climatology period</span>
+<span class="sd">    :type dateend: class:`datetime.datetime`</span>
+<span class="sd">    :param geolist: list defining the domain</span>
+<span class="sd">    :type geolist: list</span>
+<span class="sd">    :param list_forcing: list of forcing files previously found by previous iterations (should not be set by the user)</span>
+<span class="sd">    :type list_forcing: list, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">forcingpath</span> <span class="o">=</span> <span class="p">[</span><span class="n">forcingpath</span><span class="p">]</span>
+    <span class="n">list_forcing_tomerge</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">):</span>
+        <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span> <span class="o">=</span> <span class="n">get_file_period</span><span class="p">(</span><span class="s2">&quot;FORCING&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+        <span class="n">list_forcing_tomerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;FORCING_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">forcinput_applymask</span><span class="p">(</span><span class="n">list_forcing_tomerge</span><span class="p">,</span> <span class="s2">&quot;FORCING.nc&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING_0.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING.nc&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">geolist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">geolist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">geolist</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;input.nc&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="s1">&#39;GRID.nc&#39;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">geolist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;GRID.nc&quot;</span><span class="p">)</span>
+            <span class="n">callSurfexOrDie</span><span class="p">(</span><span class="n">SNOWTOOLS_DIR</span> <span class="o">+</span> <span class="s2">&quot;/interpolation/interpol&quot;</span><span class="p">,</span> <span class="n">moderun</span><span class="o">=</span><span class="s1">&#39;MPIRUN&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;output.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING.nc&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING_base.nc&quot;</span><span class="p">)</span>
+            <span class="n">forcinput_select</span><span class="p">(</span><span class="s2">&quot;FORCING_base.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">geolist</span><span class="p">)</span>
+
+    <span class="n">forcing</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;FORCING_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateforcbegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span>
+               <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateforcend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">forcing</span><span class="p">)</span>
+    <span class="n">list_forcing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span>
+
+    <span class="n">datebegin</span> <span class="o">=</span> <span class="n">dateforcend</span>
+
+    <span class="k">if</span> <span class="n">dateforcend</span> <span class="o">&lt;</span> <span class="n">dateend</span><span class="p">:</span>
+        <span class="n">get_meteo_for_clim</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">geolist</span><span class="p">,</span> <span class="n">list_forcing</span><span class="o">=</span><span class="n">list_forcing</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">list_forcing</span></div>
+
+
+
+<div class="viewcode-block" id="generate_clim">
+<a class="viewcode-back" href="../../code/tools.html#tools.initTG.generate_clim">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_clim</span><span class="p">(</span><span class="n">list_forcing</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a temperature climatology from meteorological forcing files</span>
+
+<span class="sd">    :param list_forcing: List of forcing files addresses</span>
+<span class="sd">    :type list_forcing: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DataMeteo</span> <span class="o">=</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="n">list_forcing</span><span class="p">)</span>
+    <span class="n">Tair</span> <span class="o">=</span> <span class="n">DataMeteo</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;Tair&quot;</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">spatialdim</span> <span class="o">=</span> <span class="n">DataMeteo</span><span class="o">.</span><span class="n">getdimvar</span><span class="p">(</span><span class="s2">&quot;Tair&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">tclim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Tair</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">initTGfile</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="s2">&quot;init_TG.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF3_CLASSIC&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spatialdim</span><span class="p">):</span>
+        <span class="n">initTGfile</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">Tair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">var</span> <span class="o">=</span> <span class="n">initTGfile</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;TG&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">spatialdim</span><span class="p">)</span>
+
+    <span class="n">var</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">tclim</span>
+
+    <span class="n">DataMeteo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">initTGfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="clim">
+<a class="viewcode-back" href="../../code/tools.html#tools.initTG.clim">[docs]</a>
+<span class="k">def</span> <span class="nf">clim</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a temperature climatology from S2M options</span>
+
+<span class="sd">    :param options: S2M options</span>
+<span class="sd">    :type options: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Save initial directory to go back at the end</span>
+    <span class="n">initcurrentdirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="n">create_env</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">diroutput</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">region</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">slopes</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">aspects</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">minlevel</span> <span class="ow">or</span> <span class="n">options</span><span class="o">.</span><span class="n">maxlevel</span><span class="p">:</span>
+        <span class="n">geolist</span> <span class="o">=</span> <span class="p">[</span><span class="n">options</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">minlevel</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">maxlevel</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">slopes</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">aspects</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">geolist</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">list_forcing</span> <span class="o">=</span> <span class="n">get_meteo_for_clim</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">forcing</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">datedeb</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">datefin</span><span class="p">,</span> <span class="n">geolist</span><span class="p">,</span> <span class="n">list_forcing</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">generate_clim</span><span class="p">(</span><span class="n">list_forcing</span><span class="p">)</span>
+
+    <span class="n">save_file_const</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">diroutput</span> <span class="o">+</span> <span class="s2">&quot;/prep&quot;</span><span class="p">,</span> <span class="s2">&quot;init_TG.nc&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">forcing</span> <span class="ow">in</span> <span class="n">list_forcing</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span>
+
+    <span class="c1"># Back to initial directory</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">initcurrentdirectory</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.initTG</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

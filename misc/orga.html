@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Code organization &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contribute to snowtools" href="contribute.html" />
+    <link rel="prev" title="Install Snowtools" href="install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="contribute.html" title="Contribute to snowtools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Install Snowtools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Code organization</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="code-organization">
+<span id="sec-orga"></span><h1>Code organization<a class="headerlink" href="#code-organization" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">assim</span></code> folder contains assimilation post-processing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conf</span></code> contains configuration files for research tools</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DATA</span></code> contains no code but files frequently used</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">evals</span></code> contains routines to extract data for further evaluations (which are not in this folder…)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fortran</span></code> contains interpolation tools including tools for managing solar masks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plots</span></code> contains a lot of useful classes for plotting</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scores</span></code> is a set of routines to compute scores both for deterministic or ensemble simulations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code> are a set of scripts to get simulation files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tasks</span></code> contains the typical sequence of instructions necessary to run a full simulation, both in operational or research mode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tools</span></code> contains all the classes and methods shared by the vortex project and standalone applications. It is all the physics and links between simulation elements.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils</span></code> is a set of technical tools to help manipulating simulation objects (read and convert files, sun trajectory, etc.). Please check the tool your need is not already in bronx.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bronx</span></code> is an external package that contains a lot of useful tools (this package is now an external package that have to be installed separately)</p></li>
+</ul>
+<p>A folder <code class="docutils literal notranslate"><span class="pre">tests</span></code> contains the test suite of snowtools and the <code class="docutils literal notranslate"><span class="pre">doc</span></code> folder contains this documentation code.</p>
+<p>Note that the different folder have close relationships:</p>
+<ul class="simple">
+<li><p>The contents of <code class="docutils literal notranslate"><span class="pre">utils</span></code> and <code class="docutils literal notranslate"><span class="pre">bronx</span></code> can be imported in any other part of the project.</p></li>
+<li><p>The contents of <code class="docutils literal notranslate"><span class="pre">tools</span></code> should be imported only by modules of <code class="docutils literal notranslate"><span class="pre">tasks</span></code> or directly by Vortex</p></li>
+<li><p>The contents of <code class="docutils literal notranslate"><span class="pre">tasks</span></code> and <code class="docutils literal notranslate"><span class="pre">plots</span></code> must never be imported in <code class="docutils literal notranslate"><span class="pre">tools</span></code> and <code class="docutils literal notranslate"><span class="pre">utils</span></code>.</p></li>
+<li><p>The contents of <code class="docutils literal notranslate"><span class="pre">tests</span></code> must not be imported anywhere else in the project.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bronx</span></code> must stay an independent module. It cannot import any other module of the project.</p></li>
+<li><p>Vortex call only <code class="docutils literal notranslate"><span class="pre">tools</span></code> and <code class="docutils literal notranslate"><span class="pre">utils</span></code> tasks might call some Vortex facilities some day</p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="install.html"
+                          title="previous chapter">Install Snowtools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="contribute.html"
+                          title="next chapter">Contribute to snowtools</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/orga.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="contribute.html" title="Contribute to snowtools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Install Snowtools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Code organization</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

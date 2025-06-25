@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.combine_memberfiles &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.combine_memberfiles</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tools.combine_memberfiles</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Wed Jul 5 2023.</span>
+
+<span class="sd">This module provide a method to combine PRO simulation output files from different members into one single file.</span>
+
+<span class="sd">Authors:</span>
+<span class="sd">  - Jari-Pekka Nousu</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+
+<div class="viewcode-block" id="combine_memberfiles">
+<a class="viewcode-back" href="../../code/tools.html#tools.combine_memberfiles.combine_memberfiles">[docs]</a>
+<span class="k">def</span> <span class="nf">combine_memberfiles</span><span class="p">(</span><span class="n">parentfolder</span><span class="p">,</span> <span class="n">keep_open</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Combining ensemble of SURFEX outputs into a single outputfile</span>
+<span class="sd">    with additional dimension for ensemble members</span>
+
+<span class="sd">    - creates output folder e.g. &#39;mb0001_mb0005&#39;</span>
+<span class="sd">    - adds new profile file</span>
+
+<span class="sd">    Notes:</span>
+
+<span class="sd">    - currently ensemble dimensions added for all variables, including constant outputs..</span>
+<span class="sd">    - couple of work arounds to avoid AttributeErrors, fix better later</span>
+<span class="sd">    - only tested for outputs for one point</span>
+
+<span class="sd">    :param parentfolder: Path to the folder hosting output folders for each member. The actual</span>
+<span class="sd">                         simulation output file should be in ``parentfolder/mbXXXX/pro/XXXX.nc``.</span>
+<span class="sd">    :type parentfolder: str</span>
+<span class="sd">    :returns: None or the output netCDF4 dataset when keep_open is set to True.</span>
+<span class="sd">    :rtype: None or netCDF4.Dataset</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># find the folders under parentfolder</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentfolder</span><span class="si">}</span><span class="s1">/mb*&#39;</span><span class="p">)</span>
+    <span class="c1"># sorting to have members in order</span>
+    <span class="n">folders</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="c1"># finding pro files inside folders</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
+        <span class="c1"># TODO: Optional input: name of nc file to select ?</span>
+        <span class="c1"># currently we cannot use the script if more than one netcdf file is present for each member !</span>
+        <span class="c1"># + treat errors in case no file is found.</span>
+        <span class="c1"># &lt;04-08-23, Léo Viallon-Galinier&gt; #</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s1">/pro/*.nc&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># TODO: Do we really need to sort two times ? &lt;04-08-23, Léo Viallon-Galinier&gt; #</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="c1"># opening first file to derive information on dimensions, variables etc.</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="c1"># defining outputfilename according to first and last member</span>
+    <span class="n">outname</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(/)&#39;</span><span class="p">,</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">firstmember</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(/)&#39;</span><span class="p">,</span> <span class="n">folders</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">lastmember</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(/)&#39;</span><span class="p">,</span> <span class="n">folders</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">outputfolder</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentfolder</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">firstmember</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">lastmember</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">outfilefull</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outputfolder</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">outname</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="c1"># new repo for output if does not exist</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outputfolder</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">outputfolder</span><span class="p">)</span>
+
+    <span class="c1"># creating the new output netcdf file</span>
+    <span class="n">new_output</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">outfilefull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">)</span>
+
+    <span class="c1"># dimensions as in the example file</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">new_output</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="c1"># plus additional dimension for ensemble members</span>
+    <span class="n">new_output</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;members&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+
+    <span class="c1"># list of key information</span>
+    <span class="n">list_of_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">list_of_variable_units</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">list_of_variable_longnames</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># create list of units</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">list_of_variable_longnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">long_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">list_of_variable_longnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">list_of_variable_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">list_of_variable_units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># creating variables for netcdf file</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_of_variables</span><span class="p">)):</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="n">list_of_variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">units</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">variable</span> <span class="o">==</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span>
+            <span class="n">dimensions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dimensions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;members&#39;</span><span class="p">,)</span>
+        <span class="n">longname</span> <span class="o">=</span> <span class="n">list_of_variable_longnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fill_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">_FillValue</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># going around AttributeError, at least &#39;Projection_Type&#39;... fix this better later</span>
+            <span class="n">fill_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2147483647</span>
+
+        <span class="n">output_var</span> <span class="o">=</span> <span class="n">new_output</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span>
+                                               <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">output_var</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="n">output_var</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">longname</span>
+
+    <span class="c1"># looping over the files to read data into right member dimension</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)):</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="n">member</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Filling ensemble member:&#39;</span><span class="p">,</span> <span class="n">member</span><span class="p">)</span>
+        <span class="n">tempfile</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">list_of_variables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tempfile</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">!=</span> <span class="p">():</span>
+                <span class="n">dimensionlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tempfile</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dimensionlen</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">dimensionlen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">new_output</span><span class="p">[</span><span class="n">key</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">tempfile</span><span class="p">[</span><span class="n">key</span><span class="p">][:]</span>
+            <span class="k">elif</span> <span class="n">dimensionlen</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">new_output</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="n">member</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempfile</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="n">tempfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">keep_open</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">new_output</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_output</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.combine_memberfiles</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

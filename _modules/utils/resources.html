@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.resources &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.resources</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.resources</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 30 Aug. 2017</span>
+
+<span class="sd">:Authord:</span>
+<span class="sd">    M. Lafaysse</span>
+
+<span class="sd">This module contains all file manipulations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">bronx.stdtypes.date</span> <span class="kn">import</span> <span class="n">Date</span>
+
+<span class="c1"># take care &quot;snowtools&quot; necessary in import for exception catching by vortex</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">DirNameException</span><span class="p">,</span> <span class="n">UndefinedDirectoryException</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="n">SNOWTOOLS_CEN</span>
+
+
+<div class="viewcode-block" id="absolute_path">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.absolute_path">[docs]</a>
+<span class="k">def</span> <span class="nf">absolute_path</span><span class="p">(</span><span class="n">pathin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a local path in an absolute path.</span>
+
+<span class="sd">    The input may be a list of coma-separated paths</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">pathin</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">pathin</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pathin</span><span class="p">)</span>
+            <span class="n">list_pathin</span> <span class="o">=</span> <span class="n">pathin</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">list_pathin</span><span class="p">)</span>
+            <span class="n">list_pathout</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pathin</span> <span class="ow">in</span> <span class="n">list_pathin</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">pathin</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pathin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+                    <span class="n">pathin</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">pathin</span>
+                <span class="n">list_pathout</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pathin</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">list_pathout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_pathout</span>
+
+        <span class="k">elif</span> <span class="n">pathin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">pathin</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">pathin</span>
+
+    <span class="k">return</span> <span class="n">pathin</span></div>
+
+
+
+<div class="viewcode-block" id="smart_copy">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.smart_copy">[docs]</a>
+<span class="k">def</span> <span class="nf">smart_copy</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">,</span> <span class="n">preferlink</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If pathin includes /home do a symbolic link because we probably are on the disk.</span>
+<span class="sd">    Otherwise, do a hard copy of the file to improve computing times.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pathin</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;./&#39;</span> <span class="ow">or</span> <span class="n">pathin</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home&#39;</span> <span class="ow">or</span> <span class="n">pathin</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/scratch&#39;</span> <span class="ow">or</span> <span class="n">preferlink</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">nameout</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nameout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">nameout</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nameout</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="check_surfex_exe">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.check_surfex_exe">[docs]</a>
+<span class="k">def</span> <span class="nf">check_surfex_exe</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check that SURFEX inaries are present and return their path</span>
+
+<span class="sd">    :param path: The path to look in. If one, fallback to environment variable EXESURFEX.</span>
+<span class="sd">    :returns: The path for surfex binaries</span>
+
+<span class="sd">    :raises: BaseException if no path provided or FileNameException if binaries not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;EXESURFEX&quot;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;EXESURFEX&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UndefinedDirectoryException</span><span class="p">(</span><span class="s2">&quot;A directory for SURFEX executables must be defined either with -s option or with $EXESURFEX&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">program</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;PGD&quot;</span><span class="p">,</span> <span class="s2">&quot;PREP&quot;</span><span class="p">,</span> <span class="s2">&quot;OFFLINE&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">program</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">program</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+
+<div class="viewcode-block" id="InstallException">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.InstallException">[docs]</a>
+<span class="k">class</span> <span class="nc">InstallException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issue</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">issue</span> <span class="o">=</span> <span class="n">issue</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">issue</span> <span class="o">+</span> <span class="s2">&quot;Not a valid snowtools install !&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="check_snowtools_install">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.check_snowtools_install">[docs]</a>
+<span class="k">def</span> <span class="nf">check_snowtools_install</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check the snowtools installation. More precisely :</span>
+
+<span class="sd">    - Check that the required folders for a simulation are present in the folder pointed by SNOWTOOLS_CEN</span>
+<span class="sd">    - Check the snowtools packages are correctly importable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check installation of snowtools package</span>
+    <span class="n">ValidInstall</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">issue</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">ValidInstall</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rep</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DATA&quot;</span><span class="p">,</span> <span class="s2">&quot;tasks&quot;</span><span class="p">,</span> <span class="s2">&quot;tools&quot;</span><span class="p">,</span> <span class="s2">&quot;utils&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="n">rep</span><span class="p">)):</span>
+                <span class="n">issue</span> <span class="o">+=</span> <span class="s2">&quot;There is not a correct install of snowtools_git in directory &quot;</span> <span class="o">+</span> <span class="n">SNOWTOOLS_CEN</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">issue</span> <span class="o">+=</span> <span class="s2">&quot;missing directory:&quot;</span> <span class="o">+</span> <span class="n">rep</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">ValidInstall</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">ValidInstall</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Import test (DATA already imported)</span>
+            <span class="kn">import</span> <span class="nn">snowtools.utils</span>
+            <span class="kn">import</span> <span class="nn">snowtools.tools</span>
+            <span class="kn">import</span> <span class="nn">snowtools.tasks</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">issue</span> <span class="o">+=</span> <span class="s2">&quot;PYTHONPATH environment variable must contain&quot;</span> <span class="o">+</span> <span class="n">SNOWTOOLS_CEN</span> <span class="o">+</span> \
+                     <span class="s2">&quot;. Cannot import snowtools modules.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">ValidInstall</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ValidInstall</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InstallException</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">save_file_const</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newname</span><span class="p">:</span>
+            <span class="n">savename</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">newname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">savename</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">savename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">savename</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DirNameException</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">save_file_date</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">datefile</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">newprefix</span><span class="p">:</span>
+        <span class="n">savename</span> <span class="o">=</span> <span class="n">newprefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datefile</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">savename</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datefile</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+    <span class="n">save_file_const</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">,</span> <span class="n">savename</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">save_file_period</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">newprefix</span><span class="p">:</span>
+        <span class="n">savename</span> <span class="o">=</span> <span class="n">newprefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">savename</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+
+    <span class="n">save_file_const</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">,</span> <span class="n">savename</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_file_const_or_crash</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">,</span> <span class="n">preferlink</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">get_file_const</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">,</span> <span class="n">preferlink</span><span class="o">=</span><span class="n">preferlink</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">pathin</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_file_const</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">,</span> <span class="n">preferlink</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pathin</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">pathin</span><span class="p">)</span>
+        <span class="n">smart_copy</span><span class="p">(</span><span class="n">pathin</span><span class="p">,</span> <span class="n">nameout</span><span class="p">,</span> <span class="n">preferlink</span><span class="o">=</span><span class="n">preferlink</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">get_file_date</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">datefile</span><span class="p">,</span> <span class="n">raiseexception</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">namefile</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datefile</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+
+    <span class="n">success</span> <span class="o">=</span> <span class="n">get_file_const</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">namefile</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">raiseexception</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">namefile</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">success</span>
+
+
+<span class="k">def</span> <span class="nf">get_file_period</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">smart_copy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># Attempt to find the full file</span>
+        <span class="n">fullperiodfile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fullperiodfile</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">fullperiodfile</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span>
+
+        <span class="c1"># Alternative files :</span>
+        <span class="n">daybefore</span> <span class="o">=</span> <span class="n">datebegin</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">alternatefile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">daybefore</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">alternatefile</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">alternatefile</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">daybefore</span><span class="p">,</span> <span class="n">dateend</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="s2">&quot;NOT AVAILABLE !!!!!!!&quot;</span>
+
+        <span class="c1"># Attempt to find a yearly file</span>
+        <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+            <span class="n">dateyear_beg</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">dateyear_end</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dateyear_beg</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">dateyear_end</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">yearlyfile1</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateyear_beg</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateyear_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="n">yearlyfile2</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateyear_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="n">yearlyfile3</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateyear_beg</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">yearlyfile1</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">yearlyfile1</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dateyear_beg</span><span class="p">,</span> <span class="n">dateyear_end</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">yearlyfile2</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">yearlyfile2</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateyear_end</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">yearlyfile3</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">yearlyfile3</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dateyear_beg</span><span class="p">,</span> <span class="n">dateend</span>
+
+        <span class="c1"># Attempt to find a monthly file</span>
+        <span class="n">datemonth_beg</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">datemonth_end</span> <span class="o">=</span> <span class="n">datemonth_beg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="n">datemonth_beg</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">datemonth_end</span> <span class="o">=</span> <span class="n">datemonth_beg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datemonth_beg</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">monthlyfile1</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datemonth_beg</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datemonth_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="n">monthlyfile2</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datemonth_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+        <span class="n">monthlyfile3</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">datemonth_beg</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">monthlyfile1</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">monthlyfile1</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datemonth_beg</span><span class="p">,</span> <span class="n">datemonth_end</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">monthlyfile2</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">monthlyfile2</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">datemonth_end</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">monthlyfile3</span><span class="p">):</span>
+            <span class="n">smart_copy</span><span class="p">(</span><span class="n">monthlyfile3</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datemonth_beg</span><span class="p">,</span> <span class="n">dateend</span>
+
+        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">fullperiodfile</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="c1"># python-chroot-builder</span>
+<span class="c1"># Copyright (C) 2012 Ji-hoon Kim</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+
+<span class="k">def</span> <span class="nf">ldd</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">subprocess</span>
+
+    <span class="n">libs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;ldd&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span>
+                             <span class="n">stdout</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                             <span class="n">stderr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;=&gt;&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># virtual library</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">libs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">libs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">libs</span>
+
+
+<div class="viewcode-block" id="print_used_memory">
+<a class="viewcode-back" href="../../code/utils-resources.html#utils.resources.print_used_memory">[docs]</a>
+<span class="k">def</span> <span class="nf">print_used_memory</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the currently used memory with the ``free`` linux command</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mem</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s1">&#39;free -t -m&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">T_ind</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+    <span class="n">mem_G</span> <span class="o">=</span> <span class="n">mem</span><span class="p">[</span><span class="n">T_ind</span> <span class="o">+</span> <span class="mi">14</span><span class="p">:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">S1_ind</span> <span class="o">=</span> <span class="n">mem_G</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">mem_T</span> <span class="o">=</span> <span class="n">mem_G</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">S1_ind</span><span class="p">]</span>
+    <span class="n">mem_G1</span> <span class="o">=</span> <span class="n">mem_G</span><span class="p">[</span><span class="n">S1_ind</span> <span class="o">+</span> <span class="mi">8</span><span class="p">:]</span>
+    <span class="n">S2_ind</span> <span class="o">=</span> <span class="n">mem_G1</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">mem_U</span> <span class="o">=</span> <span class="n">mem_G1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">S2_ind</span><span class="p">]</span>
+    <span class="n">mem_F</span> <span class="o">=</span> <span class="n">mem_G1</span><span class="p">[</span><span class="n">S2_ind</span> <span class="o">+</span> <span class="mi">8</span><span class="p">:]</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Used Memory = &#39;</span> <span class="o">+</span> <span class="n">mem_U</span> <span class="o">+</span> <span class="s1">&#39; MB&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Free Memory = &#39;</span> <span class="o">+</span> <span class="n">mem_F</span> <span class="o">+</span> <span class="s1">&#39; MB&#39;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Total Memory = &#39;</span> <span class="o">+</span> <span class="n">mem_T</span> <span class="o">+</span> <span class="s1">&#39; MB&#39;</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.resources</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

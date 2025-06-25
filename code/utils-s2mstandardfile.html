@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Writing simulation output files &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting git informations" href="utils-git.html" />
+    <link rel="prev" title="Sun and radiations" href="utils-sun.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils-git.html" title="Getting git informations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="utils-sun.html" title="Sun and radiations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" accesskey="U">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Writing simulation output files</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="writing-simulation-output-files">
+<h1>Writing simulation output files<a class="headerlink" href="#writing-simulation-output-files" title="Link to this heading">¶</a></h1>
+<p id="module-utils.S2M_standard_file">Created on 20 août 2019</p>
+<p>&#64;author: lafaysse</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardCDP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardCDP</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardCDP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardCDP" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.S2M_standard_file.StandardSAFRANetMET" title="utils.S2M_standard_file.StandardSAFRANetMET"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardSAFRANetMET</span></code></a></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardCROCUS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardCROCUS</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardCROCUS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardCROCUS" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StandardNC</span></code></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardHYDRO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardHYDRO</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardHYDRO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardHYDRO" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StandardNC</span></code></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardPROSNOW">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardPROSNOW</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardPROSNOW"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardPROSNOW" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.S2M_standard_file.StandardSAFRAN" title="utils.S2M_standard_file.StandardSAFRAN"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardSAFRAN</span></code></a></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardPROSNOW.addCoord">
+<span class="sig-name descname"><span class="pre">addCoord</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardPROSNOW.addCoord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardPROSNOW.addCoord" title="Link to this definition">¶</a></dt>
+<dd><p>Routine to add coordinates in the forcing file for the SAFRAN massifs</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardSAFRAN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardSAFRAN</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardSAFRAN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardSAFRAN" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.S2M_standard_file.StandardSAFRANetMET" title="utils.S2M_standard_file.StandardSAFRANetMET"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardSAFRANetMET</span></code></a></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.S2M_standard_file.StandardSAFRANetMET">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.S2M_standard_file.</span></span><span class="sig-name descname"><span class="pre">StandardSAFRANetMET</span></span><a class="reference internal" href="../_modules/utils/S2M_standard_file.html#StandardSAFRANetMET"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.S2M_standard_file.StandardSAFRANetMET" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StandardNC</span></code></p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Writing simulation output files</a><ul>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardCDP"><code class="docutils literal notranslate"><span class="pre">StandardCDP</span></code></a></li>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardCROCUS"><code class="docutils literal notranslate"><span class="pre">StandardCROCUS</span></code></a></li>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardHYDRO"><code class="docutils literal notranslate"><span class="pre">StandardHYDRO</span></code></a></li>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardPROSNOW"><code class="docutils literal notranslate"><span class="pre">StandardPROSNOW</span></code></a><ul>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardPROSNOW.addCoord"><code class="docutils literal notranslate"><span class="pre">StandardPROSNOW.addCoord()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardSAFRAN"><code class="docutils literal notranslate"><span class="pre">StandardSAFRAN</span></code></a></li>
+<li><a class="reference internal" href="#utils.S2M_standard_file.StandardSAFRANetMET"><code class="docutils literal notranslate"><span class="pre">StandardSAFRANetMET</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils-sun.html"
+                          title="previous chapter">Sun and radiations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="utils-git.html"
+                          title="next chapter">Getting git informations</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/utils-s2mstandardfile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils-git.html" title="Getting git informations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="utils-sun.html" title="Sun and radiations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" >Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Writing simulation output files</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

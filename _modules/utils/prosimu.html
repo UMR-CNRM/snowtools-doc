@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.prosimu &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.prosimu</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.prosimu</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 4 oct. 2012</span>
+
+<span class="sd">:Authors:</span>
+<span class="sd">    - lafaysse</span>
+<span class="sd">    - LVG</span>
+
+<span class="sd">Introduction</span>
+<span class="sd">^^^^^^^^^^^^</span>
+
+<span class="sd">This module contains the ``prosimu`` class used to read simulation files</span>
+<span class="sd">(netCDF format) as produced by SURFEX/Crocus for instance.</span>
+
+<span class="sd">More in details, ``prosimu1d`` and ``prosimu2d`` classes are provided to</span>
+<span class="sd">read 1D files (ony one spatial dimension, Number_of_points) or 2D files</span>
+<span class="sd">(gridded simulations with x and y axes). Unless your application is</span>
+<span class="sd">specific to 1D or 2D files, please use ``prosimu_auto`` that will</span>
+<span class="sd">instantiate the appropriate class (``prosimu1d`` or ``prosimu2d``).</span>
+
+
+<span class="sd">Examples</span>
+<span class="sd">^^^^^^^^</span>
+
+<span class="sd">A short example of how to use this module and read time dimension and</span>
+<span class="sd">snow density variables (``RSN_VEG``) for all layers at point in massif</span>
+<span class="sd">11, 2700m, northern aspect on 40 degree slope:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">   from snowtools.utils.prosimu import prosimu_auto</span>
+
+<span class="sd">   with prosimu_auto(&#39;/path/to/my/PRO_XXX.nc&#39;) as ff:</span>
+<span class="sd">           time= ff.readtime()</span>
+<span class="sd">           point = ff.get_point(ZS=2700, aspect=0, slope=40, massif_num=11)</span>
+<span class="sd">           density = ff.read(&#39;RSN_VEG&#39;, selectpoint=point)</span>
+
+<span class="sd">``time`` and ``density`` now contains the data in the form of numpy arrays</span>
+<span class="sd">for the selected point. As ``RSN_VEG`` is a variable available for all layers,</span>
+<span class="sd">the ``density`` array is a 3D numpy ndarray with dimensions</span>
+<span class="sd">(time, layers).</span>
+
+<span class="sd">A short example to get multiple points at once:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">   from snowtools.utils.prosimu import prosimu_auto</span>
+
+<span class="sd">   with prosimu_auto(&#39;/path/to/my/PRO_XXX.nc&#39;) as ff:</span>
+<span class="sd">           time= ff.readtime()</span>
+<span class="sd">           points = ff.get_points(ZS=2700, slope=40, massif_num=11)</span>
+<span class="sd">           density = ff.read(&#39;RSN_VEG&#39;, selectpoint=points)</span>
+
+<span class="sd">``time`` and ``density`` now contains the data in the form of numpy arrays</span>
+<span class="sd">for the selected points (all aspects). The ``density`` is a 3D numpy array with</span>
+<span class="sd">first dimension being time, second dimension being layers and the last one is points.</span>
+
+
+
+<span class="sd">Example to get total snow water equivalent of the snowpack (variable</span>
+<span class="sd">``WSN_T_ISBA``) across time for all points:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">   from snowtools.utils.prosimu import prosimu_auto</span>
+
+<span class="sd">   with prosimu_auto(&#39;/path/to/my/PRO_XXX.nc&#39;) as ff:</span>
+<span class="sd">           time= ff.readtime()</span>
+<span class="sd">           swe_total = ff.read(&#39;WSN_T_ISBA&#39;)</span>
+
+<span class="sd">Main methods</span>
+<span class="sd">^^^^^^^^^^^^</span>
+
+<span class="sd">Most useful methods are:</span>
+
+<span class="sd">* :meth:`prosimuAbstract.gettime` to read tim dimension</span>
+<span class="sd">* :meth:`prosimuAbstract.listvar` to have a list of available variables</span>
+<span class="sd">* :meth:`prosimuAbstract.read` to read data from one variable</span>
+<span class="sd">* :meth:`prosimuAbstract.get_point` to help in selecting a point across spatial dimensions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">DirNameException</span><span class="p">,</span> <span class="n">FileOpenException</span><span class="p">,</span> <span class="n">VarNameException</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">TimeException</span><span class="p">,</span> <span class="n">MultipleValueException</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.S2M_standard_file</span> <span class="kn">import</span> <span class="n">StandardCROCUS</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cftime</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">cftime</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">DEFAULT_NETCDF_FORMAT</span> <span class="o">=</span> <span class="s1">&#39;NETCDF3_CLASSIC&#39;</span>
+
+
+<div class="viewcode-block" id="prosimu_auto">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu_auto">[docs]</a>
+<span class="k">def</span> <span class="nf">prosimu_auto</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ncformat</span><span class="o">=</span><span class="n">DEFAULT_NETCDF_FORMAT</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Factory function that guess the correct class to return among</span>
+<span class="sd">    :class:`prosimu1d` or :class:`prosimu2d`.</span>
+
+<span class="sd">    :param path: file path or file path list</span>
+<span class="sd">    :type path: str or path-like or list</span>
+<span class="sd">    :ncformat: netCDF format only in case of creation</span>
+<span class="sd">    :type ncformat: str</span>
+<span class="sd">    :param openmode: Open mode (r, r+ or w generally)</span>
+<span class="sd">    :type openmode: str</span>
+<span class="sd">    :param kwargs: Other arguments passed to the instantiated class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">toanalyzepath</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">toanalyzepath</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">toanalyzepath</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">targetclass</span> <span class="o">=</span> <span class="n">prosimu1d</span>
+
+    <span class="k">if</span> <span class="n">toanalyzepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">toanalyzepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ncdf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Number_of_points&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ncdf</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;xx&#39;</span> <span class="ow">in</span> <span class="n">ncdf</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">and</span> <span class="s1">&#39;yy&#39;</span> <span class="ow">in</span> <span class="n">ncdf</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                    <span class="n">targetclass</span> <span class="o">=</span> <span class="n">prosimu2d</span>
+                <span class="k">elif</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">ncdf</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                    <span class="n">targetclass</span> <span class="o">=</span> <span class="n">prosimu_old</span>
+
+    <span class="k">return</span> <span class="n">targetclass</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ncformat</span><span class="o">=</span><span class="n">ncformat</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="n">openmode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="prosimuAbstract">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract">[docs]</a>
+<span class="k">class</span> <span class="nc">prosimuAbstract</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class designed to read simulations files</span>
+<span class="sd">    Describe the interface provided to access simulations.</span>
+
+<span class="sd">    :param path: path of the file to read</span>
+<span class="sd">    :type path: path-like or list</span>
+<span class="sd">    :param ncformat: NetCDF format to use.</span>
+<span class="sd">    :type ncformat: str</span>
+<span class="sd">    :param openmode: open mode (mainly ``r``, ``w`` or ``r+``)</span>
+<span class="sd">    :type openmode: str</span>
+
+<span class="sd">    Do not forget to close the file at the end or use a context manager:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       with prosimu(filename) as ff:</span>
+<span class="sd">           time= ff.readtime()</span>
+<span class="sd">           var = ff.read(varname)</span>
+<span class="sd">           # Do your stuff</span>
+
+<span class="sd">    To read data (in variables), see :meth:`read` or :meth:`read_var`</span>
+
+<span class="sd">    Note that the recommended file format is NETCDF4_CLASSIC. Prosimu also allow for using NETCDF3_CLASSIC.</span>
+<span class="sd">    However, NETCDF4 is discouraged because this format is not supported by netCDF4.MFDataset function that</span>
+<span class="sd">    is used to open several files at one time.</span>
+
+<span class="sd">    ``path`` could be a list of files to concatenate along an undefined length dimension</span>
+<span class="sd">    (should be unique, e.g. time dimension). Note that in this case, NETCDF4 format is highly discouraged as</span>
+<span class="sd">    it implies a full type conversion and copy of the data.</span>
+
+<span class="sd">    ``path`` could also be a string with a glob sign ``*`` to automatically fill a list of files to concatenate.</span>
+
+<span class="sd">    Please note that in case of opening simultaneously several files, only the ``&#39;r&#39;`` open mode is allowed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">Points_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="n">Number_of_Patches</span> <span class="o">=</span> <span class="s1">&#39;Number_of_Patches&#39;</span>
+    <span class="n">Number_of_Tiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tile&#39;</span><span class="p">,</span> <span class="s1">&#39;Number_of_Tile&#39;</span><span class="p">,</span> <span class="s1">&#39;Number_of_Patches&#39;</span><span class="p">]</span>
+
+    <span class="n">_rewrite_dims</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_rewrite_vars</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">ncformat</span><span class="o">=</span><span class="s1">&#39;NETCDF3_CLASSIC&#39;</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        forceread : si True force lors de la lecture d&#39;une variable par la</span>
+<span class="sd">        méthode read_var à mettre l&#39;ensemble des données de cette variable en</span>
+<span class="sd">        cache - utile lorsque de grands nombre d&#39;accès à la même variable sont</span>
+<span class="sd">        nécessaires</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># BC add the possibility to give wildcards to prosimu</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">openmode</span> <span class="o">==</span> <span class="s1">&#39;w&#39;</span><span class="p">:</span>
+                <span class="n">glob_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">glob_path</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob_path</span><span class="p">)</span>
+
+        <span class="c1"># At this point path is supposed to be a list of at least 1 element.</span>
+
+        <span class="c1"># Reading of several files: use netCDF4.MFDataset</span>
+        <span class="c1"># And do not allow r+ or w open modes.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">openmode</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">fichier</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fichier</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">fichier</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">MFDataset</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mfile</span> <span class="o">=</span> <span class="mi">1</span>
+
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># Conversion in netcdf4_classic</span>
+                    <span class="kn">import</span> <span class="nn">xarray</span>
+                    <span class="n">classic_path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">fichier</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="n">newname</span> <span class="o">=</span> <span class="s1">&#39;CLASSIC_&#39;</span> <span class="o">+</span> <span class="n">fichier</span>
+                        <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">fichier</span><span class="p">)</span>
+                        <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">newname</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">)</span>
+                        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                        <span class="n">classic_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newname</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">MFDataset</span><span class="p">(</span><span class="n">classic_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">classic_path</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mfile</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">((</span><span class="s1">&#39;prosimu - Open several NetCDF dataset with openmode </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+                               <span class="s1">&#39; is not supported. &#39;</span>
+                               <span class="s1">&#39;Only </span><span class="se">\&#39;</span><span class="s1">r</span><span class="se">\&#39;</span><span class="s1"> mode is supported.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">openmode</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+        <span class="c1"># Reading/Writting only one file: use StandardCROCUS (class deriving of netCDF4.Dataset)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mfile</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">openmode</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">StandardCROCUS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">openmode</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">ncformat</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">StandardCROCUS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">openmode</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FileOpenException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Create the file if openmode is w and one file only</span>
+        <span class="k">elif</span> <span class="n">openmode</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
+            <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">DirNameException</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">StandardCROCUS</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">openmode</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">ncformat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mfile</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Else, we could not either read or create the file -&gt; crash</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;I am going to crash because there is a filename exception: </span><span class="se">\</span>
+<span class="s2">                        file </span><span class="si">{}</span><span class="s2"> not found and openmode is not &#39;w&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">varcache</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedim</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timedim</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Get the dimension of the dataset</span>
+        <span class="c1"># self.pointsdim is a list of indices available</span>
+        <span class="c1">#                  (list of integers)</span>
+        <span class="c1"># self.pointsdim_n give its length</span>
+        <span class="c1">#                  (integer)</span>
+        <span class="c1"># self.pointsdim_l give the dimension of each point dimension of the dataset</span>
+        <span class="c1">#                  (list of integers)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pointsdim</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_n</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_n</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_n</span> <span class="o">*=</span> <span class="n">n</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_n</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_pointsdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of dimensions for Points_dimensions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">points_dimname</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Else assume it is a list or similar iterable</span>
+            <span class="n">points_dimname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dimname</span> <span class="ow">in</span> <span class="n">points_dimname</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dimname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">dimname</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="nf">_check_varname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        chack the variable name exists or raise a VarNameException</span>
+<span class="sd">        and if necessary perform a rewritting of variable</span>
+
+<span class="sd">        :param varname: Variable name to test</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: Actual variable name (possibly substituted from varname</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises: VarNameException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">listvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">listvar</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">varname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_vars</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_vars</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="ow">in</span> <span class="n">listvar</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_vars</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_dimname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        chack the variable name exists or raise a dimnameException</span>
+<span class="sd">        and if necessary perform a rewritting of variable</span>
+
+<span class="sd">        :param dimname: Variable name to test</span>
+<span class="sd">        :type dimname: str</span>
+<span class="sd">        :returns: Actual variable name (possibly substituted from dimname</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises: dimnameException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">listdim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listdim</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dimname</span> <span class="ow">in</span> <span class="n">listdim</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dimname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dimname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_dims</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_dims</span><span class="p">[</span><span class="n">dimname</span><span class="p">]</span> <span class="ow">in</span> <span class="n">listdim</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_dims</span><span class="p">[</span><span class="n">dimname</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="n">dimname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="prosimuAbstract.gettiledim">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.gettiledim">[docs]</a>
+    <span class="k">def</span> <span class="nf">gettiledim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of tile in the file or None if no tile dimension is found.</span>
+
+<span class="sd">        :returns: Number of tile</span>
+<span class="sd">        :rtype: int or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listdim</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Tiles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dimensions</span><span class="p">:</span>
+                <span class="n">dimension</span> <span class="o">=</span> <span class="n">dimensions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">dimension</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.force_read_in_cache">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.force_read_in_cache">[docs]</a>
+    <span class="k">def</span> <span class="nf">force_read_in_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Force la lecture des variables du netcdf sous forme de tableau numpy.</span>
+<span class="sd">        Ces tableaux sont stockés dans l&#39;attribut varcache de la classe</span>
+
+<span class="sd">        Le cache est utilisé par la méthode read_var, son utilisation n&#39;est pas</span>
+<span class="sd">        implémentée pour les autres méthodes</span>
+
+<span class="sd">        Utile lorsque de nombreuses lectures de la même variable sont requises</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">varname</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">varcache</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="bp">Ellipsis</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.format">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.format">[docs]</a>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the format of the undelying netCDF file (e.g. NETCDF3_CLASSIC)</span>
+
+<span class="sd">        :returns: The format of NetCDF file</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">data_model</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING : old version of netCDF4 module. We cannot check the format of your forcing file. </span><span class="se">\</span>
+<span class="s2">                             We assume that you provide a NETCDF3_CLASSIC file.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;NETCDF3_CLASSIC&#39;</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.listdim">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.listdim">[docs]</a>
+    <span class="k">def</span> <span class="nf">listdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of the list of dimensions present in the netCDF file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.listvar">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.listvar">[docs]</a>
+    <span class="k">def</span> <span class="nf">listvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of variables present in the netCDF file</span>
+
+<span class="sd">        :returns: list of variables</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.getlendim">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.getlendim">[docs]</a>
+    <span class="k">def</span> <span class="nf">getlendim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the length of dimension dimname</span>
+
+<span class="sd">        :returns: length of dimension dimname</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="n">dimname</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.getdimvar">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.getdimvar">[docs]</a>
+    <span class="k">def</span> <span class="nf">getdimvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The dimensions of a specific variable</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: dimensions of varname</span>
+<span class="sd">        :rtype: numpy array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.getrankvar">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.getrankvar">[docs]</a>
+    <span class="k">def</span> <span class="nf">getrankvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the rank (number of dimensions) of a variable</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: rank</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.listattr">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.listattr">[docs]</a>
+    <span class="k">def</span> <span class="nf">listattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of attributtes attached to a variable</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: atributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.getattr">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.getattr">[docs]</a>
+    <span class="k">def</span> <span class="nf">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">attname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the value of an attribute of a variable</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param attname: the attribute name</span>
+<span class="sd">        :type attname: str</span>
+<span class="sd">        :returns: the attribute value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">attname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.gettypevar">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.gettypevar">[docs]</a>
+    <span class="k">def</span> <span class="nf">gettypevar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the dtype of a variable</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: the corresponding dtype</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.getfillvalue">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.getfillvalue">[docs]</a>
+    <span class="k">def</span> <span class="nf">getfillvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the fill value for a variable</span>
+
+<span class="sd">        :param varname: Variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :returns: the fill value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="s2">&quot;_FillValue&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">_FillValue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span> <span class="nf">infovar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="c1"># Vérification du nom de la variable</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gettypevar</span><span class="p">(</span><span class="n">varname</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getrankvar</span><span class="p">(</span><span class="n">varname</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getdimvar</span><span class="p">(</span><span class="n">varname</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">getfillvalue</span><span class="p">(</span><span class="n">varname</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">listattr</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+<div class="viewcode-block" id="prosimuAbstract.readtime_for_copy">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.readtime_for_copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">readtime_for_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the time raw variable and units</span>
+
+<span class="sd">        :returns: time variable, time units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">units</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.readtime">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.readtime">[docs]</a>
+    <span class="k">def</span> <span class="nf">readtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the time dimension of the netCDF file</span>
+
+<span class="sd">        :returns: time axis data</span>
+<span class="sd">        :rtype: numpy array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Vérification du nom de la variable</span>
+        <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mfile</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">time_base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">MFTime</span><span class="p">(</span><span class="n">time_base</span><span class="p">,</span> <span class="n">calendar</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&gt;=</span> <span class="s1">&#39;1.4.0&#39;</span> <span class="ow">and</span> <span class="n">cftime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cftime</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&gt;=</span> <span class="s1">&#39;1.1.0&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">time</span><span class="p">[:],</span> <span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">only_use_cftime_datetimes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                             <span class="n">only_use_python_datetimes</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">time</span><span class="p">[:],</span> <span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.get_time">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.get_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_asdatetime</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renvoie l&#39;indice de la dimension time correspondant au datetime donné en</span>
+<span class="sd">        argument</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span> <span class="o">==</span> <span class="n">time_asdatetime</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.read_var">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.read_var">[docs]</a>
+    <span class="k">def</span> <span class="nf">read_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read a variable from netCDF file. Note that this function does not support patches.</span>
+
+<span class="sd">        :param variable_name: nom de la variable</span>
+<span class="sd">        :param kwargs: spécifier la sous-sélection sous la forme  dimname = value</span>
+<span class="sd">                         ou dimname est le nom de la dimension d&#39;intéret, value est une valeur</span>
+<span class="sd">                         numérique ou un objet slice python pour récupérer une plage de valeurs</span>
+<span class="sd">        :returns: un tableau numpy.ma.MaskedArray (on peut toujours remplacer les éléments masqués</span>
+<span class="sd">                  par un indicateur de valeur manquante  pas implémenté)</span>
+
+<span class="sd">        Exemples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">           snowemp = prosimu.read_var(&#39;SNOWTEMP&#39;, time=0, Number_of_points = slice(100,125))</span>
+<span class="sd">           snowtemp = prosimu.read_var(&#39;SNOWTEMP&#39;, time=slice(0,10,2), Number_of_points=1, snow_layer=slice(0,10))</span>
+
+<span class="sd">        peut-être utilisé en combinaison avec les méthodes get_point et get_time</span>
+<span class="sd">        pour récupérer un point / un instant donné :</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">           snowtemp = prosimu.read_var(&#39;SNOWTEMP&#39;, time=self.get_time(datetime(2018,3,1,9)),</span>
+<span class="sd">                       Number_of_points = self.get_point(massif_num=3,slope=20,ZS=4500,aspect=0))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Sanitize dimensions (kwargs)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">arg2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_dimname</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">arg2</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+        <span class="c1"># Sanitize input variable name</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+
+        <span class="c1"># Default value : Remove patches</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Patches</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">args</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Patches</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Check cache</span>
+        <span class="n">ncvariable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varcache</span><span class="p">:</span>
+            <span class="n">ncvariable_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varcache</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ncvariable_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
+
+        <span class="c1"># Extraction</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="n">ncvariable</span><span class="o">.</span><span class="n">dimensions</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dimname</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dimname</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ncvariable_data</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.get_points">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.get_points">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the values of dimension :data:`number of points&lt;Number_of_points&gt;` correpsonding to</span>
+<span class="sd">        a subset defined by variables such as aspect, elevation (ZS), massif_num, slope, latitude, longitude</span>
+<span class="sd">        according to named arguments passed to the function.</span>
+
+<span class="sd">        :returns: List of points</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.get_point">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.get_point">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Same as :meth:`get_points` but raise an exception if there is not exactly one point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">point_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">point_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MultipleValueException</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">point_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;No point matching the selection&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">point_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.read">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.read">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">needmodif</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hasDecile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read data from a variable in the netCDF file.</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param fill2zero: if True, will replace undefined data with the value of 0. Otherwise, ``np.nan`` is used</span>
+<span class="sd">                          except if ``keepfillvalue`` is set.</span>
+<span class="sd">        :type fill2zero: bool</span>
+<span class="sd">        :param selectpoint: Select a point. If -1 or None, select all points.</span>
+<span class="sd">        :type selectpoint: integer or list of integers</span>
+<span class="sd">        :param tile: Select a tile.</span>
+<span class="sd">        :type tile: int</span>
+<span class="sd">        :param keepfillvalue: Do not replace the undefined data with ``np.nan`` and keep the fill value used in the</span>
+<span class="sd">                              netCDF file.</span>
+<span class="sd">        :type keepfillvalue: bool</span>
+<span class="sd">        :param needmodif: If True, return also the variable object</span>
+<span class="sd">        :type needmodif: bool</span>
+<span class="sd">        :param hasDecile: Deprecated, please do not use.</span>
+<span class="sd">        :param removetile: Deprecated, see tile instead.</span>
+
+<span class="sd">        :returns: Numpy data array containing the data of the selected variable.</span>
+<span class="sd">                  Note that order of dimensions is the same as in in file except if selectpoint is a list.</span>
+<span class="sd">                  In this case, the resulting point dimension is appended as the last dimension.</span>
+<span class="sd">        :rtype: numpy array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="c1"># Pour compatibilité anciens codes, on conserve les routines obsolètes read1d et read2d</span>
+
+    <span class="k">def</span> <span class="nf">read1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indpoint</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. warning:: Obsolete method</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="n">fill2zero</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">indpoint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. warning:: Obsolete method</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="n">fill2zero</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">checktime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nametime</span><span class="p">,</span> <span class="n">timeref</span><span class="p">):</span>
+
+        <span class="n">newtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nametime</span><span class="p">)</span>
+
+        <span class="c1">#  Provisoirement on compare brutalement.</span>
+        <span class="c1">#  A terme il faudra faire en fonction du units ou sélectionner une période commune.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">newtime</span><span class="p">[:]</span> <span class="o">!=</span> <span class="n">timeref</span><span class="p">[:])</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">TimeException</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="prosimuAbstract.close">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the netCDF dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.integration">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.integration">[docs]</a>
+    <span class="k">def</span> <span class="nf">integration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">nstep</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renvoie les valeurs cumulées tous les nstep pas de temps</span>
+
+<span class="sd">        .. todo::</span>
+<span class="sd">           Documenter cette fonction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">[</span><span class="n">nstep</span><span class="p">:]</span> <span class="o">-</span> <span class="n">cumsum</span><span class="p">[:</span><span class="o">-</span><span class="n">nstep</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">temp</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span> <span class="o">-</span> <span class="n">nstep</span><span class="p">,</span> <span class="n">nstep</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">[</span><span class="n">nstep</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">cumsum</span><span class="p">[:</span><span class="o">-</span><span class="n">nstep</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">return</span> <span class="n">temp</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span> <span class="o">-</span> <span class="n">nstep</span><span class="p">,</span> <span class="n">nstep</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Integration of 3D variables not implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prosimuAbstract.moytempo">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimuAbstract.moytempo">[docs]</a>
+    <span class="k">def</span> <span class="nf">moytempo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precip</span><span class="p">,</span> <span class="n">nstep</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Même chose que integration mais renvoie une moyenne</span>
+
+<span class="sd">        .. todo::</span>
+<span class="sd">           Documenter cette fonction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">integration</span><span class="p">(</span><span class="n">precip</span><span class="p">,</span> <span class="n">nstep</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">nstep</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_type</span><span class="p">,</span> <span class="n">e_value</span><span class="p">,</span> <span class="n">e_traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">_prosimu1d2d</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Common definitions to :class:`prosimu1d` and :class:`prosimu2d` &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the values of dimension :data:`number of points&lt;Number_of_points&gt;` correpsonding to</span>
+<span class="sd">        a subset defined by variables such as aspect, elevation (ZS), massif_num, slope, latitude, longitude</span>
+<span class="sd">        according to named arguments passed to the function.</span>
+
+<span class="sd">        :rtype: list of integers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;Le filtrage ne peut se faire que sur des variables géographiques</span>
+<span class="s2">                    (such as ZS, slope, aspect, lat, lon). Variable </span><span class="si">{}</span><span class="s2"> not compatible.&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+
+        <span class="n">locations_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span><span class="p">),</span>
+                                 <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">varname</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+            <span class="n">vardims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="bp">Ellipsis</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">:</span>
+                <span class="n">slices</span> <span class="o">=</span> <span class="bp">Ellipsis</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Swap axes if necessary</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                    <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span>
+
+                <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)),</span> <span class="n">index</span><span class="p">)</span>
+                <span class="n">slices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="kc">None</span> <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vardims</span> <span class="k">else</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">])</span>
+
+            <span class="n">locations_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">locations_bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">slices</span><span class="p">],</span> <span class="n">values</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">locations_bool</span><span class="o">.</span><span class="n">flatten</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">needmodif</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hasDecile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read data from a variable in the netCDF file.</span>
+
+<span class="sd">        :param varname: the variable name</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param fill2zero: if True, will replace undefined data with the value of 0. Otherwise, ``np.nan`` is used</span>
+<span class="sd">                          except if ``keepfillvalue`` is set.</span>
+<span class="sd">        :type fill2zero: bool</span>
+<span class="sd">        :param selectpoint: Select a point. If -1 or None, select all points.</span>
+<span class="sd">        :type selectpoint: int or tuple or list of int or tuple</span>
+<span class="sd">        :param tile: Select a specific tile.</span>
+<span class="sd">        :type removetile: int</span>
+<span class="sd">        :param keepfillvalue: Do not replace the undefined data with ``np.nan`` and keep the fill value used in the</span>
+<span class="sd">                              netCDF file.</span>
+<span class="sd">        :type keepfillvalue: bool</span>
+<span class="sd">        :param needmodif: If True, return also the variable object</span>
+<span class="sd">        :type needmodif: bool</span>
+<span class="sd">        :param hasdecile: Deprecated.</span>
+<span class="sd">        :param removetile: Deprecated. See tile instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+        <span class="c1"># Vérification du nom de la variable</span>
+        <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Sélection de la variable</span>
+        <span class="n">varnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+
+        <span class="n">avail_fillvalue</span> <span class="o">=</span> <span class="s2">&quot;_FillValue&quot;</span> <span class="ow">in</span> <span class="n">varnc</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">avail_fillvalue</span><span class="p">:</span>
+            <span class="n">fillvalue</span> <span class="o">=</span> <span class="n">varnc</span><span class="o">.</span><span class="n">_FillValue</span>
+
+        <span class="c1"># Sélection d&#39;un point si demandé</span>
+        <span class="c1"># Suppression dimension tile si nécessaire</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">varnc</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">selectpoint</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="n">tile</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="n">removetile</span><span class="p">)</span>
+
+        <span class="c1"># Remplissage des valeurs manquantes si nécessaire</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keepfillvalue</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fill2zero</span><span class="p">:</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fill missing data with 0 for variable &quot;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fill missing data with np.nan for variable &quot;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">avail_fillvalue</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fill2zero</span><span class="p">:</span>
+                        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var</span> <span class="o">==</span> <span class="n">fillvalue</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fill missing data with 0 for variable &quot;</span> <span class="o">+</span> <span class="n">varname</span> <span class="o">+</span> <span class="s2">&quot; (old method)&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var</span> <span class="o">==</span> <span class="n">fillvalue</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Fill missing data with np.nan for variable &quot;</span> <span class="o">+</span> <span class="n">varname</span> <span class="o">+</span> <span class="s2">&quot; (old method)&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">array</span> <span class="o">=</span> <span class="n">var</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to fill data with 0 or np.nan for variable &quot;</span> <span class="o">+</span> <span class="n">varname</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">var</span>
+
+        <span class="k">if</span> <span class="n">needmodif</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">,</span> <span class="n">varnc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span>
+
+    <span class="k">def</span> <span class="nf">_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract data as a numpy array, possibly selecting point, and removing useless dimensions</span>
+
+<span class="sd">        :meta private:</span>
+
+<span class="sd">        :param selectpoint: List of points id to select along dimensions of Points_dimensions.</span>
+<span class="sd">                            Length of the list is the same as len(Points_dimensions).</span>
+<span class="sd">        :type selectpoint: list or None</span>
+<span class="sd">        :param removetile: Boolean, if true, select the tile 0. Deprecated, use tile instead.</span>
+<span class="sd">        :type removetile: bool</span>
+<span class="sd">        :param tile: The tile to select.</span>
+<span class="sd">        :type tile: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+
+        <span class="n">vardims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
+        <span class="n">allpointstest</span> <span class="o">=</span> <span class="n">selectpoint</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="c1"># Special case</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">allpointstest</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not extract a point. The </span><span class="si">{}</span><span class="s1"> dimension was not found for &#39;</span>
+                                 <span class="s1">&#39;variable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">),</span> <span class="n">varname</span><span class="p">))</span>
+
+        <span class="n">selector</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">vardims</span><span class="p">)</span>
+
+        <span class="c1"># Point extraction</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allpointstest</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vardims</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not extract a point. The </span><span class="si">{}</span><span class="s1"> dimension(s) was not found &#39;</span>
+                                 <span class="s1">&#39;for variable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">),</span> <span class="n">varname</span><span class="p">))</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">dimpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">:</span>
+                <span class="n">axispoint</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dimpoint</span><span class="p">)</span>
+                <span class="n">selector</span><span class="p">[</span><span class="n">axispoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">selectpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">removetile</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Tiles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">vardims</span><span class="p">:</span>
+                    <span class="n">tileindex</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">selector</span><span class="p">[</span><span class="n">tileindex</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">tile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tile</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Tiles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">vardims</span><span class="p">:</span>
+                    <span class="n">tileindex</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">selector</span><span class="p">[</span><span class="n">tileindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">tile</span>
+
+        <span class="k">return</span> <span class="n">var</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">selector</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="prosimu_base">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu_base">[docs]</a>
+<span class="k">class</span> <span class="nc">prosimu_base</span><span class="p">(</span><span class="n">_prosimu1d2d</span><span class="p">,</span> <span class="n">prosimuAbstract</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Common class that is allowed to read both 1d and 2d simualtions. The selection of points is</span>
+<span class="sd">    not allowed in this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Points_dimensions</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="prosimu_base.get_points">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu_base.get_points">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :meta: private</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;get_points is not implemented in prosimu_base. Please use prosimu1d or prosimu2d classes&#39;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasTime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasDecile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract data as a numpy array, possibly removing useless dimensions. In prosimu_base class,</span>
+<span class="sd">        does not allow to select a point !</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">selectpoint</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;To use the selectpoint option, please use prosimu_auto, prosimu1d or prosimu2d. &#39;</span>
+                             <span class="s1">&#39;prosimu_base does not allow for point selection.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">selectpoint</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="n">tile</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="n">removetile</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="prosimu1d">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu1d">[docs]</a>
+<span class="k">class</span> <span class="nc">prosimu1d</span><span class="p">(</span><span class="n">_prosimu1d2d</span><span class="p">,</span> <span class="n">prosimuAbstract</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to read simulations where simulation points are aggregated along one dimension.</span>
+<span class="sd">    This is commonly used for semi-distributed simulations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Number_of_points</span> <span class="o">=</span> <span class="s1">&#39;Number_of_points&#39;</span>
+    <span class="n">Points_dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Number_of_points</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasTime</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hasDecile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract data as a numpy array, possibly selecting point, and removing useless dimensions</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">selectpoint</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">selectpoint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">selectpoint</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">selectpoint</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="n">tile</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="n">removetile</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="prosimu2d">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu2d">[docs]</a>
+<span class="k">class</span> <span class="nc">prosimu2d</span><span class="p">(</span><span class="n">_prosimu1d2d</span><span class="p">,</span> <span class="n">prosimuAbstract</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to read simulations where simulation points are aggregated along one dimension.</span>
+<span class="sd">    This is commonly used for semi-distributed simulations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Points_dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract data as a numpy array, possibly selecting point, and removing useless dimensions</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">selectpoint</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">selectpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="c1"># We have one point, identified with unique integer</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_pointnr_to_varind</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">)</span>
+            <span class="n">onepoint</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># We have a list of points</span>
+            <span class="n">onepoint</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+                <span class="c1"># Translate point number in dimensions indexes</span>
+                <span class="n">selectpoint</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_translate_pointnr_to_varind</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">selectpoint</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;selectpoint must be list of integer or tuple&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selectpoint</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">selectpoint</span> <span class="o">=</span> <span class="n">selectpoint</span>
+            <span class="n">onepoint</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">varname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_varname</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span>
+        <span class="n">vardims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
+
+        <span class="n">allpointstest</span> <span class="o">=</span> <span class="n">selectpoint</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="c1"># Special case</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">allpointstest</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not extract a point. The point dimension(s) were not found for &#39;</span>
+                                 <span class="s1">&#39;variable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">varname</span><span class="p">))</span>
+
+        <span class="n">selector</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">vardims</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">removetile</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Tiles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">vardims</span><span class="p">:</span>
+                    <span class="n">tileindex</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">selector</span><span class="p">[</span><span class="n">tileindex</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">tile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tile</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Number_of_Tiles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">vardims</span><span class="p">:</span>
+                    <span class="n">tileindex</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">selector</span><span class="p">[</span><span class="n">tileindex</span><span class="p">]</span> <span class="o">=</span> <span class="n">tile</span>
+
+        <span class="k">if</span> <span class="n">allpointstest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">var</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">selector</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Point extraction</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vardims</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not extract a point. The </span><span class="si">{}</span><span class="s1"> dimension(s) was not found &#39;</span>
+                                 <span class="s1">&#39;for variable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">),</span> <span class="n">varname</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">onepoint</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dimpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">):</span>
+                    <span class="n">axispoint</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dimpoint</span><span class="p">)</span>
+                    <span class="n">selector</span><span class="p">[</span><span class="n">axispoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">selectpoint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">var</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">selector</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">outputdata</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">selectpoint</span><span class="p">:</span>
+                    <span class="n">selectorp</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dimpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Points_dimensions</span><span class="p">):</span>
+                        <span class="n">axispoint</span> <span class="o">=</span> <span class="n">vardims</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dimpoint</span><span class="p">)</span>
+                        <span class="n">selectorp</span><span class="p">[</span><span class="n">axispoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">outputdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">selectorp</span><span class="p">)])</span>
+
+            <span class="c1"># Do a numpy array, ensure Point dimension is the last one and return</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">outputdata</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_translate_pointnr_to_varind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the tuple of indices along ``Points_dimensions`` dimensions</span>
+<span class="sd">        for an integer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_n</span>
+        <span class="n">reste</span> <span class="o">=</span> <span class="n">nr</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])):</span>
+            <span class="n">pd</span> <span class="o">=</span> <span class="n">pd</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reste</span> <span class="o">//</span> <span class="n">pd</span><span class="p">)</span>
+            <span class="n">reste</span> <span class="o">=</span> <span class="n">reste</span> <span class="o">%</span> <span class="n">pd</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_translate_listtuple_to_listsidx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listtuple</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate a list of tuple, each one describing a point for its dimensions to</span>
+<span class="sd">        a list of indices by dimension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointsdim_l</span><span class="p">)):</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">listtuple</span><span class="p">:</span>
+                <span class="n">r1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+
+
+<div class="viewcode-block" id="prosimu_old">
+<a class="viewcode-back" href="../../code/utils-prosimu.html#utils.prosimu.prosimu_old">[docs]</a>
+<span class="k">class</span> <span class="nc">prosimu_old</span><span class="p">(</span><span class="n">prosimu1d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    In the old operationnal format (before 2018), some dimensions have different</span>
+<span class="sd">    names, this class allows to deal with them easily</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">       Should not be used nowadays</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Number_of_points</span> <span class="o">=</span> <span class="s1">&#39;location&#39;</span>
+    <span class="n">Points_dimensions</span> <span class="o">=</span> <span class="p">[</span><span class="n">Number_of_points</span><span class="p">]</span>
+    <span class="n">Number_of_Patches</span> <span class="o">=</span> <span class="s1">&#39;tile&#39;</span>
+
+    <span class="n">_rewrite_dims</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">:</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;Number_of_patches&#39;</span><span class="p">:</span> <span class="s1">&#39;tile&#39;</span><span class="p">}</span></div>
+
+
+
+<span class="n">prosimu</span> <span class="o">=</span> <span class="n">prosimu1d</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.prosimu</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

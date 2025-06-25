@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The read_snowpack simulation reader &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compare two versions of output NetCDF file" href="utils-operational_repro-compare2versions.html" />
+    <link rel="prev" title="Getting git informations" href="utils-git.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils-operational_repro-compare2versions.html" title="Compare two versions of output NetCDF file"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="utils-git.html" title="Getting git informations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" accesskey="U">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-read-snowpack-simulation-reader">
+<h1>The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader<a class="headerlink" href="#the-read-snowpack-simulation-reader" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> module and especially the <a class="reference internal" href="#utils.read_snowpack.snowpack_reader" title="utils.read_snowpack.snowpack_reader"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.read_snowpack.snowpack_reader</span></code></a> class is designed to read profile files produced by SNOWPACK Swiss snow cover model.</p>
+<p id="module-utils.read_snowpack">This module is designed to provide tools to parse snowpack profiles as produced by the SNOWPACK snow cover model.
+See the <a class="reference external" href="https://snowpack.slf.ch/">snowpack website</a> for more details on the production and structure of such files.</p>
+<p>NB : For easier readability and maintainability of the code, this implementation requires a strict
+form of the data :</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A blank line must separate two sections.</p></li>
+<li><p>Comments are allowed only if the first non-space character of the line is <code class="docutils literal notranslate"><span class="pre">#</span></code></p></li>
+<li><p>Inline comments are not supported.</p></li>
+<li><p>DATA is the last block that is parsed</p></li>
+</ul>
+</div></blockquote>
+<p>Authored by Léo Viallon Galinier from previous work of Neige Calonne and WSL/SLF.</p>
+<p>This script requires python&gt;=3.8.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.read_snowpack.read_snowpack_profile">
+<span class="sig-prename descclassname"><span class="pre">utils.read_snowpack.</span></span><span class="sig-name descname"><span class="pre">read_snowpack_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{'0500':</span> <span class="pre">'time',</span> <span class="pre">'0501':</span> <span class="pre">'height',</span> <span class="pre">'0502':</span> <span class="pre">'density',</span> <span class="pre">'0503':</span> <span class="pre">'temperature',</span> <span class="pre">'0504':</span> <span class="pre">'lwc',</span> <span class="pre">'0508':</span> <span class="pre">'dendricity',</span> <span class="pre">'0509':</span> <span class="pre">'sphericity',</span> <span class="pre">'0510':</span> <span class="pre">'coordination_number',</span> <span class="pre">'0511':</span> <span class="pre">'bond_size',</span> <span class="pre">'0512':</span> <span class="pre">'grain_size',</span> <span class="pre">'0513':</span> <span class="pre">'grain_type',</span> <span class="pre">'0514':</span> <span class="pre">'sh_at_surface',</span> <span class="pre">'0515':</span> <span class="pre">'ice_content',</span> <span class="pre">'0516':</span> <span class="pre">'air_content',</span> <span class="pre">'0517':</span> <span class="pre">'stress',</span> <span class="pre">'0518':</span> <span class="pre">'viscosity',</span> <span class="pre">'0520':</span> <span class="pre">'temperature_gradient',</span> <span class="pre">'0521':</span> <span class="pre">'thermal_conductivity',</span> <span class="pre">'0523':</span> <span class="pre">'viscous_deformation_rate',</span> <span class="pre">'0530':</span> <span class="pre">'stab_indices',</span> <span class="pre">'0531':</span> <span class="pre">'stab_deformation_rate',</span> <span class="pre">'0532':</span> <span class="pre">'sn38',</span> <span class="pre">'0533':</span> <span class="pre">'sk38',</span> <span class="pre">'0534':</span> <span class="pre">'hand_hardness',</span> <span class="pre">'0535':</span> <span class="pre">'opt_equ_grain_size',</span> <span class="pre">'0540':</span> <span class="pre">'date_of_birth',</span> <span class="pre">'0601':</span> <span class="pre">'shear_strength',</span> <span class="pre">'0603':</span> <span class="pre">'hardness_difference',</span> <span class="pre">'0604':</span> <span class="pre">'ssi',</span> <span class="pre">'0606':</span> <span class="pre">'crit_cut_length',</span> <span class="pre">'1501':</span> <span class="pre">'height_nodes',</span> <span class="pre">'1532':</span> <span class="pre">'sn38_nodes',</span> <span class="pre">'1533':</span> <span class="pre">'sk38_nodes'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/utils/read_snowpack.html#read_snowpack_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.read_snowpack.read_snowpack_profile" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the snowpack output file ‘.pro’ and return the raw data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em><em> or </em><em>path-like object</em>) – Path to the snowpack output PRO file (containing the profile)</p></li>
+<li><p><strong>variables</strong> (<em>dict</em>) – The variables to be parsed (if present): dictionnary associating the SNOWPACK code
+(on the form of a string) to the name to give to the variable (str).</p></li>
+<li><p><strong>soil</strong> (<em>bool</em>) – Wether or not to read soil information. If set to True, additional variables (suffixed by
+<code class="docutils literal notranslate"><span class="pre">_soil</span></code> will be created to store soil information</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.read_snowpack.snowpack_reader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.read_snowpack.</span></span><span class="sig-name descname"><span class="pre">snowpack_reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'0500':</span> <span class="pre">'time',</span> <span class="pre">'0501':</span> <span class="pre">'height',</span> <span class="pre">'0502':</span> <span class="pre">'density',</span> <span class="pre">'0503':</span> <span class="pre">'temperature',</span> <span class="pre">'0504':</span> <span class="pre">'lwc',</span> <span class="pre">'0508':</span> <span class="pre">'dendricity',</span> <span class="pre">'0509':</span> <span class="pre">'sphericity',</span> <span class="pre">'0510':</span> <span class="pre">'coordination_number',</span> <span class="pre">'0511':</span> <span class="pre">'bond_size',</span> <span class="pre">'0512':</span> <span class="pre">'grain_size',</span> <span class="pre">'0513':</span> <span class="pre">'grain_type',</span> <span class="pre">'0514':</span> <span class="pre">'sh_at_surface',</span> <span class="pre">'0515':</span> <span class="pre">'ice_content',</span> <span class="pre">'0516':</span> <span class="pre">'air_content',</span> <span class="pre">'0517':</span> <span class="pre">'stress',</span> <span class="pre">'0518':</span> <span class="pre">'viscosity',</span> <span class="pre">'0520':</span> <span class="pre">'temperature_gradient',</span> <span class="pre">'0521':</span> <span class="pre">'thermal_conductivity',</span> <span class="pre">'0523':</span> <span class="pre">'viscous_deformation_rate',</span> <span class="pre">'0530':</span> <span class="pre">'stab_indices',</span> <span class="pre">'0531':</span> <span class="pre">'stab_deformation_rate',</span> <span class="pre">'0532':</span> <span class="pre">'sn38',</span> <span class="pre">'0533':</span> <span class="pre">'sk38',</span> <span class="pre">'0534':</span> <span class="pre">'hand_hardness',</span> <span class="pre">'0535':</span> <span class="pre">'opt_equ_grain_size',</span> <span class="pre">'0540':</span> <span class="pre">'date_of_birth',</span> <span class="pre">'0601':</span> <span class="pre">'shear_strength',</span> <span class="pre">'0603':</span> <span class="pre">'hardness_difference',</span> <span class="pre">'0604':</span> <span class="pre">'ssi',</span> <span class="pre">'0606':</span> <span class="pre">'crit_cut_length',</span> <span class="pre">'1501':</span> <span class="pre">'height_nodes',</span> <span class="pre">'1532':</span> <span class="pre">'sn38_nodes',</span> <span class="pre">'1533':</span> <span class="pre">'sk38_nodes'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soil</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/read_snowpack.html#snowpack_reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.read_snowpack.snowpack_reader" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The object that provide access to SNOWPACK profiles simulation output
+through an interface that is similar to the one provided by prosimu
+for the Crocus simulations.</p>
+<p>Parse the snowpack output file ‘.pro’ and store/provide access to the parsed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em><em> or </em><em>path-like object</em>) – Path to the snowpack output PRO file (containing the profile)</p></li>
+<li><p><strong>variables</strong> (<em>dict</em>) – The variables to be parsed (if present): dictionnary associating the SNOWPACK code
+(on the form of a string) to the name to give to the variable (str). Allow to
+reduce the amount of data parsed and stored and to parse additional variables
+that would not be parsed by default.</p></li>
+<li><p><strong>soil</strong> (<em>bool</em>) – Wether or not to read soil information. If set to True, additional variables (suffixed by
+<code class="docutils literal notranslate"><span class="pre">_soil</span></code> will be created to store soil information</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.read_snowpack.snowpack_reader.get_time">
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/read_snowpack.html#snowpack_reader.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.read_snowpack.snowpack_reader.get_time" title="Link to this definition">¶</a></dt>
+<dd><p>Return the time dimension of the dataset on a similar form than provided by
+prosimu for Crocus model (numpy array of datetime.datetime objects).</p>
+<p>NB : If you are interested by the same variable on the form of a numpy
+array of integers or np.datetime64 values, use <code class="docutils literal notranslate"><span class="pre">read_var('time')</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>time array</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy array (datetime.datetime objects)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.read_snowpack.snowpack_reader.listvar">
+<span class="sig-name descname"><span class="pre">listvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/read_snowpack.html#snowpack_reader.listvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.read_snowpack.snowpack_reader.listvar" title="Link to this definition">¶</a></dt>
+<dd><p>Return the list of available variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of available variables</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.read_snowpack.snowpack_reader.read_var">
+<span class="sig-name descname"><span class="pre">read_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/read_snowpack.html#snowpack_reader.read_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.read_snowpack.snowpack_reader.read_var" title="Link to this definition">¶</a></dt>
+<dd><p>Get the data for a specified variable. It is also possible to select a relevant time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variable</strong> (<em>str</em>) – The variable name</p></li>
+<li><p><strong>time</strong> (<em>datetime.datetime</em>) – A datetime object selecting the time step to get. If None (default),
+returns the values for the whole season.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a><ul>
+<li><a class="reference internal" href="#utils.read_snowpack.read_snowpack_profile"><code class="docutils literal notranslate"><span class="pre">read_snowpack_profile()</span></code></a></li>
+<li><a class="reference internal" href="#utils.read_snowpack.snowpack_reader"><code class="docutils literal notranslate"><span class="pre">snowpack_reader</span></code></a><ul>
+<li><a class="reference internal" href="#utils.read_snowpack.snowpack_reader.get_time"><code class="docutils literal notranslate"><span class="pre">snowpack_reader.get_time()</span></code></a></li>
+<li><a class="reference internal" href="#utils.read_snowpack.snowpack_reader.listvar"><code class="docutils literal notranslate"><span class="pre">snowpack_reader.listvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.read_snowpack.snowpack_reader.read_var"><code class="docutils literal notranslate"><span class="pre">snowpack_reader.read_var()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils-git.html"
+                          title="previous chapter">Getting git informations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="utils-operational_repro-compare2versions.html"
+                          title="next chapter">Compare two versions of output NetCDF file</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/utils-readsnowpack.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils-operational_repro-compare2versions.html" title="Compare two versions of output NetCDF file"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="utils-git.html" title="Getting git informations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" >Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

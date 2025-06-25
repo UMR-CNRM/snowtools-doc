@@ -1,0 +1,48 @@
+Script ``plots/stratiprofile/proplotter.py`` help:
+
+
+.. code-block:: none
+
+   usage: proplotter [-h] [--debug] [-o OUTPUT] [-b BEGIN] [-e END]
+                     [-t {standard,multiple profil,multiple saison,height,member profil,member saison,compare}]
+                     [-v VARIABLE] [-p VARIABLE_PROFIL] [--point POINT]
+                     [-s SELECT] [--profil] [-d DATE] [--version]
+                     [filename ...]
+   
+   Proplotter is a tool to plot with (or without) the Graphical User Interface
+   which aims at providing representations and exploration tools for modelled
+   snowpack structures. It is primarily designed to deal with SURFEX/ISBA-Crocus
+   simulation output.
+   
+   positional arguments:
+     filename              Input file path
+   
+   options:
+     -h, --help            show this help message and exit
+     --debug               Increase logging for debugging purpose.
+     -o OUTPUT, --output OUTPUT
+                           Output filename (for use without GUI). Only available
+                           for standard graph for the moment.
+     -b BEGIN, --begin BEGIN
+                           Begin date
+     -e END, --end END     End date
+     -t {standard,multiple profil,multiple saison,height,member profil,member saison,compare}, --type {standard,multiple profil,multiple saison,height,member profil,member saison,compare}
+                           Type of graph (standard, multiple profil, multiple
+                           saison, height, member profil, member saison, compare)
+     -v VARIABLE, --variable VARIABLE
+                           Variable to plot
+     -p VARIABLE_PROFIL, --variable-profil VARIABLE_PROFIL
+                           Variable for profil plot (if relevant)
+     --point POINT         Point number to select
+     -s SELECT, --select SELECT
+                           Selection of point with constraints on data: use as
+                           many '-s variable=value' as necessary to select the
+                           point of interest. Note that if -p is given, these
+                           options are ignored.
+     --profil              Plot profil at given date (-d is compulsory) instead
+                           of a time evolution
+     -d DATE, --date DATE  Date for vertical profile
+     --version             show program's version number and exit
+
+
+

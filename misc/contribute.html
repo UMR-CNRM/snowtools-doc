@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Contribute to snowtools &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Snowtools code Documentation" href="doc.html" />
+    <link rel="prev" title="Code organization" href="orga.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="doc.html" title="Snowtools code Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="orga.html" title="Code organization"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Contribute to snowtools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="contribute-to-snowtools">
+<span id="sec-contribute"></span><h1>Contribute to snowtools<a class="headerlink" href="#contribute-to-snowtools" title="Link to this heading">¶</a></h1>
+<section id="developer-environment">
+<h2>Developer environment<a class="headerlink" href="#developer-environment" title="Link to this heading">¶</a></h2>
+<p>To contribute to snowtools, you must :</p>
+<ul class="simple">
+<li><p>use the <strong>git</strong> versioning tool</p></li>
+<li><p>use PyCharm as code editor</p></li>
+<li><p>work in a branch, deriving from <code class="docutils literal notranslate"><span class="pre">dev</span></code> (except for simple commits that can be directly done on <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch)</p></li>
+<li><p>Test your branch on your personal computer and with the test server</p></li>
+<li><p>Ensure new development are tested</p></li>
+<li><p>Ensure you followed guidelines below</p></li>
+<li><p>Ask for a code review before merging</p></li>
+</ul>
+<p>To add the git project to PyCharm directly, click on <code class="docutils literal notranslate"><span class="pre">VCS</span></code>, then <code class="docutils literal notranslate"><span class="pre">checkout</span> <span class="pre">from</span> <span class="pre">version</span> <span class="pre">control</span></code> and then <code class="docutils literal notranslate"><span class="pre">git</span></code>.</p>
+</section>
+<section id="code-style">
+<h2>Code style<a class="headerlink" href="#code-style" title="Link to this heading">¶</a></h2>
+<p>Python code should comply with PEP8 <a class="reference external" href="https://www.python.org/dev/peps/pep-0008">https://www.python.org/dev/peps/pep-0008</a> style guide. Please check your code before committing.
+In particular, tabs are prohibited and lines may not exceed 120 characters.</p>
+</section>
+<section id="code-tips">
+<h2>Code tips<a class="headerlink" href="#code-tips" title="Link to this heading">¶</a></h2>
+<section id="shebangs">
+<h3>Shebangs<a class="headerlink" href="#shebangs" title="Link to this heading">¶</a></h3>
+<p>If you are writing a script that can be executed, please add the following shebang. Note that you should not point to <code class="docutils literal notranslate"><span class="pre">python</span></code> as it may not be defined on all platforms, hence you have to point to <code class="docutils literal notranslate"><span class="pre">python3</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+</pre></div>
+</div>
+<p>Moreover, <strong>all</strong> codes must specify the encodign, which have to be <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+</pre></div>
+</div>
+</section>
+<section id="imports">
+<h3>Imports<a class="headerlink" href="#imports" title="Link to this heading">¶</a></h3>
+<p>Please avoid relative imports in snowtools. Absolute imports must start at <code class="docutils literal notranslate"><span class="pre">snowtools</span></code> package level. For instance, to import the <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> class from everywhere, write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+</pre></div>
+</div>
+<p>See PEP 8 import section <a class="reference external" href="https://www.python.org/dev/peps/pep-0008/#imports">https://www.python.org/dev/peps/pep-0008/#imports</a> for more details on correct import order and other guidelines on imports.</p>
+<p>Of course star-imports (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">XXX</span> <span class="pre">import</span> <span class="pre">*</span></code>) are prohibited.</p>
+</section>
+</section>
+<section id="documentation-and-testing">
+<h2>Documentation and testing<a class="headerlink" href="#documentation-and-testing" title="Link to this heading">¶</a></h2>
+<p>Each modification or code addition must be clearly documented in a docstring so that it could be included in this documentation. Please refer to <a class="reference internal" href="doc.html#sec-doc"><span class="std std-ref">Snowtools code Documentation</span></a> section for the main guidelines.</p>
+<p>In addition, each new development should come with tests (unit tests and/or test cases). See <a class="reference internal" href="test.html#sec-test"><span class="std std-ref">Testing</span></a> section for main guidelines.</p>
+</section>
+<section id="git-commits">
+<h2>Git commits<a class="headerlink" href="#git-commits" title="Link to this heading">¶</a></h2>
+<p>For both snowtools and SURFEX projects, all developments must be done in seperated git branches with frequent commit to ensure traceability of your modifications and the ability to include in your own branch the main bugfixes and developments of the main branches.</p>
+<p>We recoment to commit only when :</p>
+<ul class="simple">
+<li><p>You have a state of the code that is self-sufficient (not work in progress that could not be used yet)</p></li>
+<li><p>Tests are passing</p></li>
+<li><p>You have in your commit only changes on one topic (and not mixed changes that are unrelated)</p></li>
+</ul>
+<p>Each commit must contain a clear message that include:</p>
+<ul class="simple">
+<li><p>The type of commit (bugfix, development, documentation, etc.</p></li>
+<li><p>In few words, the part of the code that is affected</p></li>
+<li><p>The reason of the commit.</p></li>
+</ul>
+<p>The commit message is composed of a title (1st line) that summarize the changes and could be complemented by more detailed description of the changes explaining the reasons of the changes for future generations.</p>
+<p>Developpement branches must start from the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch and be named <code class="docutils literal notranslate"><span class="pre">dev_&lt;project&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code> is the name of the project or obviously describe what is inside the branch.</p>
+</section>
+<section id="language">
+<h2>Language<a class="headerlink" href="#language" title="Link to this heading">¶</a></h2>
+<p>Of course, all comments in the code, documentation and commit message have to be in english.</p>
+</section>
+<section id="surfex-specific-rules">
+<h2>SURFEX specific rules<a class="headerlink" href="#surfex-specific-rules" title="Link to this heading">¶</a></h2>
+<p>SURFEX developements must follow the specific coding rules of this project: <a class="reference external" href="http://www.cnrm.meteo.fr/surfex-lab/spip.php?rubrique93">http://www.cnrm.meteo.fr/surfex-lab/spip.php?rubrique93</a>
+Contributions will not be accepted if they do not follow these requirements.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Contribute to snowtools</a><ul>
+<li><a class="reference internal" href="#developer-environment">Developer environment</a></li>
+<li><a class="reference internal" href="#code-style">Code style</a></li>
+<li><a class="reference internal" href="#code-tips">Code tips</a><ul>
+<li><a class="reference internal" href="#shebangs">Shebangs</a></li>
+<li><a class="reference internal" href="#imports">Imports</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation-and-testing">Documentation and testing</a></li>
+<li><a class="reference internal" href="#git-commits">Git commits</a></li>
+<li><a class="reference internal" href="#language">Language</a></li>
+<li><a class="reference internal" href="#surfex-specific-rules">SURFEX specific rules</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="orga.html"
+                          title="previous chapter">Code organization</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="doc.html"
+                          title="next chapter">Snowtools code Documentation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/contribute.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="doc.html" title="Snowtools code Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="orga.html" title="Code organization"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Contribute to snowtools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

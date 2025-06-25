@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Methods of regridding &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Available User Environments (UEnv)" href="uenv.html" />
+    <link rel="prev" title="Masks" href="Masks.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="uenv.html" title="Available User Environments (UEnv)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Masks.html" title="Masks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="these_ange_index.html" accesskey="U">Documentations from Ange’s PhD (Blowing snow)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methods of regridding</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="methods-of-regridding">
+<h1>Methods of regridding<a class="headerlink" href="#methods-of-regridding" title="Link to this heading">¶</a></h1>
+<section id="spatial-regrid-with-esmf">
+<h2>Spatial regrid with <a class="reference external" href="https://earthsystemmodeling.org/">ESMF</a><a class="headerlink" href="#spatial-regrid-with-esmf" title="Link to this heading">¶</a></h2>
+<p>In some situation it can be interesing to regrid simulations files.
+For my PhD I had to downgrade high resolution simulation from 30m to 250m.
+The advantage of regriding with <a class="reference external" href="https://earthsystemmodeling.org/">ESMF</a> is that the dimension of the input file is not limited
+to 2 (can regrid NetCDF with time dimension, which is not the case for gdal).
+Can regrid using advanced methods such 1st and 2nd order conservative regridding methods (usefull for downscalling resolution)
+or regrid non-map data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Additional references:</p>
+<p><a class="reference external" href="https://earthsystemmodeling.org/esmpy_doc/release/latest/html/examples.html#regridding">https://earthsystemmodeling.org/esmpy_doc/release/latest/html/examples.html#regridding</a></p>
+<p><a class="reference external" href="https://earthsystemmodeling.org/esmpy_doc/release/latest/html/api.html#regridding">https://earthsystemmodeling.org/esmpy_doc/release/latest/html/api.html#regridding</a></p>
+<p><a class="reference external" href="https://ncar.github.io/esds/posts/2022/cam-se-regridding/">https://ncar.github.io/esds/posts/2022/cam-se-regridding/</a></p>
+</div>
+<section id="basic-principle">
+<h3>Basic principle:<a class="headerlink" href="#basic-principle" title="Link to this heading">¶</a></h3>
+<div class="line-block">
+<div class="line">Resample a 30m simulation to 250m using conservative method. The two simulations are named <em>S18_30</em> (30m) and <em>S18</em> (250m).</div>
+<div class="line"><strong>Need esmpy python library</strong> (the python wraper of ESMF regrid lib)</div>
+</div>
+<ol class="arabic">
+<li><p>Format the datasets for ESMF with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ESMF_format_dataset</span><span class="p">(</span><span class="n">S18_30</span><span class="p">)</span>
+<span class="n">ESMF_format_dataset</span><span class="p">(</span><span class="n">s18</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Define the start grid with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t30</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t30</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Define the arrival grid with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t250</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t250</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the original regrid field and fill it with the dataset</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sourcefield</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Source data 30m&#39;</span><span class="p">)</span>
+<span class="n">sourcefield</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">t30</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the original regrind field</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">esmpy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dest_grid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Resampled data 250m&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create the interpolator using the conservative method</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regrid_conserve</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Regrid</span><span class="p">(</span><span class="n">sourcefield</span><span class="p">,</span> <span class="n">destfield</span><span class="p">,</span> <span class="n">regrid_method</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">RegridMethod</span><span class="o">.</span><span class="n">CONSERVE</span><span class="p">,</span> <span class="n">unmapped_action</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">UnmappedAction</span><span class="o">.</span><span class="n">IGNORE</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Apply interpolator and fill</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">regrid_conserve</span><span class="p">(</span><span class="n">sourcefield</span><span class="p">,</span> <span class="n">destfield</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="function-to-format-dataset-for-esmf">
+<h3>Function to format dataset for ESMF<a class="headerlink" href="#function-to-format-dataset-for-esmf" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ESMF_format_dataset</span> <span class="p">(</span><span class="n">input_data</span><span class="p">,</span><span class="n">clean_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">inputpEPSG</span><span class="o">=</span><span class="mi">2154</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format dataset to be used in ESMF to regrif lamb93 data</span>
+<span class="sd">    :param input_data: the dataset to be formated</span>
+<span class="sd">    :param inputpEPSG: the epsg code of the datset</span>
+<span class="sd">    :param clean_dataset: remove variable in the dataset to keep only used values</span>
+<span class="sd">    :return: input_data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
+    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Made with</span><span class="se">\033</span><span class="s2">[0;31m &lt;3 </span><span class="se">\033</span><span class="s2">[0;30mby Ange&quot;</span><span class="p">)</span>
+    <span class="c1"># test inputs</span>
+    <span class="k">try</span> <span class="p">:</span>
+        <span class="n">input_data</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wrong dimension name ! Rename X dimension to x&#39;</span><span class="p">)</span>
+    <span class="k">try</span> <span class="p">:</span>
+        <span class="n">input_data</span><span class="o">.</span><span class="n">y</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Wrong dimension name ! Rename Y dimension to y&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">clean_dataset</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+        <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">try</span> <span class="p">:</span>
+            <span class="n">input_data</span> <span class="o">=</span>  <span class="n">input_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No time dimension in dataset, continuing...&#39;</span><span class="p">)</span>
+
+
+    <span class="c1"># create geometry to recompute correct latlon values</span>
+    <span class="c1"># I recommend not using lat/lon from surfex</span>
+
+    <span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="o">.</span><span class="n">from_epsg</span><span class="p">(</span><span class="n">inputpEPSG</span><span class="p">)</span>
+    <span class="n">crs</span><span class="o">.</span><span class="n">geodetic_crs</span>
+
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">Transformer</span><span class="o">.</span><span class="n">from_crs</span><span class="p">(</span><span class="n">crs</span><span class="p">,</span><span class="n">crs</span><span class="o">.</span><span class="n">geodetic_crs</span><span class="p">)</span>
+    <span class="n">proj</span>
+
+
+
+    <span class="n">X2D</span><span class="p">,</span><span class="n">Y2D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">Y2D</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">X2D</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+
+    <span class="n">lat</span><span class="p">,</span><span class="n">lon</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X2D</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span><span class="n">Y2D</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+    <span class="c1">#print(lat,lon)</span>
+
+    <span class="c1"># Savoir si on a une grille a espacement continue</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">)))</span><span class="o">!=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An exception occurred : not regular spacing in grid&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x spacing=&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span><span class="o">!=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;An exception occurred : not regular spacing in grid&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y spacing=&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+
+    <span class="c1">#pour 30 et x</span>
+    <span class="c1"># cell center donné par</span>
+    <span class="c1"># check sorted</span>
+    <span class="n">a</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">!=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error x value not sorted, aborting&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># cell corner donné par</span>
+    <span class="n">x_corner30</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># check size</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_corner30</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error len(X_corner), aborting&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+    <span class="c1">#pour 30 et y</span>
+    <span class="c1"># cell center donné par</span>
+    <span class="c1"># check sorted</span>
+    <span class="n">a</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">!=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error y value not sorted, aborting&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+
+    <span class="c1"># cell corner donné par</span>
+    <span class="n">y_corner30</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">))</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># check size</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_corner30</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error len(Y_corner), aborting&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># save lat/lon and corners values</span>
+
+    <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">lat</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="p">)),</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">geodetic_crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">lon</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span> <span class="p">)),</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">geodetic_crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>
+
+
+    <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">input_data</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span><span class="n">crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">set_coords</span><span class="p">((</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">))</span>
+
+    <span class="n">x_bounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_corner30</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x_bounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">x_corner30</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">x_bounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">x_corner30</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">y_bounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_corner30</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">y_bounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">y_corner30</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">y_bounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">y_corner30</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">x_bounds</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;nv_p&#39;</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x_bnds&#39;</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">y_bounds</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;nv_p&#39;</span><span class="p">],</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;y_bnds&#39;</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">crs</span><span class="o">.</span><span class="n">cs_to_cf</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+    <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">({</span><span class="s1">&#39;bounds&#39;</span><span class="p">:</span><span class="s1">&#39;y_bnds&#39;</span><span class="p">})</span>
+    <span class="n">input_data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">input_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">({</span><span class="s1">&#39;bounds&#39;</span><span class="p">:</span><span class="s1">&#39;x_bnds&#39;</span><span class="p">})</span>
+    <span class="n">input_data</span>
+
+    <span class="k">return</span> <span class="n">input_data</span>
+
+<span class="k">def</span> <span class="nf">grid_create_from_coordinates</span><span class="p">(</span><span class="n">xcoords</span><span class="p">,</span> <span class="n">ycoords</span><span class="p">,</span> <span class="n">xcorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ycorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">corners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">domask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">doarea</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ctk</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">TypeKind</span><span class="o">.</span><span class="n">R8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a 2 dimensional Grid using the bounds of the x and y coordiantes.</span>
+<span class="sd">    :param xcoords: The 1st dimension or &#39;x&#39; coordinates at cell centers, as a Python list or numpy Array</span>
+<span class="sd">    :param ycoords: The 2nd dimension or &#39;y&#39; coordinates at cell centers, as a Python list or numpy Array</span>
+<span class="sd">    :param xcorners: The 1st dimension or &#39;x&#39; coordinates at cell corners, as a Python list or numpy Array</span>
+<span class="sd">    :param ycorners: The 2nd dimension or &#39;y&#39; coordinates at cell corners, as a Python list or numpy Array</span>
+<span class="sd">    :param domask: boolean to determine whether to set an arbitrary mask or not</span>
+<span class="sd">    :param doarea: boolean to determine whether to set an arbitrary area values or not</span>
+<span class="sd">    :param ctk: the coordinate typekind</span>
+<span class="sd">    :return: grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Made with</span><span class="se">\033</span><span class="s2">[0;31m &lt;3 </span><span class="se">\033</span><span class="s2">[0;30mby Ange&quot;</span><span class="p">)</span>
+    <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># create a grid given the number of grid cells in each dimension, the center stagger location is allocated, the</span>
+    <span class="c1"># Cartesian coordinate system and type of the coordinates are specified</span>
+    <span class="n">max_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">xcoords</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ycoords</span><span class="p">)])</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="n">max_index</span><span class="p">,</span> <span class="n">staggerloc</span><span class="o">=</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CENTER</span><span class="p">],</span> <span class="n">coord_sys</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">CoordSys</span><span class="o">.</span><span class="n">CART</span><span class="p">,</span> <span class="n">coord_typekind</span><span class="o">=</span><span class="n">ctk</span><span class="p">)</span>
+
+    <span class="c1"># set the grid coordinates using numpy arrays, parallel case is handled using grid bounds</span>
+    <span class="n">gridXCenter</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x_par</span> <span class="o">=</span> <span class="n">xcoords</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">lower_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CENTER</span><span class="p">][</span><span class="n">x</span><span class="p">]:</span><span class="n">grid</span><span class="o">.</span><span class="n">upper_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CENTER</span><span class="p">][</span><span class="n">x</span><span class="p">]]</span>
+    <span class="n">gridXCenter</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_par</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">x_par</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">gridYCenter</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">y_par</span> <span class="o">=</span> <span class="n">ycoords</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">lower_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CENTER</span><span class="p">][</span><span class="n">y</span><span class="p">]:</span><span class="n">grid</span><span class="o">.</span><span class="n">upper_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CENTER</span><span class="p">][</span><span class="n">y</span><span class="p">]]</span>
+    <span class="n">gridYCenter</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_par</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">y_par</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+    <span class="c1"># create grid corners in a slightly different manner to account for the bounds format common in CF-like files</span>
+    <span class="k">if</span> <span class="n">corners</span><span class="p">:</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">add_coords</span><span class="p">([</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">])</span>
+        <span class="n">lbx</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">lower_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">ubx</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">upper_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">lby</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">lower_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+        <span class="n">uby</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">upper_bounds</span><span class="p">[</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+
+        <span class="n">gridXCorner</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">staggerloc</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i0</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ubx</span> <span class="o">-</span> <span class="n">lbx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">gridXCorner</span><span class="p">[</span><span class="n">i0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">xcorners</span><span class="p">[</span><span class="n">i0</span><span class="o">+</span><span class="n">lbx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">gridXCorner</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">xcorners</span><span class="p">[</span><span class="n">i0</span><span class="o">+</span><span class="n">lbx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">gridYCorner</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">staggerloc</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">StaggerLoc</span><span class="o">.</span><span class="n">CORNER</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">uby</span> <span class="o">-</span> <span class="n">lby</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">gridYCorner</span><span class="p">[:,</span> <span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ycorners</span><span class="p">[</span><span class="n">i1</span><span class="o">+</span><span class="n">lby</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">gridYCorner</span><span class="p">[:,</span> <span class="n">i1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ycorners</span><span class="p">[</span><span class="n">i1</span><span class="o">+</span><span class="n">lby</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># add an arbitrary mask</span>
+    <span class="k">if</span> <span class="n">domask</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">esmpy</span><span class="o">.</span><span class="n">GridItem</span><span class="o">.</span><span class="n">MASK</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="mf">1.75</span> <span class="o">&lt;=</span> <span class="n">gridXCenter</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">2.25</span><span class="p">)</span> <span class="o">&amp;</span>
+                      <span class="p">(</span><span class="mf">1.75</span> <span class="o">&lt;=</span> <span class="n">gridYCenter</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">2.25</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># add arbitrary areas values</span>
+    <span class="k">if</span> <span class="n">doarea</span><span class="p">:</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">esmpy</span><span class="o">.</span><span class="n">GridItem</span><span class="o">.</span><span class="n">AREA</span><span class="p">)</span>
+        <span class="n">area</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+    <span class="k">return</span> <span class="n">grid</span>
+</pre></div>
+</div>
+</section>
+<section id="example-of-script-to-spatially-resample-simulation-from-30m-to-250m">
+<h3>Example of script to spatially resample simulation from 30m to 250m:<a class="headerlink" href="#example-of-script-to-spatially-resample-simulation-from-30m-to-250m" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">S18_30</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/hendrix/grandesroussesfull30louissafran/Safran_tc_pap/pro/PRO_2018080106_2019080106.nc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;xx&#39;</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;yy&#39;</span><span class="p">:</span><span class="s1">&#39;y&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;2019-05-13T10:00&#39;</span><span class="p">)</span>
+<span class="c1"># donéee haute resolution a regriller</span>
+
+<span class="n">s18</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/hendrix/gr250ls/Safran_tc_pap/pro/PRO_2018080106_2019080106.nc&#39;</span><span class="p">,</span><span class="n">chunks</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span><span class="n">yy</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;2019-05-13T10:00&#39;</span><span class="p">)</span>
+<span class="c1"># grille a 250m a remplir</span>
+
+<span class="n">t30</span><span class="o">=</span><span class="n">ESMF_format_dataset</span><span class="p">(</span><span class="n">S18_30</span><span class="p">)</span> <span class="c1">#formate de dataset 30m</span>
+
+<span class="n">t250</span><span class="o">=</span><span class="n">ESMF_format_dataset</span><span class="p">(</span><span class="n">s18</span><span class="p">)</span> <span class="c1">#formate de dataset 250m</span>
+
+<span class="n">source_grid</span><span class="o">=</span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t30</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t30</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">dest_grid</span><span class="o">=</span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t250</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t250</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">esmpy</span>
+<span class="n">variable</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span> <span class="c1"># variable a regriller</span>
+<span class="n">twrite</span><span class="o">=</span><span class="n">t250</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="c1"># variable du dataset 250m a remplacer (on garde les coordonées et les attributs)</span>
+<span class="n">time_slice</span> <span class="o">=</span> <span class="n">t30</span><span class="o">.</span><span class="n">time</span> <span class="c1"># dimension temporelle</span>
+<span class="n">sourcefield</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Source data 30m&#39;</span><span class="p">)</span> <span class="c1"># creation du champ à regriller</span>
+<span class="n">sourcefield</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">t30</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="c1"># remplissage du champ avec les valeur du dataset</span>
+
+<span class="n">destfield</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">dest_grid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Resampled data 250m&#39;</span><span class="p">)</span> <span class="c1"># creation du champ apres regrid</span>
+
+<span class="c1"># creation de l&#39;interpolateur</span>
+<span class="n">regrid_conserve</span> <span class="o">=</span> <span class="n">esmpy</span><span class="o">.</span><span class="n">Regrid</span><span class="p">(</span><span class="n">sourcefield</span><span class="p">,</span> <span class="n">destfield</span><span class="p">,</span> <span class="n">regrid_method</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">RegridMethod</span><span class="o">.</span><span class="n">CONSERVE</span><span class="p">,</span> <span class="n">unmapped_action</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">UnmappedAction</span><span class="o">.</span><span class="n">IGNORE</span><span class="p">)</span>
+<span class="c1"># https://earthsystemmodeling.org/esmpy_doc/release/latest/html/RegridMethod.html#esmpy.api.constants.RegridMethod</span>
+<span class="c1"># https://earthsystemmodeling.org/esmpy_doc/release/latest/html/regrid.html</span>
+
+<span class="n">destfield</span> <span class="o">=</span> <span class="n">regrid_conserve</span><span class="p">(</span><span class="n">sourcefield</span><span class="p">,</span> <span class="n">destfield</span><span class="p">)</span><span class="c1"># regrillage</span>
+
+<span class="n">twrite</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="n">destfield</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="c1"># ecriture du champ regrillé dans un nouveau dataset</span>
+
+
+<span class="n">twrite</span><span class="o">=</span><span class="n">twrite</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span> <span class="c1"># ajout de time domme une dimension</span>
+<span class="n">twrite</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/regrid/tc_30m_2_250m_2019-05-13.zarr&#39;</span><span class="p">)</span> <span class="c1"># sauvegarde  en zarr car plus efficace que le netcdf mais fonctionne aussi</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="temporal-regrid-with-xarray">
+<h2>Temporal regrid with xarray<a class="headerlink" href="#temporal-regrid-with-xarray" title="Link to this heading">¶</a></h2>
+<p>Time re-gridding may be necessary to calculate smod from september to september.
+This can be achieved with xarray. In this following example we average simulations to a single value a day:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="n">tc_pap_lsm</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/hendrix/gr250ls/Safran_tc_pap/pro/*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">yy</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span> <span class="c1"># ouverture de toutes les simulations</span>
+<span class="n">pap_lsm</span><span class="o">=</span><span class="n">tc_pap_lsm</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="s1">&#39;2018-09-01T00:00&#39;</span><span class="p">,</span><span class="s1">&#39;2019-09-01T00:00&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">DSN_T_ISBA</span><span class="o">.</span><span class="n">chunk</span><span class="p">((</span><span class="mi">15000</span><span class="p">,</span><span class="mi">101</span><span class="p">,</span><span class="mi">143</span><span class="p">))</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;1D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># on chunk le netcdf selon la dimension temp, choix d&#39;une année =&gt; on moyenne la valeur de htn</span>
+<span class="c1">#pap_lsm.persist() # start computation asynchonous</span>
+<span class="n">pap_lsm</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">()</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">&quot;/scratch/mtool/haddjeria/hendrix/tc/pap_lsm_2018-1D.zarr&quot;</span><span class="p">)</span> <span class="c1"># on enregistre en zarr car plus efficace que le netcdf</span>
+</pre></div>
+</div>
+<section id="regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y">
+<h3>Regridding PDG or transpose Number_of_points to cartesian (X, Y)<a class="headerlink" href="#regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y" title="Link to this heading">¶</a></h3>
+<a class="reference internal image-reference" href="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png"><img alt="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" src="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" style="width: 600px;" /></a>
+<p>In some situations, it can be interesting to transpose PGD or PREP files from Number_of_points to X Y. I put the following code for
+the records. It does a transposition from Number_of_points to X Y dims, interpolate the variables to a new grid an then stack back
+the X Y coordinates to Number_of_points.
+The first part of the code can be used to only transpose Number_of_points to (X, Y) coordinates.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;~/PGD_gr250ls.nc&#39;</span><span class="p">)</span><span class="c1"># fichier a interpoler avec Number_of_points</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;~/scriptMNT30.nc&#39;</span><span class="p">)</span><span class="c1"># grille source d&#39;interpolation</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">XX</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">XY</span><span class="o">.</span><span class="n">values</span><span class="p">],</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">])</span> <span class="c1"># création de l&#39;array bijectif Numberof point =&gt; xy</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">p</span>
+<span class="n">p1</span><span class="p">[</span><span class="s1">&#39;Number_of_points&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">index</span><span class="c1"># remplacement de number of point</span>
+<span class="n">p1</span><span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span> <span class="c1"># suppression des doublons dans xxxxxxx yyyyyy =&gt; xy</span>
+<span class="n">pi</span> <span class="o">=</span><span class="n">p1</span><span class="o">.</span><span class="n">interp_like</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">ZS</span><span class="p">)</span><span class="c1"># interpolation, les dimension et coordonées doivent avoir strictement le meme nom !!</span>
+<span class="c1"># stack back to Number_of_points</span>
+<span class="n">pi</span><span class="o">=</span><span class="n">pi</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">Number_of_points</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">])</span><span class="c1"># regrillage de l&#39;array de x,y en number of points</span>
+<span class="n">pi</span>
+<span class="k">with</span> <span class="n">ProgressBar</span><span class="p">():</span> <span class="c1"># ecriture dans un netcdf</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;PGD_grandesrousses30LouisSafran.nc&#39;</span>
+    <span class="n">pi</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Methods of regridding</a><ul>
+<li><a class="reference internal" href="#spatial-regrid-with-esmf">Spatial regrid with ESMF</a><ul>
+<li><a class="reference internal" href="#basic-principle">Basic principle:</a></li>
+<li><a class="reference internal" href="#function-to-format-dataset-for-esmf">Function to format dataset for ESMF</a></li>
+<li><a class="reference internal" href="#example-of-script-to-spatially-resample-simulation-from-30m-to-250m">Example of script to spatially resample simulation from 30m to 250m:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#temporal-regrid-with-xarray">Temporal regrid with xarray</a><ul>
+<li><a class="reference internal" href="#regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y">Regridding PDG or transpose Number_of_points to cartesian (X, Y)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Masks.html"
+                          title="previous chapter">Masks</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="uenv.html"
+                          title="next chapter">Available User Environments (UEnv)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/extra_documentation/these_ange/Regridding.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="uenv.html" title="Available User Environments (UEnv)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Masks.html" title="Masks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="these_ange_index.html" >Documentations from Ange’s PhD (Blowing snow)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Methods of regridding</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

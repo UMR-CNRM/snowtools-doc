@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plots.maps.mapplotter &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=d152c80f" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">plots.maps.mapplotter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plots.maps.mapplotter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 17 June 2025</span>
+
+<span class="sd">:Authors:</span>
+<span class="sd">    radanovics</span>
+
+<span class="sd">    largely copied from epygram epy_cartoplot.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">bronx.syntax.parsing</span> <span class="kn">import</span> <span class="n">str2dict</span>
+<span class="kn">from</span> <span class="nn">bronx.stdtypes.date</span> <span class="kn">import</span> <span class="n">Date</span>
+<span class="kn">import</span> <span class="nn">epygram</span>
+<span class="kn">from</span> <span class="nn">epygram</span> <span class="kn">import</span> <span class="n">epylog</span><span class="p">,</span> <span class="n">epygramError</span>
+<span class="kn">from</span> <span class="nn">epygram.cli.args_catalog</span> <span class="kn">import</span> <span class="p">(</span><span class="n">add_arg_to_parser</span><span class="p">,</span>
+                                      <span class="n">files_args</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">,</span>
+                                      <span class="n">misc_args</span><span class="p">,</span> <span class="n">output_args</span><span class="p">,</span>
+                                      <span class="n">runtime_args</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">cartopy.feature</span> <span class="k">as</span> <span class="nn">cf</span>
+<span class="kn">from</span> <span class="nn">snowtools.plots.maps.quicklookmap</span> <span class="kn">import</span> <span class="n">read_and_preprocess</span><span class="p">,</span> <span class="n">wind_map</span><span class="p">,</span> <span class="n">difference_map</span><span class="p">,</span> <span class="n">scalar_map</span>
+
+<span class="n">CFEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span> <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">f</span><span class="p">])]</span>
+<span class="sd">&quot;&quot;&quot;Cartopy features&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../code/plots-mapplotter.html#plots.maps.mapplotter.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span>
+         <span class="n">fid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">Ufid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">Vfid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">refname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">diffmode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+         <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="c1"># pre-processing</span>
+         <span class="n">operation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">global_shift_center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="c1"># figure</span>
+         <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="c1"># graphical settings</span>
+         <span class="n">plot_method</span><span class="o">=</span><span class="s1">&#39;pcolormesh&#39;</span><span class="p">,</span>
+         <span class="n">minmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">mask_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">colorsnumber</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+         <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span>
+         <span class="n">center_cmap_on_0</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+         <span class="n">scatter_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="c1"># cartography</span>
+         <span class="n">parallels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+         <span class="n">meridians</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+         <span class="n">french_depts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+         <span class="n">cartopy_features</span><span class="o">=</span><span class="p">[],</span>
+         <span class="c1"># wind/vectors</span>
+         <span class="n">vectors_subsampling</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+         <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">&#39;quiver&#39;</span><span class="p">,</span>
+         <span class="n">wind_components_are_projected_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">quiverkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">map_factor_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+         <span class="c1"># output</span>
+         <span class="n">savefig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+         <span class="n">outputfilename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">figures_dpi</span><span class="o">=</span><span class="n">epygram</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">default_figures_dpi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot fields.</span>
+
+<span class="sd">    :param filename: name of the file to be processed.</span>
+<span class="sd">    :param fid: field identifier.</span>
+<span class="sd">    :param Ufid: U-component of wind field identifier.</span>
+<span class="sd">    :param Vfid: V-component of wind field identifier.</span>
+<span class="sd">    :param refname: name of the reference file to be compared to.</span>
+<span class="sd">    :param diffmode: if True, plots the difference field between the field in filename and refname.</span>
+<span class="sd">    :param date: date and time to choose from the file</span>
+
+<span class="sd">    Pre-processing:</span>
+
+<span class="sd">    :param operation: makes the requested operation</span>
+<span class="sd">        (e.g. {&#39;operation&#39;:&#39;-&#39;,&#39;operand&#39;:273.15} or</span>
+<span class="sd">        {&#39;operation&#39;:&#39;exp&#39;}) on the field before plot.</span>
+<span class="sd">    :param global_shift_center: for global lon/lat grids, shift the center by the</span>
+<span class="sd">        requested angle (in degrees). Enables a [0,360] grid</span>
+<span class="sd">        to be shifted to a [-180,180] grid, for instance (with -180 argument).</span>
+<span class="sd">    :param zoom: a dict(lonmin, lonmax, latmin, latmax) on which to build the plot.</span>
+
+<span class="sd">    Figure:</span>
+
+<span class="sd">    :param title: title to be written over plot.</span>
+
+<span class="sd">    Graphical settings:</span>
+
+<span class="sd">    :param plot_method: matplotlib plotting method to be used, among</span>
+<span class="sd">        (&#39;pcolormesh&#39;, &#39;contourf&#39;, &#39;contour&#39;, &#39;scatter&#39;).</span>
+<span class="sd">    :param minmax: tuple giving (or not) min and max fields values to be plotted.</span>
+<span class="sd">    :param colorsnumber: number of color discretization/isolines for fields plots.</span>
+<span class="sd">    :param colormap: name of the colormap for fields plots.</span>
+<span class="sd">    :param center_cmap_on_0: to center the colormap on 0.</span>
+<span class="sd">    :param mask_threshold: dict with min and/or max value(s) to mask outside.</span>
+<span class="sd">    :param scatter_kw: kwargs to be passed to matplotlib&#39;s ax.scatter().</span>
+<span class="sd">        Only for plot_method = &#39;scatter&#39;.</span>
+
+<span class="sd">    Cartography:</span>
+
+<span class="sd">    :param meridians and parallels: enable to fine-tune the choice of lines to</span>
+<span class="sd">        plot, with either:</span>
+<span class="sd">        - &#39;auto&#39;: automatic scaling to the map extents</span>
+<span class="sd">        - &#39;default&#39;: range(0,360,10) and range(-90,90,10)</span>
+<span class="sd">        - a list of values</span>
+<span class="sd">        - a grid step, e.g. 5 to plot each 5 degree.</span>
+<span class="sd">        - None: no one is plot</span>
+<span class="sd">    :param french_depts: draws french departments instead of countries boundaries.</span>
+<span class="sd">    :param cartopy_features: list of cartopy.feature.??? features.</span>
+
+<span class="sd">    Vector plots:</span>
+
+<span class="sd">    :param vectors_subsampling: subsampling ratio of vectors plots.</span>
+<span class="sd">    :param vector_plot_method: among (&#39;quiver&#39;, &#39;barbs&#39;, &#39;streamplot&#39;) for vector plots.</span>
+<span class="sd">    :param wind_components_are_projected_on: inform the plot on which axes the</span>
+<span class="sd">        vector components are projected on (&#39;grid&#39; or &#39;lonlat&#39;).</span>
+<span class="sd">        If None (default), look for information in the field, or raise error.</span>
+<span class="sd">    :param quiverkey: options to be passed to plotfield to activate a quiver key</span>
+<span class="sd">        (cf. pyplot.quiverkey).</span>
+<span class="sd">    :param map_factor_correction: if True, applies a correction of magnitude</span>
+<span class="sd">        to vector due to map factor.</span>
+
+<span class="sd">    Output:</span>
+
+<span class="sd">    :param savefig: save figures to file, instead of interactive plot</span>
+<span class="sd">    :param outputfilename: specify an output filename for the plot,</span>
+<span class="sd">        including format as extension.</span>
+<span class="sd">    :param figures_dpi: quality of saved figures.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 0/ checks, determine mode, initializations</span>
+    <span class="c1"># checks</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">Ufid</span><span class="p">,</span> <span class="n">Vfid</span><span class="p">)]),</span> <span class="s2">&quot;Mandatory arguments: *fid* OR *Ufid/Vfid*.&quot;</span>
+    <span class="k">if</span> <span class="n">fid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">Ufid</span> <span class="ow">is</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Exclusive arguments: *fid* OR *Ufid/Vfid*.&quot;</span>
+    <span class="k">if</span> <span class="n">Ufid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Arguments Ufid/Vfid got by pair.&quot;</span>
+    <span class="c1"># mode</span>
+    <span class="n">windmode</span> <span class="o">=</span> <span class="n">fid</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">diffmode</span> <span class="ow">and</span> <span class="n">windmode</span><span class="p">),</span> <span class="s2">&quot;Exclusive options: diff to reference file and wind plot.&quot;</span>
+    <span class="c1"># plot options</span>
+    <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="c1"># graphical settings</span>
+        <span class="n">plot_method</span><span class="o">=</span><span class="n">plot_method</span><span class="p">,</span>
+        <span class="n">minmax</span><span class="o">=</span><span class="n">minmax</span><span class="p">,</span>
+        <span class="n">mask_threshold</span><span class="o">=</span><span class="n">mask_threshold</span><span class="p">,</span>
+        <span class="n">scatter_kw</span><span class="o">=</span><span class="n">scatter_kw</span><span class="p">,</span>
+        <span class="c1"># cartography</span>
+        <span class="n">parallels</span><span class="o">=</span><span class="n">parallels</span><span class="p">,</span>
+        <span class="n">meridians</span><span class="o">=</span><span class="n">meridians</span><span class="p">,</span>
+        <span class="n">epygram_departments</span><span class="o">=</span><span class="n">french_depts</span><span class="p">,</span>
+        <span class="n">cartopy_features</span><span class="o">=</span><span class="n">cartopy_features</span><span class="p">,</span>
+        <span class="c1"># colormapping</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span>
+        <span class="n">colorsnumber</span><span class="o">=</span><span class="n">colorsnumber</span><span class="p">,</span>
+        <span class="n">center_cmap_on_0</span><span class="o">=</span><span class="n">center_cmap_on_0</span><span class="p">)</span>
+    <span class="c1"># pre-processing options</span>
+    <span class="n">preprocess_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span>
+        <span class="n">global_shift_center</span><span class="o">=</span><span class="n">global_shift_center</span><span class="p">,</span>
+        <span class="n">zoom</span><span class="o">=</span><span class="n">zoom</span><span class="p">)</span>
+
+    <span class="c1"># 1/ resource(s)</span>
+    <span class="n">resource</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">&#39;DDHLFA&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s1">&#39;use ddhlfa_plot.py tool for DDHLFA files.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">diffmode</span><span class="p">:</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">refname</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">windmode</span><span class="p">:</span>
+        <span class="c1"># 2.1/ wind</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">Ufid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">Vfid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
+        <span class="n">field</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">make_vector_field</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
+        <span class="n">takeover</span> <span class="o">=</span> <span class="n">wind_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">map_factor_correction</span><span class="p">,</span> <span class="n">vectors_subsampling</span><span class="p">,</span> <span class="n">wind_components_are_projected_on</span><span class="p">,</span>
+                            <span class="n">vector_plot_method</span><span class="p">,</span> <span class="n">quiverkey</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># 2.2/ scalar field</span>
+        <span class="k">if</span> <span class="n">diffmode</span><span class="p">:</span>
+            <span class="c1"># 2.2.1/ diff of scalar fields</span>
+            <span class="c1"># read field and ref, compute diff</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
+            <span class="n">ref_field</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+                                            <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">resource</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span>
+                                       <span class="n">reference</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span>
+                                       <span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
+            <span class="n">takeover</span> <span class="o">=</span> <span class="n">difference_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 2.2.2/ plot single scalar fields</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
+                                        <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
+            <span class="n">takeover</span> <span class="o">=</span> <span class="n">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+            
+    <span class="c1"># 3/ output</span>
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">epylog</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;save plot...&quot;</span><span class="p">)</span>
+        <span class="n">save_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">figures_dpi</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outputfilename</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<span class="c1"># end of main() ###############################################################</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c1"># 1. Parse arguments</span>
+    <span class="c1">####################</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;An EPyGrAM based tool for simple plots</span><span class="se">\</span>
+<span class="s1">                                                  of meteorological or snow cover related 2D&#39;</span>
+                                                 <span class="s1">&#39; fields from a resource file.&#39;</span><span class="p">,</span>
+                                     <span class="n">epilog</span><span class="o">=</span><span class="s1">&#39;End of help for: </span><span class="si">%(prog)s</span><span class="s1"> (EPyGrAM v&#39;</span> <span class="o">+</span> <span class="n">epygram</span><span class="o">.</span><span class="n">__version__</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">files_args</span><span class="p">[</span><span class="s1">&#39;principal_file&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;windfieldU&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;windfieldV&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;--date&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span>
+                                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Selected date in a bronx.Date compatible string format&quot;</span><span class="p">,</span>
+                                             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
+
+    <span class="n">diffmodes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">diffmodes</span><span class="p">,</span> <span class="n">files_args</span><span class="p">[</span><span class="s1">&#39;file_to_refer_in_diff&#39;</span><span class="p">])</span>
+
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;operation_on_field&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;mask_threshold&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;wind_components_are_projected_on&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;map_factor_correction&#39;</span><span class="p">])</span>
+
+    <span class="c1"># graphics</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;plot_method&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;levels_number&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;colormap&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;YlGnBu&#39;</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;center_cmap_on_0&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;cartopy_features&#39;</span><span class="p">],</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s2">&quot;cartopy features (cartopy.feature.*), separated by comma &quot;</span> <span class="o">+</span>
+                      <span class="nb">str</span><span class="p">(</span><span class="n">CFEATURES</span><span class="p">))</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;french_departments&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;parallels&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;meridians&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;vectors_subsampling&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;scatter_kw&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;lonlat_zoom&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;vector_plot_method&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;quiverkey&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;figures_dpi&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;global_shift_center&#39;</span><span class="p">])</span>
+    <span class="c1"># diff</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;diffcolormap&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;diff_center_cmap_on_0&#39;</span><span class="p">])</span>
+    <span class="c1"># output</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">output_args</span><span class="p">[</span><span class="s1">&#39;outputfilename&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">runtime_args</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">])</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># 2. Initializations</span>
+    <span class="c1">####################</span>
+    <span class="n">epygram</span><span class="o">.</span><span class="n">init_env</span><span class="p">()</span>
+    <span class="c1"># 2.0 logs</span>
+    <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;WARNING&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2.1 options</span>
+    <span class="n">refname</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">refname</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">refname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">diffmode</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">center_cmap_on_0</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">diffcenter_cmap_on_0</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">diffcolormap</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diffmode</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">center_cmap_on_0</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">center_cmap_on_0</span>
+        <span class="n">colormap</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">colormap</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">minmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">minmax</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">minmax</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">minmax</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">zoom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">zoom</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">zoom</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">zoom</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">operation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_operation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;operation&#39;</span><span class="p">:</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_operation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">operation</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+        <span class="n">parallels</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="p">:</span>
+        <span class="n">parallels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parallels</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">parallels</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+        <span class="n">meridians</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="p">:</span>
+            <span class="n">meridians</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">meridians</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">meridians</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mask_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask_threshold</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">mask_threshold</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask_threshold</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">quiverkey</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">quiverkey</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">scatter_kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scatter_kw</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">scatter_kw</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">scatter_kw</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cartopy_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cartopy_features</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cartopy_features</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cartopy_features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># 2.2 field to be processed</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">Ucomponentofwind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">Vcomponentofwind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">Ucomponentofwind</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">Vcomponentofwind</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">&quot;wind mode: both U &amp; V components of wind must be supplied&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">diffmode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;diffmode (-d/D) AND wind mode (--wU/wV) options together.&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">&quot;Need to specify a field (-f) or two wind fields (--wU/--wV).&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to specify a date (--date).&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+
+
+    <span class="c1"># 3. Main</span>
+    <span class="c1">#########</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+         <span class="n">fid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">field</span><span class="p">,</span>
+         <span class="n">Ufid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Ucomponentofwind</span><span class="p">,</span>
+         <span class="n">Vfid</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">Vcomponentofwind</span><span class="p">,</span>
+         <span class="n">refname</span><span class="o">=</span><span class="n">refname</span><span class="p">,</span>
+         <span class="n">diffmode</span><span class="o">=</span><span class="n">diffmode</span><span class="p">,</span>
+         <span class="n">date</span><span class="o">=</span><span class="n">date</span><span class="p">,</span>
+         <span class="c1"># pre-processing</span>
+         <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span>
+         <span class="n">global_shift_center</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">global_shift_center</span><span class="p">,</span>
+         <span class="n">zoom</span><span class="o">=</span><span class="n">zoom</span><span class="p">,</span>
+         <span class="c1"># figure</span>
+         <span class="n">title</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+         <span class="c1"># graphical settings</span>
+         <span class="n">plot_method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">plot_method</span><span class="p">,</span>
+         <span class="n">minmax</span><span class="o">=</span><span class="n">minmax</span><span class="p">,</span>
+         <span class="n">mask_threshold</span><span class="o">=</span><span class="n">mask_threshold</span><span class="p">,</span>
+         <span class="n">colorsnumber</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">levelsnumber</span><span class="p">,</span>
+         <span class="n">colormap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span>
+         <span class="n">center_cmap_on_0</span><span class="o">=</span><span class="n">center_cmap_on_0</span><span class="p">,</span>
+         <span class="n">scatter_kw</span><span class="o">=</span><span class="n">scatter_kw</span><span class="p">,</span>
+         <span class="c1"># cartography</span>
+         <span class="n">parallels</span><span class="o">=</span><span class="n">parallels</span><span class="p">,</span>
+         <span class="n">meridians</span><span class="o">=</span><span class="n">meridians</span><span class="p">,</span>
+         <span class="n">french_depts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">depts</span><span class="p">,</span>
+         <span class="n">cartopy_features</span><span class="o">=</span><span class="n">cartopy_features</span><span class="p">,</span>
+         <span class="c1"># wind/vectors</span>
+         <span class="n">vectors_subsampling</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">vectors_subsampling</span><span class="p">,</span>
+         <span class="n">vector_plot_method</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">vector_plot_method</span><span class="p">,</span>
+         <span class="n">wind_components_are_projected_on</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">wind_components_are_projected_on</span><span class="p">,</span>
+         <span class="n">quiverkey</span><span class="o">=</span><span class="n">quiverkey</span><span class="p">,</span>
+         <span class="n">map_factor_correction</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">map_factor_correction</span><span class="p">,</span>
+         <span class="c1"># output</span>
+         <span class="n">savefig</span><span class="o">=</span><span class="n">savefig</span><span class="p">,</span>
+         <span class="n">outputfilename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span><span class="p">)</span>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">plots.maps.mapplotter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

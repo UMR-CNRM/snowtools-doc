@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tools.massif_diags &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.massif_diags</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tools.massif_diags</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on 25 June 2018</span>
+
+<span class="sd">@author: lafaysse</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+
+
+<div class="viewcode-block" id="massif_simu">
+<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu">[docs]</a>
+<span class="k">class</span> <span class="nc">massif_simu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class overriding prosimu to add massif-scale diagnostics&quot;&quot;&quot;</span>
+    <span class="n">SurfexNatRiskName</span> <span class="o">=</span> <span class="s1">&#39;NAT_LEV&#39;</span>
+    <span class="n">MassifRiskName</span> <span class="o">=</span> <span class="s1">&#39;naturalIndex&#39;</span>
+    <span class="n">massif_dim_name</span> <span class="o">=</span> <span class="s1">&#39;massif&#39;</span>
+    <span class="n">massif_var_name</span> <span class="o">=</span> <span class="s1">&#39;massif_num&#39;</span>
+    <span class="n">aspect_var_name</span> <span class="o">=</span> <span class="s1">&#39;aspect&#39;</span>
+    <span class="n">elevation_var_name</span> <span class="o">=</span> <span class="s1">&#39;ZS&#39;</span>
+    <span class="n">slope_var_name</span> <span class="o">=</span> <span class="s1">&#39;slope&#39;</span>
+
+<div class="viewcode-block" id="massif_simu.massif_natural_risk">
+<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.massif_natural_risk">[docs]</a>
+    <span class="k">def</span> <span class="nf">massif_natural_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute massif-scale natural hazard index and add it to the file&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SurfexNatRiskName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="n">slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slope_var_name</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">slope</span> <span class="o">==</span> <span class="mf">40.</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compute massif-scale natural avalanche hazard indexes&quot;</span><span class="p">)</span>
+
+        <span class="n">slope_natural_risk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SurfexNatRiskName</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+        <span class="n">fillvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getfillvalue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SurfexNatRiskName</span><span class="p">)</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aspect_var_name</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">altitude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elevation_var_name</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">massif_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massif_var_name</span><span class="p">,</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+        <span class="n">list_massifs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span>
+        <span class="n">list_aspects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">aspect</span><span class="p">[</span><span class="n">aspect</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">minlevel</span> <span class="o">=</span> <span class="mf">1500.</span>
+        <span class="n">maxlevel</span> <span class="o">=</span> <span class="mf">3000.</span>
+
+        <span class="n">ntime</span> <span class="o">=</span> <span class="n">slope_natural_risk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">naspects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_aspects</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">warnings</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">altitude</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">altitude</span><span class="p">),</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">)</span>
+
+        <span class="n">nmassifs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_massifs</span><span class="p">)</span>
+        <span class="n">nlevels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">maxlevel</span> <span class="o">-</span> <span class="n">minlevel</span><span class="p">)</span> <span class="o">/</span> <span class="mf">300.</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_dim_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listdim</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massif_dim_name</span><span class="p">,</span> <span class="n">nmassifs</span><span class="p">)</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massif_dim_name</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">massif_dim_name</span><span class="p">],</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">var</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">list_massifs</span><span class="p">[:]</span>
+
+        <span class="n">risk_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">ntime</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">nlevels</span><span class="p">,</span> <span class="n">nmassifs</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">massif</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_massifs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">L</span><span class="p">,</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">300</span><span class="p">)):</span>
+                <span class="n">indslopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">massif_number</span> <span class="o">==</span> <span class="n">massif</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">slope</span> <span class="o">==</span> <span class="mf">40.</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude</span> <span class="o">==</span> <span class="n">level</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">indslopes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">risk_array</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">L</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">slope_natural_risk</span><span class="p">[:,</span> <span class="n">indslopes</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">risk_array</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">L</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MassifRiskName</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">,</span>
+                                          <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_dim_name</span><span class="p">],</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fillvalue</span><span class="p">)</span>
+        <span class="n">var</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Massif-scale index of natural avalanche hazard.&#39;</span>
+                         <span class="s1">&#39; Definition provided in http://dx.doi.org/10.3189/172756401781819292&#39;</span><span class="p">)</span>
+        <span class="n">var</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;0-8&#39;</span>
+
+        <span class="n">var</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">risk_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="massif_simu.warnings">
+<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.warnings">[docs]</a>
+    <span class="k">def</span> <span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minaltitude</span><span class="p">,</span> <span class="n">maxaltitude</span><span class="p">,</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if all elevations and aspects are present in the computation of massif-scale natural hazard index</span>
+
+<span class="sd">        :param minaltitude: Minimum elevation present in the PRO file</span>
+<span class="sd">        :type minaltitude: float</span>
+<span class="sd">        :param maxaltitude: Maximum elevation present in the PRO file</span>
+<span class="sd">        :type maxaltitude: float</span>
+<span class="sd">        :param minlevel: Minimum elevation considered in massif-scale natural hazard index</span>
+<span class="sd">        :type minlevel: float</span>
+<span class="sd">        :param maxlevel: Maximum elevation considered in massif-scale natural hazard index</span>
+<span class="sd">        :type maxlevel: float</span>
+<span class="sd">        :param naspects: Number of aspects present in the PRO file</span>
+<span class="sd">        :type naspects: int</span>
+<span class="sd">        :param list_aspects: List of aspects present in the PRO file</span>
+<span class="sd">        :type list_aspects: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">minaltitude</span> <span class="o">&gt;</span> <span class="n">minlevel</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the massif-scale natural avalanche&quot;</span>
+                  <span class="s2">&quot; hazard index is not computed with all expected elevations&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Lowest available level: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">minaltitude</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">maxaltitude</span> <span class="o">&lt;</span> <span class="n">maxlevel</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the massif-scale natural avalanche&quot;</span>
+                  <span class="s2">&quot;hazard index is not computed with all expected elevations&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Highest available level: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">maxaltitude</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">naspects</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the massif-scale natural avalanche hazard index is not computed with 8 aspect classes&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available aspects: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_aspects</span><span class="p">))</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tools.massif_diags</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

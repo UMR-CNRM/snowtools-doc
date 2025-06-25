@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Compare two versions of output NetCDF file &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scripts" href="scripts.html" />
+    <link rel="prev" title="The read_snowpack simulation reader" href="utils-readsnowpack.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="utils-readsnowpack.html" title="The read_snowpack simulation reader"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" accesskey="U">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Compare two versions of output NetCDF file</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="compare-two-versions-of-output-netcdf-file">
+<h1>Compare two versions of output NetCDF file<a class="headerlink" href="#compare-two-versions-of-output-netcdf-file" title="Link to this heading">¶</a></h1>
+<p id="module-utils.operational_reproductibility.compare2versions">Created on 1 oct 2014
+Major update on 13 sept 2019</p>
+<p>&#64;author: Matthieu Lafaysse</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonNetcdf">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">ComparisonNetcdf</span></span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonNetcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for Netcdf comparison</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonNetcdf.compare2files">
+<span class="sig-name descname"><span class="pre">compare2files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checktime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonNetcdf.compare2files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.compare2files" title="Link to this definition">¶</a></dt>
+<dd><p>main comparison method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name1</strong> – filename of first file</p></li>
+<li><p><strong>name2</strong> – filename of second file</p></li>
+<li><p><strong>checktime</strong> (<em>bool</em>) – check time variable</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conform</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonNetcdf.getlistvar">
+<span class="sig-name descname"><span class="pre">getlistvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">afile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonNetcdf.getlistvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.getlistvar" title="Link to this definition">¶</a></dt>
+<dd><p>get variable list from given file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>afile</strong> (<a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu" title="utils.operational_reproductibility.compare2versions.SimplifiedProsimu"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimplifiedProsimu</span></code></a>) – file object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of variables</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonNetcdf.report">
+<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonNetcdf.report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.report" title="Link to this definition">¶</a></dt>
+<dd><p>Define what should be done with the information message</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">ComparisonS2MDbleDev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmembers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MDbleDev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev" title="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComparisonS2MIntDev</span></code></a></p>
+<p>Class for comparing dev chain with “chaine en double”.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev.xpid_int">
+<span class="sig-name descname"><span class="pre">xpid_int</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DBLE'</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev.xpid_int" title="Link to this definition">¶</a></dt>
+<dd><p>experiment id</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">ComparisonS2MIntDev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmembers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf" title="utils.operational_reproductibility.compare2versions.ComparisonNetcdf"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComparisonNetcdf</span></code></a></p>
+<p>This class is not useful for vortex but is temporarily used while netcdf comparison is not implemented
+in the diff toolbox.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains">
+<span class="sig-name descname"><span class="pre">comparealldomains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.comparealldomains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains" title="Link to this definition">¶</a></dt>
+<dd><p>Comparison loop over all domains (“alp_allslopes”, “pyr_allslopes”, “cor_allslopes”, “postes”)
+and “cutoffs” (“A”, “P”) = analysis and forecast</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date</strong> – date to be compared</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conform</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Calls<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers" title="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compareallmembers()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers">
+<span class="sig-name descname"><span class="pre">compareallmembers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vconf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.compareallmembers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers" title="Link to this definition">¶</a></dt>
+<dd><p>Comparison loop over members</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vconf</strong> – vortex vconf</p></li>
+<li><p><strong>date</strong> – run date</p></li>
+<li><p><strong>cutoff</strong> – “A” or “P” (for analysis or forecast)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conform</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallruns">
+<span class="sig-name descname"><span class="pre">compareallruns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.compareallruns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallruns" title="Link to this definition">¶</a></dt>
+<dd><p>Comparison loop over all runs on a given day</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date</strong> – run date</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>conform</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Calls<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains" title="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains"><code class="xref py py-meth docutils literal notranslate"><span class="pre">comparealldomains()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.dirdate">
+<span class="sig-name descname"><span class="pre">dirdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.dirdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.dirdate" title="Link to this definition">¶</a></dt>
+<dd><p>get date directory name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date</strong> – rundate</p></li>
+<li><p><strong>cutoff</strong> – “A” or “P” (for analysis or forecast)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>date directory name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'meteo':</span> <span class="pre">'forcing',</span> <span class="pre">'prep':</span> <span class="pre">'prep',</span> <span class="pre">'pro':</span> <span class="pre">'pro'}</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.filename" title="Link to this definition">¶</a></dt>
+<dd><p>filename dict for s2m files</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.firstassimruntime">
+<span class="sig-name descname"><span class="pre">firstassimruntime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Time(6,</span> <span class="pre">0)</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.firstassimruntime" title="Link to this definition">¶</a></dt>
+<dd><p>runtime for second run of the day</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.get_period">
+<span class="sig-name descname"><span class="pre">get_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rundate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.get_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.get_period" title="Link to this definition">¶</a></dt>
+<dd><p>get simulation start date and end date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rundate</strong> – simulation reference date</p></li>
+<li><p><strong>cutoff</strong> – “A” or “P” (for analysis or forecast)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>datebegin, dateend</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathdev">
+<span class="sig-name descname"><span class="pre">getpathdev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vconf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.getpathdev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathdev" title="Link to this definition">¶</a></dt>
+<dd><p>get path of development simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vconf</strong> – vortex vconf</p></li>
+<li><p><strong>date</strong> – rundate</p></li>
+<li><p><strong>cutoff</strong> – “A” or “P” (for analysis or forecast)</p></li>
+<li><p><strong>member</strong> – member number</p></li>
+<li><p><strong>block</strong> – vortex block (“meteo”, “pro”, “prep”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathint">
+<span class="sig-name descname"><span class="pre">getpathint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vconf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#ComparisonS2MIntDev.getpathint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathint" title="Link to this definition">¶</a></dt>
+<dd><p>get path of operational simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vconf</strong> – vortex vconf</p></li>
+<li><p><strong>date</strong> – rundate</p></li>
+<li><p><strong>cutoff</strong> – “A” or “P” (for analysis or forecast)</p></li>
+<li><p><strong>member</strong> – member number</p></li>
+<li><p><strong>block</strong> – vortex block (“meteo”, “pro”, “prep”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.monthly_analysis_time">
+<span class="sig-name descname"><span class="pre">monthly_analysis_time</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Time(12,</span> <span class="pre">0)</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.monthly_analysis_time" title="Link to this definition">¶</a></dt>
+<dd><p>hour of the monthly reanalysis</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nightruntime">
+<span class="sig-name descname"><span class="pre">nightruntime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Time(3,</span> <span class="pre">0)</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nightruntime" title="Link to this definition">¶</a></dt>
+<dd><p>runtime for first run of the day</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers">
+<span class="sig-name descname"><span class="pre">nmembers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'meteo':</span> <span class="pre">{'alp':</span> <span class="pre">36,</span> <span class="pre">'cor':</span> <span class="pre">36,</span> <span class="pre">'postes':</span> <span class="pre">35,</span> <span class="pre">'pyr':</span> <span class="pre">36},</span> <span class="pre">'prep':</span> <span class="pre">{'alp':</span> <span class="pre">37,</span> <span class="pre">'cor':</span> <span class="pre">37,</span> <span class="pre">'postes':</span> <span class="pre">35,</span> <span class="pre">'pyr':</span> <span class="pre">37},</span> <span class="pre">'pro':</span> <span class="pre">{'alp':</span> <span class="pre">37,</span> <span class="pre">'cor':</span> <span class="pre">37,</span> <span class="pre">'postes':</span> <span class="pre">35,</span> <span class="pre">'pyr':</span> <span class="pre">37}}</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers" title="Link to this definition">¶</a></dt>
+<dd><p>member number dict</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_meteo">
+<span class="sig-name descname"><span class="pre">nmembers_meteo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alp':</span> <span class="pre">36,</span> <span class="pre">'cor':</span> <span class="pre">36,</span> <span class="pre">'postes':</span> <span class="pre">35,</span> <span class="pre">'pyr':</span> <span class="pre">36}</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_meteo" title="Link to this definition">¶</a></dt>
+<dd><p>number of members for safran meteo simulation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_snow">
+<span class="sig-name descname"><span class="pre">nmembers_snow</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alp':</span> <span class="pre">37,</span> <span class="pre">'cor':</span> <span class="pre">37,</span> <span class="pre">'postes':</span> <span class="pre">35,</span> <span class="pre">'pyr':</span> <span class="pre">37}</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_snow" title="Link to this definition">¶</a></dt>
+<dd><p>number of members for snow simulation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathdev">
+<span class="sig-name descname"><span class="pre">pathdev</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/scratch/mtool/lafaysse/cache/vortex/s2m'</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathdev" title="Link to this definition">¶</a></dt>
+<dd><p>path to development chain</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathint">
+<span class="sig-name descname"><span class="pre">pathint</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/chaine/mxpt001/vortex/mtool/cache/vortex/s2m'</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathint" title="Link to this definition">¶</a></dt>
+<dd><p>path to operational s2m chain</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.secondassimruntime">
+<span class="sig-name descname"><span class="pre">secondassimruntime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Time(9,</span> <span class="pre">0)</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.secondassimruntime" title="Link to this definition">¶</a></dt>
+<dd><p>runtime of third run of the day</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_dev">
+<span class="sig-name descname"><span class="pre">xpid_dev</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nouveaux_guess&#64;lafaysse'</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_dev" title="Link to this definition">¶</a></dt>
+<dd><p>experiment id of development chain</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_int">
+<span class="sig-name descname"><span class="pre">xpid_int</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OPER'</span></em><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_int" title="Link to this definition">¶</a></dt>
+<dd><p>experiment id of operational chain</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.FastComparisonS2MDbleDev">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">FastComparisonS2MDbleDev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmembers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#FastComparisonS2MDbleDev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MDbleDev" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev" title="utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev"><code class="xref py py-class docutils literal notranslate"><span class="pre">FastComparisonS2MIntDev</span></code></a>, <a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev" title="utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComparisonS2MDbleDev</span></code></a></p>
+<p>Class for fast comparison dev chain with “chaine en double”.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">FastComparisonS2MIntDev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nmembers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#FastComparisonS2MIntDev"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev" title="utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComparisonS2MIntDev</span></code></a></p>
+<p>Fast comparison of operational chain with development chain</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev.getlistvar">
+<span class="sig-name descname"><span class="pre">getlistvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">afile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#FastComparisonS2MIntDev.getlistvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev.getlistvar" title="Link to this definition">¶</a></dt>
+<dd><p>get reduced list of variables to compare</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>afile</strong> (<a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu" title="utils.operational_reproductibility.compare2versions.SimplifiedProsimu"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimplifiedProsimu</span></code></a>) – file object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.operational_reproductibility.compare2versions.</span></span><span class="sig-name descname"><span class="pre">SimplifiedProsimu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<p>Simplified prosimu class</p>
+<p><strong>`__init__(self, filename, mode=”r”, clobber=True, diskless=False,
+persist=False, keepweakref=False, memory=None, encoding=None,
+parallel=False, comm=None, info=None, format=’NETCDF4’)`</strong></p>
+<p><cite>Dataset</cite> constructor.</p>
+<p><strong>`filename`</strong>: Name of netCDF file to hold dataset. Can also
+be a python 3 pathlib instance or the URL of an OpenDAP dataset.  When memory is
+set this is just used to set the <cite>filepath()</cite>.</p>
+<p><strong>`mode`</strong>: access mode. <cite>r</cite> means read-only; no data can be
+modified. <cite>w</cite> means write; a new file is created, an existing file with
+the same name is deleted. <cite>a</cite> and <cite>r+</cite> mean append (in analogy with
+serial files); an existing file is opened for reading and writing.
+Appending <cite>s</cite> to modes <cite>r</cite>, <cite>w</cite>, <cite>r+</cite> or <cite>a</cite> will enable unbuffered shared
+access to <cite>NETCDF3_CLASSIC</cite>, <cite>NETCDF3_64BIT_OFFSET</cite> or
+<cite>NETCDF3_64BIT_DATA</cite> formatted files.
+Unbuffered access may be useful even if you don’t need shared
+access, since it may be faster for programs that don’t access data
+sequentially. This option is ignored for <cite>NETCDF4</cite> and <cite>NETCDF4_CLASSIC</cite>
+formatted files.</p>
+<p><strong>`clobber`</strong>: if <cite>True</cite> (default), opening a file with <cite>mode=’w’</cite>
+will clobber an existing file with the same name.  if <cite>False</cite>, an
+exception will be raised if a file with the same name already exists.</p>
+<p><strong>`format`</strong>: underlying file format (one of <cite>‘NETCDF4’,
+‘NETCDF4_CLASSIC’, ‘NETCDF3_CLASSIC’</cite>, <cite>‘NETCDF3_64BIT_OFFSET’</cite> or
+<cite>‘NETCDF3_64BIT_DATA’</cite>.
+Only relevant if <cite>mode = ‘w’</cite> (if <cite>mode = ‘r’,’a’</cite> or <cite>‘r+’</cite> the file format
+is automatically detected). Default <cite>‘NETCDF4’</cite>, which means the data is
+stored in an HDF5 file, using netCDF 4 API features.  Setting
+<cite>format=’NETCDF4_CLASSIC’</cite> will create an HDF5 file, using only netCDF 3
+compatible API features. netCDF 3 clients must be recompiled and linked
+against the netCDF 4 library to read files in <cite>NETCDF4_CLASSIC</cite> format.
+<cite>‘NETCDF3_CLASSIC’</cite> is the classic netCDF 3 file format that does not
+handle 2+ Gb files. <cite>‘NETCDF3_64BIT_OFFSET’</cite> is the 64-bit offset
+version of the netCDF 3 file format, which fully supports 2+ GB files, but
+is only compatible with clients linked against netCDF version 3.6.0 or
+later. <cite>‘NETCDF3_64BIT_DATA’</cite> is the 64-bit data version of the netCDF 3
+file format, which supports 64-bit dimension sizes plus unsigned and
+64 bit integer data types, but is only compatible with clients linked against
+netCDF version 4.4.0 or later.</p>
+<p><strong>`diskless`</strong>: If <cite>True</cite>, create diskless (in-core) file.
+This is a feature added to the C library after the
+netcdf-4.2 release. If you need to access the memory buffer directly,
+use the in-memory feature instead (see <cite>memory</cite> kwarg).</p>
+<p><strong>`persist`</strong>: if <cite>diskless=True</cite>, persist file to disk when closed
+(default <cite>False</cite>).</p>
+<p><strong>`keepweakref`</strong>: if <cite>True</cite>, child Dimension and Variable instances will keep weak
+references to the parent Dataset or Group object.  Default is <cite>False</cite>, which
+means strong references will be kept.  Having Dimension and Variable instances
+keep a strong reference to the parent Dataset instance, which in turn keeps a
+reference to child Dimension and Variable instances, creates circular references.
+Circular references complicate garbage collection, which may mean increased
+memory usage for programs that create may Dataset instances with lots of
+Variables. It also will result in the Dataset object never being deleted, which
+means it may keep open files alive as well. Setting <cite>keepweakref=True</cite> allows
+Dataset instances to be garbage collected as soon as they go out of scope, potentially
+reducing memory usage and open file handles.  However, in many cases this is not
+desirable, since the associated Variable instances may still be needed, but are
+rendered unusable when the parent Dataset instance is garbage collected.</p>
+<p><strong>`memory`</strong>: if not <cite>None</cite>, create or open an in-memory Dataset.
+If mode = ‘r’, the memory kwarg must contain a memory buffer object
+(an object that supports the python buffer interface).
+The Dataset will then be created with contents taken from this block of memory.
+If mode = ‘w’, the memory kwarg should contain the anticipated size
+of the Dataset in bytes (used only for NETCDF3 files).  A memory
+buffer containing a copy of the Dataset is returned by the
+<cite>Dataset.close</cite> method. Requires netcdf-c version 4.4.1 for mode=’r,
+netcdf-c 4.6.2 for mode=’w’. To persist the file to disk, the raw
+bytes from the returned buffer can be written into a binary file.
+The Dataset can also be re-opened using this memory buffer.</p>
+<p><strong>`encoding`</strong>: encoding used to encode filename string into bytes.
+Default is None (<cite>sys.getdefaultfileencoding()</cite> is used).</p>
+<p><strong>`parallel`</strong>: open for parallel access using MPI (requires mpi4py and
+parallel-enabled netcdf-c and hdf5 libraries).  Default is <cite>False</cite>. If
+<cite>True</cite>, <cite>comm</cite> and <cite>info</cite> kwargs may also be specified.</p>
+<p><strong>`comm`</strong>: MPI_Comm object for parallel access. Default <cite>None</cite>, which
+means MPI_COMM_WORLD will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<p><strong>`info`</strong>: MPI_Info object for parallel access. Default <cite>None</cite>, which
+means MPI_INFO_NULL will be used.  Ignored if <cite>parallel=False</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.getattr">
+<span class="sig-name descname"><span class="pre">getattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.getattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.getattr" title="Link to this definition">¶</a></dt>
+<dd><p>get a specific attribute for a specific variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>varname</strong> (<em>str</em>) – the variable name</p></li>
+<li><p><strong>attname</strong> (<em>str</em>) – the attribute name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the attribute value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listattr">
+<span class="sig-name descname"><span class="pre">listattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.listattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listattr" title="Link to this definition">¶</a></dt>
+<dd><p>list of attributes for a variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – the variable name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>atributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listdim">
+<span class="sig-name descname"><span class="pre">listdim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.listdim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listdim" title="Link to this definition">¶</a></dt>
+<dd><p>list of dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dimensions</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listvar">
+<span class="sig-name descname"><span class="pre">listvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.listvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listvar" title="Link to this definition">¶</a></dt>
+<dd><p>list of variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of variables</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.read" title="Link to this definition">¶</a></dt>
+<dd><p>read variable from NetCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>varname</strong> – variable name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>data array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.operational_reproductibility.compare2versions.SimplifiedProsimu.readtime">
+<span class="sig-name descname"><span class="pre">readtime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/operational_reproductibility/compare2versions.html#SimplifiedProsimu.readtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.readtime" title="Link to this definition">¶</a></dt>
+<dd><p>Get the time dimension of the netCDF file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>time axis data</p>
+</dd>
+<dt class="field-even">Trype<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Compare two versions of output NetCDF file</a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf"><code class="docutils literal notranslate"><span class="pre">ComparisonNetcdf</span></code></a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.compare2files"><code class="docutils literal notranslate"><span class="pre">ComparisonNetcdf.compare2files()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.getlistvar"><code class="docutils literal notranslate"><span class="pre">ComparisonNetcdf.getlistvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.report"><code class="docutils literal notranslate"><span class="pre">ComparisonNetcdf.report()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MDbleDev</span></code></a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev.xpid_int"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MDbleDev.xpid_int</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev</span></code></a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.comparealldomains()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.compareallmembers()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallruns"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.compareallruns()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.dirdate"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.dirdate()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.filename"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.filename</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.firstassimruntime"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.firstassimruntime</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.get_period"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.get_period()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathdev"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.getpathdev()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathint"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.getpathint()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.monthly_analysis_time"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.monthly_analysis_time</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nightruntime"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.nightruntime</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.nmembers</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_meteo"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.nmembers_meteo</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.nmembers_snow"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.nmembers_snow</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathdev"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.pathdev</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.pathint"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.pathint</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.secondassimruntime"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.secondassimruntime</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_dev"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.xpid_dev</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.xpid_int"><code class="docutils literal notranslate"><span class="pre">ComparisonS2MIntDev.xpid_int</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MDbleDev"><code class="docutils literal notranslate"><span class="pre">FastComparisonS2MDbleDev</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev"><code class="docutils literal notranslate"><span class="pre">FastComparisonS2MIntDev</span></code></a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev.getlistvar"><code class="docutils literal notranslate"><span class="pre">FastComparisonS2MIntDev.getlistvar()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu</span></code></a><ul>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.getattr"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.getattr()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listattr"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.listattr()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listdim"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.listdim()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listvar"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.listvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.read"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.read()</span></code></a></li>
+<li><a class="reference internal" href="#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.readtime"><code class="docutils literal notranslate"><span class="pre">SimplifiedProsimu.readtime()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils-readsnowpack.html"
+                          title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="scripts.html"
+                          title="next chapter">Scripts</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/utils-operational_repro-compare2versions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="utils-readsnowpack.html" title="The read_snowpack simulation reader"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="utils.html" >Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Compare two versions of output NetCDF file</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Install SURFEX &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Run a SURFEX-Crocus simulation" href="surfex-run.html" />
+    <link rel="prev" title="Common data shared in DATA directory" href="../code/data.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surfex-run.html" title="Run a SURFEX-Crocus simulation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../code/data.html" title="Common data shared in DATA directory"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Install SURFEX</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="install-surfex">
+<h1>Install SURFEX<a class="headerlink" href="#install-surfex" title="Link to this heading">¶</a></h1>
+<p>SURFEX is now available as open-source.</p>
+<p>Below is given an extract of the install procedure with the necessary information to get started with SURFEX in particular if snow on the ground is a target.</p>
+<section id="users-at-meteo-france">
+<h2>Users at Meteo-France<a class="headerlink" href="#users-at-meteo-france" title="Link to this heading">¶</a></h2>
+<p>Simple users at Meteo-France do not need to install SURFEX, but rather should point at an existing install:</p>
+<ul class="simple">
+<li><p>On supercomputers, no need to specify a SURFEX install path, snowtools will use an appropriate one automatically;</p></li>
+<li><p>On Meteo-France PC or server at CEN, please set <code class="docutils literal notranslate"><span class="pre">EXESURFEX</span></code> environment variable to <code class="docutils literal notranslate"><span class="pre">/rd/cenfic3/cenmod/home/lafaysse/common/SURFEX/surfex-cen-NOMPI-O2-X0/exe</span></code>;</p></li>
+<li><p>On sxcen, point <code class="docutils literal notranslate"><span class="pre">EXESURFEX</span></code> to <code class="docutils literal notranslate"><span class="pre">/home/lafaysse/common/SURFEX/surfex-cen-NOMPI-O2-X0/exe</span></code>.</p></li>
+</ul>
+<p>Note: If you need to work with more recent branch (<code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> for instance) or other compile options (<code class="docutils literal notranslate"><span class="pre">MPI</span></code>) have a look to available binaries in the previously pointed <code class="docutils literal notranslate"><span class="pre">SURFEX</span></code> folder where other compiled binaries are available.</p>
+</section>
+<section id="requirements-for-users-outside-of-meteo-france">
+<h2>Requirements for users outside of Meteo-France<a class="headerlink" href="#requirements-for-users-outside-of-meteo-france" title="Link to this heading">¶</a></h2>
+<p>For a first install, check the SURFEX requirements and the basics: <a class="reference external" href="http://www.cnrm.meteo.fr/surfex-lab/spip.php?article302">http://www.cnrm.meteo.fr/surfex-lab/spip.php?article302</a></p>
+</section>
+<section id="get-the-code">
+<h2>Get the code<a class="headerlink" href="#get-the-code" title="Link to this heading">¶</a></h2>
+<p>Rather than installing from an « export » archive, it is better to immediately get started from the most recent version of the git repository. Crocus users should in the general case install the <code class="docutils literal notranslate"><span class="pre">cen</span></code> branch. This is the most recent stable release of Crocus snowpack model which often includes new developments not already merged in the master SURFEX branch. Specific instructions on how to use git for SURFEX are provided in : <a class="reference external" href="http://www.umr-cnrm.fr/surfex/spip.php?article415">http://www.umr-cnrm.fr/surfex/spip.php?article415</a></p>
+<p>Access the code by registering on this website (top right of the window): <a class="reference external" href="https://opensource.umr-cnrm.fr/">https://opensource.umr-cnrm.fr/</a>. Please always fill in the “comments” field asking for an access to SURFEX project. If you have never been in contact with the Crocus team before your request, please explain briefly your interest in this model. Once you have received a confirmation of your account creation, you will have to send a public ssh key to operator at meteo dot fr. This ssh key have to be created with <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span> <span class="pre">-t</span> <span class="pre">rsa</span></code>. If you are not familiar with SSH keys, let the default key name (id_rsa), and do not provide any passphrase. The public key is available under ~/.ssh/id_rsa.pub.</p>
+<p>For users which need scientific advices about the relevance of using Crocus for their application, please contact crocus at meteo.fr</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Caution: the directory where you are going to install SURFEX and all parent directories MUST NOT contain dots (.) in their names.</p>
+</div>
+<p>If you plan to launch simulation only (ie not for developer), download the cen branch with the folowwing command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>cen<span class="w"> </span>ssh://reader097@git.umr-cnrm.fr/git/Surfex_Git2.git
+</pre></div>
+</div>
+<p>If you are a developer, you may prefer download the cen_dev branch with the folowwing command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>cen_dev<span class="w"> </span>ssh://admin097@git.umr-cnrm.fr/git/Surfex_Git2.git
+</pre></div>
+</div>
+<p>If a password is requested, it means that your ssh keys have not been registered, please contact <code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">at</span> <span class="pre">meteo</span> <span class="pre">dot</span> <span class="pre">fr</span></code></p>
+<p>This will download a number of folder and files. The SURFEX sources are in the src directory.</p>
+</section>
+<section id="compile-the-code">
+<h2>Compile the code<a class="headerlink" href="#compile-the-code" title="Link to this heading">¶</a></h2>
+<p>Then you need to compile the code following these instructions.</p>
+<p>Note that all the followings commands must be typed in the <strong>same terminal</strong>. Once finnished, you have to open a <strong>new terminal</strong> before running any simulation.</p>
+<section id="preparation-on-a-linux-pc">
+<h3>Preparation on a Linux PC<a class="headerlink" href="#preparation-on-a-linux-pc" title="Link to this heading">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you run on Meteo-France supercomputer, read next section.</p>
+</div>
+<p>If you do not want to compile SURFEX with a MPI-support for parallel runs (recommended for local simulations):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VER_MPI</span><span class="o">=</span>NOMPI
+</pre></div>
+</div>
+<p>Do not type this command in the following cases :</p>
+<ul class="simple">
+<li><p>you are working on a supercomputer</p></li>
+<li><p>you want to run simulations over more than 4 points and MPI fortran compiler is available on your computer (this is the case in Meteo-France computers)</p></li>
+<li><p>you need to use the interpolator of SAFRAN fields.</p></li>
+</ul>
+<p>In the other cases, adding this line to your $HOME/.bash_profile or equivalent is convenient.</p>
+<p>You can then follow the install procedure given below.</p>
+</section>
+<section id="preparation-on-meteo-france-supercomputers">
+<h3>Preparation on Méteo France Supercomputers<a class="headerlink" href="#preparation-on-meteo-france-supercomputers" title="Link to this heading">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not run on Meteo-France supercomputer, please skip this section.</p>
+<p>To use the last stable release of SURFEX-Crocus, you <strong>do not need</strong> to compile SURFEX on Belenos ! <code class="docutils literal notranslate"><span class="pre">s2m</span></code> will automatically use the last available binary.</p>
+</div>
+<p>You first need to load the compilers :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>intel
+module<span class="w"> </span>load<span class="w"> </span>intelmpi
+module<span class="w"> </span>load<span class="w"> </span>curl
+</pre></div>
+</div>
+<p>The next step of the configuration depends on your application:</p>
+<ul class="simple">
+<li><p>For MPI parallel applications (big domains, deterministic application) : let <code class="docutils literal notranslate"><span class="pre">VER_MPI</span></code> and <code class="docutils literal notranslate"><span class="pre">VER_CDF</span></code> options to default.</p></li>
+<li><p>For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VER_MPI</span><span class="o">=</span>NOMPI
+<span class="nb">export</span><span class="w"> </span><span class="nv">VER_CDF</span><span class="o">=</span>CDF2020
+</pre></div>
+</div>
+<p>You will also need to install <a class="reference internal" href="vortex-install.html#install-vortex"><span class="std std-ref">Install VORTEX</span></a>.</p>
+</section>
+<section id="common-configuration">
+<h3>Common configuration<a class="headerlink" href="#common-configuration" title="Link to this heading">¶</a></h3>
+<p>At this step, it is also possible to modify the optimization level by :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">OPTLEVEL</span><span class="o">=</span>DEBUG
+<span class="c1"># or</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">OPTLEVEL</span><span class="o">=</span>O2
+</pre></div>
+</div>
+<p>Optimization level “O2” is recommended in the general case (significant decrease of running time). In case of bugs or for the first local run after a new development, the optimization level may be changed to “DEBUG” to generate better error messages.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Long runs must never be run in DEBUG mode.</p>
+</div>
+<p>Initialize environment variables needed for surfex: go into <code class="docutils literal notranslate"><span class="pre">src</span></code> directory and run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./configure
+</pre></div>
+</div>
+<p>Then, execute the profile file for this master version of surfex:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>../conf/profile_surfex-LXgfortran-SFX-V8-1-1-NOMPI-OMP-O2-X0
+</pre></div>
+</div>
+<p>(or equivalent name depending on compiler, SURFEX version and compilation options)</p>
+</section>
+<section id="compilation">
+<h3>Compilation<a class="headerlink" href="#compilation" title="Link to this heading">¶</a></h3>
+<p>Compile the master version of the code:
+in the src directory and in the same terminal, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make
+make<span class="w"> </span>installmaster
+</pre></div>
+</div>
+<p>Master executables are created in directory exe. If everything goes well until this step, then surfex has been successfully installed on you computer.</p>
+<p>Then follow the paragraphs “configuration” and “Compilation” from normal computers.</p>
+</section>
+</section>
+<section id="additional-steps">
+<h2>Additional steps<a class="headerlink" href="#additional-steps" title="Link to this heading">¶</a></h2>
+<p>Setting specifically the SURFEX binaries to be used by s2m is done by exporting the variable EXESURFEX pointing to the directory containing the PGD, PREP and OFFLINE binaries:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">EXESURFEX</span><span class="o">=</span>/home/...yoursurfexdirectory../exe
+</pre></div>
+</div>
+<p>You can add this line to your $HOME/.bash_profile file if you are installing the SURFEX version you want to use by default.</p>
+<p>After SURFEX compilation, binaries have their complete names (with compiler name, surfex version, mpi option and optimization level) so you need to create manually symbolic links with these short names as s2m work with the short names.
+Please check carefully the full names of your binaries (depending on SURFEX version, compiler and compilation options) to build the symbolic links. Example :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX</span>/OFFLINE-LXgfortran-SFX-V8-1-1-NOMPI-O2-X0<span class="w"> </span><span class="nv">$EXESURFEX</span>/OFFLINE
+ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX</span>/PREP-LXgfortran-SFX-V8-1-1-NOMPI-O2-X0<span class="w"> </span><span class="nv">$EXESURFEX</span>/PREP
+ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX</span>/PGD-LXgfortran-SFX-V8-1-1-NOMPI-O2-X0<span class="w"> </span><span class="nv">$EXESURFEX</span>/PGD
+ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX</span>/SODA-LXgfortran-SFX-V8-1-1-NOMPI-O2-X0<span class="w"> </span><span class="nv">$EXESURFEX</span>/SODA
+</pre></div>
+</div>
+</section>
+<section id="test-your-snowtools-and-surfex-install">
+<h2>Test your snowtools and SURFEX install<a class="headerlink" href="#test-your-snowtools-and-surfex-install" title="Link to this heading">¶</a></h2>
+<p>If you correctly installed the snowtools and SURFEX projects, you must be able to run successfully the following test case:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/FORCING_test_base.nc<span class="w"> </span>-b<span class="w"> </span><span class="m">20100801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20110801</span><span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-g<span class="w"> </span>-s<span class="w"> </span>...yoursurfexdirectory.../exe
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Install SURFEX</a><ul>
+<li><a class="reference internal" href="#users-at-meteo-france">Users at Meteo-France</a></li>
+<li><a class="reference internal" href="#requirements-for-users-outside-of-meteo-france">Requirements for users outside of Meteo-France</a></li>
+<li><a class="reference internal" href="#get-the-code">Get the code</a></li>
+<li><a class="reference internal" href="#compile-the-code">Compile the code</a><ul>
+<li><a class="reference internal" href="#preparation-on-a-linux-pc">Preparation on a Linux PC</a></li>
+<li><a class="reference internal" href="#preparation-on-meteo-france-supercomputers">Preparation on Méteo France Supercomputers</a></li>
+<li><a class="reference internal" href="#common-configuration">Common configuration</a></li>
+<li><a class="reference internal" href="#compilation">Compilation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-steps">Additional steps</a></li>
+<li><a class="reference internal" href="#test-your-snowtools-and-surfex-install">Test your snowtools and SURFEX install</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../code/data.html"
+                          title="previous chapter">Common data shared in <cite>DATA</cite> directory</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="surfex-run.html"
+                          title="next chapter">Run a SURFEX-Crocus simulation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/surfex-install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surfex-run.html" title="Run a SURFEX-Crocus simulation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../code/data.html" title="Common data shared in DATA directory"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Install SURFEX</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scripts.extract.obs.bdquery &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/nature.css?v=d152c80f" />
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.extract.obs.bdquery</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scripts.extract.obs.bdquery</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">check_and_convert_date</span>
+
+
+<div class="viewcode-block" id="question">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question">[docs]</a>
+<span class="k">class</span> <span class="nc">question</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for interrogating PostgreSQL database</span>
+
+<span class="sd">    Useful for accessing BDClim at Meteo-France. Please consider using directly</span>
+<span class="sd">    ``psycopg2`` or ``pandas`` for new projects and make sure you are familiar</span>
+<span class="sd">    with SQL syntax before using as inputs are not always correctly sanitized.</span>
+
+<span class="sd">    Usecase example: Read all snow depth information for poste nr 38005402 (Nivose Aigleton)</span>
+<span class="sd">    and 38567002 (Chamrousse) for the season 2020-2021 and save it to a file:</span>
+
+<span class="sd">    .. code:: python</span>
+
+<span class="sd">       question1 = question(</span>
+<span class="sd">               # Variables to extract: here date, num_poste on 8 digits, poste name, snow depth</span>
+<span class="sd">               listvar=[&quot;to_char(dat,&#39;YYYY-MM-DD-HH24-MI&#39;)&quot;, &quot;to_char(h.num_poste, &#39;fm00000000&#39;)&quot;,</span>
+<span class="sd">                        &quot;poste_nivo.nom_usuel&quot;, &quot;neigetot&quot;],</span>
+<span class="sd">               # The table to read (see BDClim documentation)</span>
+<span class="sd">               table=&#39;H&#39;,</span>
+<span class="sd">               # Join table num_poste to get the poste name</span>
+<span class="sd">               listjoin=[&#39;POSTE_NIVO ON H.NUM_POSTE = POSTE_NIVO.NUM_POSTE&#39;],</span>
+<span class="sd">               # Set a time period of interest (datetime or str objects)</span>
+<span class="sd">               period=[&#39;2020-08-01&#39;, &#39;2021-08-01&#39;],</span>
+<span class="sd">               # Set the order</span>
+<span class="sd">               listorder=[&#39;dat&#39;, &#39;h.num_poste&#39;],</span>
+<span class="sd">               # Filtering</span>
+<span class="sd">               # parenthesis compulsory to group with &quot;OR&quot;</span>
+<span class="sd">               listconditions=[&#39;(H.NUM_POSTE=38005402 OR H.NUM_POSTE=38567002)&#39;],</span>
+<span class="sd">               )</span>
+<span class="sd">       # Save into a csv file</span>
+<span class="sd">       question1.run(outputfile=&#39;output.csv&#39;, header=[&#39;dat&#39;, &#39;num_poste&#39;, &#39;poste&#39;, &#39;neigetot&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;bdclimop-usr.meteo.fr&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5432</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s1">&#39;anonymous&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;anonymous&#39;</span><span class="p">,</span>
+                 <span class="n">database</span><span class="o">=</span><span class="s1">&#39;bdclim&#39;</span><span class="p">,</span> <span class="n">listvar</span><span class="o">=</span><span class="p">[],</span> <span class="n">listorder</span><span class="o">=</span><span class="p">[],</span> <span class="n">listconditions</span><span class="o">=</span><span class="p">[],</span> <span class="n">listjoin</span><span class="o">=</span><span class="p">[],</span> <span class="n">period</span><span class="o">=</span><span class="p">[],</span>
+                 <span class="n">table</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dateformat</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param host: Database server hostname</span>
+<span class="sd">        :type host: str</span>
+<span class="sd">        :param port: Database server port</span>
+<span class="sd">        :type port: int</span>
+<span class="sd">        :param user: Database username</span>
+<span class="sd">        :type user: str</span>
+<span class="sd">        :param password: Database password</span>
+<span class="sd">        :type password: str</span>
+<span class="sd">        :param database: Database name to use on the server</span>
+<span class="sd">        :type database: str</span>
+<span class="sd">        :param listvar: List of variables to read</span>
+<span class="sd">        :type listvar: list of str</span>
+<span class="sd">        :param listorder: List of variables to order on</span>
+<span class="sd">        :type listorder: list of str</span>
+<span class="sd">        :param listconditions: List of conditions to apply for data selection (SQL format)</span>
+<span class="sd">        :type listconditions: list of str</span>
+<span class="sd">        :param listjoin: List of join to be done (SQL format without &#39;JOIN&#39;)</span>
+<span class="sd">        :type join: list of str</span>
+<span class="sd">        :param period: List [[Min date, [max_date]]] for filtering on dates</span>
+<span class="sd">                       (field dat, else, put it in conditions please)</span>
+<span class="sd">        :type period: list of str or datetime</span>
+<span class="sd">        :param table: The table to read in the selected database</span>
+<span class="sd">        :type table: str</span>
+<span class="sd">        :param dateformat: Date format (iso, daily or monthly)</span>
+<span class="sd">        :type dateformat: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">listconditions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">listconditions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database</span> <span class="o">=</span> <span class="n">database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">listvar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">listorder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span> <span class="o">=</span> <span class="n">listconditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span> <span class="o">=</span> <span class="n">listjoin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="n">period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span> <span class="o">=</span> <span class="n">dateformat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="question.set_varout">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_varout">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_varout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listvar</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the list of desired output variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">listvar</span></div>
+
+
+<div class="viewcode-block" id="question.set_order">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_order">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listvar</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the list of sorting variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">listvar</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">listvar</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">listvar</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="question.set_table">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define the table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="question.set_period">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_period">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datedeb</span><span class="p">,</span> <span class="n">datefin</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define the period with begin and end date</span>
+
+<span class="sd">        :param datedeb: Begin date</span>
+<span class="sd">        :type datedeb: str or datetime object</span>
+<span class="sd">        :param datefin: End date</span>
+<span class="sd">        :type datefin: str or datetime object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="p">[</span><span class="n">datedeb</span><span class="p">,</span> <span class="n">datefin</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="question.set_condition">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_condition">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a condition, written as a SQL condition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="question.set_join">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.set_join">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">join_str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a join of table, written as a SQL JOIN.</span>
+<span class="sd">        Example: ``text ON text.id = id_text``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">join_str</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_format_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span> <span class="o">==</span> <span class="s1">&#39;iso&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span> <span class="o">==</span> <span class="s1">&#39;daily&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateformat</span> <span class="o">==</span> <span class="s1">&#39;monthly&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Date format must be one of iso, daily, monthly&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="question.get">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.get">[docs]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the query to the database and return an array of results</span>
+<span class="sd">        (or write the results in a csv file).</span>
+
+<span class="sd">        Note that the sql query is written in ``sql`` attribute of the</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        :param outputfile: Output csv file in which to write the results.</span>
+<span class="sd">                           If set to None, an array of results is returned</span>
+<span class="sd">        :type outputfile: str or path-like</span>
+<span class="sd">        :param sep: Separator in case of csv output is specified</span>
+<span class="sd">        :type sep: one-character str</span>
+<span class="sd">        :param header: Headers in case of CSV file. Defaults to True (put the headers),</span>
+<span class="sd">                       can also be False to desactivate headers or a list to override</span>
+<span class="sd">                       default ones</span>
+<span class="sd">        :type header: bool or list</span>
+<span class="sd">        :param mode: Mode for opening outputfile</span>
+<span class="sd">        :type mode: str</span>
+<span class="sd">        :returns: array of results (or nothing in case outputfile is set)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># construction of SQL request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">=</span> <span class="s1">&#39;SELECT </span><span class="si">{fields}</span><span class="s1"> FROM </span><span class="si">{table}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">),</span> <span class="n">table</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">+=</span> <span class="s1">&#39; JOIN </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; JOIN &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">date_formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="n">conditions</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="si">}</span><span class="s1">.DAT &gt;= </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">date_formatted</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="n">check_and_convert_date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">date_formatted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="n">conditions</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="si">}</span><span class="s1">.DAT &lt;= </span><span class="se">\&#39;</span><span class="si">{</span><span class="n">date_formatted</span><span class="si">}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">+=</span> <span class="s1">&#39; WHERE </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; AND &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conditions</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sql</span> <span class="o">+=</span> <span class="s1">&#39; ORDER BY </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Lauching the following querry : </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="p">)</span>
+
+        <span class="c1"># Connexion to database</span>
+        <span class="k">with</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sql</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">outputfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">csv</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outputfile</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">header</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+                        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="question.run">
+<a class="viewcode-back" href="../../../../code/scripts-extract-obs.html#scripts.extract.obs.bdquery.question.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For backward compatibility only. Please do not use.</span>
+
+<span class="sd">        meta:private</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.extract.obs.bdquery</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The mapplotter script &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plots from operational simulations" href="plots-pearps2m.html" />
+    <link rel="prev" title="The proplotter and procompare plotting tools" href="plots-proplotter.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots-pearps2m.html" title="Plots from operational simulations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plots-proplotter.html" title="The proplotter and procompare plotting tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="plots.html" accesskey="U">Plotting tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mapplotter script</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-mapplotter-script">
+<h1>The mapplotter script<a class="headerlink" href="#the-mapplotter-script" title="Link to this heading">¶</a></h1>
+<section id="command-line-use">
+<h2>Command line use<a class="headerlink" href="#command-line-use" title="Link to this heading">¶</a></h2>
+<p>Script <code class="docutils literal notranslate"><span class="pre">plots/maps/mapplotter.py</span></code> help:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: mapplotter.py [-h] [-f FIELD] [--wU UCOMPONENTOFWIND]
+                     [--wV VCOMPONENTOFWIND] --date DATE [-d REFNAME]
+                     [-x OPERATION] [--mt MASK_THRESHOLD]
+                     [--wpo {lonlat,grid}] [--mpf]
+                     [--pm {pcolormesh,contourf,contour,scatter}] [-m MINMAX]
+                     [-n LEVELSNUMBER] [-c COLORMAP] [-t] [--title TITLE]
+                     [--cpyf CARTOPY_FEATURES] [--depts]
+                     [--parallels PARALLELS] [--meridians MERIDIANS]
+                     [-s VECTORS_SUBSAMPLING] [--skw SCATTER_KW] [--zoom ZOOM]
+                     [--vpm VECTOR_PLOT_METHOD] [--qk QUIVERKEY]
+                     [--fd FIGURES_DPI]
+                     [--global_shift_center GLOBAL_SHIFT_CENTER]
+                     [-C DIFFCOLORMAP] [-T] [-O OUTPUTFILENAME] [-v]
+                     filename
+
+An EPyGrAM based tool for simple plots of meteorological or snow cover related
+2D fields from a resource file.
+
+positional arguments:
+  filename              name of the file to be processed.
+
+options:
+  -h, --help            show this help message and exit
+  -f FIELD, -F FIELD, --field FIELD
+                        *fid* = *field identifier* of of the field(s) to be
+                        processed. Syntax depends on format: GRIB: handgrip,
+                        e.g. &#39;shortName:t,level:850&#39;. FA: name, e.g.
+                        &#39;S050TEMPERATURE&#39;; regular expressions may be used,
+                        such as &#39;S00[2-6]WIND.[U-V].PHYS&#39;, &#39;SURFALBEDO*&#39; or
+                        &#39;SURF?.OF.OZONE&#39;. To obtain the list of fields in
+                        file, use the &#39;epy_what&#39; tool.
+  --wU UCOMPONENTOFWIND, --Ucomponentofwind UCOMPONENTOFWIND
+                        to process wind as a vector. U component of wind.
+                        (same syntax as -f). Not implemented in difference
+                        mode.
+  --wV VCOMPONENTOFWIND, --Vcomponentofwind VCOMPONENTOFWIND
+                        to process wind as a vector. V component of wind.
+                        (same syntax as -f). Not implemented in difference
+                        mode.
+  --date DATE           Selected date in a bronx.Date compatible string format
+  -d REFNAME, --diff REFNAME
+                        name of the 2nd (reference) file to be processed, to
+                        which comparison is done.
+  -x OPERATION, --operation OPERATION
+                        do the requested operation on field right after
+                        reading it. Syntax: &#39;-,273.15&#39; (e.g. for K =&gt; C) or
+                        &#39;exp&#39; to take the exponential of the field. The
+                        operand must be among (+,-,*,/) or &#39;normalize&#39; or any
+                        numpy function. For &#39;-&#39; operand, use short-name option
+                        -x without spacetab between option and argument.
+  --mt MASK_THRESHOLD, --mask_threshold MASK_THRESHOLD
+                        set a threshold to mask values. E.g. &#39;min=0.0&#39; will
+                        mask negative values. &#39;min=0.0,max=1e8&#39; will mask
+                        values outside these boundaries.
+  --wpo {lonlat,grid}, --wind_projected_on {lonlat,grid}
+                        specify on which coordinates the wind components are
+                        projected.
+  --mpf, --map_factor_correction
+                        apply a map factor correction to wind.
+  --pm {pcolormesh,contourf,contour,scatter}, --plot_method {pcolormesh,contourf,contour,scatter}
+                        plot method, among (&#39;pcolormesh&#39;, &#39;contourf&#39;,
+                        &#39;contour&#39;, &#39;scatter&#39;). Default is &#39;pcolormesh&#39; for
+                        rectangular grids, else &#39;contourf&#39;. There is a known
+                        bug (yet unsolved) with Arpege &amp; contourlines.
+  -m MINMAX, --minmax MINMAX
+                        min and max values for the plot. Syntax: &#39;min, max&#39;.
+                        &#39;0.0, max&#39; also works. Default is the field min/max
+                        values. In diff mode, this is valuable for resource
+                        and reference only, (min, max) for difference plot
+                        should be defined with --diffminmax option. For
+                        negative values, use short-name option -m without
+                        spacetab between option and argument.
+  -n LEVELSNUMBER, --levelsnumber LEVELSNUMBER
+                        number of levels for contours and shades. Default is
+                        50.
+  -c COLORMAP, --colormap COLORMAP
+                        name of the **matplotlib** colormap to use. Default is
+                        &#39;jet&#39; (Cf. http://matplotlib.org/examples/color/colorm
+                        aps_reference.html for standard matplotlib colormaps,
+                        or epygram.config.epygram_colormaps.keys() in a python
+                        interpreter for epygram&#39;s own colormaps). Custom
+                        colormaps can be defined (lookup matplotlib online or
+                        manually) and added in userconfig, in usercolormaps =
+                        {&#39;my_cmap&#39;:&#39;path_to_my_cmap&#39;}.
+  -t, --center_cmap_on_0
+                        to center the colormap on the value 0. Can be useful
+                        for wind plots for instance.
+  --title TITLE         title to be written over field plot.
+  --cpyf CARTOPY_FEATURES, --cartopy_features CARTOPY_FEATURES
+                        cartopy features (cartopy.feature.*), separated by
+                        comma [&#39;BORDERS&#39;, &#39;COASTLINE&#39;, &#39;COLORS&#39;, &#39;LAKES&#39;,
+                        &#39;LAND&#39;, &#39;OCEAN&#39;, &#39;RIVERS&#39;, &#39;STATES&#39;]
+  --depts               draw french departments on map (instead of countries
+                        boundaries).
+  --parallels PARALLELS
+                        tune the choice of lines to plot, among: &#39;auto&#39;:
+                        automatic scaling to the map extents (default) |
+                        &#39;default&#39;: range(0,360,10) and range(-90,90,10) | a
+                        list of values | a grid step, e.g. 5 to plot each 5
+                        degree | None: no one is plot
+  --meridians MERIDIANS
+                        Same as parallels, cf. parallels doc.
+  -s VECTORS_SUBSAMPLING, --vectors_subsampling VECTORS_SUBSAMPLING
+                        Subsampling factor for plotting vectors barbs (-w:
+                        computewind option). Defaults to 20.
+  --skw SCATTER_KW, --scatter_kw SCATTER_KW
+                        arguments to be passed to pyplot.scatter(), in case
+                        *plot_method* == &#39;scatter&#39;.
+  --zoom ZOOM           optional zoom on the specified region of the plot.
+                        Forces to &#39;cyl&#39; projection. Syntax: &#39;lonmin=-5,
+                        lonmax=1.2, latmin=40.8, latmax=51&#39;. Overwrites
+                        &#39;projection&#39; option.
+  --vpm VECTOR_PLOT_METHOD, --vector_plot_method VECTOR_PLOT_METHOD
+                        symbol to be used for vectors, among (&#39;quiver&#39;,
+                        &#39;barbs&#39;, &#39;streamplot&#39;).
+  --qk QUIVERKEY, --quiverkey QUIVERKEY
+                        arguments to be passed to pyplot.quiverkey(), in case
+                        *vector_symbol* == &#39;arrows&#39;. E.g.
+                        X=1.05,Y=1.05,U=10.,label=&#39;10m/s&#39;.
+  --fd FIGURES_DPI, --figures_dpi FIGURES_DPI
+                        quality of saved figures.
+  --global_shift_center GLOBAL_SHIFT_CENTER, --gsc GLOBAL_SHIFT_CENTER
+                        for global lon/lat grids, shift the center by the
+                        requested angle (in degrees). Enables a [0,360] grid
+                        to be shifted to a [-180,180] grid, for instance (with
+                        -180 argument).
+  -C DIFFCOLORMAP, --diffcolormap DIFFCOLORMAP
+                        name of the **matplotlib** colormap to use for diff.
+                        Default is &#39;RdBu_r&#39; (Cf. http://matplotlib.org/example
+                        s/color/colormaps_reference.html for standard
+                        matplotlib colormaps, or
+                        epygram.config.epygram_colormaps.keys() in a python
+                        interpreter for epygram&#39;s own colormaps). Custom
+                        colormaps can be defined (http://colormap.org or
+                        manually) and added in userconfig, in usercolormaps =
+                        {&#39;my_cmap&#39;:&#39;path_to_my_cmap&#39;}.
+  -T, --diffcenter_cmap_on_0
+                        NOT to center the colormap of diff plots on the value
+                        0. May be useful for fluxes decumulation.
+  -O OUTPUTFILENAME, --outputfilename OUTPUTFILENAME
+                        store output in the specified filename (without format
+                        for graphical output, to be completed by -o/--output).
+  -v, --verbose         run verbosely. Else, only messages of level Error will
+                        be displayed.
+
+End of help for: mapplotter.py (EPyGrAM v2.0.4)
+</pre></div>
+</div>
+<p>Example:</p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>-f<span class="w"> </span>DSN_T_ISBA<span class="w"> </span>--date<span class="w"> </span>20190513T10
+<span class="w">            </span>--parallels<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>--meridians<span class="w"> </span><span class="m">0</span>.1
+<span class="w">            </span>&lt;testbasedir&gt;/PRO/PRO_2019051300_2019051400.nc
+<span class="w">            </span>-O<span class="w"> </span>20190513T10_snowheight.png
+</pre></div>
+</div>
+</div></blockquote>
+<figure class="align-center">
+<img alt="../_images/20190513T10_snowheight.png" src="../_images/20190513T10_snowheight.png" />
+</figure>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>-f<span class="w"> </span>DSN_T_ISBA<span class="w"> </span>--date<span class="w"> </span>20150301T06
+<span class="w">        </span>--diff<span class="w"> </span>&lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
+<span class="w">        </span>&lt;testbasedir&gt;/PRO/PRO_second_2014080106_2015080106.nc
+<span class="w">        </span>-O<span class="w"> </span>20150301T06_snowheight_diff.png
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../_images/20150301T06_snowheight_diff.png" src="../_images/20150301T06_snowheight_diff.png" />
+</figure>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>--wU<span class="w"> </span>WSN_T_ISBA<span class="w"> </span>--wV<span class="w"> </span>SNOMLT_ISBA
+<span class="w">        </span>--date<span class="w"> </span>20150405T06<span class="w"> </span>--wpo<span class="w"> </span>grid<span class="w"> </span>--vectors_subsampling<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>&lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
+<span class="w">        </span>-O<span class="w"> </span>20150405T06_pseudo_wind_map.png
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../_images/20150405T06_pseudo_wind_map.png" src="../_images/20150405T06_pseudo_wind_map.png" />
+</figure>
+</div></blockquote>
+</section>
+<section id="main-plot-function">
+<h2>Main plot function<a class="headerlink" href="#main-plot-function" title="Link to this heading">¶</a></h2>
+<p id="module-plots.maps.mapplotter">Created on 17 June 2025</p>
+<dl class="field-list">
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
+<dd class="field-odd"><p>radanovics</p>
+<p>largely copied from epygram epy_cartoplot.py</p>
+</dd>
+</dl>
+<dl class="py data">
+<dt class="sig sig-object py" id="plots.maps.mapplotter.CFEATURES">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">CFEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['BORDERS',</span> <span class="pre">'COASTLINE',</span> <span class="pre">'COLORS',</span> <span class="pre">'LAKES',</span> <span class="pre">'LAND',</span> <span class="pre">'OCEAN',</span> <span class="pre">'RIVERS',</span> <span class="pre">'STATES']</span></em><a class="headerlink" href="#plots.maps.mapplotter.CFEATURES" title="Link to this definition">¶</a></dt>
+<dd><p>Cartopy features</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.mapplotter.main">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ufid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vfid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_shift_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pcolormesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorsnumber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plasma'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_cmap_on_0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatter_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meridians</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">french_depts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartopy_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors_subsampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quiver'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_components_are_projected_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiverkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_factor_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfilename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figures_dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/mapplotter.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.mapplotter.main" title="Link to this definition">¶</a></dt>
+<dd><p>Plot fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – name of the file to be processed.</p></li>
+<li><p><strong>fid</strong> – field identifier.</p></li>
+<li><p><strong>Ufid</strong> – U-component of wind field identifier.</p></li>
+<li><p><strong>Vfid</strong> – V-component of wind field identifier.</p></li>
+<li><p><strong>refname</strong> – name of the reference file to be compared to.</p></li>
+<li><p><strong>diffmode</strong> – if True, plots the difference field between the field in filename and refname.</p></li>
+<li><p><strong>date</strong> – date and time to choose from the file</p></li>
+</ul>
+</dd>
+</dl>
+<p>Pre-processing:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operation</strong> – makes the requested operation
+(e.g. {‘operation’:’-‘,’operand’:273.15} or
+{‘operation’:’exp’}) on the field before plot.</p></li>
+<li><p><strong>global_shift_center</strong> – for global lon/lat grids, shift the center by the
+requested angle (in degrees). Enables a [0,360] grid
+to be shifted to a [-180,180] grid, for instance (with -180 argument).</p></li>
+<li><p><strong>zoom</strong> – a dict(lonmin, lonmax, latmin, latmax) on which to build the plot.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Figure:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>title</strong> – title to be written over plot.</p>
+</dd>
+</dl>
+<p>Graphical settings:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_method</strong> – matplotlib plotting method to be used, among
+(‘pcolormesh’, ‘contourf’, ‘contour’, ‘scatter’).</p></li>
+<li><p><strong>minmax</strong> – tuple giving (or not) min and max fields values to be plotted.</p></li>
+<li><p><strong>colorsnumber</strong> – number of color discretization/isolines for fields plots.</p></li>
+<li><p><strong>colormap</strong> – name of the colormap for fields plots.</p></li>
+<li><p><strong>center_cmap_on_0</strong> – to center the colormap on 0.</p></li>
+<li><p><strong>mask_threshold</strong> – dict with min and/or max value(s) to mask outside.</p></li>
+<li><p><strong>scatter_kw</strong> – kwargs to be passed to matplotlib’s ax.scatter().
+Only for plot_method = ‘scatter’.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Cartography:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parallels</strong> (<em>meridians and</em>) – enable to fine-tune the choice of lines to
+plot, with either:
+- ‘auto’: automatic scaling to the map extents
+- ‘default’: range(0,360,10) and range(-90,90,10)
+- a list of values
+- a grid step, e.g. 5 to plot each 5 degree.
+- None: no one is plot</p></li>
+<li><p><strong>french_depts</strong> – draws french departments instead of countries boundaries.</p></li>
+<li><p><strong>cartopy_features</strong> – list of cartopy.feature.??? features.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Vector plots:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vectors_subsampling</strong> – subsampling ratio of vectors plots.</p></li>
+<li><p><strong>vector_plot_method</strong> – among (‘quiver’, ‘barbs’, ‘streamplot’) for vector plots.</p></li>
+<li><p><strong>wind_components_are_projected_on</strong> – inform the plot on which axes the
+vector components are projected on (‘grid’ or ‘lonlat’).
+If None (default), look for information in the field, or raise error.</p></li>
+<li><p><strong>quiverkey</strong> – options to be passed to plotfield to activate a quiver key
+(cf. pyplot.quiverkey).</p></li>
+<li><p><strong>map_factor_correction</strong> – if True, applies a correction of magnitude
+to vector due to map factor.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Output:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>savefig</strong> – save figures to file, instead of interactive plot</p></li>
+<li><p><strong>outputfilename</strong> – specify an output filename for the plot,
+including format as extension.</p></li>
+<li><p><strong>figures_dpi</strong> – quality of saved figures.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The mapplotter script</a><ul>
+<li><a class="reference internal" href="#command-line-use">Command line use</a></li>
+<li><a class="reference internal" href="#main-plot-function">Main plot function</a><ul>
+<li><a class="reference internal" href="#plots.maps.mapplotter.CFEATURES"><code class="docutils literal notranslate"><span class="pre">CFEATURES</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.mapplotter.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="plots-proplotter.html"
+                          title="previous chapter">The proplotter and procompare plotting tools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="plots-pearps2m.html"
+                          title="next chapter">Plots from operational simulations</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/plots-mapplotter.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots-pearps2m.html" title="Plots from operational simulations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plots-proplotter.html" title="The proplotter and procompare plotting tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="plots.html" >Plotting tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mapplotter script</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

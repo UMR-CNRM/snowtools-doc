@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">&lt;no title&gt;</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Script <code class="docutils literal notranslate"><span class="pre">scripts/create_forcing/Template_creation_FORCING.py</span></code> help:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: Template_creation_FORCING.py [-h] [-i INFILE] [-o OUTFILE] [--lon LON]
+                                    [--lat LAT] [--uref UREF] [--zref ZREF]
+                                    [--aspect ASPECT] [--slope SLOPE]
+                                    [--zs ZS] [--radpart RADPART]
+                                    [--radpart_params RADPART_PARAMS]
+                                    [--timestep FRC_TIME_STP]
+                                    [--meta METADATA]
+
+Create forcing file from txt or csv file. TXT/CSV --&gt; PD.DATAFRAME --&gt; NCF-
+FILE The FORCING File has mandatory columns. Please note time column needs to
+be first and timezone has to be UTC. [[&#39;time&#39;, &#39;CO2air&#39;, &#39;DIR_SWdown&#39;,
+&#39;HUMREL&#39;, &#39;LWdown&#39;, &#39;NEB&#39;, &#39;PSurf&#39;, &#39;Qair&#39;, &#39;Rainf&#39;, &#39;SCA_SWdown&#39;,
+&#39;Snowf&#39;,&#39;Tair&#39;, &#39;Wind&#39;, &#39;Wind_DIR&#39;]]
+
+options:
+  -h, --help            show this help message and exit
+  -i INFILE, --infile INFILE
+                        Input csv file
+  -o OUTFILE, --output OUTFILE
+                        Output netcdf file
+  --lon LON             station longitude
+  --lat LAT             station latitude
+  --uref UREF           height of wind measurements
+  --zref ZREF           height of temperature measurements
+  --aspect ASPECT       slope orientation
+  --slope SLOPE         slope angle
+  --zs ZS               station height
+  --radpart RADPART     logical: radiation partitioning global to direct and
+                        diffuse
+  --radpart_params RADPART_PARAMS
+                        reference parameters for radiation partitioning
+  --timestep FRC_TIME_STP
+                        Time step in seconds
+  --meta METADATA       add global attributes in form attname=attribute_text.
+                        Can be evoced multiple times
+</pre></div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/code/autoscripts/scripts--create_forcing--Template_creation_FORCING.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">&lt;no title&gt;</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>

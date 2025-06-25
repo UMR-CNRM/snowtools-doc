@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plots.temporal.escroc_plot &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=d152c80f" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">plots.temporal.escroc_plot</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for plots.temporal.escroc_plot</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on 4 déc. 2018</span>
+
+<span class="sd">@author: lafaysse</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">snowtools.plots.temporal.chrono</span> <span class="kn">import</span> <span class="n">prettyensemble</span>
+<span class="kn">from</span> <span class="nn">snowtools.plots.pearps2m.postprocess</span> <span class="kn">import</span> <span class="n">EnsembleDiags</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">LUSTRE_NOSAVE_DIR</span>
+
+<div class="viewcode-block" id="EnsembleEscrocDiags">
+<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.escroc_plot.EnsembleEscrocDiags">[docs]</a>
+<span class="k">class</span> <span class="nc">EnsembleEscrocDiags</span><span class="p">(</span><span class="n">EnsembleDiags</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span> <span class="o">=</span> <span class="s1">&#39;png&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_var_spag</span> <span class="o">=</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;WSN_T_ISBA&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">DSN_T_ISBA</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">convert_unit</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Snow depth (cm)&#39;</span><span class="p">),</span>
+            <span class="n">gap</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">convert_unit</span><span class="o">=</span><span class="mf">100.</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Snow depth (cm)&#39;</span><span class="p">),</span>
+            <span class="n">WSN_T_ISBA</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Snow water equivalent (kg/m2)&#39;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_q</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleEscrocDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">alldiags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleEscrocDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_var_spag</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_q</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="k">def</span> <span class="nf">getobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="n">ESMSnowMIP_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">DSN_T_ISBA</span><span class="o">=</span><span class="s2">&quot;snd_can_auto&quot;</span><span class="p">,</span> <span class="n">WSN_T_ISBA</span><span class="o">=</span><span class="s2">&quot;snw_man&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;snd_gap_auto&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;open obs&quot;</span><span class="p">)</span>
+        <span class="n">dataObs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">timeObs</span> <span class="o">=</span> <span class="n">dataObs</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">varObs</span> <span class="o">=</span> <span class="n">dataObs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ESMSnowMIP_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;convert_unit&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">varObs</span> <span class="o">=</span> <span class="n">varObs</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+
+        <span class="n">dataObs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close obs&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span>
+
+    <span class="k">def</span> <span class="nf">getsnouf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirsnouf</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+
+        <span class="c1"># Routine dégueu parce qu&#39;il faut mettre au propre les données SNOUF qui sont dans des formats crado</span>
+
+        <span class="n">SNOUF_col2017</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">DSN_T_ISBA</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+        <span class="n">SNOUF_col2016</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">DSN_T_ISBA</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">obsfile</span> <span class="o">=</span> <span class="n">dirsnouf</span> <span class="o">+</span> <span class="s2">&quot;/2017-2018/CR3000_SNOUF_2017-2018_corrYves_foret.csv&quot;</span>
+        <span class="n">str2date</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y %H:%M&#39;</span><span class="p">)</span>
+        <span class="n">timeObs2017</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">str2date</span><span class="p">})</span>
+        <span class="n">varObs2017</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="n">SNOUF_col2017</span><span class="p">[</span><span class="n">varname</span><span class="p">],))</span>
+
+        <span class="n">obsfile</span> <span class="o">=</span> <span class="n">dirsnouf</span> <span class="o">+</span> <span class="s2">&quot;/2016-2017/Obs_HTN_1h.csv&quot;</span>
+        <span class="n">str2date</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">timeObs2016</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">str2date</span><span class="p">})</span>
+
+        <span class="n">varObs2016</span> <span class="o">=</span> <span class="mf">2.07</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">str2date</span><span class="p">})</span>
+        <span class="n">varObs2016</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">varObs2016</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="n">varObs2016</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.</span>
+
+        <span class="n">indfoireux</span> <span class="o">=</span> <span class="p">(</span><span class="n">timeObs2016</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span> <span class="o">|</span> <span class="p">((</span><span class="n">timeObs2016</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">timeObs2016</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span><span class="mi">3</span> <span class="p">,</span><span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+
+        <span class="n">varObs2016</span><span class="p">[</span><span class="n">indfoireux</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">timeObs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">timeObs2016</span><span class="p">,</span> <span class="n">timeObs2017</span><span class="p">))</span>
+        <span class="n">varObs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">varObs2016</span><span class="p">,</span> <span class="n">varObs2017</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span>
+
+    <span class="k">def</span> <span class="nf">getsnoufprairie</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirsnouf</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+
+        <span class="n">SNOUF_col2017</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">gap</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">obsfile</span> <span class="o">=</span> <span class="n">dirsnouf</span> <span class="o">+</span> <span class="s2">&quot;/CR3000_SNOUF_2017-2018_corrYves_prairie.csv&quot;</span>
+        <span class="n">str2date</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%Y %H:%M&#39;</span><span class="p">)</span>
+        <span class="n">timeObs2017</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">converters</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="n">str2date</span><span class="p">})</span>
+        <span class="n">varObs2017</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="n">SNOUF_col2017</span><span class="p">[</span><span class="n">varname</span><span class="p">],))</span>
+
+        <span class="n">ESMSnowMIP_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">DSN_T_ISBA</span><span class="o">=</span><span class="s2">&quot;snow_depth_auto&quot;</span><span class="p">,</span> <span class="n">WSN_T_ISBA</span><span class="o">=</span><span class="s2">&quot;swe_auto&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;snow_depth_auto&quot;</span><span class="p">)</span>
+
+        <span class="n">obsfile</span> <span class="o">=</span> <span class="n">dirsnouf</span> <span class="o">+</span> <span class="s2">&quot;/CDP_qot_20142017.nc&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;open obs&quot;</span><span class="p">)</span>
+        <span class="n">dataObs</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="n">timeObs2016</span> <span class="o">=</span> <span class="n">dataObs</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
+        <span class="n">varObs2016</span> <span class="o">=</span> <span class="n">dataObs</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ESMSnowMIP_dicvarnames</span><span class="p">[</span><span class="n">varname</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;convert_unit&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">varObs2016</span> <span class="o">=</span> <span class="n">varObs2016</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">varname</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+
+        <span class="n">dataObs</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;close obs&quot;</span><span class="p">)</span>
+
+        <span class="n">timeObs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">timeObs2016</span><span class="p">,</span> <span class="n">timeObs2017</span><span class="p">))</span>
+        <span class="n">varObs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">varObs2016</span><span class="p">,</span> <span class="n">varObs2017</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span>
+
+    <span class="k">def</span> <span class="nf">pack_pretty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secondensemble</span><span class="p">,</span> <span class="n">diroutput</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;spaghettis&quot;</span><span class="p">,</span> <span class="n">obsfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_var_spag</span><span class="p">:</span>
+
+            <span class="n">s</span> <span class="o">=</span> <span class="n">prettyensemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+            <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ylabel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+            <span class="n">npoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">npoints</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s1">&#39;convert_unit&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">qmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                    <span class="n">qmed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">1</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                    <span class="n">qmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">2</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">qmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+                    <span class="n">qmed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">1</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+                    <span class="n">qmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">2</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+
+
+                <span class="k">if</span> <span class="s1">&#39;convert_unit&#39;</span> <span class="ow">in</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">qmin2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                    <span class="n">qmed2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">1</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                    <span class="n">qmax2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">2</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span> <span class="o">*</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;convert_unit&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">qmin2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+                    <span class="n">qmed2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">1</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+                    <span class="n">qmax2</span> <span class="o">=</span> <span class="n">secondensemble</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">2</span><span class="p">][:,</span> <span class="n">point</span><span class="p">]</span>
+
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;colorquantiles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;commonlabel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Opened area&quot;</span>
+
+                <span class="n">s</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">secondensemble</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">qmin2</span><span class="p">,</span> <span class="n">qmed2</span><span class="p">,</span> <span class="n">qmax2</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;colorquantiles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;commonlabel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Forest&quot;</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.6</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+                <span class="n">s</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="p">)</span>
+
+<span class="c1">#                 indtime = (self.time &gt;= datetime.datetime(2010, 1, 1)) &amp; ( self.time &lt;= datetime.datetime(2010, 1, 2))</span>
+<span class="c1">#</span>
+<span class="c1">#                 print qmed[indtime]</span>
+<span class="c1">#                 print qmed2[indtime]</span>
+<span class="c1">#                 import sys</span>
+<span class="c1">#                 sys.exit(1)</span>
+
+                <span class="k">if</span> <span class="n">obsfile</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="s1">&#39;snouf&#39;</span> <span class="ow">in</span> <span class="n">obsfile</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">:</span>
+                            <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getsnouf</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+                            <span class="n">timeGAP</span><span class="p">,</span> <span class="n">varGAP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getsnoufprairie</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="s1">&#39;gap&#39;</span><span class="p">)</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeGAP</span><span class="p">,</span> <span class="n">varGAP</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations in meadow&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations below canopy&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getobs</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;WSN_T_ISBA&#39;</span><span class="p">:</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations&quot;</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">:</span>
+                            <span class="n">timeObs</span><span class="p">,</span> <span class="n">varGAP</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getobs</span><span class="p">(</span><span class="n">obsfile</span><span class="p">,</span> <span class="s1">&#39;gap&#39;</span><span class="p">)</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeObs</span><span class="p">,</span> <span class="n">varGAP</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations in canopy gap&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                            <span class="n">s</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations below canopy&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="c1">#                 s.plot.set_xlim([datetime.datetime(2009, 10, 1), datetime.datetime(2010, 6, 1)])</span>
+
+                    <span class="n">s</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">secondensemble</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+                <span class="n">plotname</span> <span class="o">=</span> <span class="n">diroutput</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">formatout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">plotname</span> <span class="o">+</span> <span class="s2">&quot; is available.&quot;</span><span class="p">)</span>
+
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">from</span> <span class="nn">snowtools.scripts.extract.vortex.get_escroc</span> <span class="kn">import</span> <span class="n">S2MExtractor</span><span class="p">,</span> <span class="n">config</span>
+    <span class="kn">from</span> <span class="nn">snowtools.scripts.ESMSnowMIP.ESM_snowmip</span> <span class="kn">import</span> <span class="n">bdate</span><span class="p">,</span> <span class="n">edate</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">config</span><span class="p">()</span>
+    <span class="n">S2ME</span> <span class="o">=</span> <span class="n">S2MExtractor</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">snow_members</span> <span class="o">=</span> <span class="n">S2ME</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="n">suptitle</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">list_domains</span> <span class="o">=</span> <span class="n">snow_members</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="n">list_domains</span><span class="p">:</span>
+
+        <span class="n">list_ensembles</span> <span class="o">=</span> <span class="n">snow_members</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">domain</span> <span class="o">==</span> <span class="s1">&#39;cdp&#39;</span><span class="p">:</span>
+            <span class="n">obsfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LUSTRE_NOSAVE_DIR</span><span class="p">,</span> <span class="s1">&#39;lafaysse/ESM-SnowMIP/evaldata/snouf&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obsfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">LUSTRE_NOSAVE_DIR</span><span class="p">,</span>
+                                   <span class="s1">&#39;lafaysse/ESM-SnowMIP/evaldata/obs_insitu_&#39;</span> <span class="o">+</span> <span class="n">domain</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span>
+                                   <span class="n">bdate</span><span class="p">[</span><span class="n">domain</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">edate</span><span class="p">[</span><span class="n">domain</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+
+        <span class="n">E</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_ensembles</span><span class="p">):</span>
+
+            <span class="n">E</span><span class="p">[</span><span class="n">ensemble</span><span class="p">]</span> <span class="o">=</span> <span class="n">EnsembleEscrocDiags</span><span class="p">()</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;on domain &quot;</span> <span class="o">+</span> <span class="n">domain</span> <span class="o">+</span> <span class="s2">&quot;, open ensemble &quot;</span> <span class="o">+</span> <span class="n">ensemble</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">snow_members</span><span class="p">[</span><span class="n">domain</span><span class="p">][</span><span class="n">ensemble</span><span class="p">])</span>
+            <span class="n">E</span><span class="p">[</span><span class="n">ensemble</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">snow_members</span><span class="p">[</span><span class="n">domain</span><span class="p">][</span><span class="n">ensemble</span><span class="p">])</span>
+
+    <span class="c1">#         print (&quot;domain &quot; + domain + &quot; npoints = &quot; + str(E.npoints))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">ensemble</span><span class="p">]</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+            <span class="n">E</span><span class="p">[</span><span class="n">ensemble</span><span class="p">]</span><span class="o">.</span><span class="n">alldiags</span><span class="p">()</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diagnostics have been computed for the following variables :&#39;</span><span class="p">)</span>
+<span class="c1">#             print (E.ensemble.keys())</span>
+
+        <span class="k">if</span> <span class="n">domain</span> <span class="o">==</span> <span class="s1">&#39;cdp&#39;</span><span class="p">:</span>
+            <span class="c1"># j&#39;ai inversé E2 et E2open au CDP comme c&#39;est un site dégagé dans snowmip</span>
+            <span class="n">E</span><span class="p">[</span><span class="s2">&quot;E2open&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pack_pretty</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="s2">&quot;E2&quot;</span><span class="p">],</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">obsfile</span><span class="o">=</span><span class="n">obsfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">E</span><span class="p">[</span><span class="s2">&quot;E2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pack_pretty</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="s2">&quot;E2open&quot;</span><span class="p">],</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">obsfile</span><span class="o">=</span><span class="n">obsfile</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">E</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">value</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">del</span> <span class="n">E</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">plots.temporal.escroc_plot</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+    </div>
+  </body>
+</html>
