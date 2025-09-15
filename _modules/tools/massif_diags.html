@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.massif_diags &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,13 +46,13 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
 
 
 <div class="viewcode-block" id="massif_simu">
 <a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu">[docs]</a>
-<span class="k">class</span> <span class="nc">massif_simu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">massif_simu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class overriding prosimu to add massif-scale diagnostics&quot;&quot;&quot;</span>
     <span class="n">SurfexNatRiskName</span> <span class="o">=</span> <span class="s1">&#39;NAT_LEV&#39;</span>
     <span class="n">MassifRiskName</span> <span class="o">=</span> <span class="s1">&#39;naturalIndex&#39;</span>
@@ -64,7 +64,7 @@
 
 <div class="viewcode-block" id="massif_simu.massif_natural_risk">
 <a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.massif_natural_risk">[docs]</a>
-    <span class="k">def</span> <span class="nf">massif_natural_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">massif_natural_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute massif-scale natural hazard index and add it to the file&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SurfexNatRiskName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
             <span class="k">return</span>
@@ -123,7 +123,7 @@
 
 <div class="viewcode-block" id="massif_simu.warnings">
 <a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.warnings">[docs]</a>
-    <span class="k">def</span> <span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minaltitude</span><span class="p">,</span> <span class="n">maxaltitude</span><span class="p">,</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minaltitude</span><span class="p">,</span> <span class="n">maxaltitude</span><span class="p">,</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if all elevations and aspects are present in the computation of massif-scale natural hazard index</span>
 
 <span class="sd">        :param minaltitude: Minimum elevation present in the PRO file</span>
@@ -160,9 +160,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -170,13 +170,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -195,7 +195,7 @@
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

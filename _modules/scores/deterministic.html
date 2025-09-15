@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>scores.deterministic &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,11 +45,11 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
 
 <span class="n">ESMSnowMIP_dicvarnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">snowdepth</span><span class="o">=</span><span class="s2">&quot;snd_auto&quot;</span><span class="p">,</span> <span class="n">snowswe</span><span class="o">=</span><span class="s2">&quot;snw_auto&quot;</span><span class="p">,</span> <span class="n">snowdepthman</span><span class="o">=</span><span class="s2">&quot;snd_man&quot;</span><span class="p">,</span>
                               <span class="n">snowsweman</span><span class="o">=</span><span class="s2">&quot;snw_man&quot;</span><span class="p">,</span> <span class="n">tsurf</span><span class="o">=</span><span class="s2">&quot;ts&quot;</span><span class="p">,</span> <span class="n">albedo</span><span class="o">=</span><span class="s2">&quot;albs&quot;</span><span class="p">)</span>
@@ -70,7 +70,7 @@
 
 <div class="viewcode-block" id="DeterminsticScores">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores">[docs]</a>
-<span class="k">class</span> <span class="nc">DeterminsticScores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeterminsticScores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for deterministic scores</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -78,57 +78,57 @@
     <span class="n">startwinter</span> <span class="o">=</span> <span class="mi">10</span> 
     <span class="n">endwinter</span> <span class="o">=</span> <span class="mi">6</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DeterminsticScores.nvalues">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.nvalues">[docs]</a>
-    <span class="k">def</span> <span class="nf">nvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of values accounted for in scores computation&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DeterminsticScores.diff">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.diff">[docs]</a>
-    <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Vector of difference between simulations and observations&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">diff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DeterminsticScores.squarediff">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.squarediff">[docs]</a>
-    <span class="k">def</span> <span class="nf">squarediff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">squarediff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Vector of square difference between simulations and observations&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">squarediff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">squarediff_common</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">squarediff</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rmse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Root mean square error&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">squarediff_common</span><span class="p">))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bias</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Relative bias&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mae</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean absolute error&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diff_common</span><span class="p">))</span>
 
 <div class="viewcode-block" id="DeterminsticScores.scores_all_values">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.scores_all_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">scores_all_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scores_all_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        calculate scores (bias and RMSE) including cases of 0 values (no snow for example)</span>
 <span class="sd">        :return: number of values, bias, RMSE, mean value of simulations</span>
@@ -140,7 +140,7 @@
 
 <div class="viewcode-block" id="DeterminsticScores.scores_with_positive_values_only">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.scores_with_positive_values_only">[docs]</a>
-    <span class="k">def</span> <span class="nf">scores_with_positive_values_only</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scores_with_positive_values_only</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        calculate scores (bias and RMSE) excluding cases where both the observation and the simulation</span>
 <span class="sd">        have a value of 0</span>
@@ -159,18 +159,18 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">meanobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">meanobs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean observation value over the common period.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span><span class="p">)</span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">meansim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">meansim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean simulation value over the common period.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simCommon</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DeterminsticScores.read_var_ifpresent">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.read_var_ifpresent">[docs]</a>
-    <span class="k">def</span> <span class="nf">read_var_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_var_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">convert1d</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        read a given variable from a netcdf file if it is present in the file.</span>
 <span class="sd">        If the variable is not present under the given variable name, check if it</span>
@@ -211,7 +211,7 @@
 
 <div class="viewcode-block" id="DeterminsticScores.read_sim_ifpresent">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterminsticScores.read_sim_ifpresent">[docs]</a>
-    <span class="k">def</span> <span class="nf">read_sim_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_sim_ifpresent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_nc</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        read a variable from the simulation file if the variable is present in there.</span>
 <span class="sd">        :param data_nc: open netcdf dataset</span>
@@ -228,8 +228,8 @@
 
 <div class="viewcode-block" id="DeterministicScores_Homogeneous">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Homogeneous">[docs]</a>
-<span class="k">class</span> <span class="nc">DeterministicScores_Homogeneous</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeterministicScores_Homogeneous</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for observations and simulations covering the same periods</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -241,8 +241,8 @@
 
 <div class="viewcode-block" id="DeterministicScores_Mask">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Mask">[docs]</a>
-<span class="k">class</span> <span class="nc">DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for observations and simulations covering different periods, masks provided</span>
 <span class="sd">        :param mask_obs: mask array for observation</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="DeterministicScores_Mask.extract_common_vectors">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Mask.extract_common_vectors">[docs]</a>
-    <span class="k">def</span> <span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract common date between observations and simulations&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 </div>
@@ -276,8 +276,8 @@
 
 <div class="viewcode-block" id="DeterministicScores_CommonObs">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_CommonObs">[docs]</a>
-<span class="k">class</span> <span class="nc">DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterminsticScores</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for observations and simulations covering different periods,</span>
 <span class="sd">         observations and simulation masks provided</span>
@@ -300,8 +300,8 @@
 
 <div class="viewcode-block" id="DeterministicScores_Heterogeneous">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Heterogeneous">[docs]</a>
-<span class="k">class</span> <span class="nc">DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for observations and simulations covering different periods, times provided</span>
 
@@ -315,7 +315,7 @@
 
 <div class="viewcode-block" id="DeterministicScores_Heterogeneous.extract_common_vectors">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.DeterministicScores_Heterogeneous.extract_common_vectors">[docs]</a>
-    <span class="k">def</span> <span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_common_vectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract common date between observations and simulations selecting only winter periods.</span>
 <span class="sd">        :param time_obs: array of observation times</span>
@@ -358,7 +358,7 @@
 
 <div class="viewcode-block" id="S2M_Score">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score">[docs]</a>
-<span class="k">class</span> <span class="nc">S2M_Score</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2M_Score</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for Surfex scores</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -366,7 +366,7 @@
 
 <div class="viewcode-block" id="S2M_Score.varsimname">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score.varsimname">[docs]</a>
-    <span class="k">def</span> <span class="nf">varsimname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">varsimname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get surfex variable name given a variable name from `SURFEX_dicvarnames.keys()`</span>
 <span class="sd">        :param varname: variable name</span>
@@ -379,7 +379,7 @@
 
 <div class="viewcode-block" id="S2M_Score.varobsname">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_Score.varobsname">[docs]</a>
-    <span class="k">def</span> <span class="nf">varobsname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">varobsname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get ESMSnowMIP variable name given a variable name from `ESMSnowMIP_dicvarnames.keys()`</span>
 <span class="sd">        :param varname: variable name</span>
@@ -394,9 +394,9 @@
 
 <div class="viewcode-block" id="S2M_DeterministicScores_Heterogeneous">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Heterogeneous">[docs]</a>
-<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2M_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile: surfex output file name containing the simulations</span>
@@ -422,8 +422,8 @@
 
 <div class="viewcode-block" id="S2M_DeterministicScores_CommonObs">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_CommonObs">[docs]</a>
-<span class="k">class</span> <span class="nc">S2M_DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterministicScores_CommonObs</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2M_DeterministicScores_CommonObs</span><span class="p">(</span><span class="n">DeterministicScores_CommonObs</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">obs_common</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile: surfex output file name containing the simulations</span>
@@ -442,8 +442,8 @@
 
 <div class="viewcode-block" id="S2M_DeterministicScores_Mask">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Mask">[docs]</a>
-<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2M_DeterministicScores_Mask</span><span class="p">(</span><span class="n">DeterministicScores_Mask</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">mask_sim</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile: surfex output file name containing the simulations</span>
@@ -467,8 +467,8 @@
 
 <div class="viewcode-block" id="S2M_DeterministicScores_Time">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.S2M_DeterministicScores_Time">[docs]</a>
-<span class="k">class</span> <span class="nc">S2M_DeterministicScores_Time</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2M_DeterministicScores_Time</span><span class="p">(</span><span class="n">DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">S2M_Score</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile: surfex output file name containing the simulations</span>
@@ -492,7 +492,7 @@
 
 <div class="viewcode-block" id="ESMSnowMIP">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP">[docs]</a>
-<span class="k">class</span> <span class="nc">ESMSnowMIP</span><span class="p">(</span><span class="n">S2M_Score</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ESMSnowMIP</span><span class="p">(</span><span class="n">S2M_Score</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
@@ -502,21 +502,21 @@
 
 <div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Mask">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Mask">[docs]</a>
-<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Mask</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Mask</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ESMSnowMIP_DeterministicScores_Mask</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Mask</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Time">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Time">[docs]</a>
-<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Time</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Time</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ESMSnowMIP_DeterministicScores_Time</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Time</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="ESMSnowMIP_DeterministicScores_Heterogeneous">
 <a class="viewcode-back" href="../../code/scores.html#scores.deterministic.ESMSnowMIP_DeterministicScores_Heterogeneous">[docs]</a>
-<span class="k">class</span> <span class="nc">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">S2M_DeterministicScores_Heterogeneous</span><span class="p">,</span> <span class="n">ESMSnowMIP</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 </pre></div>
@@ -525,9 +525,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -535,13 +535,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -560,7 +560,7 @@
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

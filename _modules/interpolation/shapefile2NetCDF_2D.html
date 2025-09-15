@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>interpolation.shapefile2NetCDF_2D &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -125,24 +125,24 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">logging</span>  <span class="c1"># Import pour les log</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>  <span class="c1"># Import pour les log</span>
 
-<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">shapefile</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">shape</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">shapely.ops</span> <span class="kn">import</span> <span class="n">transform</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shapefile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">shape</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">DIRDATADEM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIRDATADEM</span>
 
 <span class="c1">################################################################</span>
 <span class="c1"># DEFAULT VALUES (but can change with options):</span>
@@ -174,7 +174,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="convert_kml2shp">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.convert_kml2shp">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_kml2shp</span><span class="p">(</span><span class="n">path_shape_kml</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_kml2shp</span><span class="p">(</span><span class="n">path_shape_kml</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    kml files (Keyhole Markup Language, google format) are transform in .shp (format GIS Geographic</span>
 <span class="sd">    Information System from ESRI) in order to avoid imports from &quot;non standard&quot; librairies in CEN</span>
@@ -196,7 +196,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="get_bounds">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.get_bounds">[docs]</a>
-<span class="k">def</span> <span class="nf">get_bounds</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bounds</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    sf.bbox return [6.61446151100006, 45.189366518, 6.8154706149867, 45.2979826160001]</span>
 <span class="sd">    ie [lon_min, lat_min, lon_max, lat_max]</span>
@@ -215,7 +215,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="conversion_to_L93_if_lat_lon">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon">[docs]</a>
-<span class="k">def</span> <span class="nf">conversion_to_L93_if_lat_lon</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">conversion_to_L93_if_lat_lon</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Idea: we have a list bbox [lon_min, lat_min, lon_max, lat_max]. We convert it in Lambert93</span>
 <span class="sd">    By default, we raise a little in case of</span>
@@ -246,7 +246,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="clean_the_mess">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.clean_the_mess">[docs]</a>
-<span class="k">def</span> <span class="nf">clean_the_mess</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">clean_the_mess</span><span class="p">(</span><span class="n">path_shape_shp</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove all the temporary files created with the script</span>
 
@@ -269,7 +269,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="create_dict_all_infos">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_dict_all_infos">[docs]</a>
-<span class="k">def</span> <span class="nf">create_dict_all_infos</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">,</span> <span class="n">resol_x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">resol_y</span><span class="o">=</span><span class="mi">250</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_dict_all_infos</span><span class="p">(</span><span class="n">list_of_four</span><span class="p">,</span> <span class="n">resol_x</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">resol_y</span><span class="o">=</span><span class="mi">250</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dictionnary with all the important information (coordinates of the lower-left and upper-right points,</span>
 <span class="sd">    number of pixel in x and y direction, resolution in x and y direction).</span>
@@ -301,7 +301,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="create_MNT_tif">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_MNT_tif">[docs]</a>
-<span class="k">def</span> <span class="nf">create_MNT_tif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">path_MNT_given</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_MNT_tif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">path_MNT_given</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use the dictionary with all the information (coordinates of the lower-left and upper-right points, number of pixel</span>
 <span class="sd">    in x and y direction, resolution in x and y direction) and and a MNT (with the good resolution) to create a .tif</span>
@@ -334,7 +334,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="find_most_common_massif">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.find_most_common_massif">[docs]</a>
-<span class="k">def</span> <span class="nf">find_most_common_massif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_most_common_massif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use the grid info coming from the dictionary and the massif info coming from snowtools to detect what is the most</span>
 <span class="sd">    common massif on the grid. If there are more than 50% of points in the most common massif, all the points are</span>
@@ -395,7 +395,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="create_netcdf">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_netcdf">[docs]</a>
-<span class="k">def</span> <span class="nf">create_netcdf</span><span class="p">(</span><span class="n">massif_number</span><span class="p">,</span> <span class="n">file_out</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_netcdf</span><span class="p">(</span><span class="n">massif_number</span><span class="p">,</span> <span class="n">file_out</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creation of the 2D_NetCDF with 2 values: &#39;ZS&#39; for the altitude and &#39;Massif number&#39; for the massif number.</span>
 
@@ -453,7 +453,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="print_for_namelist">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.print_for_namelist">[docs]</a>
-<span class="k">def</span> <span class="nf">print_for_namelist</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">output_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_for_namelist</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">output_name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Just to have a print on the screen in order to have all the relevant information for the namelist used later in the</span>
 <span class="sd">    Surfex simulations.</span>
@@ -481,7 +481,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="parseArguments">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.parseArguments">[docs]</a>
-<span class="k">def</span> <span class="nf">parseArguments</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parseArguments</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parsing the arguments when you call the main program.</span>
 <span class="sd">    :param args: The list of arguments when you call the main program (typically sys.argv[1:] )</span>
@@ -508,7 +508,7 @@
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.main">[docs]</a>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main program: parse argument then launch the creation of NetCDF</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -556,9 +556,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -566,13 +566,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -591,7 +591,7 @@
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

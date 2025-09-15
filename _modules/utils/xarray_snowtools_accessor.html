@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.xarray_snowtools_accessor &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools_accessor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.xarray_snowtools_accessor</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Functions (accessors) provided by snowtools adaptation of xarray</span>
+<span class="sd">----------------------------------------------------------------</span>
+
+<span class="sd">The module xarray_snowtools_accessor aims at wrapping and extending the xarray module for snowtools-specific usage.</span>
+<span class="sd">The wrapping of existing methods is designed to reduce dependency to native xarray method changes (in order to</span>
+<span class="sd">centralise required adaptations).</span>
+
+<span class="sd">Following the xarray project&#39;s recomandations, it is based on the use of accessor :</span>
+<span class="sd">https://tutorial.xarray.dev/advanced/accessors/01_accessor_examples.html</span>
+
+<span class="sd">This accessor is automatically made available when you import ``snowtools.utils.xarray_snowtools``.</span>
+
+
+<span class="sd">Usage examples</span>
+<span class="sd">^^^^^^^^^^^^^^</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">     from snowtools.utils import xarray_snowtools</span>
+<span class="sd">     import xarray as xr</span>
+
+<span class="sd">     ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
+<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+
+<span class="sd">1. Select subset of points from a S2M file in the massif geometry, based on the massif number,</span>
+<span class="sd">   elevation, slope and aspect</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    ds.semidistributed.sel_points(massif_num=3, ZS=[900, 1800, 2700, 3600], slope=40)</span>
+
+<span class="sd">2. Project gridded data from Lambert-93 to lat/lon :</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    ds.distributed.proj(crs_in=&quot;EPSG:2154&quot;, crs_out=&quot;EPSG:4326&quot;)</span>
+
+<span class="sd">3. Interpret time-like variable or dimension as datetime :</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    ds.surfex.decode_time_variable(varname)</span>
+
+<span class="sd">4. Compute 24-hour precipitation accumulations from 6h J to 6h J+1 from hourly precipitation dataset:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    ds.Precipitation.meteo.daily_accumulation()</span>
+
+<span class="sd">5. Example of groupby with the first-test PRO file:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">     from snowtools.utils import xarray_snowtools</span>
+<span class="sd">     import xarray as xr</span>
+<span class="sd">     import matplotlib.pyplot as plt</span>
+<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, decode_times=False)</span>
+<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     dszs = ds.semidistributed.sel_points(ZS=2400)</span>
+<span class="sd">     meanmonthgroup = dszs.groupby(&quot;time.month&quot;).mean() # mean the variables on a monthly base</span>
+<span class="sd">     meanmonthgroup.TG1.plot() # choose one variable to plot</span>
+<span class="sd">     plt.show()</span>
+
+<span class="sd">6. Example of resample with the first-test PRO file:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">     from snowtools.utils import xarray_snowtools</span>
+<span class="sd">     import xarray as xr</span>
+<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, decode_times=False)</span>
+<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     dszs = ds.semidistributed.sel_points(ZS=2400)</span>
+<span class="sd">     dszs.resample(time=&#39;12h&#39;).mean() # time resampling to 12h timestep</span>
+
+<span class="sd">7. Use of custom &quot;daily_accumulation&quot; method</span>
+
+<span class="sd">Resample Rainf variable from hourly values to daily accumulations, starting at 03:00 :</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">     from snowtools.utils import xarray_snowtools</span>
+<span class="sd">     import xarray as xr</span>
+
+<span class="sd">     ds_hourly = xr.open_dataset(&#39;FORCING_test_2d.nc&#39;, decode_times=False)</span>
+<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     ds_daily = ds_hourly.Rainf.snowtools.daily_accumulation(start_hour=3)</span>
+
+
+<span class="sd">New features integration rules:</span>
+
+<span class="sd">Any native xarray function/method NOT part of xarray’s public API can be overwritten in these accessors in order to</span>
+<span class="sd">centralise required adaptations in case of any change of behavior of the native method.</span>
+
+<span class="sd">Informations on the list of xarray function/method considered public API can be found in the xarray documentation :</span>
+
+<span class="sd">- https://docs.xarray.dev/en/v2023.09.0/getting-started-guide/faq.html (section &quot;What parts of xarray are considered</span>
+<span class="sd">  public API?&quot;)</span>
+<span class="sd">- https://docs.xarray.dev/en/v2023.09.0/api.html#api</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+
+<div class="viewcode-block" id="SnowtoolsAccessor">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor">[docs]</a>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">)</span>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SnowtoolsAccessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Common snowtools-specific additionnal methods for xarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xarray_obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_obj</span>
+
+<div class="viewcode-block" id="SnowtoolsAccessor.transpose">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put time dimension as first dimension in case of data processing through numpy arrays</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;time&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
+
+
+<div class="viewcode-block" id="SnowtoolsAccessor.squeeze">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Drop dimensions with only 1 coordinate (ex : Number_of_patches / Number_of_tiles)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SnowtoolsAccessor.daily_accumulation">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">daily_accumulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_hour</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute 24-hour accumulation starting at *strat_hour*, with an output label set at the end of the</span>
+<span class="sd">        accumulation period.</span>
+<span class="sd">        This method will return the sum of all values between &quot;start_hour&quot; at day J and &quot;start_hour&quot; at day J+1</span>
+<span class="sd">        whatever the available frequency in the original dataset.</span>
+
+<span class="sd">        It is important to use dask when calling the resample function for huge dataset to optimise computation time.</span>
+<span class="sd">        Since the operations are carried out along the time dimension by slices of 24 hours, chunk sizes are</span>
+<span class="sd">        automatically set to 24 over the time dimension and the dimension&#39;s length over all other dimensions.</span>
+
+<span class="sd">        Execution time for a file over the Grandes Rousses at 25m resolution (~1M of points, total file size ~177 Go)</span>
+<span class="sd">            - 1000 hourly time steps : &lt; 30s</span>
+<span class="sd">            - 2000 hourly time steps : ~ 2 minutes</span>
+<span class="sd">            - 4000 hourly time steps (~6 months)    : ~ 6 minutes</span>
+<span class="sd">            - 1 full year (8760 hourly timte steps) : crash</span>
+
+<span class="sd">        Execution time for a file over the French Alps at 250m resolution (~2.5M of points, total file size 13 Go) over</span>
+<span class="sd">        1 month (721 hourly time steps) : ~ 20s</span>
+
+<span class="sd">        Usage example:</span>
+
+<span class="sd">        Compute 24-hour precipitation accumulations from 6h J to 6h J+1 from hourly precipitation dataset,</span>
+<span class="sd">        so that the new index &#39;YYYY-MM-DD O6&#39; contains the sum of all indices between</span>
+<span class="sd">        &#39;YYYY-MM-{DD-1} 07&#39; and &#39;YYYY-MM-DD 06&#39; (corresponding to precipitation accumulations between</span>
+<span class="sd">        &#39;YYYY-MM-{DD-1} 06&#39; and &#39;YYYY-MM-DD 06&#39;)</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            tmp = ds.snowtools.daily_accumulation()</span>
+<span class="sd">            out = tmp.sel(time=&#39;2021-12-05 06&#39;)</span>
+
+<span class="sd">        is equivalent to :</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            out = ds.sel({&#39;time&#39;: slice(&#39;2021-12-04 07&#39;, &#39;2021-12-05 06&#39;)}).sum(&#39;time&#39;)</span>
+
+<span class="sd">        :param start_hour: Hour of the day from which the 24-hour accumulation is to be computed</span>
+<span class="sd">        :type start_hour: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Re-chunking a dataset is expensive, so only if the gain in computation time is worth it</span>
+        <span class="n">nbpoints</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+            <span class="n">nbpoints</span> <span class="o">=</span> <span class="n">nbpoints</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nbpoints</span> <span class="o">&gt;</span> <span class="mi">1000000000</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">):</span>
+                <span class="n">chunks</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">xr</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&lt;=</span> <span class="s1">&#39;2022.03.0&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">indexer</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;D&#39;</span><span class="p">},</span> <span class="n">base</span><span class="o">=</span><span class="n">start_hour</span><span class="p">,</span> <span class="n">loffset</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_hour</span><span class="si">}</span><span class="s1">h&#39;</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_hour</span><span class="si">}</span><span class="s1">h&#39;</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SnowtoolsAccessor.snow_cover_stats">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">snow_cover_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snow_depth_variable</span><span class="o">=</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="n">snow_depth_threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute snow cover statistics from a snow depth time serie.</span>
+<span class="sd">        Returned stats are:</span>
+
+<span class="sd">        - LCSCD  : Longest Concurent Snow Cover Duration period</span>
+<span class="sd">        - LCSMOD : Snow Melt Out Date of the Longest Concurent snow cover period</span>
+<span class="sd">        - LCSOD  : Snow Cover Onset date of the Longest Concurent snow cover period</span>
+<span class="sd">        - SD     : Snow duration : total number of snow coverage</span>
+
+<span class="sd">        This method calls the &quot;lcscd&quot; function defined in snowtools/tools/SnowCoverDuration.py, see the associated</span>
+<span class="sd">        documentation for more information.</span>
+
+<span class="sd">        Usage example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from snowtools.utils import xarray_snowtools</span>
+<span class="sd">            import xarray as xr</span>
+<span class="sd">            ds=xr.open_dataset(&#39;PRO_WJF_2010-2016.nc&#39;, decode_times=False)</span>
+<span class="sd">            ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">            stats=ds.snowtools.snow_cover_stats()</span>
+
+<span class="sd">        :param snow_depth_variable: Name of the variable containing the snow depth (default value for SURFEX outpus)</span>
+<span class="sd">        :type start_hour: str</span>
+<span class="sd">        :param threshold: Snow depth threshold to consider a given point / day as &quot;snow covered&quot;</span>
+<span class="sd">        :type start_hour: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.SnowCoverDuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">lcscd</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">)</span> <span class="ow">and</span> <span class="n">snow_depth_variable</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">htn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">snow_depth_variable</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DatArray</span><span class="p">):</span>
+            <span class="n">htn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span>
+
+        <span class="k">return</span> <span class="n">lcscd</span><span class="p">(</span><span class="n">htn</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">snow_depth_threshold</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SnowtoolsAccessor.backtrack_preprocess">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">backtrack_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to undo the changes done in the preprocess step if the dataset was opened with the &quot;snowtools&quot; backend.</span>
+<span class="sd">        Initial variable / dimension names come from the &#39;original_variable_name&#39;, &#39;original_dimension_name&#39; or</span>
+<span class="sd">        &#39;original_name&#39; attribute created during the preprocess step.</span>
+
+<span class="sd">        Usage example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from snowtools.utils import xarray_snowtools</span>
+<span class="sd">            import xarray as xr</span>
+<span class="sd">            ds = xr.open_dataset(&#39;old_PRO_20180807032000_002400.nc&#39;, decode_times=False)</span>
+<span class="sd">            ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">            original = ds.backtrack_preprocess()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;original_variable_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;original_variable_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">())}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;original_dimension_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;original_dimension_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">)}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;original_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;original_name&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MeteoAccessor">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.MeteoAccessor">[docs]</a>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)</span>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MeteoAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Accessor designed to deal with meteorological files.</span>
+
+<span class="sd">    Usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">         from snowtools.utils import xarray_snowtools</span>
+<span class="sd">         import xarray as xr</span>
+
+<span class="sd">         ds = xr.open_dataset(&#39;FORCING.nc&#39;, decode_times=False)</span>
+<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds.meteo.[...]</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="SurfexAccessor">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor">[docs]</a>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;surfex&quot;</span><span class="p">)</span>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;surfex&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfexAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Accessor designed to deal with SURFEX output files.</span>
+
+<span class="sd">    Usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">         from snowtools.utils import xarray_snowtools</span>
+<span class="sd">         import xarray as xr</span>
+
+<span class="sd">         ds = xr.open_dataset(&#39;PRO.nc&#39;, decode_times=False)</span>
+<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds.surfex.decode_time_variable(&#39;time&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SurfexAccessor.decode_time_variable">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decode_time_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manually decode any time-like variable from a SURFEX output</span>
+
+<span class="sd">        :param varname: Name of the variable to decode</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">timevar</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="n">varname</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">varname</span><span class="p">]})</span>
+        <span class="n">timevar</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">decode_cf</span><span class="p">(</span><span class="n">timevar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">timevar</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SurfexAccessor.drop_tile_dimension">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">drop_tile_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select a single value for &quot;tile&quot; dimension (or equivalent) and squeeze the dataset to drop the dimension.</span>
+
+<span class="sd">        :param tile: Value of the &quot;tile&quot; dimension to select</span>
+<span class="sd">        :type tile: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">drop_dim</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Number_of_patches&#39;</span><span class="p">,</span> <span class="s1">&#39;tile&#39;</span><span class="p">,</span> <span class="s1">&#39;Number_of_Tile&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">drop_dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">drop_dim</span><span class="o">=</span><span class="n">tile</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SemiDistributedAccessor">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor">[docs]</a>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;semidistributed&quot;</span><span class="p">)</span>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;semidistributed&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SemiDistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Additionnal methods in semi-distributed geometry (ex: S2M simulaitions)</span>
+
+<span class="sd">    Usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">         from snowtools.utils import xarray_snowtools</span>
+<span class="sd">         import xarray as xr</span>
+
+<span class="sd">         ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
+<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds.semidistributed.sel_points(massif_num=3, ZS=[900, 1800, 2700, 3600], slope=40)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SemiDistributedAccessor.sel_points">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sel_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method used to select a user-defined list of points in semi-distributed geometry (SAFRAN massifs geometry)</span>
+<span class="sd">        from their elevation (ZS), massif number (massif_num), slope and aspect.</span>
+
+<span class="sd">        **NB :**</span>
+<span class="sd">        More advanced indexing (for example to select all elevations above 1800m or use a slice as argument), use the</span>
+<span class="sd">        native xarray &quot;where&quot; method directly.</span>
+
+<span class="sd">        :param massif_num: Massif number(s) of points to select</span>
+<span class="sd">        :param massif_num: list, range or int</span>
+<span class="sd">        :param ZS: Elevation(s) of points to select</span>
+<span class="sd">        :param ZS: list, range or int</span>
+<span class="sd">        :param slope: Slope(s) of points to select</span>
+<span class="sd">        :param slope: list, range or int</span>
+<span class="sd">        :param aspect: Aspects(s) of points to select</span>
+<span class="sd">        :param aspect: list, range or int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;This method only applies to Dataset objects&quot;</span><span class="p">)</span>
+
+        <span class="n">indexer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Variable &quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&quot; does not exist&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
+                        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">),</span> <span class="nb">range</span><span class="p">):</span>
+                        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">)])</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">),</span> <span class="nb">int</span><span class="p">):</span>
+                        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">==</span> <span class="nb">eval</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> should be a list, range or int&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">indexer</span> <span class="o">=</span> <span class="n">tmp</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span> <span class="o">&amp;</span> <span class="n">tmp</span>
+
+        <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+            <span class="c1"># When all elements of the indexer are &quot;False&quot;, calling &quot;where&quot; raises the following error:</span>
+            <span class="c1"># IndexError: The indexing operation you are attempting to perform is not valid on netCDF4.Variable object.</span>
+            <span class="c1"># Try loading your data into memory first by calling .load().</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">indexer</span><span class="p">):</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">indexer</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING : No entry found with the given arguments, returning an empty Dataset&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING : arguments where empty or could not be interpreted, nothing changed.&quot;</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DistributedAccessor">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor">[docs]</a>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;distributed&quot;</span><span class="p">)</span>
+<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;distributed&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Additionnal methods in distributed geometry (ex: EDELWEISS)</span>
+
+<span class="sd">    Usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">         from snowtools.utils import xarray_snowtools</span>
+<span class="sd">         import xarray as xr</span>
+
+<span class="sd">         ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
+<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds.distributed.proj(&quot;EPSG:4326&quot;, &quot;EPSG:2154&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DistributedAccessor.proj">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.proj">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs_in</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="n">crs_out</span><span class="o">=</span><span class="s2">&quot;EPSG:2154&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Projection of an xarray dataset or dataarray into a new CRS.</span>
+<span class="sd">        This method implies a dependency to rioxarray.</span>
+
+<span class="sd">        :param ds: xarray object to preprocess</span>
+<span class="sd">        :type ds: xarray Dataset or Dataarray</span>
+<span class="sd">        :param crs_in: CRS of the input object</span>
+<span class="sd">        :type crs_in: str</span>
+<span class="sd">        :param crs_out: CRS of the output object</span>
+<span class="sd">        :type crs_out: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>  <span class="c1"># noqa</span>
+
+        <span class="c1"># TODO extract from rioxarray documentation :</span>
+        <span class="c1"># &quot;If you use one of xarray’s open methods such as xarray.open_dataset to load netCDF files with the default</span>
+        <span class="c1"># engine, it is recommended to use decode_coords=&quot;all&quot;. This will load the grid mapping variable into</span>
+        <span class="c1"># coordinates for compatibility with rioxarray.&quot;</span>
+        <span class="c1"># TODO : check crs_in ?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">set_spatial_dims</span><span class="p">(</span><span class="n">x_dim</span><span class="o">=</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="n">y_dim</span><span class="o">=</span><span class="s1">&#39;yy&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="n">crs_in</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">crs_out</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;yy&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="DistributedAccessor.plot_ensemble">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_ensemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isolevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">members</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot field(s) from an ensemble. To control the members of the ensemble to be plotted, use the &quot;members&quot;</span>
+<span class="sd">        argument.</span>
+<span class="sd">        The dataset must have a &#39;member&#39; dimension, and the spatial dimensions (&#39;xx&#39;, &#39;yy&#39;). This implies that</span>
+<span class="sd">        the selection of the time step must be done before calling the method.</span>
+
+<span class="sd">        :param variable: Variable name to plot (Dataset only)</span>
+<span class="sd">        :type variable: str</span>
+<span class="sd">        :param vmin: Min colorbar value.</span>
+<span class="sd">        :type vmin: float</span>
+<span class="sd">        :param vmax: Max colorbar value.</span>
+<span class="sd">        :type vmax: float</span>
+<span class="sd">        :param cmap: Matplotlib colormap</span>
+<span class="sd">        :type cmap: str</span>
+<span class="sd">        :param dem: Digital Elevation Model covering the dataset area.</span>
+<span class="sd">        :type dem: DataArray</span>
+<span class="sd">        :param isolevels: List of iso-levels to plot</span>
+<span class="sd">        :type isolevels: list</span>
+<span class="sd">        :param members: How to plot the ensemble data:</span>
+<span class="sd">                        &#39;all&#39;: Plot all ensemble members on the same figure;</span>
+<span class="sd">                        &#39;mean&#39;: Plot the mean ensemble field;</span>
+<span class="sd">                        int: Plot the given ensemble member only.</span>
+<span class="sd">        :type members: str or int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">variable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A variable name should be provided&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">variable</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variable </span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2"> not in Dataset&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ensemble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ensemble</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span>
+
+        <span class="k">if</span> <span class="s1">&#39;member&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;The &#39;member&#39; dimension is missing&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">))</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;The dimensions of the dataset must be exactly (&#39;xx&#39;, &#39;yy&#39;, &#39;member&#39;)&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot2D</span>
+
+            <span class="k">if</span> <span class="n">members</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">ensemble</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vmin</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vmax</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+                <span class="c1"># Assume ensemble size = 16</span>
+                <span class="c1"># TODO : Add check on ensemble size</span>
+                <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">mb</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="s1">&#39;member&#39;</span><span class="p">:</span> <span class="n">mb</span><span class="p">})</span>
+                    <span class="n">im</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
+                            <span class="n">isolevels</span><span class="o">=</span><span class="n">isolevels</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mf">0.02</span><span class="p">)</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">hspace</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+                <span class="n">cax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.96</span><span class="p">])</span>
+                <span class="n">cb</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">)</span>
+                <span class="c1"># cb.ax.tick_params(labelsize=20)</span>
+
+                <span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">fig</span>
+
+            <span class="k">elif</span> <span class="n">members</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;member&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">members</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">member</span><span class="o">=</span><span class="n">members</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not interpret argument members (</span><span class="si">{</span><span class="n">members</span><span class="si">}</span><span class="s1">). &#39;</span>
+                                 <span class="s1">&#39;Should be an interger, &quot;mean&quot; or &quot;all&quot;.&#39;</span><span class="p">)</span>
+
+                <span class="n">field</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vmin</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">vmax</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+                <span class="n">gridlines</span> <span class="o">=</span> <span class="n">projection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
+                              <span class="n">isolevels</span><span class="o">=</span><span class="n">isolevels</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="n">gridlines</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">im</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools_accessor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

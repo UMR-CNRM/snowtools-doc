@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.perturb_forcing &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,17 +46,17 @@
 <span class="sd">@author: M Lafaysse, from B. Cluzet methods</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.tools.change_forcing</span> <span class="kn">import</span> <span class="n">forcinput_tomodify</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DATA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_forcing</span><span class="w"> </span><span class="kn">import</span> <span class="n">forcinput_tomodify</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_DATA</span>
 
 
 <div class="viewcode-block" id="gener_random_serie_autocorr">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.gener_random_serie_autocorr">[docs]</a>
-<span class="k">def</span> <span class="nf">gener_random_serie_autocorr</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gener_random_serie_autocorr</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a serie perturbation_vector of random temporally correlated values, centered on fsys of std sigma and</span>
 <span class="sd">    temporal correlation tau.</span>
@@ -102,7 +102,7 @@
 
 <div class="viewcode-block" id="convertPrecipPhase">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.convertPrecipPhase">[docs]</a>
-<span class="k">def</span> <span class="nf">convertPrecipPhase</span><span class="p">(</span><span class="n">Tair</span><span class="p">,</span> <span class="n">precip</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="mf">272.65</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">274.05</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convertPrecipPhase</span><span class="p">(</span><span class="n">Tair</span><span class="p">,</span> <span class="n">precip</span><span class="p">,</span> <span class="n">Tmin</span><span class="o">=</span><span class="mf">272.65</span><span class="p">,</span> <span class="n">Tmax</span><span class="o">=</span><span class="mf">274.05</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert precipitation to solid or liquid according to the disturbed temperature.</span>
 
@@ -129,7 +129,7 @@
 
 <div class="viewcode-block" id="addNoiseMultiplicative">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoiseMultiplicative">[docs]</a>
-<span class="k">def</span> <span class="nf">addNoiseMultiplicative</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">addNoiseMultiplicative</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply multiplicative perturbation (sigma=std of random perturbation, tau=temporal correlation, fsys=systematic</span>
 
@@ -161,7 +161,7 @@
 
 <div class="viewcode-block" id="addNoiseAdditive">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoiseAdditive">[docs]</a>
-<span class="k">def</span> <span class="nf">addNoiseAdditive</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">addNoiseAdditive</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">fsys</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply additive perturbation (sigma=std of random perturbation, tau=temporal correlation, fsys=systematic</span>
 <span class="sd">    perturbation) to a time serie.</span>
@@ -192,7 +192,7 @@
 
 <div class="viewcode-block" id="addNoise2Impur">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.addNoise2Impur">[docs]</a>
-<span class="k">def</span> <span class="nf">addNoise2Impur</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">varName</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">brutal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">addNoise2Impur</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">varName</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">semiDistrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">brutal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add noise with temporal correlation.</span>
 
@@ -240,7 +240,7 @@
 
 <div class="viewcode-block" id="forcinput_perturb">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.forcinput_perturb">[docs]</a>
-<span class="k">class</span> <span class="nc">forcinput_perturb</span><span class="p">(</span><span class="n">forcinput_tomodify</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">forcinput_perturb</span><span class="p">(</span><span class="n">forcinput_tomodify</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stochastically perturbed meterological forcing file for assimilation purpose</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -260,7 +260,7 @@
 
 <div class="viewcode-block" id="forcinput_perturb.modify">
 <a class="viewcode-back" href="../../code/tools.html#tools.perturb_forcing.forcinput_perturb.modify">[docs]</a>
-    <span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_forcing_file</span><span class="p">,</span> <span class="n">new_forcing_file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_forcing_file</span><span class="p">,</span> <span class="n">new_forcing_file</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add stochastic perturbations to a meterological forcing file</span>
 
@@ -379,7 +379,7 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">forcinput_perturb</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 
@@ -387,9 +387,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -397,13 +397,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -422,7 +422,7 @@
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

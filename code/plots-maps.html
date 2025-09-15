@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Map plotting tools for data at Massif scale &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -17,7 +17,7 @@
     <link rel="next" title="Map plotting tools for gridded data" href="plots-maps-grid.html" />
     <link rel="prev" title="Plots from operational simulations" href="plots-pearps2m.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,9 +46,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="map-plotting-tools-for-data-at-massif-scale">
-<span id="plots-maps"></span><h1>Map plotting tools for data at Massif scale<a class="headerlink" href="#map-plotting-tools-for-data-at-massif-scale" title="Link to this heading">¶</a></h1>
-<p id="module-plots.maps.cartopy_massifs">Created on 29 march 2021</p>
+  <section id="module-plots.maps.cartopy_massifs">
+<span id="map-plotting-tools-for-data-at-massif-scale"></span><span id="plots-maps"></span><h1>Map plotting tools for data at Massif scale<a class="headerlink" href="#module-plots.maps.cartopy_massifs" title="Link to this heading">¶</a></h1>
+<p>Created on 29 march 2021</p>
 <dl class="field-list simple">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><p>radanovics</p>
@@ -71,7 +71,7 @@ If this doesn’t succeed for some reason (proxy or certificate
 issues for example), you can manually download the
 shapefiles from NaturalEarth <a class="reference external" href="https://www.naturalearthdata.com/">https://www.naturalearthdata.com/</a> and store them
 in cartopys ‘data_dir’. To see where cartopy will look for the data do :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cartopy</span> <span class="kn">import</span> <span class="n">config</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cartopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -94,11 +94,11 @@ Can not be used if geofeatures=True.</p>
 <p>Class to draw map over all French massifs.</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">netCDF4</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/grid_postproc_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">lats</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;LAT&#39;</span><span class="p">][:]</span>
@@ -222,11 +222,11 @@ Can not be used if geofeatures=True.</p>
 <p>Class for plotting a map over the French Alps.</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Alp/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -457,11 +457,11 @@ near the massif center without overlapping.</p>
 <p>Class for plotting a map over Corse.</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Cor/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -692,11 +692,11 @@ near the massif center without overlapping.</p>
 <p>Class to plot a map of the Pyrenees.</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Pyr/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points_nord</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
@@ -929,11 +929,11 @@ the massif center without overlapping.</p>
 <p>Class for plotting multiple massif plots of the French Alps</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Alp/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -1003,11 +1003,11 @@ the massif center without overlapping.</p>
 <p>Class for plotting multiple massif plots of Corse</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Cor/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -1063,11 +1063,11 @@ the massif center without overlapping.</p>
 <dd><p>Bases: <a class="reference internal" href="#plots.maps.cartopy_massifs.Map_pyrenees" title="plots.maps.cartopy_massifs.Map_pyrenees"><code class="xref py py-class docutils literal notranslate"><span class="pre">Map_pyrenees</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_MultiMap</span></code></p>
 <p>Class for plotting multiple massif plots of the Pyrenees</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Pyr/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points_nord</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
@@ -1152,11 +1152,11 @@ If the ‘proj’ is ‘lcc’ in projdict, an LambertConformal projection is in
 <p>Class for zoomed map on a given massif</p>
 <p>Example:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">cartopy_massifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartopy_massifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;PRO/postproc/Pyr/postproc_2021041006_2021041112.nc&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
     <span class="n">points_nord</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="mi">2100</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
@@ -1298,7 +1298,7 @@ If the ‘proj’ is ‘lcc’ in projdict, an LambertConformal projection is in
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
@@ -1465,7 +1465,7 @@ If the ‘proj’ is ‘lcc’ in projdict, an LambertConformal projection is in
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -1473,13 +1473,13 @@ If the ‘proj’ is ‘lcc’ in projdict, an LambertConformal projection is in
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -1504,7 +1504,7 @@ If the ‘proj’ is ‘lcc’ in projdict, an LambertConformal projection is in
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

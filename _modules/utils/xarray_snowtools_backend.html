@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.xarray_snowtools_backend &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools_backend</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.xarray_snowtools_backend</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">Opening a netCDF file with xarray</span>
+<span class="sd">---------------------------------</span>
+
+<span class="sd">The xarray_snowtools_backend module contains all elements defining the xarray entry points for SURFEX Input / Outputs</span>
+<span class="sd">in NetCDF format (methods `open_dataset`, `open_dataarray` and `open_mfdataset`, responsible for reading files and</span>
+<span class="sd">returning an xarray DataArray or Dataset Object) to be used within the snowtools package.</span>
+
+<span class="sd">These entry points are defined in the ``SnowtoolsBackendEntrypoint`` class inheriting from the xarray-native</span>
+<span class="sd">``BackendEntrypoint`` class (https://docs.xarray.dev/en/stable/internals/how-to-add-new-backend.html).</span>
+<span class="sd">WARNING : xarray ``BackendEntrypoint`` class is not implemented on xarray before 0.18 (default Meteo-France install)</span>
+
+<span class="sd">These entry points are designed to deal with the following requirements :</span>
+
+<span class="sd">    - Ensure that the coordinates associated to the time dimension are datetime objects. By default xarray try to</span>
+<span class="sd">      decode time variables as datetime objects based on their &quot;unit&quot; attribute. However, some SURFEX variables,</span>
+<span class="sd">      such as &quot;SNOWAGE&quot;, have an unit attribute that can not be interpreted by the default cftime tool,</span>
+<span class="sd">      raising the following error:</span>
+
+<span class="sd">      &quot;ValueError: Failed to decode variable &#39;SNOWAGE&#39;: unable to decode time units &#39;days since snowfall&#39; with</span>
+<span class="sd">      &#39;the default calendar&#39;.</span>
+<span class="sd">      Try opening your dataset with decode_times=False or installing cftime if it is not installed.&quot;</span>
+
+<span class="sd">      The solution here is to switch off the decoding of time variables when reading data (&quot;decode_times=False&quot;)</span>
+<span class="sd">      and doing so manually afterward for the dime dimension alone (see &quot;decode_time_dimension&quot; method)</span>
+
+<span class="sd">    - Ensure that variable and dimension names are standard names for backward compatibility of SURFEX versions</span>
+<span class="sd">      and to deal with data coming from different sources (this replaces the former prosimu functionality</span>
+<span class="sd">      designed to reduce dependency to variable and dimension names of SURFEX outputs).</span>
+<span class="sd">      This is done by mapping the possible names of a variable / dimension (when different names coexist) to the a</span>
+<span class="sd">      standard name through the &quot;dimension_map&quot; and &quot;variables_map&quot; dictionnaries (see &quot;update_varname&quot; and</span>
+<span class="sd">      &quot;update_dimname&quot; methods).</span>
+
+<span class="sd">    - Remove len 1 dimensions (the replaces the former prosimu functionality designed to remove</span>
+<span class="sd">      Number_of_patches / Number_of_tiles dimensions from SURFEX outputs).</span>
+<span class="sd">      This is done by calling the native xarray &quot;squeeze&quot; method on the target DataArray / Dataset.</span>
+
+<span class="sd">    - Ensure that the time dimension is in the first one for numpy-based tools backward compatibility ((this replaces</span>
+<span class="sd">      the former prosimu functionality designe to reduce the dependency to the dimensions order of SURFEX outputs).</span>
+<span class="sd">      This is done by calling the xarray native &quot;transpose&quot; method.</span>
+
+<span class="sd">    - Ensure that &#39;missing_value&#39; and &quot;_FillValue&quot; attributes do not differ to avoid crashing when trying to write data</span>
+<span class="sd">      (see &quot;check_encoding&quot; method for more information)</span>
+
+<span class="sd">To use these entry points, the native xarray methods `open_dataset`, `open_dataarray` and `open_mfdataset` should</span>
+<span class="sd">simply be called with the keyword argument &quot;engine=&#39;snowtools&#39;&quot; except if you have an older xarray version (see below).</span>
+
+<span class="sd">Meteo-France usage (until next xarray update from version 0.16.0)</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    import xarray as xr</span>
+<span class="sd">    from snowtools.utils import xarray_snowtools</span>
+
+<span class="sd">    ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
+<span class="sd">    ds = xarray_snowtools.preprocess(ds)</span>
+
+
+<span class="sd">Usage with xarray &gt; 0.18</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from snowtools.utils import xarray_snowtools</span>
+<span class="sd">    import xarray as xr</span>
+
+<span class="sd">    ds = xr.open_dataset(filename, engine=&#39;snowtools&#39;)</span>
+<span class="sd">    ds = xr.open_mfdataset(list_of_files, engine=&#39;snowtools&#39;)</span>
+
+
+<span class="sd">Use with statements!</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">We encourage you to use with statements as soon as possible to ensure that the files are correctly closed:</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">    from snowtools.utils import xarray_snowtools</span>
+<span class="sd">    import xarray as xr</span>
+
+<span class="sd">    with xr.open_dataset(filename, decode_times=False) as ds:</span>
+<span class="sd">        ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">        ...  # Do what you want with the data inside of these files.</span>
+
+<span class="sd">..</span>
+<span class="sd">   Additionnal features</span>
+<span class="sd">   ^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">   The subsequent use of xarray directly enables the following functionalities of the former prosimu tool:</span>
+
+<span class="sd">       - Extract points according to spatial properties (through native xarray indexing methods &quot;sel&quot;, &quot;loc&quot;,&quot;where&quot;...)</span>
+<span class="sd">         xarray related documentation : https://docs.xarray.dev/en/stable/user-guide/indexing.html</span>
+
+<span class="sd">         examples:</span>
+
+<span class="sd">         .. code-block:: python</span>
+
+<span class="sd">             ds.sel(time=slice(&#39;2025-06-12 00&#39;, &#39;2025-06-14 12&#39;, xx=slice(6.5, 8.), yy=slice(43., 45.))</span>
+<span class="sd">             ds.where((ds.massif_num == 3) &amp; (ds.ZS.isin([900, 1800, 2700, 3600])) &amp;</span>
+<span class="sd">                           (ds.slope == 40) &amp; (ds.aspect.isin([0, 180])), drop=True)</span>
+
+<span class="sd">       - Temporal integration of a diagnostic (native xarray &quot;resample&quot; method)</span>
+
+<span class="sd">       - Data concatenation along 1 dimension of a set of files (method `open_mfdataset`)</span>
+
+<span class="sd">       - Optimisation of data reanding and prossessing through the use of xarray-compatible dask tools</span>
+<span class="sd">         (https://docs.xarray.dev/en/stable/user-guide/dask.html)</span>
+
+<span class="sd">       - Dealing with missing values</span>
+
+<span class="sd">   It also enables new functionalities not covered (or only partially) by prosimu :</span>
+
+<span class="sd">       - Integration of xarray-based codes into snowtools, benefiting from advanced xarray functionalities</span>
+<span class="sd">         (eg: &quot;groupby&quot;) and related projects (ex : https://docs.xarray.dev/en/stable/user-guide/ecosystem.html)</span>
+
+<span class="sd">       - Easy exploration / processing of 2D, ensemble data (interpolation, maps, scores,...)</span>
+
+<span class="sd">       - Direct compatibility with any new dimension (ex : &quot;member&quot;)</span>
+
+<span class="sd">       - Propagation of the attributes along all process steps</span>
+
+<span class="sd">       - Process different input file formats (grib, tif,...) with the same tools by using native or</span>
+<span class="sd">         custom xarray engines</span>
+
+<span class="sd">   See xarray documentation (https://xarray.dev/) for more information, in particular :</span>
+
+<span class="sd">       - xarray philosophy : https://docs.xarray.dev/en/stable/roadmap.html#roadmap</span>
+
+<span class="sd">       - xarray internal design :</span>
+<span class="sd">         https://docs.xarray.dev/en/stable/internals/internal-design.html#internal-design-lazy-indexing</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools_preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">xarray.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendEntrypoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xarray.backends.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKEND_ENTRYPOINTS</span>
+
+<span class="c1"># WARNING : the following line changes the default behavior of ALL subsequent xarray `open_*`</span>
+<span class="c1"># by forcing the use of the custom `SnowtoolsBackendEntrypoint` entry point.</span>
+<span class="c1"># This may be a bad idea to mess with the default engine</span>
+<span class="c1"># def guess_engine(store_spec):</span>
+<span class="c1">#    return &#39;snowtools&#39;</span>
+<span class="c1"># import xarray.backends.plugins as plugins</span>
+<span class="c1"># plugins.guess_engine = guess_engine</span>
+
+
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SnowtoolsBackendEntrypoint</span><span class="p">(</span><span class="n">BackendEntrypoint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Xarray entry point to deal with snowtools-specific NetCDF files :</span>
+<span class="sd">    - Ensure backward compatibility in case of a change of variable/dimension name</span>
+<span class="sd">    - Map between identical variables coming from different sources with different names</span>
+<span class="sd">    - Deal with SURFEX-specific time dimension issues</span>
+
+<span class="sd">    This is done by applying a preprocess (see the &quot;preprocess&quot; method) to the</span>
+<span class="sd">    data before returning the xarray dataset or dataarray object.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from snowtools.utils import xarray_snowtools</span>
+<span class="sd">        import xarray</span>
+
+<span class="sd">        ds = xr.open_dataset(filename, engine=&#39;snowtools&#39;)</span>
+
+<span class="sd">    External documentation :</span>
+
+<span class="sd">    https://docs.xarray.dev/en/stable/internals/how-to-add-new-backend.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">available</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Necessary before v.2024.04.0</span>
+
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.open_dataset">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_or_obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Snowtools-specific version of the xarray&#39;s &quot;open_dataset&quot; method, which calls the native method</span>
+<span class="sd">        and carries out a preprocessing of the data before returning the dataset object.</span>
+<span class="sd">        If a list of paths is provided, the files are automatically opened with &quot;open_mfdataset&quot;.</span>
+<span class="sd">        WARNING : the direct use of *open_mfdataset* is recomended whenever you are sure to deal with more</span>
+<span class="sd">        than one file.</span>
+
+<span class="sd">        :param filename_or_obj: Pathi or list of paths of the file(s) to read</span>
+<span class="sd">        :type filename_or_obj: str, Path, file_like, DataStore or nested sequence of paths</span>
+<span class="sd">        :mapping: User-defined dictionnary to map variable or dimension names. It can be used as a complement to</span>
+<span class="sd">                  the default mapping dictionnary in case of a code based on variable / dimension names different than</span>
+<span class="sd">                  the standard ones (for example a code written after a SURFEX update).</span>
+<span class="sd">                  This is a snowtools-specific argument.</span>
+<span class="sd">        :type mapping: dict</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename_or_obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">filename_or_obj</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename_or_obj</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">_close</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="n">mapping</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">set_close</span><span class="p">(</span><span class="n">close</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">ds</span></div>
+
+
+    <span class="n">open_dataset_parameters</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.guess_can_open">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">guess_can_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        guess_can_open is used to identify the proper engine to open your data file automatically in case</span>
+<span class="sd">        the engine is not specified explicitly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
+
+
+<span class="c1"># Register the custom &quot;SnowtoolsBackendEntrypoint&quot; among xarray known backend entry points when this module is imported</span>
+<span class="k">if</span> <span class="n">xarray</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&gt;=</span> <span class="s1">&#39;2023.04.0&#39;</span><span class="p">:</span>
+    <span class="n">BACKEND_ENTRYPOINTS</span><span class="p">[</span><span class="s2">&quot;snowtools&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">,</span> <span class="n">SnowtoolsBackendEntrypoint</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">xarray</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&gt;=</span> <span class="s1">&#39;0.18.0&#39;</span><span class="p">:</span>
+    <span class="n">BACKEND_ENTRYPOINTS</span><span class="p">[</span><span class="s2">&quot;snowtools&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SnowtoolsBackendEntrypoint</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools_backend</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

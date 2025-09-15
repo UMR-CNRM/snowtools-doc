@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Tools for simulations &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -17,7 +17,7 @@
     <link rel="next" title="Tools for reading simulations : the utils module" href="utils.html" />
     <link rel="prev" title="The s2m command" href="s2m.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -51,21 +51,22 @@
 It includes only pre-processing of input files and post-processing of output files.</p>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#forcing-edition" id="id1">Forcing edition</a></p></li>
-<li><p><a class="reference internal" href="#meteorological-functions" id="id2">Meteorological functions</a></p></li>
-<li><p><a class="reference internal" href="#namelist-edition" id="id3">Namelist edition</a></p></li>
-<li><p><a class="reference internal" href="#ground-initialization" id="id4">Ground initialization</a></p></li>
-<li><p><a class="reference internal" href="#prep-edition" id="id5">Prep edition</a></p></li>
-<li><p><a class="reference internal" href="#massif-scale-diagnostics" id="id6">Massif-scale diagnostics</a></p></li>
-<li><p><a class="reference internal" href="#hydrological-diagnostics" id="id7">Hydrological diagnostics</a></p></li>
-<li><p><a class="reference internal" href="#simulation-execution-helpers" id="id8">Simulation execution helpers</a></p></li>
-<li><p><a class="reference internal" href="#ensemble-of-perturbed-forcing" id="id9">Ensemble of perturbed forcing</a></p></li>
-<li><p><a class="reference internal" href="#management-of-ensemble-pro-output-files" id="id10">Management of ensemble PRO output files</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.change_forcing" id="id1">Forcing edition</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.meteo" id="id2">Meteorological functions</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.update_namelist" id="id3">Namelist edition</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.initTG" id="id4">Ground initialization</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.change_prep" id="id5">Prep edition</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.massif_diags" id="id6">Massif-scale diagnostics</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.hydro" id="id7">Hydrological diagnostics</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.SnowCoverDuration" id="id8">Calculus of Snow Cover Duration</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.execute" id="id9">Simulation execution helpers</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.perturb_forcing" id="id10">Ensemble of perturbed forcing</a></p></li>
+<li><p><a class="reference internal" href="#module-tools.combine_memberfiles" id="id11">Management of ensemble PRO output files</a></p></li>
 </ul>
 </nav>
-<section id="forcing-edition">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Forcing edition</a><a class="headerlink" href="#forcing-edition" title="Link to this heading">¶</a></h2>
-<p id="module-tools.change_forcing">Created on 3 Aug. 2017</p>
+<section id="module-tools.change_forcing">
+<span id="forcing-edition"></span><h2><a class="toc-backref" href="#id1" role="doc-backlink">Forcing edition</a><a class="headerlink" href="#module-tools.change_forcing" title="Link to this heading">¶</a></h2>
+<p>Created on 3 Aug. 2017</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tools.change_forcing.forcinput_tomerge">
@@ -347,9 +348,9 @@ Implemented by C. Carmagnola in November 2018 (PROSNOW project).</p>
 </dd></dl>
 
 </section>
-<section id="meteorological-functions">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Meteorological functions</a><a class="headerlink" href="#meteorological-functions" title="Link to this heading">¶</a></h2>
-<dl class="field-list simple" id="module-tools.meteo">
+<section id="module-tools.meteo">
+<span id="meteorological-functions"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">Meteorological functions</a><a class="headerlink" href="#module-tools.meteo" title="Link to this heading">¶</a></h2>
+<dl class="field-list simple">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p>Diego Monteiro</p></li>
@@ -364,8 +365,8 @@ in <code class="docutils literal notranslate"><span class="pre">bronx.meteo.ther
 please check what you need is not yet implemented in bronx.</p>
 <p>In particular conversion between relative humidity (rh) and specific humidity (qair) could
 be done the following way (knowing the air temperature <code class="docutils literal notranslate"><span class="pre">Tair</span></code> and atmospheric pressure <code class="docutils literal notranslate"><span class="pre">PSurf</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">bronx.meteo.thermo</span> <span class="kn">import</span> <span class="n">Thermo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.meteo.thermo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Thermo</span>
 
 <span class="c1"># rh -&gt; qair:</span>
 <span class="n">qair</span> <span class="o">=</span> <span class="n">Thermo</span><span class="p">([</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="n">PSurf</span><span class="p">,</span> <span class="n">Huw</span><span class="o">=</span><span class="n">hu</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">Tair</span><span class="p">,</span> <span class="n">rc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Tair</span><span class="p">)))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;qv&#39;</span><span class="p">)</span>
@@ -430,9 +431,9 @@ depending on the site considered following Froidurot et al., (2014) method
 </dd></dl>
 
 </section>
-<section id="namelist-edition">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Namelist edition</a><a class="headerlink" href="#namelist-edition" title="Link to this heading">¶</a></h2>
-<dl class="py function" id="module-tools.update_namelist">
+<section id="module-tools.update_namelist">
+<span id="namelist-edition"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Namelist edition</a><a class="headerlink" href="#module-tools.update_namelist" title="Link to this heading">¶</a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="tools.update_namelist.update_surfex_namelist_file">
 <span class="sig-prename descclassname"><span class="pre">tools.update_namelist.</span></span><span class="sig-name descname"><span class="pre">update_surfex_namelist_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datebegin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namelistfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OPTIONS.nam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forcing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FORCING.nc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updateloc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physicaloptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snowparameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmembers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_caution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cselect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tools/update_namelist.html#update_surfex_namelist_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tools.update_namelist.update_surfex_namelist_file" title="Link to this definition">¶</a></dt>
 <dd><p>This function updates a namelist file through the bronx module. Called by standalone S2M but not by vortex</p>
@@ -589,9 +590,9 @@ depending on the site considered following Froidurot et al., (2014) method
 </dd></dl>
 
 </section>
-<section id="ground-initialization">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Ground initialization</a><a class="headerlink" href="#ground-initialization" title="Link to this heading">¶</a></h2>
-<p id="module-tools.initTG">Created on 5 Sept. 2017</p>
+<section id="module-tools.initTG">
+<span id="ground-initialization"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink">Ground initialization</a><a class="headerlink" href="#module-tools.initTG" title="Link to this heading">¶</a></h2>
+<p>Created on 5 Sept. 2017</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="tools.initTG.clim">
@@ -645,9 +646,9 @@ This is a recursive function until all files are found.</p>
 </dd></dl>
 
 </section>
-<section id="prep-edition">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Prep edition</a><a class="headerlink" href="#prep-edition" title="Link to this heading">¶</a></h2>
-<p id="module-tools.change_prep">Created on 23 Aug. 2017</p>
+<section id="module-tools.change_prep">
+<span id="prep-edition"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">Prep edition</a><a class="headerlink" href="#module-tools.change_prep" title="Link to this heading">¶</a></h2>
+<p>Created on 23 Aug. 2017</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tools.change_prep.prep_tomodify">
@@ -717,9 +718,9 @@ It modifies a PREP file by inserting measured snow depth values.</p>
 </dd></dl>
 
 </section>
-<section id="massif-scale-diagnostics">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Massif-scale diagnostics</a><a class="headerlink" href="#massif-scale-diagnostics" title="Link to this heading">¶</a></h2>
-<p id="module-tools.massif_diags">Created on 25 June 2018</p>
+<section id="module-tools.massif_diags">
+<span id="massif-scale-diagnostics"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Massif-scale diagnostics</a><a class="headerlink" href="#module-tools.massif_diags" title="Link to this heading">¶</a></h2>
+<p>Created on 25 June 2018</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tools.massif_diags.massif_simu">
@@ -757,17 +758,17 @@ nécessaires</p>
 </dd></dl>
 
 </section>
-<section id="hydrological-diagnostics">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Hydrological diagnostics</a><a class="headerlink" href="#hydrological-diagnostics" title="Link to this heading">¶</a></h2>
-<p id="module-tools.hydro">snowtools contains hydrological routines designed to agregate S2M outputs into hydrological basins.</p>
+<section id="module-tools.hydro">
+<span id="hydrological-diagnostics"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Hydrological diagnostics</a><a class="headerlink" href="#module-tools.hydro" title="Link to this heading">¶</a></h2>
+<p>snowtools contains hydrological routines designed to agregate S2M outputs into hydrological basins.</p>
 <p>Starting from a shapefile of hydrological basins and a digital elevation model including massif numbers, two
 preliminary steps are necessary:</p>
 <ol class="arabic simple">
 <li><p>Rasterize the shapefile of basin on the same grid as the DEM using the following:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.tools.hydro</span> <span class="kn">import</span> <span class="n">rasterized_shapefile</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.hydro</span><span class="w"> </span><span class="kn">import</span> <span class="n">rasterized_shapefile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">dem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;hydro&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/lafaysse/hydroMF/DEM_FRANCE_L93_250m_bilinear.nc&#39;</span><span class="p">)</span>
 <span class="n">shapefilebasin</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;hydro&#39;</span><span class="p">,</span> <span class="s1">&#39;BVTopo_Topage2024_inmassifs.shp&#39;</span><span class="p">)</span>
@@ -781,9 +782,9 @@ preliminary steps are necessary:</p>
 </div>
 <p>2. Compute the areas of S2M simulation units inside each basin using the following example where rasterbasin can be
 replaced by the file obtained at the previous step:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.tools.hydro</span> <span class="kn">import</span> <span class="n">basin_areas_file</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.hydro</span><span class="w"> </span><span class="kn">import</span> <span class="n">basin_areas_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">dem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;hydro&#39;</span><span class="p">,</span> <span class="s1">&#39;/home/lafaysse/hydroMF/DEM_FRANCE_L93_250m_bilinear.nc&#39;</span><span class="p">)</span>
 <span class="n">rasterbasin</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s1">&#39;hydro&#39;</span><span class="p">,</span> <span class="s1">&#39;BNBV_SCHAPI_FRANCE250m.nc&#39;</span><span class="p">)</span>
@@ -797,9 +798,9 @@ replaced by the file obtained at the previous step:</p>
 </div>
 <p>Once this areas file is available, the computation of hydrological diagnostics can be done using the following example
 where a list of variables are agregated and saved in the HYDRO.nc file</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.tools.hydro</span> <span class="kn">import</span> <span class="n">hydro</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.hydro</span><span class="w"> </span><span class="kn">import</span> <span class="n">hydro</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">TESTBASE_DIR</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="n">forcing</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s2">&quot;FORCING&quot;</span><span class="p">,</span> <span class="s2">&quot;forcing_testhydro_alp_oper_2025031806_2025032306.nc&quot;</span><span class="p">)</span>
 <span class="n">pro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s2">&quot;PRO&quot;</span><span class="p">,</span> <span class="s2">&quot;pro_testhydro_alp_oper_2025031906_2025032306.nc&quot;</span><span class="p">)</span>
 <span class="n">areas</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TESTBASE_DIR</span><span class="p">,</span> <span class="s2">&quot;hydro&quot;</span><span class="p">,</span> <span class="s2">&quot;areas_alp27_allslopes.nc&quot;</span><span class="p">)</span>
@@ -1100,9 +1101,96 @@ nécessaires</p>
 </dd></dl>
 
 </section>
-<section id="simulation-execution-helpers">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Simulation execution helpers</a><a class="headerlink" href="#simulation-execution-helpers" title="Link to this heading">¶</a></h2>
-<p id="module-tools.execute">Created on 9 oct. 2012
+<section id="module-tools.SnowCoverDuration">
+<span id="calculus-of-snow-cover-duration"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Calculus of Snow Cover Duration</a><a class="headerlink" href="#module-tools.SnowCoverDuration" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="tools.SnowCoverDuration.lcscd">
+<span class="sig-prename descclassname"><span class="pre">tools.SnowCoverDuration.</span></span><span class="sig-name descname"><span class="pre">lcscd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tools/SnowCoverDuration.html#lcscd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tools.SnowCoverDuration.lcscd" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (class:<cite>xarray.Dataset</cite> ou <cite>xarray.DataArray</cite>) – Snow depths time serie</p></li>
+<li><p><strong>threshold</strong> (class:<cite>int</cite>) – Snow depth threshold to consider a point as “snow covered”</p></li>
+</ul>
+</dd>
+</dl>
+<p>Output :</p>
+<p>xarray.Dataset/DataArray containing the following variables :</p>
+<ul class="simple">
+<li><p>LCSCD  : Longest Concurent Snow Cover Duration period</p></li>
+<li><p>LCSMOD : Snow Melt Out Date of the Longest Concurent snow cover period</p></li>
+<li><p>LCSOD  : Snow Cover Onset date of the Longest Concurent snow cover period</p></li>
+<li><p>SD     : Snow duration : total number of snow coverage</p></li>
+</ul>
+<p>Method :</p>
+<ol class="arabic simple">
+<li><p>Classify each date/day as “snow covered” or “snow free” using the prescribed threshold</p></li>
+<li><p>Associate to each time/day of <em>data</em> the starting date of the corresponding season (the previous 1 septembre)</p></li>
+</ol>
+<ul class="simple">
+<li><p>Get indices of all dates corresponding to september 1st</p></li>
+<li><p>“forward fill” (see warning below) these values to associate each date to its season’s starting date</p></li>
+<li><p>Remove dates before 1st of september: force all 1 september as snow free dates to match Sentinel2 convention</p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>Use the xarray “groupby” method to compute the diagnostics for each season</p></li>
+</ol>
+<ul class="simple">
+<li><p>Create a time serie containing the number of snow covered dates since the begining of the seaon with
+the xarray’s “cumsum” method (see warning below)</p></li>
+<li><p>Create a time serie containing the number of snow free days since the begining of the season after
+each snow cover period</p></li>
+<li><p>-&gt; the difference between these 2 time series is a time serie containing the number of days since the
+apparition of snow for each snow covered period of the season</p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p>Compute all diagnotics from the time serie obtained in step 3</p></li>
+</ol>
+<ul class="simple">
+<li><p>SCD = maximum value (higher number of concurent snow covered days)</p></li>
+<li><p>MOD = index (number of days since 1 september) of the SCD value</p></li>
+<li><p>SOD = MOD - SCD (retract the number of snow days to get the index of the begining of the period)</p></li>
+<li><p>SD  = Total number of days counted as snow covered</p></li>
+</ul>
+<p>WARNING :</p>
+<p>The standard solution to compute the longest continuous snow cover duration relies on the use of the
+xarray “ffill” method that uses the “bottleneck” module which is not available on MF’s HPC.</p>
+<p>–&gt; a custom “xr_ffill” method based on numpy only is used in this case</p>
+<p>TODO : compare the performances of both methods</p>
+<p>NB :</p>
+<p>The use of xarray.DataArray object instead of numpy arrays is motivated by several reasons :</p>
+<ul class="simple">
+<li><p>The “resample” method used to resample hourly HTN values to daily ones has not equivalent in prosimu / numpy</p></li>
+<li><p>The multi-season situation is managed using the “groupby” method that does not exist in numpy</p></li>
+<li><p>The “cumsum” method exists in numpy (with the same core than the xarray’s one), but with xarray
+the dimension order management is explicit (parsing a dimension name instead of an index number that can vary
+between numpy arrays)</p></li>
+<li><p>The “ffill” method has no equivalent in numpy</p></li>
+<li><p>The final goal is to write a netcdf file, which is straightforward with a DataArray but requires
+(a bit of) formatting with numpy</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tools.SnowCoverDuration.xr_ffill">
+<span class="sig-prename descclassname"><span class="pre">tools.SnowCoverDuration.</span></span><span class="sig-name descname"><span class="pre">xr_ffill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">da</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tools/SnowCoverDuration.html#xr_ffill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tools.SnowCoverDuration.xr_ffill" title="Link to this definition">¶</a></dt>
+<dd><p>Solution inspired from :
+<a class="reference external" href="https://stackoverflow.com/questions/41190852/most-efficient-way-to-forward-fill-nan-values-in-numpy-array">https://stackoverflow.com/questions/41190852/most-efficient-way-to-forward-fill-nan-values-in-numpy-array</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>da</strong> (class:<cite>xarray.DataArray</cite>) – Any DatArray with missing values to forward fill</p></li>
+<li><p><strong>dim</strong> (class:<cite>str</cite>) – Name of the dimension along which the forward-fill should be applied</p></li>
+<li><p><strong>fillna</strong> (class:<cite>bool</cite>) – If True, fill remaining NaN values with 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-tools.execute">
+<span id="simulation-execution-helpers"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">Simulation execution helpers</a><a class="headerlink" href="#module-tools.execute" title="Link to this heading">¶</a></h2>
+<p>Created on 9 oct. 2012
 &#64;author: lafaysse</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="tools.execute.SystemException">
@@ -1131,9 +1219,9 @@ Include the setting of MPI and OpenMP tasks, and the extension of stack memory.<
 </dd></dl>
 
 </section>
-<section id="ensemble-of-perturbed-forcing">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Ensemble of perturbed forcing</a><a class="headerlink" href="#ensemble-of-perturbed-forcing" title="Link to this heading">¶</a></h2>
-<p id="module-tools.perturb_forcing">Created on 3 Aug. 2022</p>
+<section id="module-tools.perturb_forcing">
+<span id="ensemble-of-perturbed-forcing"></span><h2><a class="toc-backref" href="#id10" role="doc-backlink">Ensemble of perturbed forcing</a><a class="headerlink" href="#module-tools.perturb_forcing" title="Link to this heading">¶</a></h2>
+<p>Created on 3 Aug. 2022</p>
 <p>&#64;author: M Lafaysse, from B. Cluzet methods</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="tools.perturb_forcing.addNoise2Impur">
@@ -1256,9 +1344,9 @@ temporal correlation tau.</p>
 </dd></dl>
 
 </section>
-<section id="management-of-ensemble-pro-output-files">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Management of ensemble PRO output files</a><a class="headerlink" href="#management-of-ensemble-pro-output-files" title="Link to this heading">¶</a></h2>
-<p id="module-tools.combine_memberfiles">Created on Wed Jul 5 2023.</p>
+<section id="module-tools.combine_memberfiles">
+<span id="management-of-ensemble-pro-output-files"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">Management of ensemble PRO output files</a><a class="headerlink" href="#module-tools.combine_memberfiles" title="Link to this heading">¶</a></h2>
+<p>Created on Wed Jul 5 2023.</p>
 <p>This module provide a method to combine PRO simulation output files from different members into one single file.</p>
 <dl class="simple">
 <dt>Authors:</dt><dd><ul class="simple">
@@ -1303,13 +1391,13 @@ simulation output file should be in <code class="docutils literal notranslate"><
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Tools for simulations</a><ul>
-<li><a class="reference internal" href="#forcing-edition">Forcing edition</a><ul>
+<li><a class="reference internal" href="#module-tools.change_forcing">Forcing edition</a><ul>
 <li><a class="reference internal" href="#tools.change_forcing.forcinput_tomerge"><code class="docutils literal notranslate"><span class="pre">forcinput_tomerge</span></code></a><ul>
 <li><a class="reference internal" href="#tools.change_forcing.forcinput_tomerge.checktime"><code class="docutils literal notranslate"><span class="pre">forcinput_tomerge.checktime()</span></code></a></li>
 <li><a class="reference internal" href="#tools.change_forcing.forcinput_tomerge.merge"><code class="docutils literal notranslate"><span class="pre">forcinput_tomerge.merge()</span></code></a></li>
@@ -1351,13 +1439,13 @@ simulation output file should be in <code class="docutils literal notranslate"><
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#meteorological-functions">Meteorological functions</a><ul>
+<li><a class="reference internal" href="#module-tools.meteo">Meteorological functions</a><ul>
 <li><a class="reference internal" href="#tools.meteo.CO2_CONCENTRATION"><code class="docutils literal notranslate"><span class="pre">CO2_CONCENTRATION</span></code></a></li>
 <li><a class="reference internal" href="#tools.meteo.splitting_prectot"><code class="docutils literal notranslate"><span class="pre">splitting_prectot()</span></code></a></li>
 <li><a class="reference internal" href="#tools.meteo.psurf"><code class="docutils literal notranslate"><span class="pre">psurf()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#namelist-edition">Namelist edition</a><ul>
+<li><a class="reference internal" href="#module-tools.update_namelist">Namelist edition</a><ul>
 <li><a class="reference internal" href="#tools.update_namelist.update_surfex_namelist_file"><code class="docutils literal notranslate"><span class="pre">update_surfex_namelist_file()</span></code></a></li>
 <li><a class="reference internal" href="#tools.update_namelist.update_surfex_namelist_object"><code class="docutils literal notranslate"><span class="pre">update_surfex_namelist_object()</span></code></a></li>
 <li><a class="reference internal" href="#tools.update_namelist.check_or_create_block"><code class="docutils literal notranslate"><span class="pre">check_or_create_block()</span></code></a></li>
@@ -1370,14 +1458,14 @@ simulation output file should be in <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#tools.update_namelist.update_namelist_object_nmembers"><code class="docutils literal notranslate"><span class="pre">update_namelist_object_nmembers()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ground-initialization">Ground initialization</a><ul>
+<li><a class="reference internal" href="#module-tools.initTG">Ground initialization</a><ul>
 <li><a class="reference internal" href="#tools.initTG.clim"><code class="docutils literal notranslate"><span class="pre">clim()</span></code></a></li>
 <li><a class="reference internal" href="#tools.initTG.create_env"><code class="docutils literal notranslate"><span class="pre">create_env()</span></code></a></li>
 <li><a class="reference internal" href="#tools.initTG.generate_clim"><code class="docutils literal notranslate"><span class="pre">generate_clim()</span></code></a></li>
 <li><a class="reference internal" href="#tools.initTG.get_meteo_for_clim"><code class="docutils literal notranslate"><span class="pre">get_meteo_for_clim()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#prep-edition">Prep edition</a><ul>
+<li><a class="reference internal" href="#module-tools.change_prep">Prep edition</a><ul>
 <li><a class="reference internal" href="#tools.change_prep.prep_tomodify"><code class="docutils literal notranslate"><span class="pre">prep_tomodify</span></code></a><ul>
 <li><a class="reference internal" href="#tools.change_prep.prep_tomodify.apply_swe_threshold"><code class="docutils literal notranslate"><span class="pre">prep_tomodify.apply_swe_threshold()</span></code></a></li>
 <li><a class="reference internal" href="#tools.change_prep.prep_tomodify.change_date"><code class="docutils literal notranslate"><span class="pre">prep_tomodify.change_date()</span></code></a></li>
@@ -1388,7 +1476,7 @@ simulation output file should be in <code class="docutils literal notranslate"><
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#massif-scale-diagnostics">Massif-scale diagnostics</a><ul>
+<li><a class="reference internal" href="#module-tools.massif_diags">Massif-scale diagnostics</a><ul>
 <li><a class="reference internal" href="#tools.massif_diags.massif_simu"><code class="docutils literal notranslate"><span class="pre">massif_simu</span></code></a><ul>
 <li><a class="reference internal" href="#tools.massif_diags.massif_simu.massif_natural_risk"><code class="docutils literal notranslate"><span class="pre">massif_simu.massif_natural_risk()</span></code></a></li>
 <li><a class="reference internal" href="#tools.massif_diags.massif_simu.warnings"><code class="docutils literal notranslate"><span class="pre">massif_simu.warnings()</span></code></a></li>
@@ -1396,7 +1484,7 @@ simulation output file should be in <code class="docutils literal notranslate"><
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#hydrological-diagnostics">Hydrological diagnostics</a><ul>
+<li><a class="reference internal" href="#module-tools.hydro">Hydrological diagnostics</a><ul>
 <li><a class="reference internal" href="#tools.hydro.hydro"><code class="docutils literal notranslate"><span class="pre">hydro</span></code></a><ul>
 <li><a class="reference internal" href="#tools.hydro.hydro.close"><code class="docutils literal notranslate"><span class="pre">hydro.close()</span></code></a></li>
 <li><a class="reference internal" href="#tools.hydro.hydro.checktime"><code class="docutils literal notranslate"><span class="pre">hydro.checktime()</span></code></a></li>
@@ -1426,14 +1514,19 @@ simulation output file should be in <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#tools.hydro.bbox"><code class="docutils literal notranslate"><span class="pre">bbox()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#simulation-execution-helpers">Simulation execution helpers</a><ul>
+<li><a class="reference internal" href="#module-tools.SnowCoverDuration">Calculus of Snow Cover Duration</a><ul>
+<li><a class="reference internal" href="#tools.SnowCoverDuration.lcscd"><code class="docutils literal notranslate"><span class="pre">lcscd()</span></code></a></li>
+<li><a class="reference internal" href="#tools.SnowCoverDuration.xr_ffill"><code class="docutils literal notranslate"><span class="pre">xr_ffill()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-tools.execute">Simulation execution helpers</a><ul>
 <li><a class="reference internal" href="#tools.execute.SystemException"><code class="docutils literal notranslate"><span class="pre">SystemException</span></code></a></li>
 <li><a class="reference internal" href="#tools.execute.callSurfexOrDie"><code class="docutils literal notranslate"><span class="pre">callSurfexOrDie()</span></code></a></li>
 <li><a class="reference internal" href="#tools.execute.callSystemOrDie"><code class="docutils literal notranslate"><span class="pre">callSystemOrDie()</span></code></a></li>
 <li><a class="reference internal" href="#tools.execute.printandcallSystemOrDie"><code class="docutils literal notranslate"><span class="pre">printandcallSystemOrDie()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#ensemble-of-perturbed-forcing">Ensemble of perturbed forcing</a><ul>
+<li><a class="reference internal" href="#module-tools.perturb_forcing">Ensemble of perturbed forcing</a><ul>
 <li><a class="reference internal" href="#tools.perturb_forcing.addNoise2Impur"><code class="docutils literal notranslate"><span class="pre">addNoise2Impur()</span></code></a></li>
 <li><a class="reference internal" href="#tools.perturb_forcing.addNoiseAdditive"><code class="docutils literal notranslate"><span class="pre">addNoiseAdditive()</span></code></a></li>
 <li><a class="reference internal" href="#tools.perturb_forcing.addNoiseMultiplicative"><code class="docutils literal notranslate"><span class="pre">addNoiseMultiplicative()</span></code></a></li>
@@ -1445,7 +1538,7 @@ simulation output file should be in <code class="docutils literal notranslate"><
 <li><a class="reference internal" href="#tools.perturb_forcing.gener_random_serie_autocorr"><code class="docutils literal notranslate"><span class="pre">gener_random_serie_autocorr()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#management-of-ensemble-pro-output-files">Management of ensemble PRO output files</a><ul>
+<li><a class="reference internal" href="#module-tools.combine_memberfiles">Management of ensemble PRO output files</a><ul>
 <li><a class="reference internal" href="#tools.combine_memberfiles.combine_memberfiles"><code class="docutils literal notranslate"><span class="pre">combine_memberfiles()</span></code></a></li>
 </ul>
 </li>
@@ -1471,7 +1564,7 @@ simulation output file should be in <code class="docutils literal notranslate"><
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -1479,13 +1572,13 @@ simulation output file should be in <code class="docutils literal notranslate"><
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -1509,7 +1602,7 @@ simulation output file should be in <code class="docutils literal notranslate"><
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

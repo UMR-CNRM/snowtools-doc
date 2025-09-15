@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>SURFEX-Crocus user documentation for cen branch &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -17,7 +17,7 @@
     <link rel="next" title="Development in progress in SURFEX-Crocus" href="surfex-dev-in-progress.html" />
     <link rel="prev" title="Information for SURFEX-Crocus developers" href="surfex-dev.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -73,7 +73,7 @@
 <h3>Changes in namelist<a class="headerlink" href="#changes-in-namelist" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_ISBA_SNOWn
 <span class="w">    </span><span class="nv">CSNOWRAD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;B92&#39;</span>,<span class="w"> </span><span class="s1">&#39;T17&#39;</span><span class="w"> </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>absorption<span class="w"> </span>of<span class="w"> </span>solar<span class="w"> </span>radiation,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>B92
-<span class="w">    </span><span class="nv">CSNOWMETAMO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;B21&#39;</span>,<span class="s1">&#39;C13&#39;</span>,<span class="s1">&#39;F06&#39;</span>,<span class="s1">&#39;T07&#39;</span>,<span class="s1">&#39;S-C&#39;</span>,<span class="s1">&#39;S-F&#39;</span><span class="w">  </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>metamorphism,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>B21
+<span class="w">    </span><span class="nv">CSNOWMETAMO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;B21&#39;</span>,<span class="s1">&#39;F06&#39;</span>,<span class="s1">&#39;T07&#39;</span>,<span class="s1">&#39;S-B&#39;</span>,<span class="s1">&#39;S-F&#39;</span><span class="w">  </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>metamorphism,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>B21
 <span class="w">    </span><span class="nv">CSNOWFALL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;V12&#39;</span>,<span class="s1">&#39;S02&#39;</span>,<span class="s1">&#39;A76&#39;</span>,<span class="s1">&#39;P75&#39;</span>,<span class="s1">&#39;NZE&#39;</span><span class="w"> </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>falling<span class="w"> </span>snow<span class="w"> </span>density,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>V12
 <span class="w">    </span><span class="nv">CSNOWCOMP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;B92&#39;</span>,<span class="w"> </span><span class="s1">&#39;S14&#39;</span>,<span class="w"> </span><span class="s1">&#39;T11&#39;</span><span class="w">  </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>compaction,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>B92
 <span class="w">    </span><span class="nv">CSNOWCOND</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Y81&#39;</span>,<span class="w"> </span><span class="s1">&#39;I02&#39;</span>,<span class="s1">&#39;C11&#39;</span><span class="w"> </span>option<span class="w"> </span><span class="k">for</span><span class="w"> </span>snow<span class="w"> </span>thermal<span class="w"> </span>conductivity,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>Y81
@@ -95,10 +95,9 @@
 <p><strong>CSNOWMETAMO</strong> : snow metamorphism</p>
 <ul class="simple">
 <li><p>‘B92’ obsolete option which will be removed in a next version : empirical evolution of dendricity, sphericity and size from Brun et al 1992</p></li>
-<li><p>‘C13’ Translation of B92 option in terms of Optical Diameter and Sphericity</p></li>
-<li><p>‘B21’ Correction of C13 option for some limit case (default)</p></li>
+<li><p>‘B21’ Translation of B92 option in terms of Optical Diameter and Sphericity (default). NB: this is a correction of C13 option which is not supported now</p></li>
 <li><p>‘F06’ Evolution law of the optical diameter from Flanner and Zender (2006), which fits the model outputs of a snow microstructure model representing the diffusive vapour fluxes among the grains.</p></li>
-<li><p>‘S-C’ Experimental evolution law of Optical Diameter from Schleef et al, 2014 for the first 48 hours after snowfall, then C13 option</p></li>
+<li><p>‘S-B’ Experimental evolution law of Optical Diameter from Schleef et al, 2014 for the first 48 hours after snowfall, then B21 option</p></li>
 <li><p>‘S-F’ Experimental evolution law of Optical Diameter from Schleef et al, 2014 for the first 48 hours after snowfall, then F06 option</p></li>
 <li><p>‘T07’ Experimental evolution law of Optical Diameter from Taillandier et al, 2007</p></li>
 </ul>
@@ -761,7 +760,7 @@ You can try this parameterization for any other site, even in cold climates like
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
@@ -851,7 +850,7 @@ You can try this parameterization for any other site, even in cold climates like
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -859,13 +858,13 @@ You can try this parameterization for any other site, even in cold climates like
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -889,7 +888,7 @@ You can try this parameterization for any other site, even in cold climates like
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

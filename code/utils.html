@@ -6,18 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Tools for reading simulations : the utils module &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="The prosimu simulation reader" href="utils-prosimu.html" />
+    <link rel="next" title="Xarray with snowtools" href="utils-xarray.html" />
     <link rel="prev" title="Tools for simulations" href="tools.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -30,7 +30,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="utils-prosimu.html" title="The prosimu simulation reader"
+          <a href="utils-xarray.html" title="Xarray with snowtools"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="tools.html" title="Tools for simulations"
@@ -49,7 +49,8 @@
 <span id="sec-code-utils"></span><h1>Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module<a class="headerlink" href="#tools-for-reading-simulations-the-utils-module" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="utils-prosimu.html">The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils-xarray.html">Xarray with snowtools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils-xarray.html#good-practices">Good practices</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils-massifs.html">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils-resources.html">Managing resources (files, filenames, copy, memory)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils-exceptions.html">Snowtools Exceptions</a></li>
@@ -57,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="utils-s2mstandardfile.html">Writing simulation output files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils-git.html">Getting git informations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils-readsnowpack.html">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils-prosimu.html">The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader</a></li>
 </ul>
 </div>
 <section id="other-tools">
@@ -97,9 +99,9 @@ Options:
 <h3><a class="toc-backref" href="#id2" role="doc-backlink">File conversions : Met and netCDF</a><a class="headerlink" href="#file-conversions-met-and-netcdf" title="Link to this heading">¶</a></h3>
 </section>
 </section>
-<section id="met2netcdf-tool">
-<h2>Met2Netcdf tool<a class="headerlink" href="#met2netcdf-tool" title="Link to this heading">¶</a></h2>
-<p id="module-utils.Met2Netcdf">This script creates FORCING files for the Col de Porte site.
+<section id="module-utils.Met2Netcdf">
+<span id="met2netcdf-tool"></span><h2>Met2Netcdf tool<a class="headerlink" href="#module-utils.Met2Netcdf" title="Link to this heading">¶</a></h2>
+<p>This script creates FORCING files for the Col de Porte site.
 It uses MET files (ie meteorogical files) from 1993 and s2m reanalysis before.</p>
 <p>Values of MET files come from different sensor in the Col de Porte site and benefit from a human expertise.</p>
 <p>The FORCING files which is created is also use to complete the doi of the article “57 years…”
@@ -123,6 +125,7 @@ path to reanalysis files (normally stable path)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>Met2Netcdf.py<span class="w"> </span>-b<span class="w"> </span><span class="m">2000080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2001080106</span>
 python3<span class="w"> </span>Met2Netcdf.py<span class="w"> </span>-b<span class="w"> </span><span class="m">1993080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2023080106</span><span class="w"> </span>-o<span class="w"> </span>MAJ_MetInsitu.nc
 python3<span class="w"> </span>Met2Netcdf.py<span class="w"> </span>-b<span class="w"> </span><span class="m">2000080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2001080106</span><span class="w"> </span>--one_file<span class="w"> </span>-p<span class="w"> </span>partial_MET.txt
+python3<span class="w"> </span>Met2Netcdf.py<span class="w"> </span>-b<span class="w"> </span><span class="m">2023080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2024080106</span><span class="w"> </span>-c<span class="w"> </span>--one_file<span class="w"> </span>-p<span class="w"> </span>/rd/cenfic3/cenobs/mesure_data/col_de_porte/met/MET_2023_2024_fmt
 </pre></div>
 </div>
 <p>Options:</p>
@@ -319,9 +322,9 @@ options:
   --version             show program&#39;s version number and exit
 </pre></div>
 </div>
-<section id="read-observations-from-csv-files">
-<h3>Read observations from csv files<a class="headerlink" href="#read-observations-from-csv-files" title="Link to this heading">¶</a></h3>
-<p id="module-utils.obscsv">Created on 29 oct. 2012</p>
+<section id="module-utils.obscsv">
+<span id="read-observations-from-csv-files"></span><h3>Read observations from csv files<a class="headerlink" href="#module-utils.obscsv" title="Link to this heading">¶</a></h3>
+<p>Created on 29 oct. 2012</p>
 <p>&#64;author: lafaysse</p>
 </section>
 <section id="dates-management">
@@ -339,7 +342,7 @@ options:
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
@@ -350,7 +353,7 @@ options:
 <li><a class="reference internal" href="#file-conversions-met-and-netcdf">File conversions : Met and netCDF</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#met2netcdf-tool">Met2Netcdf tool</a><ul>
+<li><a class="reference internal" href="#module-utils.Met2Netcdf">Met2Netcdf tool</a><ul>
 <li><a class="reference internal" href="#what-has-to-be-controled-in-met2netcdf-py-script">What has to be controled in Met2Netcdf.py script</a><ul>
 <li><a class="reference internal" href="#hard-coded-part-of-the-code">HARD CODED PART OF THE CODE</a></li>
 <li><a class="reference internal" href="#examples-of-use">EXAMPLES OF USE</a></li>
@@ -365,7 +368,7 @@ options:
 <li><a class="reference internal" href="#utils.Met2Netcdf.recup_cdp"><code class="docutils literal notranslate"><span class="pre">recup_cdp()</span></code></a></li>
 <li><a class="reference internal" href="#utils.Met2Netcdf.recup_donnees_site"><code class="docutils literal notranslate"><span class="pre">recup_donnees_site()</span></code></a></li>
 <li><a class="reference internal" href="#utils.Met2Netcdf.recup_safran"><code class="docutils literal notranslate"><span class="pre">recup_safran()</span></code></a></li>
-<li><a class="reference internal" href="#read-observations-from-csv-files">Read observations from csv files</a></li>
+<li><a class="reference internal" href="#module-utils.obscsv">Read observations from csv files</a></li>
 <li><a class="reference internal" href="#dates-management">Dates management</a></li>
 </ul>
 </li>
@@ -381,8 +384,8 @@ options:
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="utils-prosimu.html"
-                          title="next chapter">The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader</a></p>
+    <p class="topless"><a href="utils-xarray.html"
+                          title="next chapter">Xarray with snowtools</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -391,7 +394,7 @@ options:
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -399,13 +402,13 @@ options:
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -418,7 +421,7 @@ options:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="utils-prosimu.html" title="The prosimu simulation reader"
+          <a href="utils-xarray.html" title="Xarray with snowtools"
              >next</a> |</li>
         <li class="right" >
           <a href="tools.html" title="Tools for simulations"
@@ -429,7 +432,7 @@ options:
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

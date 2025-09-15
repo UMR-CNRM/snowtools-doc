@@ -6,18 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>The prosimu simulation reader &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=d152c80f" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Helpers for massif management : infomassif" href="utils-massifs.html" />
-    <link rel="prev" title="Tools for reading simulations : the utils module" href="utils.html" /> 
+    <link rel="next" title="Compare two versions of output NetCDF file" href="utils-operational_repro-compare2versions.html" />
+    <link rel="prev" title="The read_snowpack simulation reader" href="utils-readsnowpack.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -30,10 +30,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="utils-massifs.html" title="Helpers for massif management : infomassif"
+          <a href="utils-operational_repro-compare2versions.html" title="Compare two versions of output NetCDF file"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="utils.html" title="Tools for reading simulations : the utils module"
+          <a href="utils-readsnowpack.html" title="The read_snowpack simulation reader"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="utils.html" accesskey="U">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
@@ -48,7 +48,8 @@
             
   <section id="the-prosimu-simulation-reader">
 <h1>The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader<a class="headerlink" href="#the-prosimu-simulation-reader" title="Link to this heading">¶</a></h1>
-<p>The prosimu class is designed to read netCDF files used in simulations (inputs, outputs).</p>
+<p>The prosimu class is designed to read netCDF files used in simulations (inputs, outputs).
+It is still maintained but new work should be done with xarray</p>
 <p id="module-utils.prosimu">Created on 4 oct. 2012</p>
 <dl class="field-list simple">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
@@ -73,7 +74,7 @@ instantiate the appropriate class (<code class="docutils literal notranslate"><s
 <p>A short example of how to use this module and read time dimension and
 snow density variables (<code class="docutils literal notranslate"><span class="pre">RSN_VEG</span></code>) for all layers at point in massif
 11, 2700m, northern aspect on 40 degree slope:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -86,7 +87,7 @@ for the selected point. As <code class="docutils literal notranslate"><span clas
 the <code class="docutils literal notranslate"><span class="pre">density</span></code> array is a 3D numpy ndarray with dimensions
 (time, layers).</p>
 <p>A short example to get multiple points at once:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -99,7 +100,7 @@ for the selected points (all aspects). The <code class="docutils literal notrans
 first dimension being time, second dimension being layers and the last one is points.</p>
 <p>Example to get total snow water equivalent of the snowpack (variable
 <code class="docutils literal notranslate"><span class="pre">WSN_T_ISBA</span></code>) across time for all points:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -551,7 +552,7 @@ nécessaires</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="../index.html">Table of Contents</a></h3>
@@ -601,13 +602,13 @@ nécessaires</p>
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="utils.html"
-                          title="previous chapter">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a></p>
+    <p class="topless"><a href="utils-readsnowpack.html"
+                          title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="utils-massifs.html"
-                          title="next chapter">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></p>
+    <p class="topless"><a href="utils-operational_repro-compare2versions.html"
+                          title="next chapter">Compare two versions of output NetCDF file</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -616,7 +617,7 @@ nécessaires</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -624,13 +625,13 @@ nécessaires</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -643,10 +644,10 @@ nécessaires</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="utils-massifs.html" title="Helpers for massif management : infomassif"
+          <a href="utils-operational_repro-compare2versions.html" title="Compare two versions of output NetCDF file"
              >next</a> |</li>
         <li class="right" >
-          <a href="utils.html" title="Tools for reading simulations : the utils module"
+          <a href="utils-readsnowpack.html" title="The read_snowpack simulation reader"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="utils.html" >Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a> &#187;</li>
@@ -655,7 +656,7 @@ nécessaires</p>
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>
