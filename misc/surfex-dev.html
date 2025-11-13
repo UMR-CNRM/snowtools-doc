@@ -59,44 +59,59 @@
 </section>
 <section id="rules-coding-for-surfex-crocus">
 <h2>Rules coding for SURFEX-Crocus<a class="headerlink" href="#rules-coding-for-surfex-crocus" title="Link to this heading">¶</a></h2>
-<p>If you plan to code in SURFEX-Crocus and to share your work, you must respect 3 main ideas:</p>
+<p>If you plan to code in SURFEX-Crocus and to share your work, you must respect 4 main ideas:</p>
 <ul class="simple">
 <li><p>CODE: Readability counts</p></li>
+<li><p>EFFICIENCY: Time is money</p></li>
 <li><p>TEST: Errors should never pass silently</p></li>
 <li><p>COMMENT: Now is better than never</p></li>
 </ul>
 <section id="code">
 <h3>CODE<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p>follow the general rules for SURFEX : <a class="reference external" href="https://www.umr-cnrm.fr/surfex/spip.php?rubrique93">https://www.umr-cnrm.fr/surfex/spip.php?rubrique93</a> and in particular the DOCTOR norm for prefixing variables.</p></li>
+<li><p>Follow the general rules for SURFEX : <a class="reference external" href="https://www.umr-cnrm.fr/surfex/spip.php?rubrique93">https://www.umr-cnrm.fr/surfex/spip.php?rubrique93</a> and in particular the DOCTOR norm for prefixing variables (mandatory).</p></li>
+<li><p>Do not implement IF statements within loops when the condition does not depend on points or layers (i.e. for physical options). Tests are expensive.</p></li>
 <li><p>No spaces at end of lines</p></li>
 <li><p>No tabulation</p></li>
-<li><p>Always ENDIF after IF. Indeed, FORTRAN allows a IF instruction in only one line but it can disturb some IDE tools resulting in bad automatic indentation</p></li>
-<li><p>Same for DO/ENDDO and WHERE/ENDWHERE</p></li>
 <li><p>Two spaces for indentation in IF/DO/WHERE etc…</p></li>
 <li><p>Number of columns shouldn’t be more than 100</p></li>
-<li><p>Proposal : one line for each dummy variable in declaration. Always comment what is this variable, give the unit involved.</p></li>
-<li><p>For the CALL of routine, we should have a rule for the « &amp; column » -&gt; has to be decided.</p></li>
-<li><p>Please separate commit for indentation/rule coding and commit for science (implementation of new physical scheme, implementation of diagnostic).</p></li>
-<li><p>The actual SURFEX-Crocus code is not respecting these rules. We DO NEED YOU to help us getting the code as clean as possible. If you’re OK to do your part on rule coding, this would be awesome.</p></li>
+<li><p>Prefer one line for each dummy variable in declaration. Describe the variable in comments providing the unit.</p></li>
+<li><p>Separate commit for indentation/rule coding and commit for science (implementation of new physical scheme, implementation of diagnostic).</p></li>
 </ul>
 </section>
 <section id="test">
 <h3>TEST<a class="headerlink" href="#test" title="Link to this heading">¶</a></h3>
-<p>Snowtools provides some developments test for surfex. Please use it to check that your devs don’t break something and please add one of your test.</p>
-<p>Test your modifications:</p>
+<p>Snowtools provides some developments test for surfex. Run all tests to check that your devs don’t break something.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/tests
 python3<span class="w"> </span>test_dev_surfex.py
 </pre></div>
 </div>
-<p>Implement a new test in order to secure your developments :</p>
-<p>We just need a namelist and a FORCING File to add your devs to test_dev_surfex.py
-If it is possible to use the FORCING used in the First Test, this is better. Otherwise, never commit in the snowtools repository but put your test files in the <code class="docutils literal notranslate"><span class="pre">snowtools.DATA.TESTBASE_DIR</span></code> folder.</p>
+<p>Implement a new test in order to secure your new developments providing a namelist and if necessary a forcing file.
+If sufficient to test your implementation, prefer using the reference FORCING file for the First Test.
+Otherwise, FORCING files must not be added to the snowtools repository but provided in the <code class="docutils literal notranslate"><span class="pre">snowtools.DATA.TESTBASE_DIR</span></code> folder.</p>
+<p>It is also mandatory to check whether external version of Crocus can still be compiled and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$EXESURFEX</span>/../src/EXT_CROCUS
+make
+./prog
+</pre></div>
+</div>
+</section>
+<section id="check-numerical-efficiency">
+<h3>CHECK NUMERICAL EFFICIENCY<a class="headerlink" href="#check-numerical-efficiency" title="Link to this heading">¶</a></h3>
+<p>New developments are not allowed to increase the reference computing time of each routine. This has to be checked by CEN team:</p>
+<p>On belenos:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20230801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20240801</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/DATA/OPTIONS_V9_reanalysis_forprep.nam<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span>/SURFEX/cen/exe<span class="w"> </span>--drhook<span class="w"> </span>-f<span class="w"> </span>reanalysis2025.1@lafaysse<span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-o<span class="w"> </span>reanalysis2025.drhook<span class="w"> </span>-r<span class="w"> </span>alp_allslopes
+</pre></div>
+</div>
+<p>Get drhook outputs on a laptop or server and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/scripts/drhook/script_drhook.sh
+</pre></div>
+</div>
+<p>Results in SORT_TOTAL file should exhibit lower computation times than reference computation times for all routines (cf. GMD paper for version3.0).</p>
 </section>
 <section id="comment">
 <h3>COMMENT<a class="headerlink" href="#comment" title="Link to this heading">¶</a></h3>
-<p>Please comment your code in the Fortran files. It is useful to have the units involved.</p>
-<p>If some diagnostics are specific to your devs, please also add some infos in this documentation (Page Few informations on SURFEX-Crocus simulations).</p>
+<p>Please comment your code in the Fortran files providing units of variables.</p>
 </section>
 </section>
 <section id="debug-surfex-crocus">
@@ -107,8 +122,7 @@ If it is possible to use the FORCING used in the First Test, this is better. Oth
 <a class="reference external" href="https://www.umr-cnrm.fr/surfex/IMG/pdf/doc_crodebug.pdf">https://www.umr-cnrm.fr/surfex/IMG/pdf/doc_crodebug.pdf</a></p>
 <section id="on-meteo-france-supercomputers">
 <h3>On Meteo-France supercomputers<a class="headerlink" href="#on-meteo-france-supercomputers" title="Link to this heading">¶</a></h3>
-<p>To understand unexpected crashes during belenos runs, two options are possible:</p>
-<p>For complex bugs, it is highly recommended to use use the ddt debugger from ARM-FORGE.</p>
+<p>To understand unexpected crashes during belenos runs, it is recommended to use use the ddt debugger from ARM-FORGE.</p>
 <section id="install-debugger">
 <h4>Install debugger<a class="headerlink" href="#install-debugger" title="Link to this heading">¶</a></h4>
 <p>First, check the remote version of DDT on the supercomputer with <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">avail</span></code></p>
@@ -168,8 +182,8 @@ You can start using the debugger normally.</p>
 </section>
 <section id="add-diagnostic-in-surfex-crocus">
 <h2>Add diagnostic in SURFEX-Crocus<a class="headerlink" href="#add-diagnostic-in-surfex-crocus" title="Link to this heading">¶</a></h2>
-<p>If you need to ad a diagnostic, some guidelines are provided below. Depending of the science involved, it could be done in different parts of the SURFEX-Crocus code.
-We imagine here the simpliest way for a first try, following an existing diagnostic ACC_RAT which is define on each layer of the snowpack.</p>
+<p>If you need to add a diagnostic relative to the snowpack simulation, some guidelines are provided below.
+For variables defined for each snow, it is possible to follow instructions applied to ACC_RAT diagnostics which is also defined for each layer of the snowpack.</p>
 <p>Files to modify (a minima) :</p>
 <ul class="simple">
 <li><p>modd_diag_misc_isban.F90</p></li>
@@ -178,37 +192,35 @@ We imagine here the simpliest way for a first try, following an existing diagnos
 <li><p>snowcro_diag.F90</p></li>
 <li><p>write_diag_misc_isban.F90</p></li>
 </ul>
-<p>What are these routines, what are me modifying inside ?</p>
 <p><strong>modd_diag_misc_isban.F90</strong>:</p>
-<p>In this script, we declare the “ISBA Diagnostic” variable.</p>
-<p>The nature of this variable is TYPE.</p>
-<p>You can imagine the TYPE as a vector and you are adding a new coordinate to this vector.</p>
-<p>In this script, the name of ISBA_Diagnostic is DMI. The way to access to a coordinate is via the % sign : DMI%XVAR_NEWDIAG.</p>
+<p>In this module, the “ISBA Diagnostic” variable is declared. The type of this variable is TYPE.</p>
+<p>You can imagine the TYPE as an object and you are adding a new attribute to this object.</p>
+<p>In this module, the name of ISBA_Diagnostic is DMI. The way to access to an attribute is via the % sign : DMI%XVAR_NEWDIAG.</p>
 <p>If your diagnostic dimension is (number of points, number of layers), you can follow ACC_RAT for the declaration of your new diagnostic</p>
 <p><strong>diag_isba_initn.F90</strong>:</p>
-<p>In this script, this is the initialisation of ISBA_Diagnostic, named DMA.</p>
+<p>In this module, this is the initialisation of ISBA_Diagnostic, named DMA.</p>
 <p>So we are working on DMA%XVAR_NEWDIAG</p>
 <p>For a (number of points, number of layers) diagnostic, you can follow ACC_RAT also.</p>
 <p>Beware, there are two dimensions possible : KLUA and KLUAP which depends on the behaviour of your diagnostic regarding to SURFEX Patches -&gt; be sure that the existing diagnostic you are following has the same behaviour and dimensions.</p>
 <p><strong>snow3L_isba.F90</strong>:</p>
-<p>In this script, you’re starting to work with ISBA_Diagnostic (named DMK here):</p>
+<p>In this module, you’re starting to work with ISBA_Diagnostic (named DMK here):</p>
 <ul class="simple">
 <li><p>initialise DMK%XVAR_NEWDIAG( :, : ) = XUNDEF</p></li>
-<li><p>define a local variable ZP_XVAR_NEWDIAG</p></li>
-<li><p>call snowcro_diag.F90 with the local variable (Of course, for specific diagnostic, the calculus could be done in another part of the code and maybe you would have to modify snowcro.F90 or another script).</p></li>
-<li><p>put the returning value in DMK%XVAR_NEWDIAG</p></li>
+<li><p>define a local variable ZP_XVAR_NEWDIAG (packed for snow-covered points)</p></li>
+<li><p>call snowcro_diag.F90 with the local variable if it can be computed from snowcro outputs (Of course, for specific diagnostic, the computation could be done in another part of the code e.g. snowcro.F90 or another module).</p></li>
+<li><p>put the return value in DMK%XVAR_NEWDIAG (unpacking to all simulation points)</p></li>
 <li><p>As always, you can follow ACC_RAT to see what happens and how.</p></li>
 </ul>
 <p><strong>The (near) end</strong>:</p>
 <p>Now your variable is ready and you can either</p>
 <ol class="arabic simple">
 <li><p>use <em>snowcro_diag.F90:</em> if you want to compute a diagnostic with output variables from snowcro,</p></li>
-<li><p>and/or use <em>snowcro.F90:</em> if you want to set/get your variable in this main routine.</p></li>
+<li><p>and/or use <em>snowcro.F90:</em> if you need to set/get your variable in this main routine.</p></li>
 </ol>
-<p>In both case, your variable should appear in the subroutine arguments as IN, OUT or IN/OUT.
+<p>In both cases, your variable should appear in the subroutine arguments as OUT.
 Below the case 1 is described.</p>
 <p><strong>snowcro_diag.F90</strong>:</p>
-<p>This is the science part : you have to calculate NEW_DIAG with the fields you need. Of course, you have to declare this new variable as INOUT and to put it in the call of the script.</p>
+<p>This is the science part : you have to calculate NEW_DIAG with the variables you need. Of course, you have to declare this new variable as OUT and to put it in the call of the module.</p>
 <p><strong>write_diag_misc_isban.F90</strong>:</p>
 <p>This is the script for writing in PRO file. (you can follow ACC_RAT)</p>
 <ul class="simple">
@@ -216,6 +228,7 @@ Below the case 1 is described.</p>
 <li><p>change the short name ‘VAR_NEWDIAG’ and name the variable (lot of % everywhere but you only have to put XVAR_NEWDIAG instead of XACC_RAT if you are copying this diag)</p></li>
 </ul>
 <p>Now, you have to compile SURFEX and to test it (do not forget to add your diagnostic in the CSELECT of the namelist).</p>
+<p>Finally, please also add some infos in this documentation (<a class="reference internal" href="surfex.html#avail-diagnostics"><span class="std std-ref">Available diagnostics</span></a>).</p>
 </section>
 </section>
 
@@ -234,6 +247,7 @@ Below the case 1 is described.</p>
 <li><a class="reference internal" href="#rules-coding-for-surfex-crocus">Rules coding for SURFEX-Crocus</a><ul>
 <li><a class="reference internal" href="#code">CODE</a></li>
 <li><a class="reference internal" href="#test">TEST</a></li>
+<li><a class="reference internal" href="#check-numerical-efficiency">CHECK NUMERICAL EFFICIENCY</a></li>
 <li><a class="reference internal" href="#comment">COMMENT</a></li>
 </ul>
 </li>

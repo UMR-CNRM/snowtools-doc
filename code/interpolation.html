@@ -504,7 +504,7 @@ number of pixel in x and y direction, resolution in x and y direction).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.create_netcdf">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NetCDF2D_from_shapefile.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_netcdf" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massif_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NetCDF2D_from_shapefile.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_netcdf" title="Link to this definition">¶</a></dt>
 <dd><p>Creation of the 2D_NetCDF with 2 values: ‘ZS’ for the altitude and ‘Massif number’ for the massif number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -586,7 +586,7 @@ Surfex simulations.</p>
 <p>Script <code class="docutils literal notranslate"><span class="pre">interpolation/shapefile2NetCDF_2D.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: shapefile2NetCDF_2D.py [-h] [-o OUTPUT] [-rlon RESOL_LON]
                               [-rlat RESOL_LAT] [--MNT_alt MNT_ALT]
-                              [-m MASSIF_NUMBER]
+                              [-m {map,one,mapfill,force}] [-n MASSIF_NUMBER]
                               path_shape
 
 positional arguments:
@@ -601,9 +601,10 @@ options:
   -rlat RESOL_LAT, --resol_lat RESOL_LAT
                         Latitude Resolution for 2D grid (250 or 30)
   --MNT_alt MNT_ALT     Path for MNT altitude
-  -m MASSIF_NUMBER, --massif_number MASSIF_NUMBER
-                        Massif number if you want to choose the massif that
-                        will be applied to your zone
+  -m {map,one,mapfill,force}, --massif_method {map,one,mapfill,force}
+                        Method to assign massif number
+  -n MASSIF_NUMBER, --massif_number MASSIF_NUMBER
+                        Massif number to assign if --massif_method=force
 </pre></div>
 </div>
 </section>

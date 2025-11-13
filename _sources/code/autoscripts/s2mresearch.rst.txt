@@ -12,8 +12,9 @@ s2m command help:
                        [--geotype {unstructured,grid}]
                        [--veg {namelist,ecoclimap}] [--hydro HYDRO]
                        [--hydrovar HYDROVAR] [--uenv UENV] [-m MODEL]
-                       [-p PREP_XPID] [--obsxpid OBSXPID] [--nnodes NNODES]
-                       [--ntasks NTASKS] [--walltime WALLTIME] [--writesx]
+                       [-p PREP_XPID] [--pro_xpid PRO_XPID] [--forceprep]
+                       [--obsxpid OBSXPID] [--nnodes NNODES] [--ntasks NTASKS]
+                       [--walltime WALLTIME] [--writesx]
                        [--save-pro {none,cache,archive,multi}]
                        [--postprocess POSTPROCESS_EXE] [--drhook]
                        [--task {surfex,surfex_dailyprep,escroc,escroc_scores,croco,croco_perturb,reforecast,debug,refill,interpol}]
@@ -159,6 +160,10 @@ s2m command help:
      -p PREP_XPID, --prep_xpid PREP_XPID
                            xpid in wich are the PREP files to be used (default:
                            None)
+     --pro_xpid PRO_XPID   xpid in wich are the PRO files to be used
+                           (interpolation task) (default: None)
+     --forceprep           If True, force the generation of new initial
+                           conditions (default: False)
      --obsxpid OBSXPID     xpid of the obs you want to assimilate (default: None)
      --nnodes NNODES       Total number of nodes requested by the s2m command
                            (can be split between several jobs or not). Take care,

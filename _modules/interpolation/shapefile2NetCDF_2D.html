@@ -127,7 +127,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>  <span class="c1"># Import pour les log</span>
 
@@ -143,6 +143,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">DIRDATADEM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.execute</span><span class="w"> </span><span class="kn">import</span> <span class="n">printandcallSystemOrDie</span>
 
 <span class="c1">################################################################</span>
 <span class="c1"># DEFAULT VALUES (but can change with options):</span>
@@ -151,8 +152,20 @@
 <span class="n">NetCDF_out</span> <span class="o">=</span> <span class="s1">&#39;NetCDF2D_from_shapefile.nc&#39;</span>
 
 <span class="c1"># PATH_MNT</span>
-<span class="n">path_MNT_alti_30m</span> <span class="o">=</span> <span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/DEM_FRANCE_L93_30m_bilinear.tif&#39;</span>
-<span class="n">path_MNT_alti_250m</span> <span class="o">=</span> <span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/DEM_FRANCE_L93_250m_bilinear.tif&#39;</span>
+<span class="n">path_MNT_30m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/DEM_FRANCE_L93_30m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">aspect</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/ASP_FRANCE_L93_30m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">slope</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/SLP_FRANCE_L93_30m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">massif</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_30m/MSF_FRANCE_L93_30m_bilinear.tif&#39;</span><span class="p">)</span>
+
+<span class="n">path_MNT_250m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/DEM_FRANCE_L93_250m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">aspect</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/ASP_FRANCE_L93_250m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">slope</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/SLP_FRANCE_L93_250m_bilinear.tif&#39;</span><span class="p">,</span>
+                    <span class="n">massif</span><span class="o">=</span><span class="n">DIRDATADEM</span> <span class="o">+</span> <span class="s1">&#39;france_250m/MSF_FRANCE_L93_250m_bilinear.tif&#39;</span><span class="p">)</span>
+
+<span class="n">vartopo_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="s2">&quot;ZS&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;aspect&quot;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="s2">&quot;slope&quot;</span><span class="p">,</span> <span class="n">massif</span><span class="o">=</span><span class="s2">&quot;massif_num&quot;</span><span class="p">)</span>
+<span class="n">vartopo_longname</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="s2">&quot;Elevation&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;Aspect angle&quot;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="s2">&quot;Slope angle&quot;</span><span class="p">,</span> <span class="n">massif</span><span class="o">=</span><span class="s2">&quot;Massif number&quot;</span><span class="p">)</span>
+<span class="n">vartopo_units</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="n">massif</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+<span class="n">vartopo_typegdal</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alti</span><span class="o">=</span><span class="s2">&quot;Float32&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;Float32&quot;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="s2">&quot;Float32&quot;</span><span class="p">,</span> <span class="n">massif</span><span class="o">=</span><span class="s2">&quot;Int32&quot;</span><span class="p">)</span>
 
 <span class="c1">################################################################</span>
 <span class="c1"># Infos shapefile massif, normally stable and durable</span>
@@ -185,8 +198,8 @@
 <span class="sd">    :return: a string: the path to the .shp file after conversion from the .kml file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path_shape_shp</span> <span class="o">=</span> <span class="n">path_shape_kml</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;shp&#39;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ogr2ogr&#39;</span><span class="p">,</span> <span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;ESRI Shapefile&#39;</span><span class="p">,</span> <span class="n">path_shape_shp</span><span class="p">,</span> <span class="n">path_shape_kml</span><span class="p">]</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ogr2ogr -f ESRI Shapefile </span><span class="si">{</span><span class="n">path_shape_shp</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">path_shape_kml</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path_shape_shp</span></div>
 
 
@@ -257,11 +270,14 @@
     <span class="k">if</span> <span class="n">clean_all</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">suffixe</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;shp&#39;</span><span class="p">,</span> <span class="s1">&#39;prj&#39;</span><span class="p">,</span> <span class="s1">&#39;shx&#39;</span><span class="p">,</span> <span class="s1">&#39;dbf&#39;</span><span class="p">]:</span>
             <span class="n">path_shape_rm</span> <span class="o">=</span> <span class="n">path_shape_shp</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">suffixe</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rm&#39;</span><span class="p">,</span> <span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="n">path_shape_rm</span><span class="p">]</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;rm -f step1.tif&#39;</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_shape_rm</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path_shape_rm</span><span class="p">)</span>
 
+    <span class="k">for</span> <span class="n">vartopo</span> <span class="ow">in</span> <span class="n">vartopo_out</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.tif&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.tif&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span></div>
 
 
 <span class="c1">################################################################</span>
@@ -314,19 +330,22 @@
 <span class="sd">    :return: In a pythonic point of view, nothing. A .tif file is created.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">250</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">250</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
-        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_alti_250m</span>
+        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_250m</span>
     <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">30</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">30</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
-        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_alti_30m</span>
+        <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_30m</span>
     <span class="k">elif</span> <span class="n">path_MNT_given</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">path_MNT</span> <span class="o">=</span> <span class="n">path_MNT_given</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PB: no MNT provided with this resolution, please have a look to the code&#39;</span><span class="p">)</span>
         <span class="k">pass</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdalwarp&#39;</span><span class="p">,</span> <span class="s1">&#39;-te&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XUR&#39;</span><span class="p">]),</span>
-           <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YUR&#39;</span><span class="p">]),</span> <span class="s1">&#39;-tap&#39;</span><span class="p">,</span> <span class="s1">&#39;-tr&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">]),</span> <span class="s1">&#39;-te_srs&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;EPSG:2154&#39;</span><span class="p">,</span> <span class="s1">&#39;-s_srs&#39;</span><span class="p">,</span> <span class="s1">&#39;EPSG:2154&#39;</span><span class="p">,</span> <span class="n">path_MNT</span><span class="p">,</span> <span class="s1">&#39;step1.tif&#39;</span><span class="p">]</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
 
+    <span class="k">for</span> <span class="n">vartopo</span> <span class="ow">in</span> <span class="n">vartopo_out</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gdalwarp -te </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XLL&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YLL&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;XUR&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+               <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;YUR&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> -tap -tr </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_x&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;resol_y&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+               <span class="sa">f</span><span class="s2">&quot; -te_srs EPSG:2154 -s_srs EPSG:2154 </span><span class="si">{</span><span class="n">path_MNT</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s2">.tif&quot;</span><span class="p">)</span>
+
+        <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
 
 
 <span class="c1">################################################################</span>
@@ -395,7 +414,7 @@
 <span class="c1">################################################################</span>
 <div class="viewcode-block" id="create_netcdf">
 <a class="viewcode-back" href="../../code/interpolation.html#interpolation.shapefile2NetCDF_2D.create_netcdf">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_netcdf</span><span class="p">(</span><span class="n">massif_number</span><span class="p">,</span> <span class="n">file_out</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_netcdf</span><span class="p">(</span><span class="n">massif_method</span><span class="p">,</span> <span class="n">massif_number</span><span class="p">,</span> <span class="n">file_out</span><span class="o">=</span><span class="n">NetCDF_out</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creation of the 2D_NetCDF with 2 values: &#39;ZS&#39; for the altitude and &#39;Massif number&#39; for the massif number.</span>
 
@@ -404,47 +423,85 @@
 <span class="sd">    :type file_out: str</span>
 <span class="sd">    :return: In a pythonic point of view, nothing. A .nc file is created.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gdal_translate&#39;</span><span class="p">,</span> <span class="s1">&#39;-of&#39;</span><span class="p">,</span> <span class="s1">&#39;netCDF&#39;</span><span class="p">,</span> <span class="s1">&#39;-co&#39;</span><span class="p">,</span> <span class="s1">&#39;FORMAT=NC4&#39;</span><span class="p">,</span> <span class="s1">&#39;step1.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;step1.nc&#39;</span><span class="p">]</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">alt_min_massif</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">alt_max_massif</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;else:</span>
-<span class="sd">        size_x = massif_number.shape[0]</span>
-<span class="sd">        size_y = massif_number.shape[1]</span>
-<span class="sd">        print(size_x)</span>
-<span class="sd">        print(size_y)</span>
-<span class="sd">        alt_min_massif = np.zeros(( size_x, size_y))</span>
-<span class="sd">        alt_max_massif = np.zeros(( size_x, size_y))</span>
-<span class="sd">        for i in range(size_x):</span>
-<span class="sd">            print(i)</span>
-<span class="sd">            for j in range(size_y):</span>
-<span class="sd">                alt_min_massif[i,j] = infomassifs().getAltMinMax(massif_number[i,j])[0]</span>
-<span class="sd">                alt_max_massif[i,j] = infomassifs().getAltMinMax(massif_number[i,j])[1]&quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert all extracted tif in netcdf files with correct variable names and create one single file with</span>
+    <span class="c1"># all variables</span>
+    <span class="n">listvartopo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">vartopo_out</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">massif_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;force&#39;</span><span class="p">]:</span>
+        <span class="n">listvartopo</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;massif&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">vartopo</span> <span class="ow">in</span> <span class="n">listvartopo</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;gdal_translate -of netCDF -co FORMAT=NC4 -ot </span><span class="si">{</span><span class="n">vartopo_typegdal</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.tif </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ncrename -v Band1,</span><span class="si">{</span><span class="n">vartopo_out</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span>
+        <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ncatted -a long_name,</span><span class="si">{</span><span class="n">vartopo_out</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1">,o,c,&quot;</span><span class="si">{</span><span class="n">vartopo_longname</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;-a units,&quot;</span><span class="si">{</span><span class="n">vartopo_out</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;,o,c,</span><span class="si">{</span><span class="n">vartopo_units</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span>
+        <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;step1.nc&#39;</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;step1.nc&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;ncks -v </span><span class="si">{</span><span class="n">vartopo_out</span><span class="p">[</span><span class="n">vartopo</span><span class="p">]</span><span class="si">}</span><span class="s1"> -A </span><span class="si">{</span><span class="n">vartopo</span><span class="si">}</span><span class="s1">.nc step1.nc&#39;</span>
+            <span class="n">printandcallSystemOrDie</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+    <span class="c1"># Open final file</span>
     <span class="n">NetCDF_file</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s1">&#39;step1.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
-    <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">renameVariable</span><span class="p">(</span><span class="s1">&#39;Band1&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">)</span>
-    <span class="n">ZS</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:]</span>
-    <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">ZS</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZS</span> <span class="o">&gt;</span> <span class="n">alt_min_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">alt_min_massif</span><span class="p">)</span>
-        <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ZS</span> <span class="o">&lt;</span> <span class="n">alt_max_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">,</span> <span class="n">alt_max_massif</span><span class="p">)</span>
-    <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">ZS</span>
-    <span class="n">massif_num_nc</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span>
-                                               <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
-    <span class="n">massif_num_nc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Massif number&#39;</span>
-    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">massif_num_nc</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">massif_number</span>
-    <span class="k">else</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="n">massif_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;force&#39;</span><span class="p">]:</span>
+        <span class="c1"># Create massif variable and force to prescribed or prevailing value</span>
+        <span class="n">massif_num_nc</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span>
+                                                   <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">9999999</span><span class="p">)</span>
+        <span class="n">massif_num_nc</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Massif number&#39;</span>
         <span class="n">massif_num_nc</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">massif_number</span>
 
+    <span class="k">elif</span> <span class="n">massif_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mapfill&#39;</span><span class="p">]:</span>
+        <span class="c1"># Take massif number for preexisting gridded file but replace 0 by prevailing value</span>
+        <span class="n">massif_num_nc</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;massif_num&#39;</span><span class="p">][:]</span>
+
+        <span class="n">indzeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">nzeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">indzeros</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">nzeros</span><span class="si">}</span><span class="s1"> pixels outside massifs boundaries filled with massif number </span><span class="si">{</span><span class="n">massif_number</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">massif_num_nc</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">massif_number</span><span class="p">,</span> <span class="n">massif_num_nc</span><span class="p">)</span>
+        <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;massif_num&#39;</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">massif_num_nc</span>
+
+    <span class="k">elif</span> <span class="n">massif_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;map&#39;</span><span class="p">]:</span>
+        <span class="c1"># Take massif number for preexisting gridded file</span>
+        <span class="n">massif_num_nc</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;massif_num&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Massif method unknown&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check and if necessary correct consistency between pixel elevation</span>
+    <span class="c1"># and massif extreme elevations for all massifs of the domain</span>
+    <span class="n">ZS</span> <span class="o">=</span> <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:,</span> <span class="p">:]</span>
+
+    <span class="n">nbelow</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nabove</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">Info</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">massif_number</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">massif_num_nc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">Info</span><span class="o">.</span><span class="n">ismassif</span><span class="p">(</span><span class="n">massif_number</span><span class="p">):</span>
+            <span class="n">alt_min_massif</span><span class="p">,</span> <span class="n">alt_max_massif</span> <span class="o">=</span> <span class="n">Info</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">massif_number</span><span class="p">)</span>
+            <span class="n">indbelow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="n">massif_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ZS</span> <span class="o">&lt;</span> <span class="n">alt_min_massif</span><span class="p">))</span>
+            <span class="n">indabove</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="n">massif_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ZS</span> <span class="o">&gt;</span> <span class="n">alt_max_massif</span><span class="p">))</span>
+            <span class="n">nbelow</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">indbelow</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">nabove</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">indabove</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="n">massif_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ZS</span> <span class="o">&lt;</span> <span class="n">alt_min_massif</span><span class="p">),</span> <span class="n">alt_min_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">)</span>
+            <span class="n">ZS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">massif_num_nc</span> <span class="o">==</span> <span class="n">massif_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ZS</span> <span class="o">&gt;</span> <span class="n">alt_max_massif</span><span class="p">),</span> <span class="n">alt_max_massif</span><span class="p">,</span> <span class="n">ZS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: massif number </span><span class="si">{</span><span class="n">massif_number</span><span class="si">}</span><span class="s2"> is unknown&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nbelow</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">nabove</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Elevation corrected for </span><span class="si">{</span><span class="n">nbelow</span><span class="si">}</span><span class="s1"> pixels below minimum elevation &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;and </span><span class="si">{</span><span class="n">nabove</span><span class="si">}</span><span class="s1"> pixels above maximum elevation&#39;</span><span class="p">)</span>
+        <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">ZS</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;NETCDF dimension:&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">NetCDF_file</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ZS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="n">NetCDF_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;mv step1.nc &#39;</span> <span class="o">+</span> <span class="n">file_out</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;step1.nc&#39;</span><span class="p">,</span> <span class="n">file_out</span><span class="p">)</span></div>
 
 
 
@@ -499,7 +556,10 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-rlat&quot;</span><span class="p">,</span> <span class="s2">&quot;--resol_lat&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Latitude Resolution for 2D grid (250 or 30)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
                         <span class="n">default</span><span class="o">=</span><span class="mi">250</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--MNT_alt&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path for MNT altitude&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--massif_number&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Massif number if you want to choose the massif that will be applied to your zone&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--massif_method&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Method to assign massif number&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;mapfill&#39;</span><span class="p">,</span> <span class="s1">&#39;force&#39;</span><span class="p">])</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--massif_number&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Massif number to assign if --massif_method=force&quot;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">args</span></div>
@@ -536,13 +596,12 @@
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">conversion_to_L93_if_lat_lon</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
         <span class="n">dict_info</span> <span class="o">=</span> <span class="n">create_dict_all_infos</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">resol_x</span><span class="p">,</span> <span class="n">resol_y</span><span class="p">)</span>
         <span class="n">create_MNT_tif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">path_MNT_alti</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">massif</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">massif_method</span> <span class="o">==</span> <span class="s1">&#39;force&#39;</span><span class="p">:</span>
             <span class="n">massif_num</span> <span class="o">=</span> <span class="n">massif</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">massif_method</span> <span class="ow">in</span> <span class="s1">&#39;one, mapfill&#39;</span><span class="p">:</span>
             <span class="n">massif_num</span> <span class="o">=</span> <span class="n">find_most_common_massif</span><span class="p">(</span><span class="n">dict_info</span><span class="p">)</span>
 
-        <span class="c1">#massif_num = find_most_common_massif(dict_info)</span>
-        <span class="n">create_netcdf</span><span class="p">(</span><span class="n">massif_num</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
+        <span class="n">create_netcdf</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">massif_method</span><span class="p">,</span> <span class="n">massif_num</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
         <span class="n">clean_the_mess</span><span class="p">(</span><span class="n">path_shapefile</span><span class="p">,</span> <span class="n">clean_all</span><span class="p">)</span>
         <span class="n">print_for_namelist</span><span class="p">(</span><span class="n">dict_info</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span></div>
 

@@ -371,11 +371,17 @@
 <span class="sd">        Cosinus of solar zenith angle</span>
 <span class="sd">        (detailed explaination in function slope_aspect_correction)</span>
 
-<span class="sd">        :param tab_time_date: time</span>
-<span class="sd">        :param lat: latitude</span>
-<span class="sd">        :param lon: longitude</span>
-<span class="sd">        :param slope: slope (degrees)</span>
-<span class="sd">        :param aspect: aspect (degrees)</span>
+<span class="sd">        Take a certain amount of times (Nt) and points (Np described by lat, lon, slope, aspect)</span>
+<span class="sd">        and return for each time and point the cosinus of zenith angle of sun (shape Nt, Np).</span>
+
+<span class="sd">        :param tab_time_date: time values, numpy array of size Nt of python datetime.datetime elements</span>
+<span class="sd">                              (or other type with timetuple function available)</span>
+<span class="sd">        :param lat: latitude, numpy array (floats), length Np</span>
+<span class="sd">        :param lon: longitude, numpy array (floats), length Np</span>
+<span class="sd">        :param slope: slope (degrees), numpy array (floats), length Np</span>
+<span class="sd">        :param aspect: aspect (degrees), numpy array (floats), length Np</span>
+<span class="sd">        :returns: Cosinus of zenith angle</span>
+<span class="sd">        :rtype: numpy array of shape (Nt, Np)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
         <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
@@ -385,7 +391,7 @@
             <span class="n">julian_days</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>  <span class="c1"># extract Julian day (integer)</span>
             <span class="c1"># L. Roussel: fix to decimal hour instead of integer hour</span>
             <span class="n">decimal_hours</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="n">timetup</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="mi">3600</span>  <span class="c1"># extrac time in hour</span>
-            
+
         <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">julian_days</span><span class="p">,</span> <span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upscale_tab_time</span><span class="p">(</span><span class="n">decimal_hours</span><span class="p">,</span> <span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
 
@@ -504,7 +510,6 @@
         <span class="k">return</span> <span class="n">SWdir</span><span class="p">,</span> <span class="n">SWdif</span></div>
 </div>
 
-    
 </pre></div>
 
             <div class="clearer"></div>

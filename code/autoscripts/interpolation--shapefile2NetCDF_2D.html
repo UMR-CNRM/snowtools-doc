@@ -40,7 +40,7 @@
   <p>Script <code class="docutils literal notranslate"><span class="pre">interpolation/shapefile2NetCDF_2D.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: shapefile2NetCDF_2D.py [-h] [-o OUTPUT] [-rlon RESOL_LON]
                               [-rlat RESOL_LAT] [--MNT_alt MNT_ALT]
-                              [-m MASSIF_NUMBER]
+                              [-m {map,one,mapfill,force}] [-n MASSIF_NUMBER]
                               path_shape
 
 positional arguments:
@@ -55,9 +55,10 @@ options:
   -rlat RESOL_LAT, --resol_lat RESOL_LAT
                         Latitude Resolution for 2D grid (250 or 30)
   --MNT_alt MNT_ALT     Path for MNT altitude
-  -m MASSIF_NUMBER, --massif_number MASSIF_NUMBER
-                        Massif number if you want to choose the massif that
-                        will be applied to your zone
+  -m {map,one,mapfill,force}, --massif_method {map,one,mapfill,force}
+                        Method to assign massif number
+  -n MASSIF_NUMBER, --massif_number MASSIF_NUMBER
+                        Massif number to assign if --massif_method=force
 </pre></div>
 </div>
 

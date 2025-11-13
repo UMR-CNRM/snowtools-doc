@@ -58,15 +58,24 @@
 <span class="sig-name descname"><span class="pre">coszenith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tab_time_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.coszenith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.coszenith" title="Link to this definition">¶</a></dt>
 <dd><p>Cosinus of solar zenith angle
 (detailed explaination in function slope_aspect_correction)</p>
+<p>Take a certain amount of times (Nt) and points (Np described by lat, lon, slope, aspect)
+and return for each time and point the cosinus of zenith angle of sun (shape Nt, Np).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tab_time_date</strong> – time</p></li>
-<li><p><strong>lat</strong> – latitude</p></li>
-<li><p><strong>lon</strong> – longitude</p></li>
-<li><p><strong>slope</strong> – slope (degrees)</p></li>
-<li><p><strong>aspect</strong> – aspect (degrees)</p></li>
+<li><p><strong>tab_time_date</strong> – time values, numpy array of size Nt of python datetime.datetime elements
+(or other type with timetuple function available)</p></li>
+<li><p><strong>lat</strong> – latitude, numpy array (floats), length Np</p></li>
+<li><p><strong>lon</strong> – longitude, numpy array (floats), length Np</p></li>
+<li><p><strong>slope</strong> – slope (degrees), numpy array (floats), length Np</p></li>
+<li><p><strong>aspect</strong> – aspect (degrees), numpy array (floats), length Np</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cosinus of zenith angle</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy array of shape (Nt, Np)</p>
 </dd>
 </dl>
 </dd></dl>
