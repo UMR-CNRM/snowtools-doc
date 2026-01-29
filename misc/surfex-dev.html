@@ -55,7 +55,14 @@
 <li><p>cen_hotfix: branch dedicated to publish bug fixes</p></li>
 <li><p>cen_dev: branch for new developments (recommended for all developers)</p></li>
 </ul>
-<p>New branches must be named <code class="docutils literal notranslate"><span class="pre">cen_dev_&lt;project&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code> being the name of the project or clearly describe the goal of the branch and originating from <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code>.</p>
+<p>New branches must be named <code class="docutils literal notranslate"><span class="pre">cen_dev_&lt;project&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code> being the name of the project or clearly describe the goal of the branch and originating from <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code>.
+When you end your developments:</p>
+<ul class="simple">
+<li><p>test your code (see below)</p></li>
+<li><p>merge the cen_dev branch in your code</p></li>
+<li><p>rebase your dev</p></li>
+<li><p>make a pull request for adding your devs to cen_dev branch</p></li>
+</ul>
 </section>
 <section id="rules-coding-for-surfex-crocus">
 <h2>Rules coding for SURFEX-Crocus<a class="headerlink" href="#rules-coding-for-surfex-crocus" title="Link to this heading">¶</a></h2>
@@ -100,7 +107,7 @@ make
 <h3>CHECK NUMERICAL EFFICIENCY<a class="headerlink" href="#check-numerical-efficiency" title="Link to this heading">¶</a></h3>
 <p>New developments are not allowed to increase the reference computing time of each routine. This has to be checked by CEN team:</p>
 <p>On belenos:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20230801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20240801</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/DATA/OPTIONS_V9_reanalysis_forprep.nam<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span>/SURFEX/cen/exe<span class="w"> </span>--drhook<span class="w"> </span>-f<span class="w"> </span>reanalysis2025.1@lafaysse<span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-o<span class="w"> </span>reanalysis2025.drhook<span class="w"> </span>-r<span class="w"> </span>alp_allslopes
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20230801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20240801</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis_forprep.nam<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span>/SURFEX/cen/exe<span class="w"> </span>--drhook<span class="w"> </span>-f<span class="w"> </span>reanalysis2025.1@lafaysse<span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-o<span class="w"> </span>reanalysis2025.drhook<span class="w"> </span>-r<span class="w"> </span>alp_allslopes
 </pre></div>
 </div>
 <p>Get drhook outputs on a laptop or server and run:</p>
@@ -197,7 +204,7 @@ For variables defined for each snow, it is possible to follow instructions appli
 <p>You can imagine the TYPE as an object and you are adding a new attribute to this object.</p>
 <p>In this module, the name of ISBA_Diagnostic is DMI. The way to access to an attribute is via the % sign : DMI%XVAR_NEWDIAG.</p>
 <p>If your diagnostic dimension is (number of points, number of layers), you can follow ACC_RAT for the declaration of your new diagnostic</p>
-<p><strong>diag_isba_initn.F90</strong>:</p>
+<p><strong>diag_misc_isba_initn.F90</strong>:</p>
 <p>In this module, this is the initialisation of ISBA_Diagnostic, named DMA.</p>
 <p>So we are working on DMA%XVAR_NEWDIAG</p>
 <p>For a (number of points, number of layers) diagnostic, you can follow ACC_RAT also.</p>
@@ -230,6 +237,47 @@ Below the case 1 is described.</p>
 <p>Now, you have to compile SURFEX and to test it (do not forget to add your diagnostic in the CSELECT of the namelist).</p>
 <p>Finally, please also add some infos in this documentation (<a class="reference internal" href="surfex.html#avail-diagnostics"><span class="std std-ref">Available diagnostics</span></a>).</p>
 </section>
+<section id="add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus">
+<h2>Add an option and/or a flag for option activation in SURFEX-Crocus<a class="headerlink" href="#add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus" title="Link to this heading">¶</a></h2>
+<p>You can calculate your new diagnostic only if a key is activated in the namelist, usually in NAM_ISBA_SNOW for us.
+It is also possible that your new diagnostic depends on a physical parametrization, so you want to add an option.
+Your option has to start with C (for Character). Your flag has to start with L (for Logical).
+In the code, flags and options belong to IO object.
+So, you’ll implement LNEWFLAG, CNEWOPTION, IO%LNEWFLAG or IO%CNEWOPTION depending on where you are in the code.</p>
+<p>Files to modify (a minima) :</p>
+<ul class="simple">
+<li><p>modn_isban.F90</p></li>
+<li><p>modd_isba_optionsn.F90</p></li>
+<li><p>read_namelist_isban.F90</p></li>
+<li><p>init_isban.F90</p></li>
+<li><p>init_teb_veg_optionsn.F90</p></li>
+<li><p>snow3L_isba.F90</p></li>
+<li><p>default_crocus.F90</p></li>
+<li><p>snowcro.F90</p></li>
+</ul>
+<p><strong>modn_isban.F90</strong>:</p>
+<p>This module contains the declaration of namelist, it details in which part of namelist your flag and/or option is (probably NAM_ISBA_SNOW).
+In that case, you have also to implement INIT_NAM_ISBA_SNOW and UPDATE_NAM_ISBA_SNOW</p>
+<p><strong>modd_isba_optionsn.F90</strong>:</p>
+<p>This module is the declaration of the IO object -&gt; you have to add your flag and option (probably in the snow model option).
+You have also to declare the default value.</p>
+<p><strong>read_namelist_isban.F90</strong>:</p>
+<p>You have to add your flag/option in DEFAULT_CROCUS part</p>
+<p><strong>init_isban.F90</strong></p>
+<p>You have to add your flag/option in the CALL of DEFAULT_CROCUS</p>
+<p><strong>init_teb_veg_optionsn.F90</strong></p>
+<p>TEB is a TOWN scheme. But there are some garden and greenroof in town so it needs two times a call to vegetation.
+You have to add your flag/option in the two CALL of DEFAULT_CROCUS</p>
+<p><strong>snow3L_isba.F90</strong></p>
+<p>Your flag/option is used in snowcro in order to calculate something.
+So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
+<p><strong>default_crocus.F90</strong></p>
+<p>This is the defautt value for your flag (True or False) and/or for your option (which scheme you want by default).</p>
+<p>NB: in there, the flag/option is local. So the flag starts with O and the option starts with H: ONEWFLAG and HNEWOPTION</p>
+<p><strong>snowcro.F90</strong></p>
+<p>This is where the science is made. It’s up to you to know what you want to modify.</p>
+<p>NB: as in default_crocus, ONEWFLAG and HNEWOPTION</p>
+</section>
 </section>
 
 
@@ -260,6 +308,7 @@ Below the case 1 is described.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#add-diagnostic-in-surfex-crocus">Add diagnostic in SURFEX-Crocus</a></li>
+<li><a class="reference internal" href="#add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus">Add an option and/or a flag for option activation in SURFEX-Crocus</a></li>
 </ul>
 </li>
 </ul>

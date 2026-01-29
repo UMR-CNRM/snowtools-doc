@@ -753,6 +753,301 @@ You can try this parameterization for any other site, even in cold climates like
 <p><strong>LMEB_INT_UNLOAD_SFC</strong> : enable this key in order to separate snow unloading from snowfalls in Crocus fresh snow incorporation. When the key is set at True, snow unloading will be included into the Crocus snowpack as “old” snow, with properties of melt forms and a density of 200kg.m^-2 .</p>
 </section>
 </section>
+<section id="snava-development-for-snow-avalanche-risk-assessment">
+<h2>9-SNAVA (development for SNow AVAlanche risk assessment)<a class="headerlink" href="#snava-development-for-snow-avalanche-risk-assessment" title="Link to this heading">¶</a></h2>
+<section id="id22">
+<h3>Basic information<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : D Monteiro</p></li>
+<li><p><strong>Status of the development</strong> : [Evaluation]</p></li>
+<li><p><strong>Date of start of development</strong> : 10/2024</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit of development</strong> : fa387a1b0cd08058afb3fdbb9a1e000628162604</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id23">
+<h3>Description of the development<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<p><strong>Miscellaneous options</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">XSNAVA_SLOPE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CSNAVA_DIAG</span></code></p></li>
+</ul>
+<p><strong>Computation of diagnostics for snow avalanche risk assessment purposes [SNAVA]</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_WET_SNOW</span></code>
+Wet-snow indicators</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_SSI</span></code>
+Structural Stability Index
+(Schweizer et al., 2006)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_AC</span></code>
+Critical crack length
+(Heierli et al., 2008; Schweizer et al., 2011; Reuter et al., 2015)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_ACG</span></code>
+Critical crack length
+(Gaume et al., 2017)</p></li>
+</ul>
+<p><strong>Algorithm for avalanche type problems identification [SNSAT]</strong></p>
+<p>Derived from Reuter et al. (2022).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_SAT</span></code></p></li>
+</ul>
+<p><strong>Implementation details</strong></p>
+<p>Most of the developments presented here are gathered in the module
+<code class="docutils literal notranslate"><span class="pre">mode_snow_ava.F90</span></code> and divided into subroutines and functions called
+within <code class="docutils literal notranslate"><span class="pre">snowcro_diag.F90</span></code>.</p>
+</section>
+<section id="scientific-details">
+<h3>Scientific details<a class="headerlink" href="#scientific-details" title="Link to this heading">¶</a></h3>
+<p>Publication in preparation.</p>
+</section>
+<section id="id24">
+<h3>Changes in namelist<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_SURF_SNOW_CSTS
+<span class="w">    </span><span class="nv">XSNAVA_SLOPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>-90<span class="w"> </span>change<span class="w"> </span>slope<span class="w"> </span>angle<span class="w"> </span>used<span class="w"> </span>only<span class="w"> </span><span class="k">for</span><span class="w"> </span>mechanics<span class="w"> </span>snow<span class="w"> </span>avalanche<span class="w"> </span>diagnostics<span class="w"> </span>computation,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span>-1<span class="w"> </span><span class="o">(</span>disable<span class="o">)</span>
+
+<span class="p">&amp;</span>NAM_ISBA_SNOWn
+<span class="w">    </span><span class="nv">CSNAVA_DIAG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;NONE &#39;</span>,<span class="w"> </span><span class="s1">&#39;MEPRA&#39;</span>,<span class="w"> </span><span class="s1">&#39;SNAVA&#39;</span>,<span class="w"> </span><span class="s1">&#39;SNSAT&#39;</span><span class="w">  </span>enable/disable<span class="w"> </span>the<span class="w"> </span>computation<span class="w"> </span>of<span class="w"> </span>some<span class="w"> </span>diagnostics<span class="w"> </span>within<span class="w"> </span>SNOWCRO_DIAG.F90,<span class="w"> </span>default<span class="w"> </span>:<span class="w"> </span><span class="s1">&#39;MEPRA&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="miscellaneous-options">
+<h3>Miscellaneous options<a class="headerlink" href="#miscellaneous-options" title="Link to this heading">¶</a></h3>
+<p><strong>XSNAVA_SLOPE</strong> : slope angle for mechanic diagnostic computations</p>
+<ul class="simple">
+<li><p>‘0-99’ slope angle in degrees, values outside range is not considered (i.e. disable the option)</p></li>
+<li><p>NOTE : The characteristics of the snowpack, including its thickness and all properties such as the surface
+energy balance leading to it usually affected by the slope are not accounted for. This option is only applied
+to the computation of mechanical properties.
+Further dev would be to indicate this value is True in pro files.</p></li>
+</ul>
+<p><strong>CSNAVA_DIAG</strong> : enable/disable the computation of some diagnostics within SNOWCRO_DIAG.F90 routine</p>
+<ul class="simple">
+<li><p>‘NONE ‘ Disable the computation of most diagnostics usually computed in snowcro_diag. Only, MEPRA snow grain type remains calculated</p></li>
+<li><p>‘MEPRA’ ‘NONE ‘+ Enable the computation of all diagnostics used to run MEPRA, including cumulated new snow (thickness and water equivalent). It is the default setting.</p></li>
+<li><p>‘SNAVA’ ‘MEPRA’ + Enable the computation of SNAVA diagnostics (2024-2025 developpments), which are complementary wet-snow indicators, structural stability index and critical crack length. All are described in the following documentation.</p></li>
+<li><p>‘SNSAT’ : ‘SNAVA’ + Enable the algorithm to determine avalanche type problems</p></li>
+</ul>
+</section>
+<section id="wet-snow-indicators-and-ssi">
+<h3>Wet-snow indicators and SSI<a class="headerlink" href="#wet-snow-indicators-and-ssi" title="Link to this heading">¶</a></h3>
+<p><strong>Thickness of isothermal snow</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_IH`)</em></p>
+<p>The thickness of isothermal snow is defined as the integrated height of all snow layers with a temperature at or above the melting point (273.15 K).</p>
+<p><strong>Age since last isothermal state</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_HUDAT`)</em></p>
+<p>The age since last isothermal state of the snowpack is the time (in days) since the snowpack was isothermal at or above a fraction of its total height (set here to 0.9).
+The default value is <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>. This variable is present in the PREP as it requires previous time step state to be updated.
+If the snowpack falls below the threshold fraction, the counter is reset to <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code>.</p>
+<p><strong>Volumic ratio of liquid water content</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_LWCTV`)</em></p>
+<p>Volumic ratio of the liquid water content of the snowpack (<code class="docutils literal notranslate"><span class="pre">m³/m³</span></code>).
+The default value is <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>. This variable is present in the PREP as it requires the previous time step for the SNSAT algorithm computation.</p>
+<p><strong>Structural stability index</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_SSI / SNAVA_SSI`)</em></p>
+<p>This diagnostic is computed as the skier stability index Sk38 (<code class="docutils literal notranslate"><span class="pre">ACC_RAT</span></code>) to which 1 or 2 is added in the case of a structurally homogeneous stratigraphy.
+For each layer (except the top one), the absolute differences in hand hardness (<img class="math" src="../_images/math/a738bd73d33891e0c5082f21fbd75e1b8b4c976e.png" alt="\Delta R"/>) and grain size (<img class="math" src="../_images/math/d558cea506d7732938752a1e0ee2d43632c88a64.png" alt="\Delta E"/>) are calculated in comparison with the upper adjacent layer.</p>
+<p>Then, the SSI is defined as:</p>
+<div class="math">
+<p><img src="../_images/math/08a389a7bddf33b3f14e58b3f2780b54b6992d6e.png" alt="SSI = SK38 + D"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="../_images/math/382677adfd7bb5df53a9bacd7c49da0a70c04689.png" alt="D =
+\begin{cases}
+  0 &amp; \text{if } \Delta R \geq 1.5 \text{ and } \Delta E \geq 0.5\,\text{mm} \\
+  1 &amp; \text{if } \Delta R &lt; 1.5 \text{ or } \Delta E &lt; 0.5\,\text{mm} \\
+  2 &amp; \text{if } \Delta R &lt; 1.5 \text{ and } \Delta E &lt; 0.5\,\text{mm}
+\end{cases}"/></p>
+</div></section>
+<section id="critical-crack-length">
+<h3>Critical crack length<a class="headerlink" href="#critical-crack-length" title="Link to this heading">¶</a></h3>
+<p>The critical crack length is intended to represent the propagation of cracks in an avalanche. It gives a theoretical length (m) from which an initial crack in the weak layer will propagate further.**
+Multiple models of it exist; two of them are implemented and described below.</p>
+<p><strong>Anticrack model (SNAVA_AC)</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_AC / SNAVA_AC`)</em></p>
+<p>In this model, the characteristics of an equivalent slab are represented by a Timoshenko beam fixed on its left side, deforming only on its unsupported part.
+The mechanical behavior of the weak layer, including its deformation, is not taken into account. The weak layer fracture energy is the only property of the weak layer, to which the deformation energy of the slab is compared.</p>
+<p>This approach allows expressing and relating the weak layer fracture energy <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> to the critical crack length <img class="math" src="../_images/math/53064c5a29176bc3778ebab55969e8e8c43a418b.png" alt="a_c"/> and to the characteristics of the slab–weak layer system: slab height <img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/>, slab Young modulus <img class="math" src="../_images/math/1815f600df7845409443aed470eac2d449e4ddb0.png" alt="E"/>, and the normal (<img class="math" src="../_images/math/b52df27bfb0b1e3af0c2c68a7b9da459178c2a7d.png" alt="\sigma"/>) and shear (<img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/>) stresses due to the weight of the slab over the weak layer:</p>
+<div class="math">
+<p><img src="../_images/math/af6bdab9ddc999be9212e34f3e1573efc105e6ef.png" alt="W_f = \frac{H}{2E}
+\left[
+  w_0
+  + w_1 \frac{a_c}{H}
+  + w_2 \left(\frac{a_c}{H}\right)^2
+  + w_3 \left(\frac{a_c}{H}\right)^3
+  + w_4 \left(\frac{a_c}{H}\right)^4
+\right]"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="../_images/math/a0cf6001d5725ad74ae9463e30c4f324d657b928.png" alt="\begin{cases}
+  w_0 = \frac{3\eta^2}{4}\tau^2 \\
+  w_1 = (\pi\gamma + \frac{3\eta}{2})\tau^2 + 3\eta^2\tau\sigma + \pi\gamma\sigma^2 \\
+  w_2 = \tau^2 + \frac{9\eta}{2}\tau\sigma + 3\eta^2\sigma^2 \\
+  w_3 = 3\eta\sigma^2 \\
+  w_4 = 3\sigma^2
+\end{cases}"/></p>
+</div><p>In this formulation,</p>
+<p><img class="math" src="../_images/math/43e9f4e99ad2b398b9279ce3a20bc4562194698b.png" alt="\eta = \sqrt{\frac{4(1+\nu)}{5}}"/>, where <img class="math" src="../_images/math/14eb89266154200b9c81dcfc3bd058638fa221bf.png" alt="\nu"/> is the Poisson’s ratio, set to 0.2 according to Gaume et al., (2017) and Richter et al., (2019), and <img class="math" src="../_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> is the elastic mismatch parameter, set to 1.</p>
+<p>The weight of the slab is decomposed into a shear stress</p>
+<div class="math">
+<p><img src="../_images/math/10884fd60e54880200f9377fd0955ced012a3181.png" alt="\tau = \rho g H \sin{\alpha}"/></p>
+</div><p>and a normal stress</p>
+<div class="math">
+<p><img src="../_images/math/2cc83032bb0131b4a487a3528f7d51604915b8e9.png" alt="\sigma = -\rho g H \cos{\alpha}."/></p>
+</div><p>The slab height is defined as the sum of the thicknesses of all layers <img class="math" src="../_images/math/b6e2c1bc7d8a8ef8bc3878348c32e442f102d286.png" alt="h_i"/> above the weak layer:</p>
+<div class="math">
+<p><img src="../_images/math/e779fca1a075283cfb211840dfe0e8768607dcc1.png" alt="H = \sum_i h_i"/></p>
+</div><p>and the slab density is computed as the thickness-weighted arithmetic mean of the layer densities:</p>
+<div class="math">
+<p><img src="../_images/math/771175323122aea5d6ee1a965a7502e9b8a628a8.png" alt="\rho = \frac{\sum_i \rho_i h_i}{\sum_i h_i}."/></p>
+</div><p>The Young modulus of each layer <img class="math" src="../_images/math/6dee1c45812cc81d4c0c16626aaad62ee2d6fc98.png" alt="E_{i}"/> is determined using the density parameterization of Gerling et al., (2017):</p>
+<div class="math">
+<p><img src="../_images/math/8841a1a93500c4a014221593a5559370b12f0377.png" alt="E_i = 6.5 \times 10^9 \left(\frac{\rho_i}{\rho_{\text{ice}}}\right)^{5.13}."/></p>
+</div><p><strong>Equivalent Young modulus of the slab</strong></p>
+<p>The equivalent Young modulus of the slab is computed using solutions from the theory of laminate plates (cf. Eqs. 8c and 9b in Weisgraeber and Rosendahl, 2023).
+It is noted on page 1489 of this paper that the <img class="math" src="../_images/math/62b6597ba75d51eba63d71eb068a47b3a04b7dcd.png" alt="D_{11}"/> coefficient used here (mode I) characterizes the bending stiffness and allows representing the bridging effect of a snowpack configuration.</p>
+<div class="math">
+<p><img src="../_images/math/a2ca77d7ed3fe765f93b39ec0c553578ef6132f1.png" alt="E_{eq} = 4 \cdot \frac{\sum_i E_i \left(z_{it}^3 - z_{ib}^3\right)}{H^3}"/></p>
+</div><p>with <img class="math" src="../_images/math/6560d9d211e9f54618bf3d3d1ae0ce43a9cfd309.png" alt="z_{it}"/> and <img class="math" src="../_images/math/62841a6c7c5c9046fdb46da9e2ffc07ecc6f8c89.png" alt="z_{ib}"/> respectively the top and bottom height of the layer i.
+Considering only mode II, the equivalent Young modulus becomes:</p>
+<div class="math">
+<p><img src="../_images/math/48710ac8d5177303fe7613405746b067f4fa8034.png" alt="E_{eq} = \frac{\sum_i E_i h_i}{H}"/></p>
+</div><p>Both formulations assume that variations in the Poisson ratio between layers are negligible.</p>
+<p>In the following, <img class="math" src="../_images/math/3e490b5bfa683dbc29106ff8a621e657d6d76429.png" alt="E_{eq}"/> is computed using mode I only.</p>
+<p><strong>Weak layer fracture energy parameterization : solution from Heierli</strong></p>
+<p>The weak layer fracture energy <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> is a property of the weak layer, theoretically dependent on its material and geometric characteristics, for which no direct parameterization applicable to macroscopic snow models is available in the literature.</p>
+<p>In this application, <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> is linearly related to the min-cut (Hagenmuller et al., 2014), itself parameterized as a function of the weak layer density <img class="math" src="../_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>, with a scaling factor depending on the specific surface area (SSA) <img class="math" src="../_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> and the sphericity <img class="math" src="../_images/math/b988975be41fd13b4d091c10202ba19374643586.png" alt="S"/> of the weak layer.
+This allows discriminating between different grain-type behaviors (see Monteiro et al., in preparation, for further details).</p>
+<div class="math">
+<p><img src="../_images/math/4a3f05f9c4e9329b1fc57e2107b075d66b2203a3.png" alt="W_f = \alpha_{w_f} \, f_{mincut}(\rho, G, S)"/></p>
+</div><p>with <img class="math" src="../_images/math/d260753906b0a144b94c5a47b70731475673af66.png" alt="\alpha_{w_f} = 13.7"/> and</p>
+<div class="math">
+<p><img src="../_images/math/fe994fb4f9cfd3f67c4ed2cdc2e80ab94c550552.png" alt="f_{mincut} =
+\frac{1}{1 + \exp\left(-\alpha_0 - \alpha_S S - \alpha_G G - \alpha_{SG} S G\right)}
+\left(\frac{\phi - \phi_t}{1 - \phi_t}\right)^m"/></p>
+</div><p>where the calibrated parameters are
+<img class="math" src="../_images/math/202cb162db81eba30aaa320167c838f09417146f.png" alt="\alpha_0 = -2.56"/>,
+<img class="math" src="../_images/math/866b820d8ae880d652f1cee6ba57e85120029bab.png" alt="\alpha_S = 4.95"/>,
+<img class="math" src="../_images/math/677860948b2fd02d9a3e3e0d8108d78249f8a019.png" alt="\alpha_G = 0.14"/>,
+<img class="math" src="../_images/math/6ff892f42ca00d3e7c0431b79bb6edb4fce9d241.png" alt="\alpha_{SG} = -0.30"/>,
+<img class="math" src="../_images/math/030a25ba9887b107d2af3eef43d40ad36431fd86.png" alt="\phi_t = 0.04"/>,
+and <img class="math" src="../_images/math/0e467ad3f745eae9781febf362b6771e96db042b.png" alt="m = 2.46"/>.</p>
+<p>Finally, determining the critical crack length <img class="math" src="../_images/math/53064c5a29176bc3778ebab55969e8e8c43a418b.png" alt="a_c"/> reduces to finding the roots of the fourth-degree polynomial equation, which has real and strictly positive coefficients.
+In practice, the roots are computed using a fourth-order polynomial solver <code class="docutils literal notranslate"><span class="pre">R_QUARTIC</span></code> implemented in the module <code class="docutils literal notranslate"><span class="pre">mode_polyroots.F90</span></code>.</p>
+<p><strong>Gaume et al., (2017) model (SNAVA_ACG)</strong>
+<em>(`mode_snow_ava.F90 / SNAVA_ACG / SNAVA_ACG`)</em></p>
+<p>The algorithm is implemented as described in Gaume et al., (2017). Please refer to this publication for full methodological details.</p>
+</section>
+<section id="avalanche-problems-determination-algorithm-snsat">
+<h3>Avalanche problems determination algorithm (SNSAT)<a class="headerlink" href="#avalanche-problems-determination-algorithm-snsat" title="Link to this heading">¶</a></h3>
+<p><em>(`mode_snow_ava.F90 / SNSAT / SNSAT`)</em></p>
+<p><strong>Weak layer identification</strong></p>
+<p>This step identifies potential weak layers according to grain types and slab characteristics.
+The algorithm iterates through each snow layer and tags layers fulfilling the following conditions:</p>
+<ul class="simple">
+<li><p>Slab thickness &gt; 0.18 m</p></li>
+<li><p>Slab density &gt; 100 kg m⁻³</p></li>
+</ul>
+<p>A tagged layer is classified as a persistent weak layer (PWL) if the grain type is one of (FC, DH, FC+DH), and as a non-persistent weak layer (NPWL) if the grain type is one of (PP, DF, PP+DF, PPgp, DF+FC).</p>
+<p>The table of tagged weak layers is not an output of the algorithm.</p>
+<p><em>Non implemented:</em> NPWLs are no longer considered after 48 hours without new
+snowfall or snow transport
+(i.e. AGE &gt; 2 days and NEWSNOW48h == 0).
+PWLs become APWLs if <img class="math" src="../_images/math/519ea80e9005b58a4691b527d84aa12598886091.png" alt="a_c &lt; 0.6\,\text{m}"/> and <img class="math" src="../_images/math/b3317c7416886672e63caa9bb1cb79e0092d00e3.png" alt="S &gt; 2"/>.</p>
+<p><strong>Layer tracking</strong></p>
+<p>The algorithm attempts to match snow layers between times <img class="math" src="../_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> and <img class="math" src="../_images/math/7bcad2a761e7bbc9562bbd567947e34cc047e536.png" alt="t-1"/> using their ages. The matching process starts from the top of the snowpack and iterates over the combined number of layers:</p>
+<div class="math">
+<p><img src="../_images/math/001034ca6ac53ec4a11b6837857afe24d848fa8a.png" alt="N_{\text{snow layers}}(t) + N_{\text{snow layers}}(t-1)"/></p>
+</div><p>A parallel traversal of both layer tables is performed, as layer ages are sorted in ascending order. When a match is found, both tables advance.
+Otherwise, the next layer in the table with the smallest age is selected.
+The indices of matching layers at <img class="math" src="../_images/math/7bcad2a761e7bbc9562bbd567947e34cc047e536.png" alt="t-1"/> are stored in the variable <code class="docutils literal notranslate"><span class="pre">SNSAT_IPRE</span></code> with dimensions (Nb_layers, Nb_points, time).</p>
+<p><em>Note:</em> although layer merges are not explicitly handled, they can be inferred from jumps in the index matrix at time <img class="math" src="../_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/>.</p>
+<p><strong>Failure initiation</strong></p>
+<p>This step assesses whether identified weak layers are prone to failure initiation.</p>
+<p>For natural hazard:</p>
+<ul class="simple">
+<li><p>Natural stability <img class="math" src="../_images/math/bed213c1ea33cc687960613a9a9b9ff630e3b275.png" alt="S_n &lt; 2.5"/></p></li>
+<li><p>Expected time to failure <img class="math" src="../_images/math/a5918863b799443510332e6c173f9ab7fcbb3c0c.png" alt="t_f &lt; 27"/> h</p></li>
+</ul>
+<p>For triggered hazard (e.g. skier):</p>
+<ul class="simple">
+<li><p>Skier stability index <img class="math" src="../_images/math/4b6f4d3dc5b8ff391c1acb937802754a224e5f0e.png" alt="S_k &lt; 1"/></p></li>
+</ul>
+<p>Boolean (0, 1) arrays with dimensions (Nb_layers, Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NINIT</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_AINIT</span></code> for triggered hazard.</p>
+<p><strong>Crack propagation</strong></p>
+<p>This step evaluates whether an initiated failure is likely to propagate.
+For both natural and triggered hazard, propagation is assumed if:</p>
+<ul class="simple">
+<li><p>Critical crack length <img class="math" src="../_images/math/a741aabbfda37b2648d3bca7813bb8972435540c.png" alt="a_c &lt; 0.3"/></p></li>
+</ul>
+<p>A boolean (0, 1) array (Nb_layers, Nb_points, time) indicating layers fulfilling propagation conditions is stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_PROP</span></code>.</p>
+<p><strong>Avalanche problems (AP) determination</strong></p>
+<p>For each snow profile presenting a potential avalanche hazard, the avalanche problem types are determined as follows.</p>
+<p><em>Wet-snow avalanche</em></p>
+<p>This is the only avalanche problem that does not rely on initiation or propagation criteria. It requires that at least one persistent or non-persistent weak layer has been identified.</p>
+<p>The onset of the wet-snow avalanche period is defined by:</p>
+<ul class="simple">
+<li><p>Liquid water content (<img class="math" src="../_images/math/32b655138891310677f6e8e5de917162db0ff53c.png" alt="LWC"/>) ≥ critical liquid water content (<img class="math" src="../_images/math/309fe87f9fd19519e575984a424e1e42dcb5e1c7.png" alt="LWC_{crit}"/>), set here to 1 %</p></li>
+</ul>
+<p>After onset, a wet-snow avalanche risk is assumed if:</p>
+<ul class="simple">
+<li><p>Days since isothermal state &lt; 4 days</p></li>
+<li><p><img class="math" src="../_images/math/bbebe509b4dfb594fdc16cfcf8bee93cac814176.png" alt="LWC(t) &gt; LWC(t-1)"/> and <img class="math" src="../_images/math/d1d068811fe619ccce934316fd150aa25ec1e44c.png" alt="LWC(t) &gt; LWC_{crit}"/></p></li>
+</ul>
+<p>A table with values (XUNDEF, 1, 2) and dimensions (Nb_points, time) is stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_WET</span></code>:</p>
+<ul class="simple">
+<li><p>XUNDEF: no avalanche problem</p></li>
+<li><p>1: onset conditions fulfilled</p></li>
+<li><p>2: onset conditions fulfilled and increasing LWC</p></li>
+</ul>
+<p><em>New snow</em></p>
+<p>This avalanche type is related to fresh snow accumulation at the top of the snowpack.</p>
+<p>It is considered if accumulated snowfall exceeds 5 cm per 24 h and if a non-persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NNEW</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_ANEW</span></code> for triggered hazard.</p>
+<p><em>Drifting snow</em></p>
+<p>This avalanche type is associated with wind slab formation.</p>
+<p>It is considered if the transported snow mass exceeds 0.2 kg cm⁻¹ per 24 h and if a non-persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NDRIFT</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_ADRIFT</span></code> for triggered hazard.</p>
+<p><em>Note:</em> at each time step, several variables from SNOWPAPPUS are available in snow3Lisba. Without divergence activated (1D and 2D possible), the following quantities can be accessed: <code class="docutils literal notranslate"><span class="pre">DEK%XQT_TOT(JJ)</span></code>, saltation transport <code class="docutils literal notranslate"><span class="pre">DMK%XQ_OUT_SALT(JJ)</span></code>, and suspension <code class="docutils literal notranslate"><span class="pre">DMK%XQ_OUT_SUSP(JJ)</span></code> (kg m⁻¹ s⁻¹).
+Here, only the saltation transport rate is used, converted to kg cm⁻¹ per 24 h. Since <code class="docutils literal notranslate"><span class="pre">Snowcrodiag</span></code> is called once per hour, transport fluxes are assumed stationary between output time steps.</p>
+<p><em>Persistent weak layer</em></p>
+<p>This avalanche type is associated with the presence of a buried persistent weak layer.</p>
+<p>It is considered if new snow or drifting snow thresholds are exceeded and if a persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NPWL</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_APWL</span></code> for triggered hazard.</p>
+</section>
+<section id="id25">
+<h3>References<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<p>Gaume, J., van Herwijnen, A., Chambon, G., Wever, N., &amp; Schweizer, J. (2017).
+Snow fracture in relation to slab avalanche release: Critical state for the onset of crack propagation.
+The Cryosphere, 11(1), 217–228. <a class="reference external" href="https://doi.org/10.5194/tc-11-217-2017">https://doi.org/10.5194/tc-11-217-2017</a></p>
+<p>Gerling, B., Löwe, H., &amp; van Herwijnen, A. (2017).
+Measuring the elastic modulus of snow.
+Geophysical Research Letters, 44(21). <a class="reference external" href="https://doi.org/10.1002/2017GL075110">https://doi.org/10.1002/2017GL075110</a></p>
+<p>Hagenmuller, P., Calonne, N., Chambon, G., Flin, F., Geindreau, C., &amp; Naaim, M. (2014).
+Characterization of the snow microstructural bonding system through the minimum cut density.
+Cold Regions Science and Technology, 108, 72–79.</p>
+<p>Heierli, J., Gumbsch, P., &amp; Zaiser, M. (2008).
+Anticrack nucleation as triggering mechanism for snow slab avalanches.
+Science, 321(5886), 240–243. <a class="reference external" href="https://doi.org/10.1126/science.1153948">https://doi.org/10.1126/science.1153948</a></p>
+<p>Reuter, B., Schweizer, J., &amp; van Herwijnen, A. (2015).
+A process-based approach to estimate point snow instability.
+The Cryosphere, 9(3), 837–847. <a class="reference external" href="https://doi.org/10.5194/tc-9-837-2015">https://doi.org/10.5194/tc-9-837-2015</a></p>
+<p>Richter, B., Schweizer, J., Rotach, M. W., &amp; van Herwijnen, A. (2019).
+Validating modeled critical crack length for crack propagation in the snow cover model SNOWPACK.
+The Cryosphere, 13(12), 3353–3366. <a class="reference external" href="https://doi.org/10.5194/tc-13-3353-2019">https://doi.org/10.5194/tc-13-3353-2019</a></p>
+<p>Schweizer, J., Bellaire, S., Fierz, C., Lehning, M., &amp; Pielmeier, C. (2006).
+Evaluating and improving the stability predictions of the snow cover model SNOWPACK.
+Cold Regions Science and Technology, 46(1), 52–59. <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2006.05.007">https://doi.org/10.1016/j.coldregions.2006.05.007</a></p>
+<p>Schweizer, J., van Herwijnen, A., &amp; Reuter, B. (2011).
+Measurements of weak layer fracture energy.
+Cold Regions Science and Technology, 69(2–3), 139–144. <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2011.06.004">https://doi.org/10.1016/j.coldregions.2011.06.004</a></p>
+<p>Weissgraeber, P., &amp; Rosendahl, P. L. (2023).
+A closed-form model for layered snow slabs.
+The Cryosphere, 17(4), 1475–1496. <a class="reference external" href="https://doi.org/10.5194/tc-17-1475-2023">https://doi.org/10.5194/tc-17-1475-2023</a></p>
+</section>
+</section>
 </section>
 
 
@@ -826,6 +1121,18 @@ You can try this parameterization for any other site, even in cold climates like
 <li><a class="reference internal" href="#id19">Description of the development</a></li>
 <li><a class="reference internal" href="#id20">Changes in namelist</a></li>
 <li><a class="reference internal" href="#id21">Full Description</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#snava-development-for-snow-avalanche-risk-assessment">9-SNAVA (development for SNow AVAlanche risk assessment)</a><ul>
+<li><a class="reference internal" href="#id22">Basic information</a></li>
+<li><a class="reference internal" href="#id23">Description of the development</a></li>
+<li><a class="reference internal" href="#scientific-details">Scientific details</a></li>
+<li><a class="reference internal" href="#id24">Changes in namelist</a></li>
+<li><a class="reference internal" href="#miscellaneous-options">Miscellaneous options</a></li>
+<li><a class="reference internal" href="#wet-snow-indicators-and-ssi">Wet-snow indicators and SSI</a></li>
+<li><a class="reference internal" href="#critical-crack-length">Critical crack length</a></li>
+<li><a class="reference internal" href="#avalanche-problems-determination-algorithm-snsat">Avalanche problems determination algorithm (SNSAT)</a></li>
+<li><a class="reference internal" href="#id25">References</a></li>
 </ul>
 </li>
 </ul>

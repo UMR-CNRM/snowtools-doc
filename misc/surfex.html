@@ -125,6 +125,12 @@ However, these directories can contain useful informations to understand the ori
 </li>
 </ul>
 </section>
+<section id="the-nam-io-offline-options-in-namelist">
+<h2>The NAM_IO_OFFLINE options in namelist<a class="headerlink" href="#the-nam-io-offline-options-in-namelist" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">XTSTEP_OUTPUT</span></code> defines the timestep (in seconds) of the outputs. <code class="docutils literal notranslate"><span class="pre">XTSTEP_OUTPUT=21600</span></code> means that you’ll have diagnostics every 6 hours in your PRO file.</p>
+<p>It is possible to compress the netcdf PRO file: <code class="docutils literal notranslate"><span class="pre">NOUTPUT_NETCDF</span> <span class="pre">=</span> <span class="pre">4</span></code> (the output file is a NetCDF4-classic format, the default is NetCDF3 format) and <code class="docutils literal notranslate"><span class="pre">NCOMPRESS_NETCDF</span> <span class="pre">=</span> <span class="pre">1</span></code> (the level of compression is 1, this is the default).</p>
+<p>By default, the FORCING file is read every timestep. In order to decrease the I/O time, you can choose to read all forcing datas in one time by setting <code class="docutils literal notranslate"><span class="pre">NB_READ_FORC</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
+</section>
 <section id="the-cselect-options">
 <h2>The CSELECT options<a class="headerlink" href="#the-cselect-options" title="Link to this heading">¶</a></h2>
 <p>In the namelist, CSELECT allows you to choose output. For example, in the standard namelist, you have:
@@ -269,6 +275,7 @@ The operational value used at Météo-France is 3h.</p>
 </li>
 <li><a class="reference internal" href="#launch-simulations">Launch simulations</a></li>
 <li><a class="reference internal" href="#results">Results</a></li>
+<li><a class="reference internal" href="#the-nam-io-offline-options-in-namelist">The NAM_IO_OFFLINE options in namelist</a></li>
 <li><a class="reference internal" href="#the-cselect-options">The CSELECT options</a><ul>
 <li><a class="reference internal" href="#available-diagnostics">Available diagnostics</a></li>
 <li><a class="reference internal" href="#snowpappus">SNOWPAPPUS</a></li>

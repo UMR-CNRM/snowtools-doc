@@ -59,29 +59,19 @@
 </ul>
 <p>Note: If you need to work with more recent branch (<code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> for instance) or other compile options (<code class="docutils literal notranslate"><span class="pre">MPI</span></code>) have a look to available binaries in the previously pointed <code class="docutils literal notranslate"><span class="pre">SURFEX</span></code> folder where other compiled binaries are available.</p>
 </section>
-<section id="requirements-for-users-outside-of-meteo-france">
-<h2>Requirements for users outside of Meteo-France<a class="headerlink" href="#requirements-for-users-outside-of-meteo-france" title="Link to this heading">¶</a></h2>
-<p>For a first install, check the SURFEX requirements and the basics: <a class="reference external" href="http://www.cnrm.meteo.fr/surfex-lab/spip.php?article302">http://www.cnrm.meteo.fr/surfex-lab/spip.php?article302</a></p>
-</section>
 <section id="get-the-code">
 <h2>Get the code<a class="headerlink" href="#get-the-code" title="Link to this heading">¶</a></h2>
-<p>Rather than installing from an « export » archive, it is better to immediately get started from the most recent version of the git repository. Crocus users should in the general case install the <code class="docutils literal notranslate"><span class="pre">cen</span></code> branch. This is the most recent stable release of Crocus snowpack model which often includes new developments not already merged in the master SURFEX branch. Specific instructions on how to use git for SURFEX are provided in : <a class="reference external" href="http://www.umr-cnrm.fr/surfex/spip.php?article415">http://www.umr-cnrm.fr/surfex/spip.php?article415</a></p>
-<p>Access the code by registering on this website (top right of the window): <a class="reference external" href="https://opensource.umr-cnrm.fr/">https://opensource.umr-cnrm.fr/</a>. Please always fill in the “comments” field asking for an access to SURFEX project. If you have never been in contact with the Crocus team before your request, please explain briefly your interest in this model. Once you have received a confirmation of your account creation, you will have to send a public ssh key to operator at meteo dot fr. This ssh key have to be created with <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span> <span class="pre">-t</span> <span class="pre">rsa</span></code>. If you are not familiar with SSH keys, let the default key name (id_rsa), and do not provide any passphrase. The public key is available under ~/.ssh/id_rsa.pub.</p>
-<p>For users which need scientific advices about the relevance of using Crocus for their application, please contact crocus at meteo.fr</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Caution: the directory where you are going to install SURFEX and all parent directories MUST NOT contain dots (.) in their names.</p>
-</div>
-<p>If you plan to launch simulation only (ie not for developer), download the cen branch with the folowwing command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>cen<span class="w"> </span>ssh://reader097@git.umr-cnrm.fr/git/Surfex_Git2.git
+<p>If you will develop in SURFEX_CEN, you must clone with SSH. First create a SSH key and associate it to your github account : follow the corresponding section of the <a class="reference external" href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key">github documentation</a>). Then you can get the code with :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:UMR-CNRM/SURFEX_CEN.git
 </pre></div>
 </div>
-<p>If you are a developer, you may prefer download the cen_dev branch with the folowwing command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>cen_dev<span class="w"> </span>ssh://admin097@git.umr-cnrm.fr/git/Surfex_Git2.git
-</pre></div>
-</div>
-<p>If a password is requested, it means that your ssh keys have not been registered, please contact <code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">at</span> <span class="pre">meteo</span> <span class="pre">dot</span> <span class="pre">fr</span></code></p>
-<p>This will download a number of folder and files. The SURFEX sources are in the src directory.</p>
+<p>If you are a simple user (outside of Meteo-France where pre-compiled binaries are available) you can get the code by running <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/UMR-CNRM/SURFEX_CEN.git</span></code>.</p>
+<p>You will need some additional packages that are provided by the SURFEX project. for the moment, these packages are not publicly available.</p>
+<ul class="simple">
+<li><p>At Meteo-France/CEN, these files can be copied from <code class="docutils literal notranslate"><span class="pre">/rd/cenfic3/cenmod/home/common/SURFEX_LIB</span></code>. Copy all the content of this folder into <code class="docutils literal notranslate"><span class="pre">src/LIB</span></code> folder of the cloned repository.</p></li>
+<li><p>If you are not at CEN, please ask your contact person to transfer these libraries to you and then copy the files into the <code class="docutils literal notranslate"><span class="pre">src/LIB</span></code> directory.</p></li>
+</ul>
+<p>Please read the infos for developper: <a class="reference external" href="https://umr-cnrm.github.io/snowtools-doc/misc/surfex-dev.html">https://umr-cnrm.github.io/snowtools-doc/misc/surfex-dev.html</a></p>
 </section>
 <section id="compile-the-code">
 <h2>Compile the code<a class="headerlink" href="#compile-the-code" title="Link to this heading">¶</a></h2>
@@ -122,12 +112,8 @@ module<span class="w"> </span>load<span class="w"> </span>curl
 <p>The next step of the configuration depends on your application:</p>
 <ul class="simple">
 <li><p>For MPI parallel applications (big domains, deterministic application) : let <code class="docutils literal notranslate"><span class="pre">VER_MPI</span></code> and <code class="docutils literal notranslate"><span class="pre">VER_CDF</span></code> options to default.</p></li>
-<li><p>For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables:</p></li>
+<li><p>For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">VER_MPI=NOMPI</span></code> and <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">VER_CDF=CDF2020</span></code>.</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">VER_MPI</span><span class="o">=</span>NOMPI
-<span class="nb">export</span><span class="w"> </span><span class="nv">VER_CDF</span><span class="o">=</span>CDF2020
-</pre></div>
-</div>
 <p>You will also need to install <a class="reference internal" href="vortex-install.html#install-vortex"><span class="std std-ref">Install VORTEX</span></a>.</p>
 </section>
 <section id="common-configuration">
@@ -151,7 +137,7 @@ module<span class="w"> </span>load<span class="w"> </span>curl
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>../conf/profile_surfex-LXgfortran-SFX-V8-1-1-NOMPI-OMP-O2-X0
 </pre></div>
 </div>
-<p>(or equivalent name depending on compiler, SURFEX version and compilation options)</p>
+<p>(or equivalent name depending on compiler, SURFEX version and compilation options, the exact name is provided at the end of the <code class="docutils literal notranslate"><span class="pre">configure</span></code> execution)</p>
 </section>
 <section id="compilation">
 <h3>Compilation<a class="headerlink" href="#compilation" title="Link to this heading">¶</a></h3>
@@ -202,7 +188,6 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX<
     <ul>
 <li><a class="reference internal" href="#">Install SURFEX</a><ul>
 <li><a class="reference internal" href="#users-at-meteo-france">Users at Meteo-France</a></li>
-<li><a class="reference internal" href="#requirements-for-users-outside-of-meteo-france">Requirements for users outside of Meteo-France</a></li>
 <li><a class="reference internal" href="#get-the-code">Get the code</a></li>
 <li><a class="reference internal" href="#compile-the-code">Compile the code</a><ul>
 <li><a class="reference internal" href="#preparation-on-a-linux-pc">Preparation on a Linux PC</a></li>
