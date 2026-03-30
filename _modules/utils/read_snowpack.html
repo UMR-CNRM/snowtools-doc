@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.read_snowpack &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -57,10 +59,10 @@
 <span class="sd">This script requires python&gt;=3.8.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">VARIABLES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;0500&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>    <span class="c1"># compulsory</span>
              <span class="s1">&#39;0501&#39;</span><span class="p">:</span> <span class="s1">&#39;height&#39;</span><span class="p">,</span>  <span class="c1"># compulsory</span>
@@ -104,8 +106,8 @@
 <span class="n">SEP</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span>  <span class="c1"># The data separator used</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_parse_metadata_point</span><span class="p">(</span><span class="n">ff</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_parse_metadata_point</span><span class="p">(</span><span class="n">ff</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the section STATION_PARAMETERS</span>
 <span class="sd">    The section should finish with a blank line</span>
 
@@ -144,8 +146,8 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_parse_header</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_parse_header</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the section HEADER</span>
 <span class="sd">    The section should finish with a blank line</span>
 
@@ -188,8 +190,8 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_parse_data</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_parse_data</span><span class="p">(</span><span class="n">ff</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the section DATA</span>
 
 <span class="sd">    :param ff: opened file</span>
@@ -261,10 +263,8 @@
     <span class="k">return</span> <span class="n">data</span>
 
 
-<div class="viewcode-block" id="read_snowpack_profile">
-<a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.read_snowpack_profile">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read_snowpack_profile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="read_snowpack_profile"><a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.read_snowpack_profile">[docs]</a><span class="k">def</span> <span class="nf">read_snowpack_profile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the snowpack output file &#39;.pro&#39; and return the raw data</span>
 
 <span class="sd">    :param filepath: Path to the snowpack output PRO file (containing the profile)</span>
@@ -308,18 +308,15 @@
             <span class="p">}</span></div>
 
 
-
-<div class="viewcode-block" id="snowpack_reader">
-<a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">snowpack_reader</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="snowpack_reader"><a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader">[docs]</a><span class="k">class</span> <span class="nc">snowpack_reader</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The object that provide access to SNOWPACK profiles simulation output</span>
 <span class="sd">    through an interface that is similar to the one provided by prosimu</span>
 <span class="sd">    for the Crocus simulations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">VARIABLES</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the snowpack output file &#39;.pro&#39; and store/provide access to the parsed data.</span>
 
 <span class="sd">        :param filepath: Path to the snowpack output PRO file (containing the profile)</span>
@@ -334,7 +331,7 @@
 <span class="sd">        :type soil: bool</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+        <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
         <span class="c1"># Actually read the file</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">read_snowpack_profile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">)</span>
@@ -359,10 +356,8 @@
             <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="snowpack_reader.get_time">
-<a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.get_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="snowpack_reader.get_time"><a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.get_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the time dimension of the dataset on a similar form than provided by</span>
 <span class="sd">        prosimu for Crocus model (numpy array of datetime.datetime objects).</span>
 
@@ -374,11 +369,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span></div>
 
-
-<div class="viewcode-block" id="snowpack_reader.listvar">
-<a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.listvar">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">listvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="snowpack_reader.listvar"><a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.listvar">[docs]</a>    <span class="k">def</span> <span class="nf">listvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of available variables</span>
 
 <span class="sd">        :returns: List of available variables</span>
@@ -386,11 +378,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="snowpack_reader.read_var">
-<a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.read_var">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="snowpack_reader.read_var"><a class="viewcode-back" href="../../code/utils-readsnowpack.html#utils.read_snowpack.snowpack_reader.read_var">[docs]</a>    <span class="k">def</span> <span class="nf">read_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the data for a specified variable. It is also possible to select a relevant time step.</span>
 
 <span class="sd">        :param variable: The variable name</span>
@@ -411,18 +400,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">select</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">][</span><span class="n">select</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span></div>
-</div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">variable</span><span class="p">][</span><span class="n">select</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -430,13 +417,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -454,8 +441,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

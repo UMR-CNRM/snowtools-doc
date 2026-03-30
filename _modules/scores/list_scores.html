@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>scores.list_scores &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,23 +47,21 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scores.deterministic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">snowtools.scores.deterministic</span> <span class="kn">import</span> <span class="n">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">,</span> \
         <span class="n">ESMSnowMIP_DeterministicScores_Time</span><span class="p">,</span> <span class="n">S2M_DeterministicScores_CommonObs</span>
 
 
-<div class="viewcode-block" id="ESCROC_list_scores">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ESCROC_list_scores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ESCROC_list_scores"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores">[docs]</a><span class="k">class</span> <span class="nc">ESCROC_list_scores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for all deterministic scores of a given ESM-SnowMIP simulation member</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Constructor</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeread</span> <span class="o">=</span> <span class="kc">False</span>
@@ -70,10 +70,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simread</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lastprofileread</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="ESCROC_list_scores.read_data">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.read_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ESCROC_list_scores.read_data"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile:</span>
 <span class="sd">        :param obsfile:</span>
@@ -108,16 +106,13 @@
 <span class="c1">#                 self.scores.timeObs = timeObs</span>
 <span class="c1">#             else:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="n">ESMSnowMIP_DeterministicScores_Heterogeneous</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span></div>
-
 <span class="c1">#             self.timeread = True</span>
 <span class="c1">#</span>
 <span class="c1">#             self.obsread[varname] = self.scores.obsCommon</span>
 <span class="c1">#             self.masksim[varname] = self.scores.modelMask</span>
 
-<div class="viewcode-block" id="ESCROC_list_scores.compute_scores_1member">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_1member">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_scores_1member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ESCROC_list_scores.compute_scores_1member"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_1member">[docs]</a>    <span class="k">def</span> <span class="nf">compute_scores_1member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param profile:</span>
 <span class="sd">        :param obsfile:</span>
@@ -146,11 +141,8 @@
 
         <span class="k">return</span> <span class="n">tab_scores</span></div>
 
-
-<div class="viewcode-block" id="ESCROC_list_scores.compute_scores_allmembers">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_allmembers">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_scores_allmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_pro</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ESCROC_list_scores.compute_scores_allmembers"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_allmembers">[docs]</a>    <span class="k">def</span> <span class="nf">compute_scores_allmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_pro</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        compute scores for every ensemble member</span>
 
 <span class="sd">        :param list_pro: list of simulation files</span>
@@ -166,19 +158,15 @@
         <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">profile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_pro</span><span class="p">):</span>
             <span class="n">tab_scores</span><span class="p">[:,</span> <span class="n">p</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_scores_1member</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">tab_scores</span></div>
-</div>
+        <span class="k">return</span> <span class="n">tab_scores</span></div></div>
 
 
-
-<div class="viewcode-block" id="scores_file">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">scores_file</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="scores_file"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file">[docs]</a><span class="k">class</span> <span class="nc">scores_file</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    class for writing scores with dimensions (member, variable, station)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        open a netcdf dataset and create dimensions.</span>
 
 <span class="sd">        :param args: passed to netCDF4.Dataset</span>
@@ -187,60 +175,51 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">scores_file</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cree_dims</span><span class="p">()</span>
 
-<div class="viewcode-block" id="scores_file.cree_dims">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file.cree_dims">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="scores_file.cree_dims"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file.cree_dims">[docs]</a>    <span class="k">def</span> <span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        create member, variable and stat dimensions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;member&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;member&#39;</span><span class="p">,</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;stat&#39;</span><span class="p">))</span>
         <span class="c1"># self.createVariable(scorename, &#39;f8&#39;, (&#39;member&#39;, &#39;variable&#39;))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;write the following table&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">scoretab</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">scorename</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">scoretab</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span></div>
-
         <span class="c1"># print(scoretab)</span>
         <span class="c1"># self.variables[scorename][:, :] = scoretab</span>
 
 
-<div class="viewcode-block" id="ensemble_scores_file">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ensemble_scores_file">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ensemble_scores_file</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="ensemble_scores_file"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ensemble_scores_file">[docs]</a><span class="k">class</span> <span class="nc">ensemble_scores_file</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ensemble_scores_file</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cree_dims</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">write_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;iteration&#39;</span><span class="p">,</span> <span class="s1">&#39;members&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;members&quot;</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">members</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;iteration&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">scorename</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">scoretab</span><span class="p">[:]</span></div>
 
 
-
-<div class="viewcode-block" id="SpatialScoreFile">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">SpatialScoreFile</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SpatialScoreFile"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile">[docs]</a><span class="k">class</span> <span class="nc">SpatialScoreFile</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for writing spatial scores.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">,</span>
                  <span class="n">list_of_threshold_increments</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;spatialscores.nc&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param list_of_experiments:</span>
 <span class="sd">        :param list_of_kernels:</span>
@@ -253,10 +232,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">create_dims</span><span class="p">(</span><span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_vars</span><span class="p">(</span><span class="n">list_of_threshold_increments</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SpatialScoreFile.create_dims">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_dims">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SpatialScoreFile.create_dims"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_dims">[docs]</a>    <span class="k">def</span> <span class="nf">create_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        create experiment, kernel and threshold dimensions</span>
 
 <span class="sd">        :param list_of_experiments:</span>
@@ -274,11 +251,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_thresholds</span></div>
 
-
-<div class="viewcode-block" id="SpatialScoreFile.create_vars">
-<a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_vars">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_threshold_increments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SpatialScoreFile.create_vars"><a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_vars">[docs]</a>    <span class="k">def</span> <span class="nf">create_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_threshold_increments</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create threshold_increment and fuzzy score variables</span>
 
 <span class="sd">        :param list_of_threshold_increments:</span>
@@ -305,9 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ACC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Accuracy&#39;</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;PAG&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;PAG&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Post Agreement&#39;</span><span class="p">})</span></div>
-</div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;PAG&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Post Agreement&#39;</span><span class="p">})</span></div></div>
 
 
 
@@ -317,9 +289,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -327,13 +299,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -351,8 +323,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Blowing snow simulation preparation &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Pleiades observation" href="Pleiades.html" />
     <link rel="prev" title="Documentations from Ange’s PhD (Blowing snow)" href="these_ange_index.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,14 +49,14 @@
           <div class="body" role="main">
             
   <section id="blowing-snow-simulation-preparation">
-<h1>Blowing snow simulation preparation<a class="headerlink" href="#blowing-snow-simulation-preparation" title="Link to this heading">¶</a></h1>
+<h1>Blowing snow simulation preparation<a class="headerlink" href="#blowing-snow-simulation-preparation" title="Permalink to this headline">¶</a></h1>
 <div class="line-block">
-<div class="line">During my PhD, we developped with Matthieu Baron <strong>SnowPappus</strong> <a class="footnote-reference brackets" href="#f0" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, a distributed blowing snow model. :)</div>
+<div class="line">During my PhD, we developped with Matthieu Baron <strong>SnowPappus</strong> <a class="footnote-reference brackets" href="#f0" id="id1">1</a>, a distributed blowing snow model. :)</div>
 <div class="line">For blowing snow transport simulations, having a realistic wind is essential. In our simulations we used Louis’ DEVINE high resolution wind.</div>
 <div class="line">To proceed to our simulations we therefore had to hand-cook wind modified simulation forcings.</div>
 </div>
 <section id="typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos">
-<span id="simscratch"></span><h2>Typical workflow for a blowing snow experiment from scratch on Belenos :<a class="headerlink" href="#typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos" title="Link to this heading">¶</a></h2>
+<span id="simscratch"></span><h2>Typical workflow for a blowing snow experiment from scratch on Belenos :<a class="headerlink" href="#typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p><a class="reference internal" href="#geom"><span class="std std-ref">S2M Geometry creation</span></a></p></li>
 <li><p><a class="reference internal" href="#spinup"><span class="std std-ref">Spinup creation</span></a> (PREP + PGD + raw forcings (SAFRAN))</p></li>
@@ -77,7 +79,7 @@
 <p>Do not forget to clean the vortex cache before launching simulation with modified forcings to <strong>override the previous cached forcing files</strong>.</p>
 </div>
 <section id="s2m-geometry-creation-from-scratch">
-<span id="geom"></span><h3>1. S2M geometry creation from scratch:<a class="headerlink" href="#s2m-geometry-creation-from-scratch" title="Link to this heading">¶</a></h3>
+<span id="geom"></span><h3>1. S2M geometry creation from scratch:<a class="headerlink" href="#s2m-geometry-creation-from-scratch" title="Permalink to this headline">¶</a></h3>
 <p>To generate a simulation geometry from scratch, the first step is to determine the simulation area.
 I suggest to use the following workflow:</p>
 <ol class="arabic">
@@ -115,7 +117,7 @@ NROWS= 129
 </ol>
 </section>
 <section id="spinup-creation-on-belenos">
-<span id="spinup"></span><h3>2. Spinup creation on BELENOS<a class="headerlink" href="#spinup-creation-on-belenos" title="Link to this heading">¶</a></h3>
+<span id="spinup"></span><h3>2. Spinup creation on BELENOS<a class="headerlink" href="#spinup-creation-on-belenos" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
 <li><p>Name and add the new geometry info in the <code class="file docutils literal notranslate"><span class="pre">~/.vortexrc/geometries.ini</span></code> file on BELENOS server:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">eaudolle250</span><span class="p">]</span>
@@ -146,18 +148,17 @@ NROWS= 129
 </section>
 </section>
 <section id="louis-devine-wind">
-<h2>Louis’ DEVINE wind<a class="headerlink" href="#louis-devine-wind" title="Link to this heading">¶</a></h2>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png"><img alt="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" src="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" style="width: 600px;" />
-</a>
-<p>Louis Le Toumelin developped a machine learning method to downscale the wind speed and direction for AROME coarse simulation model named <strong>DEVINE</strong>. <a class="footnote-reference brackets" href="#f1" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#f2" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
+<h2>Louis’ DEVINE wind<a class="headerlink" href="#louis-devine-wind" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png"><img alt="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" src="https://raw.githubusercontent.com/louisletoumelin/wind_downscaling_cnn/master/images/SchemeDevine.png" style="width: 600px;" /></a>
+<p>Louis Le Toumelin developped a machine learning method to downscale the wind speed and direction for AROME coarse simulation model named <strong>DEVINE</strong>. <a class="footnote-reference brackets" href="#f1" id="id2">2</a> <a class="footnote-reference brackets" href="#f2" id="id3">3</a>
 If the simulation forcings and the wind are on the same grid (30m) the Wind and Wind_DIR forcing fields can be replaced in files transparently.
 If the two grid are different, the two wind fields (Wind and Wind_DIR) need to be resample to the simulation grid.</p>
 <section id="louis-wind-resampling">
-<span id="louis"></span><h3>3.1 Louis’ wind resampling<a class="headerlink" href="#louis-wind-resampling" title="Link to this heading">¶</a></h3>
+<span id="louis"></span><h3>3.1 Louis’ wind resampling<a class="headerlink" href="#louis-wind-resampling" title="Permalink to this headline">¶</a></h3>
 <p>This regridding workflow is based on the folowing functions defined by Louis in is <a class="reference external" href="https://github.com/louisletoumelin/bias_correction">github repo</a> &lt;3:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># source : https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L37</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">wind2comp</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;radian&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">wind2comp</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;radian&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts wind speed and direction from polar coordinates to rectangular components (u, v).</span>
 
 <span class="sd">    Args:</span>
@@ -183,8 +184,8 @@ If the two grid are different, the two wind fields (Wind and Wind_DIR) need to b
 
 
 <span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L48</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">comp2dir</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">comp2dir</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates wind direction from rectangular components (u, v).</span>
 
 <span class="sd">    Args:</span>
@@ -216,8 +217,8 @@ If the two grid are different, the two wind fields (Wind and Wind_DIR) need to b
 
 
 <span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L4</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">comp2speed</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">comp2speed</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates wind speed from rectangular components (u, v) or (u, v, w).</span>
 
 <span class="sd">    Args:</span>
@@ -250,7 +251,7 @@ At the moment of the writing of this file, the high resolution wind database was
 but it is best to ask Hugo or Isabelle for the file.</p>
 </div>
 <section id="the-regridding-unfolds-in-tree-steps">
-<h4>The regridding unfolds in tree steps :<a class="headerlink" href="#the-regridding-unfolds-in-tree-steps" title="Link to this heading">¶</a></h4>
+<h4>The regridding unfolds in tree steps :<a class="headerlink" href="#the-regridding-unfolds-in-tree-steps" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><p>Convert Louis’ wind speed and direction to rectangular components (u,v) (<em>wind2comp</em>)</p></li>
 <li><p>Regrid the rectangular components (u,v) to the desired grid (<em>rio.reproject_match</em>)</p></li>
@@ -263,7 +264,7 @@ but it is best to ask Hugo or Isabelle for the file.</p>
 Please note that the path need to be changed. The regridding uses <em>rioxarray</em> library to average wind to the simulation grid <strong>(bilinear method is not recommended for resampling to coarser grid)</strong>.
 In this example, files are saved at each steps, the amount of intermediate files can be reduced for same results.</p>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rioxarray</span>
 <span class="c1"># Load Louis&#39; wind data from Netcdf storage (sdir)</span>
 <span class="n">spd</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_wind.nc/&#39;</span><span class="p">)</span>
 <span class="c1"># Assuming &#39;spd&#39; contains wind data with a variable named &#39;Wind&#39; and &#39;Wind_DIR&#39;</span>
@@ -277,7 +278,7 @@ In this example, files are saved at each steps, the amount of intermediate files
 <span class="n">v</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_v.nc&#39;</span><span class="p">)</span>
 
 <span class="c1"># Import rioxarray library for geospatial data handling</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>
+<span class="kn">import</span> <span class="nn">rioxarray</span>
 
 <span class="c1"># Reload the u and v components from netcdf storage</span>
 <span class="n">u</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_u.nc/&#39;</span><span class="p">)</span>
@@ -329,7 +330,7 @@ In this example, files are saved at each steps, the amount of intermediate files
 </section>
 </section>
 <section id="forcing-modification">
-<span id="fmod"></span><h3>3.2 Forcing modification<a class="headerlink" href="#forcing-modification" title="Link to this heading">¶</a></h3>
+<span id="fmod"></span><h3>3.2 Forcing modification<a class="headerlink" href="#forcing-modification" title="Permalink to this headline">¶</a></h3>
 <p>You can find bellow an example to replace Wind and Wind_DIR forcing fields in forcings.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -339,13 +340,13 @@ Please note that the path need to be changed.</p>
 </div>
 <p>Imports:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import libraries for working with xarray data (xr)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
 <span class="c1"># Import NumPy for numerical operations</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># Import garbage collector (gc)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">gc</span>
 <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>  <span class="c1"># Collect garbage before starting further processing</span>
 </pre></div>
 </div>
@@ -472,20 +473,17 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
 </pre></div>
 </div>
 <p class="rubric">Footnotes</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="f0" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="https://doi.org/10.5194/gmd-17-1297-2024">https://doi.org/10.5194/gmd-17-1297-2024</a></p>
-</aside>
-<aside class="footnote brackets" id="f1" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="https://doi.org/10.5194/npg-31-75-2024">https://doi.org/10.5194/npg-31-75-2024</a></p>
-</aside>
-<aside class="footnote brackets" id="f2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="https://doi.org/10.1175/AIES-D-22-0034.1">https://doi.org/10.1175/AIES-D-22-0034.1</a></p>
-</aside>
-</aside>
+<dl class="footnote brackets">
+<dt class="label" id="f0"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://doi.org/10.5194/gmd-17-1297-2024">https://doi.org/10.5194/gmd-17-1297-2024</a></p>
+</dd>
+<dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p><a class="reference external" href="https://doi.org/10.5194/npg-31-75-2024">https://doi.org/10.5194/npg-31-75-2024</a></p>
+</dd>
+<dt class="label" id="f2"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p><a class="reference external" href="https://doi.org/10.1175/AIES-D-22-0034.1">https://doi.org/10.1175/AIES-D-22-0034.1</a></p>
+</dd>
+</dl>
 </section>
 </section>
 </section>
@@ -495,11 +493,10 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Blowing snow simulation preparation</a><ul>
 <li><a class="reference internal" href="#typical-workflow-for-a-blowing-snow-experiment-from-scratch-on-belenos">Typical workflow for a blowing snow experiment from scratch on Belenos :</a><ul>
 <li><a class="reference internal" href="#s2m-geometry-creation-from-scratch">1. S2M geometry creation from scratch:</a></li>
@@ -518,17 +515,12 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="these_ange_index.html"
-                          title="previous chapter">Documentations from Ange’s PhD (Blowing snow)</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Pleiades.html"
-                          title="next chapter">Pleiades observation</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="these_ange_index.html"
+                        title="previous chapter">Documentations from Ange’s PhD (Blowing snow)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Pleiades.html"
+                        title="next chapter">Pleiades observation</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -536,7 +528,7 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -544,13 +536,13 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -574,8 +566,8 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

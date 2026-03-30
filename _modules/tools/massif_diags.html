@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.massif_diags &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,14 +48,12 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
 
 
-<div class="viewcode-block" id="massif_simu">
-<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">massif_simu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class overriding prosimu to add massif-scale diagnostics&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="massif_simu"><a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu">[docs]</a><span class="k">class</span> <span class="nc">massif_simu</span><span class="p">(</span><span class="n">prosimu</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class overriding prosimu to add massif-scale diagnostics&quot;&quot;&quot;</span>
     <span class="n">SurfexNatRiskName</span> <span class="o">=</span> <span class="s1">&#39;NAT_LEV&#39;</span>
     <span class="n">MassifRiskName</span> <span class="o">=</span> <span class="s1">&#39;naturalIndex&#39;</span>
     <span class="n">massif_dim_name</span> <span class="o">=</span> <span class="s1">&#39;massif&#39;</span>
@@ -62,10 +62,8 @@
     <span class="n">elevation_var_name</span> <span class="o">=</span> <span class="s1">&#39;ZS&#39;</span>
     <span class="n">slope_var_name</span> <span class="o">=</span> <span class="s1">&#39;slope&#39;</span>
 
-<div class="viewcode-block" id="massif_simu.massif_natural_risk">
-<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.massif_natural_risk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">massif_natural_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute massif-scale natural hazard index and add it to the file&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="massif_simu.massif_natural_risk"><a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.massif_natural_risk">[docs]</a>    <span class="k">def</span> <span class="nf">massif_natural_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute massif-scale natural hazard index and add it to the file&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SurfexNatRiskName</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">massif_var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listvar</span><span class="p">():</span>
             <span class="k">return</span>
 
@@ -120,11 +118,8 @@
 
         <span class="n">var</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">risk_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="massif_simu.warnings">
-<a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.warnings">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minaltitude</span><span class="p">,</span> <span class="n">maxaltitude</span><span class="p">,</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if all elevations and aspects are present in the computation of massif-scale natural hazard index</span>
+<div class="viewcode-block" id="massif_simu.warnings"><a class="viewcode-back" href="../../code/tools.html#tools.massif_diags.massif_simu.warnings">[docs]</a>    <span class="k">def</span> <span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minaltitude</span><span class="p">,</span> <span class="n">maxaltitude</span><span class="p">,</span> <span class="n">minlevel</span><span class="p">,</span> <span class="n">maxlevel</span><span class="p">,</span> <span class="n">naspects</span><span class="p">,</span> <span class="n">list_aspects</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if all elevations and aspects are present in the computation of massif-scale natural hazard index</span>
 
 <span class="sd">        :param minaltitude: Minimum elevation present in the PRO file</span>
 <span class="sd">        :type minaltitude: float</span>
@@ -151,18 +146,16 @@
 
         <span class="k">if</span> <span class="n">naspects</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: the massif-scale natural avalanche hazard index is not computed with 8 aspect classes&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available aspects: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_aspects</span><span class="p">))</span></div>
-</div>
-
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available aspects: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_aspects</span><span class="p">))</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -170,13 +163,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -194,8 +187,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Extract and post-processing observations &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SnowMIP runs and post-processing" href="scripts-snowmip.html" />
     <link rel="prev" title="Get simulation files through vortex" href="scripts-extract-vortex.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,15 +49,15 @@
           <div class="body" role="main">
             
   <section id="extract-and-post-processing-observations">
-<h1>Extract and post-processing observations<a class="headerlink" href="#extract-and-post-processing-observations" title="Link to this heading">¶</a></h1>
+<h1>Extract and post-processing observations<a class="headerlink" href="#extract-and-post-processing-observations" title="Permalink to this headline">¶</a></h1>
 <section id="python-class-for-accessing-bdclim-data">
-<h2>Python class for accessing BDClim data<a class="headerlink" href="#python-class-for-accessing-bdclim-data" title="Link to this heading">¶</a></h2>
+<h2>Python class for accessing BDClim data<a class="headerlink" href="#python-class-for-accessing-bdclim-data" title="Permalink to this headline">¶</a></h2>
 <p>A python class is described below for generating sql queries to bdclim. If you are familiar with SQL, it may also be interesting to use directly the <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code> python module as Meteo-France database are managed through PostgreSQL.</p>
 <p>Please read the documentation of BDClim on <a class="reference external" href="http://tipige.meteo.fr/Climsol/">http://tipige.meteo.fr/Climsol/</a></p>
 <p>For additional examples of extractions on BDClim, please have a look to <a class="reference internal" href="#existing-scripts-for-querying-on-bdclim">Existing scripts for querying on BDClim</a> that may provide useful examples. Note that they may be easily adjusted if they does not immediately match your needs, have a look to their code !</p>
-<dl class="py class" id="module-scripts.extract.obs.bdquery">
+<span class="target" id="module-scripts.extract.obs.bdquery"></span><dl class="py class">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.extract.obs.bdquery.</span></span><span class="sig-name descname"><span class="pre">question</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bdclimop-usr.meteo.fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5432</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'anonymous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'anonymous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bdclim'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listconditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listjoin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iso'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.extract.obs.bdquery.</span></span><span class="sig-name descname"><span class="pre">question</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bdclimop-usr.meteo.fr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5432</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'anonymous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'anonymous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bdclim'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listconditions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listjoin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iso'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for interrogating PostgreSQL database</p>
 <p>Useful for accessing BDClim at Meteo-France. Please consider using directly
@@ -84,18 +86,18 @@ and 38567002 (Chamrousse) for the season 2020-2021 and save it to a file:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>host</strong> (<em>str</em>) – Database server hostname</p></li>
 <li><p><strong>port</strong> (<em>int</em>) – Database server port</p></li>
 <li><p><strong>user</strong> (<em>str</em>) – Database username</p></li>
 <li><p><strong>password</strong> (<em>str</em>) – Database password</p></li>
 <li><p><strong>database</strong> (<em>str</em>) – Database name to use on the server</p></li>
-<li><p><strong>listvar</strong> (<em>list</em><em> of </em><em>str</em>) – List of variables to read</p></li>
-<li><p><strong>listorder</strong> (<em>list</em><em> of </em><em>str</em>) – List of variables to order on</p></li>
-<li><p><strong>listconditions</strong> (<em>list</em><em> of </em><em>str</em>) – List of conditions to apply for data selection (SQL format)</p></li>
+<li><p><strong>listvar</strong> (<em>list of str</em>) – List of variables to read</p></li>
+<li><p><strong>listorder</strong> (<em>list of str</em>) – List of variables to order on</p></li>
+<li><p><strong>listconditions</strong> (<em>list of str</em>) – List of conditions to apply for data selection (SQL format)</p></li>
 <li><p><strong>listjoin</strong> – List of join to be done (SQL format without ‘JOIN’)</p></li>
-<li><p><strong>period</strong> (<em>list</em><em> of </em><em>str</em><em> or </em><em>datetime</em>) – List [[Min date, [max_date]]] for filtering on dates
+<li><p><strong>period</strong> (<em>list of str</em><em> or </em><em>datetime</em>) – List [[Min date, [max_date]]] for filtering on dates
 (field dat, else, put it in conditions please)</p></li>
 <li><p><strong>table</strong> (<em>str</em>) – The table to read in the selected database</p></li>
 <li><p><strong>dateformat</strong> (<em>str</em>) – Date format (iso, daily or monthly)</p></li>
@@ -104,13 +106,13 @@ and 38567002 (Chamrousse) for the season 2020-2021 and save it to a file:</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.get" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">';'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the query to the database and return an array of results
 (or write the results in a csv file).</p>
 <p>Note that the sql query is written in <code class="docutils literal notranslate"><span class="pre">sql</span></code> attribute of the
 object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>outputfile</strong> (<em>str</em><em> or </em><em>path-like</em>) – Output csv file in which to write the results.
 If set to None, an array of results is returned</p></li>
@@ -121,7 +123,7 @@ default ones</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – Mode for opening outputfile</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>array of results (or nothing in case outputfile is set)</p>
 </dd>
 </dl>
@@ -129,36 +131,36 @@ default ones</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.run" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>For backward compatibility only. Please do not use.</p>
 <p>meta:private</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_condition">
-<span class="sig-name descname"><span class="pre">set_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_condition" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_condition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a condition, written as a SQL condition</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_join">
-<span class="sig-name descname"><span class="pre">set_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">join_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_join" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">join_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_join" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a join of table, written as a SQL JOIN.
 Example: <code class="docutils literal notranslate"><span class="pre">text</span> <span class="pre">ON</span> <span class="pre">text.id</span> <span class="pre">=</span> <span class="pre">id_text</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_order">
-<span class="sig-name descname"><span class="pre">set_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_order" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the list of sorting variables</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_period">
-<span class="sig-name descname"><span class="pre">set_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datedeb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_period" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datedeb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_period"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_period" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the period with begin and end date</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>datedeb</strong> (<em>str</em><em> or </em><em>datetime object</em>) – Begin date</p></li>
 <li><p><strong>datefin</strong> (<em>str</em><em> or </em><em>datetime object</em>) – End date</p></li>
@@ -169,13 +171,13 @@ Example: <code class="docutils literal notranslate"><span class="pre">text</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_table">
-<span class="sig-name descname"><span class="pre">set_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the table</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.obs.bdquery.question.set_varout">
-<span class="sig-name descname"><span class="pre">set_varout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_varout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_varout" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_varout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/obs/bdquery.html#question.set_varout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.obs.bdquery.question.set_varout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the list of desired output variables</p>
 </dd></dl>
 
@@ -183,7 +185,7 @@ Example: <code class="docutils literal notranslate"><span class="pre">text</span
 
 </section>
 <section id="existing-scripts-for-querying-on-bdclim">
-<h2>Existing scripts for querying on BDClim<a class="headerlink" href="#existing-scripts-for-querying-on-bdclim" title="Link to this heading">¶</a></h2>
+<h2>Existing scripts for querying on BDClim<a class="headerlink" href="#existing-scripts-for-querying-on-bdclim" title="Permalink to this headline">¶</a></h2>
 <p>An overview of existing scripts is proposed below. They all extract data based on parameters specifying time period (at least) and produces CSV file(s) as an output.</p>
 <p>Script <code class="docutils literal notranslate"><span class="pre">scripts/extract/obs/extract_obs.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: extract_obs.py [-h] [-o OUTPUT] date_min date_max
@@ -272,42 +274,23 @@ options:
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Extract and post-processing observations</a><ul>
-<li><a class="reference internal" href="#python-class-for-accessing-bdclim-data">Python class for accessing BDClim data</a><ul>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question"><code class="docutils literal notranslate"><span class="pre">question</span></code></a><ul>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.get"><code class="docutils literal notranslate"><span class="pre">question.get()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.run"><code class="docutils literal notranslate"><span class="pre">question.run()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_condition"><code class="docutils literal notranslate"><span class="pre">question.set_condition()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_join"><code class="docutils literal notranslate"><span class="pre">question.set_join()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_order"><code class="docutils literal notranslate"><span class="pre">question.set_order()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_period"><code class="docutils literal notranslate"><span class="pre">question.set_period()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_table"><code class="docutils literal notranslate"><span class="pre">question.set_table()</span></code></a></li>
-<li><a class="reference internal" href="#scripts.extract.obs.bdquery.question.set_varout"><code class="docutils literal notranslate"><span class="pre">question.set_varout()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#python-class-for-accessing-bdclim-data">Python class for accessing BDClim data</a></li>
 <li><a class="reference internal" href="#existing-scripts-for-querying-on-bdclim">Existing scripts for querying on BDClim</a></li>
 </ul>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="scripts-extract-vortex.html"
-                          title="previous chapter">Get simulation files through vortex</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="scripts-snowmip.html"
-                          title="next chapter">SnowMIP runs and post-processing</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="scripts-extract-vortex.html"
+                        title="previous chapter">Get simulation files through vortex</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="scripts-snowmip.html"
+                        title="next chapter">SnowMIP runs and post-processing</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -315,7 +298,7 @@ options:
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -323,13 +306,13 @@ options:
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -353,8 +336,8 @@ options:
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

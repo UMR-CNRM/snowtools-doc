@@ -16,27 +16,38 @@ Simple users at Meteo-France do not need to install SURFEX, but rather should po
 
 Note: If you need to work with more recent branch (``cen_dev`` for instance) or other compile options (``MPI``) have a look to available binaries in the previously pointed ``SURFEX`` folder where other compiled binaries are available.
 
+Requirements for users outside of Meteo-France
+----------------------------------------------
+
+For a first install, check the SURFEX requirements and the basics: http://www.cnrm.meteo.fr/surfex-lab/spip.php?article302
 
 Get the code
 ------------
 
+Rather than installing from an « export » archive, it is better to immediately get started from the most recent version of the git repository. Crocus users should in the general case install the ``cen`` branch. This is the most recent stable release of Crocus snowpack model which often includes new developments not already merged in the master SURFEX branch. Specific instructions on how to use git for SURFEX are provided in : http://www.umr-cnrm.fr/surfex/spip.php?article415
 
-If you will develop in SURFEX_CEN, you must clone with SSH. First create a SSH key and associate it to your github account : follow the corresponding section of the `github documentation <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key>`_). Then you can get the code with :
+Access the code by registering on this website (top right of the window): https://opensource.umr-cnrm.fr/. Please always fill in the "comments" field asking for an access to SURFEX project. If you have never been in contact with the Crocus team before your request, please explain briefly your interest in this model. Once you have received a confirmation of your account creation, you will have to send a public ssh key to operator at meteo dot fr. This ssh key have to be created with ``ssh-keygen -t rsa``. If you are not familiar with SSH keys, let the default key name (id_rsa), and do not provide any passphrase. The public key is available under ~/.ssh/id_rsa.pub.
+
+For users which need scientific advices about the relevance of using Crocus for their application, please contact crocus at meteo.fr
+
+.. warning::
+   Caution: the directory where you are going to install SURFEX and all parent directories MUST NOT contain dots (.) in their names.
+
+If you plan to launch simulation only (ie not for developer), download the cen branch with the folowwing command:
 
 .. code-block:: bash
 
-   git clone git@github.com:UMR-CNRM/SURFEX_CEN.git
+   git clone -b cen ssh://reader097@git.umr-cnrm.fr/git/Surfex_Git2.git
+   
+If you are a developer, you may prefer download the cen_dev branch with the folowwing command:
 
-If you are a simple user (outside of Meteo-France where pre-compiled binaries are available) you can get the code by running ``git clone https://github.com/UMR-CNRM/SURFEX_CEN.git``.
+.. code-block:: bash
 
+   git clone -b cen_dev ssh://admin097@git.umr-cnrm.fr/git/Surfex_Git2.git
 
-You will need some additional packages that are provided by the SURFEX project. for the moment, these packages are not publicly available.
+If a password is requested, it means that your ssh keys have not been registered, please contact ``operator at meteo dot fr``
 
-- At Meteo-France/CEN, these files can be copied from ``/rd/cenfic3/cenmod/home/common/SURFEX_LIB``. Copy all the content of this folder into ``src/LIB`` folder of the cloned repository.
-- If you are not at CEN, please ask your contact person to transfer these libraries to you and then copy the files into the ``src/LIB`` directory.
-
-
-Please read the infos for developper: https://umr-cnrm.github.io/snowtools-doc/misc/surfex-dev.html
+This will download a number of folder and files. The SURFEX sources are in the src directory.
 
 Compile the code
 ----------------
@@ -88,7 +99,12 @@ You first need to load the compilers :
 The next step of the configuration depends on your application:
 
 * For MPI parallel applications (big domains, deterministic application) : let ``VER_MPI`` and ``VER_CDF`` options to default.
-* For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables: ``export VER_MPI=NOMPI`` and ``export VER_CDF=CDF2020``.
+* For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables:
+
+.. code-block:: bash
+
+    export VER_MPI=NOMPI
+    export VER_CDF=CDF2020
 
 You will also need to install :ref:`install-vortex`.
 
@@ -123,7 +139,7 @@ Then, execute the profile file for this master version of surfex:
    source ../conf/profile_surfex-LXgfortran-SFX-V8-1-1-NOMPI-OMP-O2-X0
 
 
-(or equivalent name depending on compiler, SURFEX version and compilation options, the exact name is provided at the end of the ``configure`` execution)
+(or equivalent name depending on compiler, SURFEX version and compilation options)
 
 Compilation
 ^^^^^^^^^^^
@@ -172,3 +188,5 @@ If you correctly installed the snowtools and SURFEX projects, you must be able t
 .. code-block:: bash
 
    s2m research -f $SNOWTOOLS_CEN/snowtools/DATA/FORCING_test_base.nc -b 20100801 -e 20110801 -o output -g -s ...yoursurfexdirectory.../exe
+
+

@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Sun and radiations &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Writing simulation output files" href="utils-s2mstandardfile.html" />
     <link rel="prev" title="Snowtools Exceptions" href="utils-exceptions.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,21 +49,21 @@
           <div class="body" role="main">
             
   <section id="module-utils.sun">
-<span id="sun-and-radiations"></span><h1>Sun and radiations<a class="headerlink" href="#module-utils.sun" title="Link to this heading">¶</a></h1>
+<span id="sun-and-radiations"></span><h1>Sun and radiations<a class="headerlink" href="#module-utils.sun" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.sun.sun">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.sun.</span></span><span class="sig-name descname"><span class="pre">sun</span></span><a class="reference internal" href="../_modules/utils/sun.html#sun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.sun.</span></span><span class="sig-name descname"><span class="pre">sun</span></span><a class="reference internal" href="../_modules/utils/sun.html#sun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class for computation around sun and radiations</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.sun.sun.coszenith">
-<span class="sig-name descname"><span class="pre">coszenith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tab_time_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.coszenith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.coszenith" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">coszenith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tab_time_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.coszenith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.coszenith" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cosinus of solar zenith angle
 (detailed explaination in function slope_aspect_correction)</p>
 <p>Take a certain amount of times (Nt) and points (Np described by lat, lon, slope, aspect)
 and return for each time and point the cosinus of zenith angle of sun (shape Nt, Np).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tab_time_date</strong> – time values, numpy array of size Nt of python datetime.datetime elements
 (or other type with timetuple function available)</p></li>
@@ -71,10 +73,10 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
 <li><p><strong>aspect</strong> – aspect (degrees), numpy array (floats), length Np</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Cosinus of zenith angle</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>numpy array of shape (Nt, Np)</p>
 </dd>
 </dl>
@@ -82,10 +84,10 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.sun.sun.directdiffus">
-<span class="sig-name descname"><span class="pre">directdiffus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SWglo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.directdiffus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.directdiffus" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">directdiffus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SWglo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.directdiffus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.directdiffus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Separation of direct and diffuse  short wave radiations</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>SWglo</strong> – global short wave</p></li>
 <li><p><strong>time</strong> – time</p></li>
@@ -96,7 +98,7 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
 <li><p><strong>site</strong> – The site code for clear sky decomposition. Must be one of wfj, snb, swa, sap, sod, rme, oas, obs, ojp or cdp)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>direct short wave, diffuse short wave</p>
 </dd>
 </dl>
@@ -104,10 +106,10 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.sun.sun.slope_aspect_correction">
-<span class="sig-name descname"><span class="pre">slope_aspect_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_list_azim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_list_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lnosof_surfex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.slope_aspect_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.slope_aspect_correction" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">slope_aspect_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_list_azim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_list_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lnosof_surfex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/sun.html#sun.slope_aspect_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.sun.sun.slope_aspect_correction" title="Permalink to this definition">¶</a></dt>
 <dd><p>This routine corrects the direct solar radiation because of explicit slope or surrounding masks</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>direct</strong> – array of direct solar radiation over an infinite flat surface (time,loc) or (time,x,y)</p></li>
 <li><p><strong>time</strong> – time vector</p></li>
@@ -122,7 +124,7 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
 <li><p><strong>return_angles</strong> (<em>bool</em>) – if True, also return the sun angle</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>corrected direct solar radiation and optionally, the angular positions of sun</p>
 </dd>
 </dl>
@@ -137,33 +139,14 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
-<li><a class="reference internal" href="#">Sun and radiations</a><ul>
-<li><a class="reference internal" href="#utils.sun.sun"><code class="docutils literal notranslate"><span class="pre">sun</span></code></a><ul>
-<li><a class="reference internal" href="#utils.sun.sun.coszenith"><code class="docutils literal notranslate"><span class="pre">sun.coszenith()</span></code></a></li>
-<li><a class="reference internal" href="#utils.sun.sun.directdiffus"><code class="docutils literal notranslate"><span class="pre">sun.directdiffus()</span></code></a></li>
-<li><a class="reference internal" href="#utils.sun.sun.slope_aspect_correction"><code class="docutils literal notranslate"><span class="pre">sun.slope_aspect_correction()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="utils-exceptions.html"
-                          title="previous chapter">Snowtools Exceptions</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="utils-s2mstandardfile.html"
-                          title="next chapter">Writing simulation output files</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="utils-exceptions.html"
+                        title="previous chapter">Snowtools Exceptions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils-s2mstandardfile.html"
+                        title="next chapter">Writing simulation output files</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -171,7 +154,7 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -179,13 +162,13 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -209,8 +192,8 @@ and return for each time and point the cosinus of zenith angle of sun (shape Nt,
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

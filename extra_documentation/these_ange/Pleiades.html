@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Pleiades observation &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Theia Snow observations" href="Sentinel_2.html" />
     <link rel="prev" title="Blowing snow simulation preparation" href="Forcing_modification.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,11 +49,11 @@
           <div class="body" role="main">
             
   <section id="pleiades-observation">
-<h1>Pleiades observation<a class="headerlink" href="#pleiades-observation" title="Link to this heading">¶</a></h1>
-<p>Pleiades observations are high resolution snow depth images retrived using stereo-imagery method of a single scene. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#f2" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
+<h1>Pleiades observation<a class="headerlink" href="#pleiades-observation" title="Permalink to this headline">¶</a></h1>
+<p>Pleiades observations are high resolution snow depth images retrived using stereo-imagery method of a single scene. <a class="footnote-reference brackets" href="#f1" id="id1">1</a> <a class="footnote-reference brackets" href="#f2" id="id2">2</a></p>
 <p>Those images are provided by César Deschamps-Berger et Simon Gascoin and need a little bit of processing before being used.</p>
 <section id="building-the-pleiades-reference">
-<h2>Building the Pleiades reference<a class="headerlink" href="#building-the-pleiades-reference" title="Link to this heading">¶</a></h2>
+<h2>Building the Pleiades reference<a class="headerlink" href="#building-the-pleiades-reference" title="Permalink to this headline">¶</a></h2>
 <p>This section present an example to pre-process Pleiades images from files provided by César ou Simulations.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -62,14 +64,14 @@
 <li><p>forests masks (<em>classif_Glb_foret</em>) =&gt; gives forest pixels</p></li>
 </ol>
 <p>Filters must be applied to obtain heights on snow only.
-In addition, unrealistic snow heights are filtered out [-0.5 , 20m] (cf mail and cesar paper <a class="footnote-reference brackets" href="#f2" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
+In addition, unrealistic snow heights are filtered out [-0.5 , 20m] (cf mail and cesar paper <a class="footnote-reference brackets" href="#f2" id="id3">2</a>)</p>
 <p>Path must be changed</p>
 </div>
 <p>This  example is based on the files of the 3 2018 Lautaret images (Janv 2018, March 2018, June 2018):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">hvplot.xarray</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">rioxarray</span>
+<span class="kn">import</span> <span class="nn">hvplot.xarray</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">classif1801</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/home/cnrm_other/cen/mrns/haddjeria/Lautaret_Pleiades_2018_4ange/20180123_classif_r-r.tif&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">band</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">band_data</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="s1">&#39;2MB&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;band&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;spatial_ref&#39;</span><span class="p">)</span>
 <span class="n">dh1801</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/home/cnrm_other/cen/mrns/haddjeria/Lautaret_Pleiades_2018_4ange/dH_20180123_minus_20160928-r.tif&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">band</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">band_data</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="s1">&#39;2MB&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;band&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;spatial_ref&#39;</span><span class="p">)</span>
@@ -102,7 +104,7 @@ In addition, unrealistic snow heights are filtered out [-0.5 , 20m] (cf mail and
 <span class="n">combi1806</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">foret1806</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">combi1806</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Filtering extreme values [-0.5 , 20m] <a class="footnote-reference brackets" href="#f2" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and saving:</p>
+<p>Filtering extreme values [-0.5 , 20m] <a class="footnote-reference brackets" href="#f2" id="id4">2</a> and saving:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f1801</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">combi1801</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">,</span><span class="n">combi1801</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 <span class="n">combi1801filtred</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">f1801</span><span class="o">&gt;-</span><span class="mf">.5</span><span class="p">,</span><span class="n">f1801</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 <span class="n">f1803</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">combi1803</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">,</span><span class="n">combi1803</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
@@ -117,7 +119,7 @@ In addition, unrealistic snow heights are filtered out [-0.5 , 20m] (cf mail and
 </div>
 </section>
 <section id="resampling-pleiades-reference-to-simulation-grid">
-<h2>Resampling Pleiades reference to simulation grid<a class="headerlink" href="#resampling-pleiades-reference-to-simulation-grid" title="Link to this heading">¶</a></h2>
+<h2>Resampling Pleiades reference to simulation grid<a class="headerlink" href="#resampling-pleiades-reference-to-simulation-grid" title="Permalink to this headline">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This is the critical part to use Pleiades images as simulation references.
@@ -154,17 +156,14 @@ The algo is slow, not optimised and work as followed:</p>
 </pre></div>
 </div>
 <p class="rubric">Footnotes</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="f1" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="https://doi.org/10.5194/tc-10-1361-2016">https://doi.org/10.5194/tc-10-1361-2016</a></p>
-</aside>
-<aside class="footnote brackets" id="f2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>)</span>
-<p><a class="reference external" href="https://doi.org/10.5194/tc-14-2925-2020">https://doi.org/10.5194/tc-14-2925-2020</a></p>
-</aside>
-</aside>
+<dl class="footnote brackets">
+<dt class="label" id="f1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p><a class="reference external" href="https://doi.org/10.5194/tc-10-1361-2016">https://doi.org/10.5194/tc-10-1361-2016</a></p>
+</dd>
+<dt class="label" id="f2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id3">2</a>,<a href="#id4">3</a>)</span></dt>
+<dd><p><a class="reference external" href="https://doi.org/10.5194/tc-14-2925-2020">https://doi.org/10.5194/tc-14-2925-2020</a></p>
+</dd>
+</dl>
 </section>
 </section>
 
@@ -173,11 +172,10 @@ The algo is slow, not optimised and work as followed:</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Pleiades observation</a><ul>
 <li><a class="reference internal" href="#building-the-pleiades-reference">Building the Pleiades reference</a></li>
 <li><a class="reference internal" href="#resampling-pleiades-reference-to-simulation-grid">Resampling Pleiades reference to simulation grid</a></li>
@@ -185,17 +183,12 @@ The algo is slow, not optimised and work as followed:</p>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="Forcing_modification.html"
-                          title="previous chapter">Blowing snow simulation preparation</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="Sentinel_2.html"
-                          title="next chapter">Theia Snow observations</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Forcing_modification.html"
+                        title="previous chapter">Blowing snow simulation preparation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Sentinel_2.html"
+                        title="next chapter">Theia Snow observations</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -203,7 +196,7 @@ The algo is slow, not optimised and work as followed:</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -211,13 +204,13 @@ The algo is slow, not optimised and work as followed:</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -241,8 +234,8 @@ The algo is slow, not optimised and work as followed:</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

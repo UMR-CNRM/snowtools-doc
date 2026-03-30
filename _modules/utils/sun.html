@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.sun &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -40,16 +42,16 @@
   <h1>Source code for utils.sun</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_used_memory</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">print_used_memory</span>
 
 <span class="c1"># L. Roussel dec. 2024 : modification start slope_aspect_correction when extracting dates</span>
 <span class="c1">#                        + write comprehensive commented code</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the linear interpolation of y for the tab values of the x coordinate</span>
 <span class="sd">    Method designed to avoid the use of scipy.interpolate (avoid the dependency to an external module and environment problems on Bull)</span>
 
@@ -67,22 +69,18 @@
     <span class="k">return</span> <span class="p">((</span><span class="n">x_after</span> <span class="o">-</span> <span class="n">tab</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_before</span> <span class="o">+</span> <span class="p">(</span><span class="n">tab</span> <span class="o">-</span> <span class="n">x_before</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_after</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">x_after</span> <span class="o">-</span> <span class="n">x_before</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="sun">
-<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">sun</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="sun"><a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun">[docs]</a><span class="k">class</span> <span class="nc">sun</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for computation around sun and radiations</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">printmemory</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">missingvalue</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9999999.</span>
 
-<div class="viewcode-block" id="sun.slope_aspect_correction">
-<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.slope_aspect_correction">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">slope_aspect_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direct</span><span class="p">,</span> <span class="n">diffus</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat_in</span><span class="p">,</span> <span class="n">lon_in</span><span class="p">,</span> <span class="n">aspect_in</span><span class="p">,</span> <span class="n">slope_in</span><span class="p">,</span> <span class="n">list_list_azim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_list_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lnosof_surfex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_time</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">return_angles</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="sun.slope_aspect_correction"><a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.slope_aspect_correction">[docs]</a>    <span class="k">def</span> <span class="nf">slope_aspect_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direct</span><span class="p">,</span> <span class="n">diffus</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat_in</span><span class="p">,</span> <span class="n">lon_in</span><span class="p">,</span> <span class="n">aspect_in</span><span class="p">,</span> <span class="n">slope_in</span><span class="p">,</span> <span class="n">list_list_azim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_list_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lnosof_surfex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_time</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">return_angles</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This routine corrects the direct solar radiation because of explicit slope or surrounding masks</span>
 
 <span class="sd">        :param direct: array of direct solar radiation over an infinite flat surface (time,loc) or (time,x,y)</span>
@@ -314,9 +312,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tab_direct</span><span class="p">,</span> <span class="n">tab_diffus</span></div>
 
-
     <span class="c1"># The two following routines from JM Willemet should be rewritten without the loops</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">upscale_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">upscale_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
 
         <span class="c1"># array var can be considered at the same shape than the other arrays (simplify matricial traitment)</span>
         <span class="n">bigvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">missingvalue</span>
@@ -346,7 +343,7 @@
 
         <span class="k">return</span> <span class="n">bigvar</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">upscale_tab_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">upscale_tab_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">theshape</span><span class="p">):</span>
 
         <span class="c1"># array slope can be considered at the same shape than the other arrays (simplify matricial traitment)</span>
         <span class="n">bigvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">theshape</span><span class="p">)</span>
@@ -364,10 +361,8 @@
 
         <span class="k">return</span> <span class="n">bigvar</span>
 
-<div class="viewcode-block" id="sun.coszenith">
-<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.coszenith">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">coszenith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tab_time_date</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="sun.coszenith"><a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.coszenith">[docs]</a>    <span class="k">def</span> <span class="nf">coszenith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tab_time_date</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cosinus of solar zenith angle</span>
 <span class="sd">        (detailed explaination in function slope_aspect_correction)</span>
 
@@ -427,11 +422,8 @@
 
         <span class="k">return</span> <span class="n">sin_gamma</span></div>
 
-
-<div class="viewcode-block" id="sun.directdiffus">
-<a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.directdiffus">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">directdiffus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SWglo</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="sun.directdiffus"><a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.directdiffus">[docs]</a>    <span class="k">def</span> <span class="nf">directdiffus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SWglo</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Separation of direct and diffuse  short wave radiations</span>
 
 <span class="sd">        :param SWglo: global short wave</span>
@@ -507,18 +499,16 @@
     <span class="c1">#   for hour in range(1, 24):</span>
     <span class="c1">#       print hour, coszenith[ndays * 24 + hour - 1], ratio[ndays * 24 + hour - 1], SWdir[ndays * 24 + hour - 1], SWdif[ndays * 24 + hour - 1], SWglo[ndays * 24 + hour - 1]</span>
 
-        <span class="k">return</span> <span class="n">SWdir</span><span class="p">,</span> <span class="n">SWdif</span></div>
-</div>
-
+        <span class="k">return</span> <span class="n">SWdir</span><span class="p">,</span> <span class="n">SWdif</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -526,13 +516,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -550,8 +540,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

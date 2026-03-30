@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.git &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -55,9 +57,9 @@
 <span class="sd">    Léo Viallon-Galinier</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;snowtools.gitutils&#39;</span><span class="p">)</span>
 
@@ -72,23 +74,23 @@
 <span class="n">COMMAND_TAG</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--tags&#39;</span><span class="p">,</span> <span class="s1">&#39;--abbrev=0&#39;</span><span class="p">]</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">_ChdirException</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">_ChdirException</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when changing directory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">_chdir</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">_chdir</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change directory with a correct management of errors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">oldpwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chdir</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">try</span><span class="p">:</span>
@@ -97,17 +99,15 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">NotADirectoryError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Incorrect path: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="k">raise</span> <span class="n">_ChdirException</span><span class="p">(</span><span class="s1">&#39;Could not change directory to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">raise</span> <span class="n">_ChdirException</span><span class="p">(</span><span class="s1">&#39;Could not change directory to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_type</span><span class="p">,</span> <span class="n">e_value</span><span class="p">,</span> <span class="n">e_traceback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_type</span><span class="p">,</span> <span class="n">e_value</span><span class="p">,</span> <span class="n">e_traceback</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chdir</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">oldpwd</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="current_git_repo">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.current_git_repo">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">current_git_repo</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="current_git_repo"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.current_git_repo">[docs]</a><span class="k">def</span> <span class="nf">current_git_repo</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the git repo path if we are in a git repo</span>
 <span class="sd">    else return None</span>
 
@@ -137,11 +137,8 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-
-<div class="viewcode-block" id="git_infos">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">git_infos</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos">[docs]</a><span class="k">class</span> <span class="nc">git_infos</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get git informations and put it in a dictionary</span>
 <span class="sd">    ``self.dict``.</span>
 
@@ -239,7 +236,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">current_git_repo</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -248,10 +245,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s1">&#39;last_tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_tag</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="s1">&#39;clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_clean</span><span class="p">()</span>
 
-<div class="viewcode-block" id="git_infos.parse_commit_infos">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.parse_commit_infos">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse_commit_infos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos.parse_commit_infos"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.parse_commit_infos">[docs]</a>    <span class="k">def</span> <span class="nf">parse_commit_infos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse commit information, executing ``git log -1``</span>
 <span class="sd">        and fill the dict containing all git informations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -272,9 +267,8 @@
         <span class="k">except</span> <span class="n">_ChdirException</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not reach target directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_extract_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse branch_raw key and return main branch name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;branch_raw&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
@@ -287,10 +281,8 @@
                     <span class="k">return</span> <span class="n">sp</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="git_infos.is_clean">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.is_clean">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos.is_clean"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.is_clean">[docs]</a>    <span class="k">def</span> <span class="nf">is_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if there is modified files in the repo.</span>
 
 <span class="sd">        :returns: True if the repository is clean (no modified file), else False.</span>
@@ -317,11 +309,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not reach target directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-
-<div class="viewcode-block" id="git_infos.last_tag">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.last_tag">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">last_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos.last_tag"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.last_tag">[docs]</a>    <span class="k">def</span> <span class="nf">last_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the last available tag from current commit</span>
 
 <span class="sd">        :returns: The last available tag</span>
@@ -343,11 +332,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not reach target directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-
-<div class="viewcode-block" id="git_infos.pretty_str_commit">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.pretty_str_commit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pretty_str_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos.pretty_str_commit"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.pretty_str_commit">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a pretty one-line string to describe the commit</span>
 
 <span class="sd">        Example: ``c46bb7a088fc182950621f6849e64d2654987325 (master) by Matthieu Lafaysse on 2021-07-20 (from s2m_reanalysis_2020.2)``</span>
@@ -385,11 +371,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="git_infos.get_commit">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.get_commit">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="git_infos.get_commit"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.git_infos.get_commit">[docs]</a>    <span class="k">def</span> <span class="nf">get_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the commit number if present, and a zero-length</span>
 <span class="sd">        string else (or default if specified).</span>
 
@@ -407,31 +390,27 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">r</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">r</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span></div>
 
 
-
-<div class="viewcode-block" id="get_summary_git">
-<a class="viewcode-back" href="../../code/utils-git.html#utils.git.get_summary_git">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_summary_git</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_summary_git"><a class="viewcode-back" href="../../code/utils-git.html#utils.git.get_summary_git">[docs]</a><span class="k">def</span> <span class="nf">get_summary_git</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a short string describing the state of git repository.</span>
 
 <span class="sd">    Try to use git command. If this fails, search for a .git_info file</span>
@@ -466,9 +445,8 @@
     <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
 
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+    <span class="kn">import</span> <span class="nn">argparse</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tool to read git informations easily (last commit)&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path for git repository. Default to current directory&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--summary&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Get a summary &quot;</span>
@@ -489,9 +467,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -499,13 +477,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -523,8 +501,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

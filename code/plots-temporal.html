@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Temporal plots &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plotting modelled snow stratigraphy" href="plots-strati.html" />
     <link rel="prev" title="Map plotting tools for gridded data" href="plots-maps-grid.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,33 +49,62 @@
           <div class="body" role="main">
             
   <section id="temporal-plots">
-<h1>Temporal plots<a class="headerlink" href="#temporal-plots" title="Link to this heading">¶</a></h1>
+<h1>Temporal plots<a class="headerlink" href="#temporal-plots" title="Permalink to this headline">¶</a></h1>
 <section id="deterministic-plots">
-<h2>Deterministic plots<a class="headerlink" href="#deterministic-plots" title="Link to this heading">¶</a></h2>
+<h2>Deterministic plots<a class="headerlink" href="#deterministic-plots" title="Permalink to this headline">¶</a></h2>
 <p>Base temporal plots are in the module <code class="docutils literal notranslate"><span class="pre">plots/temporal/chrono</span></code>.</p>
-<p id="module-plots.temporal.chrono">Created on 4 déc. 2018</p>
+<span class="target" id="module-plots.temporal.chrono"></span><p>Created on 4 déc. 2018</p>
 <p>This script contains classes allowing to make matplotlib graphs with an automatic formatting of the temporal axis in
 order to adapt to simulation temporal extent.</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="plots.temporal.chrono.prettyensemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">prettyensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#prettyensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.prettyensemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
+<p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plots.temporal.chrono.spaghettis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">spaghettis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#spaghettis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.spaghettis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
+<p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plots.temporal.chrono.spaghettis_with_det">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">spaghettis_with_det</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#spaghettis_with_det"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.spaghettis_with_det" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.spaghettis" title="plots.temporal.chrono.spaghettis"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.spaghettis</span></code></a></p>
+<p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="plots.temporal.chrono.temporalplot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot_abstract</span></code></p>
+<p>Class for timeseries plot</p>
+<p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplot2Axes">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplot2Axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplot2Axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplot2Axes" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">temporalplot</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplot2Axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplot2Axes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplot2Axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
 <p>Kept for bakward compatibility
 LM2B = Looks Broken to Me</p>
 <p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplot2Axes.addAx2">
-<span class="sig-name descname"><span class="pre">addAx2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labelAx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplot2Axes.addAx2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplot2Axes.addAx2" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">addAx2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labelAx2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplot2Axes.addAx2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplot2Axes.addAx2" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>labelAx2</strong> – str of label</p></li>
-<li><p><strong>color</strong></p></li>
-<li><p><strong>kw</strong></p></li>
+<li><p><strong>color</strong> – </p></li>
+<li><p><strong>kw</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -83,18 +114,18 @@ LM2B = Looks Broken to Me</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotObsMultipleSims">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotObsMultipleSims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsMultipleSims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsMultipleSims" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">temporalplot</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotObsMultipleSims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsMultipleSims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsMultipleSims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
 <p>Kept for bakward compatibility , please refer to temporalplotObsSim
 Similar to temporalplotObsSim but UGLIER</p>
 <p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotObsMultipleSims.draw">
-<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsMultipleSims.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsMultipleSims.draw" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsMultipleSims.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsMultipleSims.draw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method of temporalplotObsMultipleSims class. Used for generating comparative 1D plot with time formatting.
 Similar to temporalplotObsSim but UGLIER</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>timeObs</strong> – Array of Observation duration usually given by prosimu.readtime()</p></li>
 <li><p><strong>varObs</strong> – Array of Observation data usially given by prosimu.read()</p></li>
@@ -104,7 +135,7 @@ Similar to temporalplotObsSim but UGLIER</p>
 <li><p><strong>kwargs</strong> – optional ( matplotlib.pyplot key arguments )</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -114,12 +145,12 @@ Similar to temporalplotObsSim but UGLIER</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotObsSim">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotObsSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsSim" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">temporalplot</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotObsSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
 <p>Class for 1D variable temporal plot comparaison with observation</p>
 <p>Example :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.temporal.chrono</span><span class="w"> </span><span class="kn">import</span> <span class="n">temporalplotObsSim</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span> <span class="nn">snowtools.plots.temporal.chrono</span> <span class="kn">import</span> <span class="n">temporalplotObsSim</span>
 <span class="c1"># read data</span>
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
     <span class="n">sd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">)</span>
@@ -137,10 +168,10 @@ Similar to temporalplotObsSim but UGLIER</p>
 <p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotObsSim.draw">
-<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsSim.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsSim.draw" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varObs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotObsSim.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotObsSim.draw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method of temporalplotObsSim class. Used for generating comparative 1D plot with time formatting.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>timeObs</strong> – Array of Observation duration usually given by prosimu.readtime()</p></li>
 <li><p><strong>varObs</strong> – Array of Observation data usially given by prosimu.read()</p></li>
@@ -150,7 +181,7 @@ Similar to temporalplotObsSim but UGLIER</p>
 <li><p><strong>kwargs</strong> – optional ( matplotlib.pyplot key arguments )</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -160,12 +191,12 @@ Similar to temporalplotObsSim but UGLIER</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotSim">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotSim" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">temporalplot</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.chrono.</span></span><span class="sig-name descname"><span class="pre">temporalplotSim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotSim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotSim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#plots.temporal.chrono.temporalplot" title="plots.temporal.chrono.temporalplot"><code class="xref py py-class docutils literal notranslate"><span class="pre">plots.temporal.chrono.temporalplot</span></code></a></p>
 <p>Class for 1D variable temporal plot</p>
 <p>Example :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.temporal.chrono</span><span class="w"> </span><span class="kn">import</span> <span class="n">temporalplotSim</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span> <span class="nn">snowtools.plots.temporal.chrono</span> <span class="kn">import</span> <span class="n">temporalplotSim</span>
 
 <span class="c1"># read data</span>
 <span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
@@ -184,10 +215,10 @@ Similar to temporalplotObsSim but UGLIER</p>
 <p>Constructor for temporalplot_abstract class, redefinied for the child class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="plots.temporal.chrono.temporalplotSim.draw">
-<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotSim.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotSim.draw" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varSim</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/temporal/chrono.html#temporalplotSim.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.chrono.temporalplotSim.draw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method of temporalplotSim class. Used for generating a 1D plot with time formatting.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>timeSim</strong> – Array of simulation duration usually given by prosimu.readtime()</p></li>
 <li><p><strong>varSim</strong> – Array of simulation data usially given by prosimu.read()</p></li>
@@ -195,7 +226,7 @@ Similar to temporalplotObsSim but UGLIER</p>
 <li><p><strong>kwargs</strong> – optional ( matplotlib.pyplot key arguments )</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -205,19 +236,19 @@ Similar to temporalplotObsSim but UGLIER</p>
 
 </section>
 <section id="ensemble-plots">
-<h2>Ensemble plots<a class="headerlink" href="#ensemble-plots" title="Link to this heading">¶</a></h2>
+<h2>Ensemble plots<a class="headerlink" href="#ensemble-plots" title="Permalink to this headline">¶</a></h2>
 <p>Ensemble plots are in the module <code class="docutils literal notranslate"><span class="pre">plots/temporal/escroc_plot</span></code>.</p>
-<p id="module-plots.temporal.escroc_plot">Created on 4 déc. 2018</p>
+<span class="target" id="module-plots.temporal.escroc_plot"></span><p>Created on 4 déc. 2018</p>
 <p>&#64;author: lafaysse</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="plots.temporal.escroc_plot.EnsembleEscrocDiags">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.escroc_plot.</span></span><span class="sig-name descname"><span class="pre">EnsembleEscrocDiags</span></span><a class="reference internal" href="../_modules/plots/temporal/escroc_plot.html#EnsembleEscrocDiags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.escroc_plot.EnsembleEscrocDiags" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EnsembleDiags</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">plots.temporal.escroc_plot.</span></span><span class="sig-name descname"><span class="pre">EnsembleEscrocDiags</span></span><a class="reference internal" href="../_modules/plots/temporal/escroc_plot.html#EnsembleEscrocDiags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.temporal.escroc_plot.EnsembleEscrocDiags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">snowtools.plots.pearps2m.postprocess.EnsembleDiags</span></code></p>
 </dd></dl>
 
 </section>
 <section id="comparison-tool">
-<h2>Comparison tool<a class="headerlink" href="#comparison-tool" title="Link to this heading">¶</a></h2>
+<h2>Comparison tool<a class="headerlink" href="#comparison-tool" title="Permalink to this headline">¶</a></h2>
 <p>To compare two simulations, a script is available in <code class="docutils literal notranslate"><span class="pre">plots/temporal/compare_sims.py</span></code>.</p>
 <p>Script <code class="docutils literal notranslate"><span class="pre">plots/temporal/compare_sims.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: compare_sims.py [-b YYYYMMDD] [-e YYYYMMDD] --dirsim=dirsim1,dirsim2 --labels=label1,labe2 --dirplot=dirplot --format=pdf,png,eps --yearly
@@ -238,7 +269,7 @@ Options:
 </div>
 </section>
 <section id="demo-files">
-<h2>Demo files<a class="headerlink" href="#demo-files" title="Link to this heading">¶</a></h2>
+<h2>Demo files<a class="headerlink" href="#demo-files" title="Permalink to this headline">¶</a></h2>
 <p>A demo file is available in <code class="docutils literal notranslate"><span class="pre">plots/temporal/demo.py</span></code>. A file for plots for COMOD is also is in <code class="docutils literal notranslate"><span class="pre">plots/temporal/impact_comod.py</span></code>.</p>
 </section>
 </section>
@@ -248,52 +279,25 @@ Options:
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Temporal plots</a><ul>
-<li><a class="reference internal" href="#deterministic-plots">Deterministic plots</a><ul>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplot2Axes"><code class="docutils literal notranslate"><span class="pre">temporalplot2Axes</span></code></a><ul>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplot2Axes.addAx2"><code class="docutils literal notranslate"><span class="pre">temporalplot2Axes.addAx2()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotObsMultipleSims"><code class="docutils literal notranslate"><span class="pre">temporalplotObsMultipleSims</span></code></a><ul>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotObsMultipleSims.draw"><code class="docutils literal notranslate"><span class="pre">temporalplotObsMultipleSims.draw()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotObsSim"><code class="docutils literal notranslate"><span class="pre">temporalplotObsSim</span></code></a><ul>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotObsSim.draw"><code class="docutils literal notranslate"><span class="pre">temporalplotObsSim.draw()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotSim"><code class="docutils literal notranslate"><span class="pre">temporalplotSim</span></code></a><ul>
-<li><a class="reference internal" href="#plots.temporal.chrono.temporalplotSim.draw"><code class="docutils literal notranslate"><span class="pre">temporalplotSim.draw()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#ensemble-plots">Ensemble plots</a><ul>
-<li><a class="reference internal" href="#plots.temporal.escroc_plot.EnsembleEscrocDiags"><code class="docutils literal notranslate"><span class="pre">EnsembleEscrocDiags</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#deterministic-plots">Deterministic plots</a></li>
+<li><a class="reference internal" href="#ensemble-plots">Ensemble plots</a></li>
 <li><a class="reference internal" href="#comparison-tool">Comparison tool</a></li>
 <li><a class="reference internal" href="#demo-files">Demo files</a></li>
 </ul>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="plots-maps-grid.html"
-                          title="previous chapter">Map plotting tools for gridded data</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="plots-strati.html"
-                          title="next chapter">Plotting modelled snow stratigraphy</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plots-maps-grid.html"
+                        title="previous chapter">Map plotting tools for gridded data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="plots-strati.html"
+                        title="next chapter">Plotting modelled snow stratigraphy</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -301,7 +305,7 @@ Options:
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -309,13 +313,13 @@ Options:
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -339,8 +343,8 @@ Options:
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

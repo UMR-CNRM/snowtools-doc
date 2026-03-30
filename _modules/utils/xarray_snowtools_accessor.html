@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.xarray_snowtools_accessor &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -63,8 +65,7 @@
 <span class="sd">     from snowtools.utils import xarray_snowtools</span>
 <span class="sd">     import xarray as xr</span>
 
-<span class="sd">     ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
-<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     ds = xr.open_dataset(&#39;INPUT.nc&#39;, engine=&#39;snowtools&#39;)</span>
 
 <span class="sd">1. Select subset of points from a S2M file in the massif geometry, based on the massif number,</span>
 <span class="sd">   elevation, slope and aspect</span>
@@ -98,8 +99,7 @@
 <span class="sd">     from snowtools.utils import xarray_snowtools</span>
 <span class="sd">     import xarray as xr</span>
 <span class="sd">     import matplotlib.pyplot as plt</span>
-<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, decode_times=False)</span>
-<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">     dszs = ds.semidistributed.sel_points(ZS=2400)</span>
 <span class="sd">     meanmonthgroup = dszs.groupby(&quot;time.month&quot;).mean() # mean the variables on a monthly base</span>
 <span class="sd">     meanmonthgroup.TG1.plot() # choose one variable to plot</span>
@@ -111,8 +111,7 @@
 
 <span class="sd">     from snowtools.utils import xarray_snowtools</span>
 <span class="sd">     import xarray as xr</span>
-<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, decode_times=False)</span>
-<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     ds = xr.open_dataset(&#39;PRO_2010080106_2011080106.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">     dszs = ds.semidistributed.sel_points(ZS=2400)</span>
 <span class="sd">     dszs.resample(time=&#39;12h&#39;).mean() # time resampling to 12h timestep</span>
 
@@ -125,8 +124,7 @@
 <span class="sd">     from snowtools.utils import xarray_snowtools</span>
 <span class="sd">     import xarray as xr</span>
 
-<span class="sd">     ds_hourly = xr.open_dataset(&#39;FORCING_test_2d.nc&#39;, decode_times=False)</span>
-<span class="sd">     ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">     ds_hourly = xr.open_dataset(&#39;FORCING_test_2d.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">     ds_daily = ds_hourly.Rainf.snowtools.daily_accumulation(start_hour=3)</span>
 
 
@@ -143,27 +141,24 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
 
-<div class="viewcode-block" id="SnowtoolsAccessor">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor">[docs]</a>
-<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SnowtoolsAccessor"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor">[docs]</a><span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">)</span>
 <span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;snowtools&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SnowtoolsAccessor</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">SnowtoolsAccessor</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Common snowtools-specific additionnal methods for xarray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xarray_obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xarray_obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_obj</span>
 
-<div class="viewcode-block" id="SnowtoolsAccessor.transpose">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsAccessor.transpose"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Put time dimension as first dimension in case of data processing through numpy arrays</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -173,20 +168,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
 
-
-<div class="viewcode-block" id="SnowtoolsAccessor.squeeze">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsAccessor.squeeze"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze">[docs]</a>    <span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Drop dimensions with only 1 coordinate (ex : Number_of_patches / Number_of_tiles)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="SnowtoolsAccessor.daily_accumulation">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">daily_accumulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_hour</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsAccessor.daily_accumulation"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation">[docs]</a>    <span class="k">def</span> <span class="nf">daily_accumulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_hour</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute 24-hour accumulation starting at *strat_hour*, with an output label set at the end of the</span>
 <span class="sd">        accumulation period.</span>
 <span class="sd">        This method will return the sum of all values between &quot;start_hour&quot; at day J and &quot;start_hour&quot; at day J+1</span>
@@ -245,11 +234,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_hour</span><span class="si">}</span><span class="s1">h&#39;</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="SnowtoolsAccessor.snow_cover_stats">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">snow_cover_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snow_depth_variable</span><span class="o">=</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="n">snow_depth_threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsAccessor.snow_cover_stats"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats">[docs]</a>    <span class="k">def</span> <span class="nf">snow_cover_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snow_depth_variable</span><span class="o">=</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="n">snow_depth_threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute snow cover statistics from a snow depth time serie.</span>
 <span class="sd">        Returned stats are:</span>
 
@@ -267,8 +253,7 @@
 
 <span class="sd">            from snowtools.utils import xarray_snowtools</span>
 <span class="sd">            import xarray as xr</span>
-<span class="sd">            ds=xr.open_dataset(&#39;PRO_WJF_2010-2016.nc&#39;, decode_times=False)</span>
-<span class="sd">            ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">            ds=xr.open_dataset(&#39;PRO_WJF_2010-2016.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">            stats=ds.snowtools.snow_cover_stats()</span>
 
 <span class="sd">        :param snow_depth_variable: Name of the variable containing the snow depth (default value for SURFEX outpus)</span>
@@ -277,7 +262,7 @@
 <span class="sd">        :type start_hour: float</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.SnowCoverDuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">lcscd</span>
+        <span class="kn">from</span> <span class="nn">snowtools.tools.SnowCoverDuration</span> <span class="kn">import</span> <span class="n">lcscd</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">)</span> <span class="ow">and</span> <span class="n">snow_depth_variable</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="n">htn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">snow_depth_variable</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DatArray</span><span class="p">):</span>
@@ -285,11 +270,8 @@
 
         <span class="k">return</span> <span class="n">lcscd</span><span class="p">(</span><span class="n">htn</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">snow_depth_threshold</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="SnowtoolsAccessor.backtrack_preprocess">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">backtrack_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsAccessor.backtrack_preprocess"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">backtrack_preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to undo the changes done in the preprocess step if the dataset was opened with the &quot;snowtools&quot; backend.</span>
 <span class="sd">        Initial variable / dimension names come from the &#39;original_name&#39; attribute created during the preprocess step.</span>
 
@@ -299,8 +281,7 @@
 
 <span class="sd">            from snowtools.utils import xarray_snowtools</span>
 <span class="sd">            import xarray as xr</span>
-<span class="sd">            ds = xr.open_dataset(&#39;old_PRO_20180807032000_002400.nc&#39;, decode_times=False)</span>
-<span class="sd">            ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">            ds = xr.open_dataset(&#39;old_PRO_20180807032000_002400.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">            original = ds.backtrack_preprocess()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -308,17 +289,13 @@
             <span class="n">backtrack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;original_name&#39;</span><span class="p">]</span>
             <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">backtrack</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div></div>
 
 
-
-<div class="viewcode-block" id="MeteoAccessor">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.MeteoAccessor">[docs]</a>
-<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="MeteoAccessor"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.MeteoAccessor">[docs]</a><span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)</span>
 <span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;meteo&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">MeteoAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">MeteoAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor designed to deal with meteorological files.</span>
 
 <span class="sd">    Usage example:</span>
@@ -328,19 +305,15 @@
 <span class="sd">         from snowtools.utils import xarray_snowtools</span>
 <span class="sd">         import xarray as xr</span>
 
-<span class="sd">         ds = xr.open_dataset(&#39;FORCING.nc&#39;, decode_times=False)</span>
-<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds = xr.open_dataset(&#39;FORCING.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">         ds.meteo.[...]</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-
-<div class="viewcode-block" id="SurfexAccessor">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor">[docs]</a>
-<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;surfex&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SurfexAccessor"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor">[docs]</a><span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;surfex&quot;</span><span class="p">)</span>
 <span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;surfex&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SurfexAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">SurfexAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Accessor designed to deal with SURFEX output files.</span>
 
 <span class="sd">    Usage example:</span>
@@ -350,15 +323,12 @@
 <span class="sd">         from snowtools.utils import xarray_snowtools</span>
 <span class="sd">         import xarray as xr</span>
 
-<span class="sd">         ds = xr.open_dataset(&#39;PRO.nc&#39;, decode_times=False)</span>
-<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds = xr.open_dataset(&#39;PRO.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">         ds.surfex.decode_time_variable(&#39;time&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SurfexAccessor.decode_time_variable">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">decode_time_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SurfexAccessor.decode_time_variable"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable">[docs]</a>    <span class="k">def</span> <span class="nf">decode_time_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manually decode any time-like variable from a SURFEX output</span>
 
 <span class="sd">        :param varname: Name of the variable to decode</span>
@@ -369,11 +339,8 @@
         <span class="n">timevar</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">decode_cf</span><span class="p">(</span><span class="n">timevar</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">timevar</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="SurfexAccessor.drop_tile_dimension">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">drop_tile_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SurfexAccessor.drop_tile_dimension"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension">[docs]</a>    <span class="k">def</span> <span class="nf">drop_tile_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select a single value for &quot;tile&quot; dimension (or equivalent) and squeeze the dataset to drop the dimension.</span>
 
 <span class="sd">        :param tile: Value of the &quot;tile&quot; dimension to select</span>
@@ -384,17 +351,13 @@
             <span class="k">if</span> <span class="n">drop_dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">drop_dim</span><span class="o">=</span><span class="n">tile</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
-</div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div></div>
 
 
-
-<div class="viewcode-block" id="SemiDistributedAccessor">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor">[docs]</a>
-<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;semidistributed&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SemiDistributedAccessor"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor">[docs]</a><span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;semidistributed&quot;</span><span class="p">)</span>
 <span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;semidistributed&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SemiDistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">SemiDistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additionnal methods in semi-distributed geometry (ex: S2M simulaitions)</span>
 
 <span class="sd">    Usage example:</span>
@@ -404,15 +367,12 @@
 <span class="sd">         from snowtools.utils import xarray_snowtools</span>
 <span class="sd">         import xarray as xr</span>
 
-<span class="sd">         ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
-<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
+<span class="sd">         ds = xr.open_dataset(&#39;INPUT.nc&#39;, engine=&#39;snowtools&#39;)</span>
 <span class="sd">         ds.semidistributed.sel_points(massif_num=3, ZS=[900, 1800, 2700, 3600], slope=40)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SemiDistributedAccessor.sel_points">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sel_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SemiDistributedAccessor.sel_points"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points">[docs]</a>    <span class="k">def</span> <span class="nf">sel_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method used to select a user-defined list of points in semi-distributed geometry (SAFRAN massifs geometry)</span>
 <span class="sd">        from their elevation (ZS), massif number (massif_num), slope and aspect.</span>
 
@@ -467,37 +427,31 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING : arguments where empty or could not be interpreted, nothing changed.&quot;</span><span class="p">)</span>
             <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span>
-        <span class="k">return</span> <span class="n">out</span></div>
-</div>
+        <span class="k">return</span> <span class="n">out</span></div></div>
 
 
-
-<div class="viewcode-block" id="DistributedAccessor">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor">[docs]</a>
-<span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;distributed&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="DistributedAccessor"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor">[docs]</a><span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataset_accessor</span><span class="p">(</span><span class="s2">&quot;distributed&quot;</span><span class="p">)</span>
 <span class="nd">@xr</span><span class="o">.</span><span class="n">register_dataarray_accessor</span><span class="p">(</span><span class="s2">&quot;distributed&quot;</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">DistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">DistributedAccessor</span><span class="p">(</span><span class="n">SnowtoolsAccessor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Additionnal methods in distributed geometry (ex: EDELWEISS)</span>
 
-<span class="sd">    Usage example:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">         from snowtools.utils import xarray_snowtools</span>
-<span class="sd">         import xarray as xr</span>
-
-<span class="sd">         ds = xr.open_dataset(&#39;INPUT.nc&#39;, decode_times=False)</span>
-<span class="sd">         ds = xarray_snowtools.preprocess(ds)</span>
-<span class="sd">         ds.distributed.proj(&quot;EPSG:4326&quot;, &quot;EPSG:2154&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DistributedAccessor.proj">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.proj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs_in</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="n">crs_out</span><span class="o">=</span><span class="s2">&quot;EPSG:2154&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DistributedAccessor.proj"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.proj">[docs]</a>    <span class="k">def</span> <span class="nf">proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs_in</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="n">crs_out</span><span class="o">=</span><span class="s2">&quot;EPSG:2154&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Projection of an xarray dataset or dataarray into a new CRS.</span>
 <span class="sd">        This method implies a dependency to rioxarray.</span>
+
+<span class="sd">        Usage example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">             from snowtools.utils import xarray_snowtools</span>
+<span class="sd">             import xarray as xr</span>
+
+<span class="sd">             ds = xr.open_dataset(&#39;INPUT.nc&#39;, engine=&#39;snowtools&#39;)</span>
+<span class="sd">             ds.distributed.proj(&quot;EPSG:4326&quot;, &quot;EPSG:2154&quot;)</span>
 
 <span class="sd">        :param ds: xarray object to preprocess</span>
 <span class="sd">        :type ds: xarray Dataset or Dataarray</span>
@@ -506,7 +460,7 @@
 <span class="sd">        :param crs_out: CRS of the output object</span>
 <span class="sd">        :type crs_out: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>  <span class="c1"># noqa</span>
+        <span class="kn">import</span> <span class="nn">rioxarray</span>  <span class="c1"># noqa</span>
 
         <span class="c1"># TODO extract from rioxarray documentation :</span>
         <span class="c1"># &quot;If you use one of xarray’s open methods such as xarray.open_dataset to load netCDF files with the default</span>
@@ -519,12 +473,52 @@
 
         <span class="k">return</span> <span class="n">out</span></div>
 
+<div class="viewcode-block" id="DistributedAccessor.sel_stations"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.sel_stations">[docs]</a>    <span class="k">def</span> <span class="nf">sel_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lons</span><span class="p">,</span> <span class="n">lats</span><span class="p">,</span> <span class="n">station_numbers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_dim</span><span class="o">=</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="n">y_dim</span><span class="o">=</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method used to select a list of points defined by their coordinates from a dataset in a distributed geometry.</span>
+<span class="sd">        By default, the extracted value comes from the nearest pixel. This default behavior can be modified with</span>
+<span class="sd">        the &#39;method&#39; arguments, equivalent to the one in the xarray native &#39;sel&#39; method.</span>
 
-<div class="viewcode-block" id="DistributedAccessor.plot_ensemble">
-<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_ensemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isolevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from snowtools.utils import xarray_snowtools</span>
+<span class="sd">            import xarray as xr</span>
+
+<span class="sd">            df = pd.read_csv(&#39;liste_stations.txt&#39;)</span>
+<span class="sd">            ds = xr.open_dataset(&#39;INPUT_2D.nc&#39;, engine=&#39;snowtools&#39;)</span>
+<span class="sd">            ds.distributed.sel_stations(df.lons.values, df.lats.values, station_numbers=df.num_poste.values)</span>
+
+<span class="sd">        :param lons: List of longitudes of the points to be extracted</span>
+<span class="sd">        :param lons: array_like</span>
+<span class="sd">        :param lats: List of latitudes of the points to be extracted</span>
+<span class="sd">        :param lats: array_like</span>
+<span class="sd">        :param station_numbers: List of station numbers to use as new coordinate</span>
+<span class="sd">        :param station_numbers: array_like</span>
+<span class="sd">        :param x_dim: Name of the &#39;X&#39; dimension in the dataset</span>
+<span class="sd">        :param x_dim: str</span>
+<span class="sd">        :param y_dim: Name of the &#39;Y&#39; dimension in the dataset</span>
+<span class="sd">        :param y_dim: str</span>
+<span class="sd">        :param method: Method to use for inexact matches (see xarray &#39;sel&#39; method)</span>
+<span class="sd">        :param method: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">x_dim</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lons</span><span class="p">),</span> <span class="n">dims</span><span class="o">=</span><span class="s1">&#39;station&#39;</span><span class="p">),</span>
+                <span class="n">y_dim</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lats</span><span class="p">),</span> <span class="n">dims</span><span class="o">=</span><span class="s1">&#39;station&#39;</span><span class="p">),</span>
+            <span class="p">},</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">station_numbers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_numbers</span>
+
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="DistributedAccessor.plot_ensemble"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ensemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">isolevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">members</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot field(s) from an ensemble. To control the members of the ensemble to be plotted, use the &quot;members&quot;</span>
 <span class="sd">        argument.</span>
 <span class="sd">        The dataset must have a &#39;member&#39; dimension, and the spatial dimensions (&#39;xx&#39;, &#39;yy&#39;). This implies that</span>
@@ -565,8 +559,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">))</span> <span class="o">==</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">,</span> <span class="s1">&#39;member&#39;</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;The dimensions of the dataset must be exactly (&#39;xx&#39;, &#39;yy&#39;, &#39;member&#39;)&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot2D</span>
+            <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+            <span class="kn">from</span> <span class="nn">snowtools.plots.maps</span> <span class="kn">import</span> <span class="n">plot2D</span>
 
             <span class="k">if</span> <span class="n">members</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
                 <span class="n">ensemble</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
@@ -611,28 +605,26 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not interpret argument members (</span><span class="si">{</span><span class="n">members</span><span class="si">}</span><span class="s1">). &#39;</span>
                                  <span class="s1">&#39;Should be an interger, &quot;mean&quot; or &quot;all&quot;.&#39;</span><span class="p">)</span>
 
-                <span class="n">field</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">vmin</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
-                <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">vmax</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
-                <span class="n">gridlines</span> <span class="o">=</span> <span class="n">projection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="n">im</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
-                              <span class="n">isolevels</span><span class="o">=</span><span class="n">isolevels</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="n">gridlines</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">vmin</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">vmax</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">gridlines</span> <span class="o">=</span> <span class="n">projection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
+                          <span class="n">isolevels</span><span class="o">=</span><span class="n">isolevels</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="n">gridlines</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">)</span>
 
-                <span class="k">return</span> <span class="n">im</span></div>
-</div>
-
+            <span class="k">return</span> <span class="n">im</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -640,13 +632,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -664,8 +656,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

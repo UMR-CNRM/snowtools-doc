@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Create a User Environment from scratch &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentations from Ange’s PhD (Blowing snow)" href="../extra_documentation/these_ange/these_ange_index.html" />
+    <link rel="prev" title="File transfers with hendrix archive and sxcen" href="file-transfert.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../extra_documentation/these_ange/these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="file-transfert.html" title="File transfers with hendrix archive and sxcen"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="hpc-index.html" accesskey="U">Meteo France HPC environment</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Create a User Environment from scratch</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <dl class="simple">
+<dt>A general documentation (in french) can be found in:</dt><dd><p><a class="reference external" href="http://intra.cnrm.meteo.fr/algopy/sphinx/vortex/current/technical/uget.html">http://intra.cnrm.meteo.fr/algopy/sphinx/vortex/current/technical/uget.html</a></p>
+</dd>
+</dl>
+<p>There is a list of useful commands at the end</p>
+<section id="create-a-user-environment-from-scratch">
+<h1>Create a User Environment from scratch<a class="headerlink" href="#create-a-user-environment-from-scratch" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>Put the file(s) you need in your UEnv in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code></p></li>
+</ol>
+<p>Your file(s) should have a name and a number: <code class="docutils literal notranslate"><span class="pre">AFirstFile.0</span></code>, <code class="docutils literal notranslate"><span class="pre">ASecondFile.1</span></code></p>
+<ol class="arabic simple" start="2">
+<li><p>Create a text file which is the name of your UEnv (ex <code class="docutils literal notranslate"><span class="pre">MyFirstUenv.0</span></code>) in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p></li>
+<li><p>In this text file, associate a key to each file:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">FIRST_KEY</span><span class="o">=</span><span class="s2">&quot;uenv:AFirstFile.0@your_username&quot;</span>
+<span class="nv">SECOND_KEY</span><span class="o">=</span><span class="s2">&quot;uenv:ASecondFile.1@your_username&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>UEnv is ready, you can access to file(s) with the command:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">&#39;uenv:MyFirstUenv.0@your_username&#39;</span>, <span class="nv">gvar</span><span class="o">=</span><span class="s1">&#39;FIRST_KEY&#39;</span>, <span class="nv">unknown</span><span class="o">=</span>True, <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="o">)</span>
+toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">&#39;uenv:MyFirstUenv.0@your_username&#39;</span>, <span class="nv">gvar</span><span class="o">=</span><span class="s1">&#39;SECOND_KEY&#39;</span>, <span class="nv">unknown</span><span class="o">=</span>True, <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="o">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>In order to store and share your UEnv (vortex1 command) :</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py push env MyFirstUenv.0@your_username
+</pre></div>
+</div>
+</section>
+<section id="modifying-an-existing-uenv">
+<h1>Modifying an existing UEnv<a class="headerlink" href="#modifying-an-existing-uenv" title="Permalink to this headline">¶</a></h1>
+<section id="create-a-copy-of-existing-uenv">
+<h2>1. Create a copy of existing UEnv:<a class="headerlink" href="#create-a-copy-of-existing-uenv" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py hack env Existing_UEnv.0@username_uenv_owner into MyNewUenv.0@your_username
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py hack env cen.14@CONST_CEN into MyNewUenv.0@vernaym
+</pre></div>
+</div>
+<p><strong>NB:</strong> you can also upgrade your uenv with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py hack env Existing_UEnv.0@your_username into Existing_UEnv.1@your_username
+</pre></div>
+</div>
+<p>Now, A text file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> is create in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p>
+</section>
+<section id="modify-new-uenv-mynewuenv-0">
+<h2>2. Modify new UEnv <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code>:<a class="headerlink" href="#modify-new-uenv-mynewuenv-0" title="Permalink to this headline">¶</a></h2>
+<ol class="loweralpha simple">
+<li><p>Upgrade a file already in UEnv</p></li>
+</ol>
+<blockquote>
+<div><p>–&gt; Identify the file and key in <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: SSA_PARAMS=”uenv:drdt_bst_fit_60.nc&#64;CONST_CEN”)</p>
+<p class="attribution">—&gt; Place new version of your file in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code> (ex: drdt_bst_fit_60_new.nc)</p>
+</div></blockquote>
+<blockquote>
+<div><p>–&gt; Modify corresponding line in file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: SSA_PARAMS=”uenv:drdt_bst_fit_60_new.nc&#64;your_username”)</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="2">
+<li><p>Add a new file in <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code></p></li>
+</ol>
+<blockquote>
+<div><p>–&gt; Place the file <code class="docutils literal notranslate"><span class="pre">New_File.0</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code></p>
+<p class="attribution">—&gt; Add a line to the file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: NEW_KEY=”uenv:New_File.0&#64;your_username”)</p>
+</div></blockquote>
+</section>
+</section>
+<section id="concatenation-of-2-existing-uenv">
+<h1>Concatenation of 2 existing UEnv<a class="headerlink" href="#concatenation-of-2-existing-uenv" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>Get both UEnv:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py hack env UEnv1@user_who_own_this_uenv into UEnv1_copy@your_username
+<span class="nv">$VORTEX</span>/bin/uget.py hack env UEnv2@maybe_another_user into UEnv2_copy@your_username
+</pre></div>
+</div>
+<p>Now, the files <code class="docutils literal notranslate"><span class="pre">UEnv1_copy</span></code> and <code class="docutils literal notranslate"><span class="pre">UEnv2_copy</span></code> are copied in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p>
+<ol class="arabic simple" start="2">
+<li><p>Concatenate both files in a new UEnv <code class="docutils literal notranslate"><span class="pre">UEnv1_UEnv2</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat UEnv1_copy UEnv2_copy &gt; UEnv1_UEnv2
+</pre></div>
+</div>
+<p><strong>NB:</strong> it is of course posible to just pick few lines of each files</p>
+</section>
+<section id="using-uenv-targetuenv-x-owned-by-another-user">
+<h1>Using UEnv <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code> owned by another user<a class="headerlink" href="#using-uenv-targetuenv-x-owned-by-another-user" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>Explore <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$VORTEX</span>/bin/uget.py check env TargetUEnv.X@the_other_user
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Get the file of interest with his key <code class="docutils literal notranslate"><span class="pre">Key_from_TargetUEnv.X</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">&#39;uenv:TargetUEnv.X@the_other_user&#39;</span>, <span class="nv">gvar</span><span class="o">=</span><span class="s1">&#39;Key_from_TargetUEnv.X&#39;</span>, <span class="nv">unknown</span><span class="o">=</span>True, <span class="nv">filename</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="examples-of-available-user-environments-uenv">
+<h1>Examples of available User Environments (UEnv)<a class="headerlink" href="#examples-of-available-user-environments-uenv" title="Permalink to this headline">¶</a></h1>
+<p>Started by Ange Haddjeri, to be continued…</p>
+<p>Digital elevations models available in “uenv:dem.2&#64;vernaym”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DEM_ALP1KM_EPSG4326</span>
+<span class="n">DEM_FRANCE25M_L93</span>
+<span class="n">DEM_GRANDESROUSSES25M_L93</span>
+<span class="n">DEM_PYR1KM_EPSG4326</span>
+<span class="n">RELIEF_FRANGP0025</span>
+<span class="n">RELIEF_GRANDESROUSSES250M_4326</span>
+<span class="n">RELIEF_GRANDESROUSSES250M_L93</span>
+</pre></div>
+</div>
+<p>Shapefiles availables in “uenv:shapefiles.1&#64;vernaym”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FRENCH_CITIES</span>
+<span class="n">MASSIFS_SAFRAN</span>
+<span class="n">WORLD_BOUNDARIES</span>
+</pre></div>
+</div>
+<p>Uenv to reproduce simulations from M.Vernay PhD : “<a class="reference external" href="mailto:edelweiss_gr250_pappus&#46;2&#37;&#52;&#48;vernaym">edelweiss_gr250_pappus<span>&#46;</span>2<span>&#64;</span>vernaym</a>”</p>
+<p>Uenv for latest version of the ANTILOPE post-processing algorithm : “<a class="reference external" href="mailto:edelweiss&#46;3&#37;&#52;&#48;vernaym">edelweiss<span>&#46;</span>3<span>&#64;</span>vernaym</a>”</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Create a User Environment from scratch</a></li>
+<li><a class="reference internal" href="#modifying-an-existing-uenv">Modifying an existing UEnv</a><ul>
+<li><a class="reference internal" href="#create-a-copy-of-existing-uenv">1. Create a copy of existing UEnv:</a></li>
+<li><a class="reference internal" href="#modify-new-uenv-mynewuenv-0">2. Modify new UEnv <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code>:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#concatenation-of-2-existing-uenv">Concatenation of 2 existing UEnv</a></li>
+<li><a class="reference internal" href="#using-uenv-targetuenv-x-owned-by-another-user">Using UEnv <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code> owned by another user</a></li>
+<li><a class="reference internal" href="#examples-of-available-user-environments-uenv">Examples of available User Environments (UEnv)</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="file-transfert.html"
+                        title="previous chapter">File transfers with hendrix archive and sxcen</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../extra_documentation/these_ange/these_ange_index.html"
+                        title="next chapter">Documentations from Ange’s PhD (Blowing snow)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/hpc/uenv.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../extra_documentation/these_ange/these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="file-transfert.html" title="File transfers with hendrix archive and sxcen"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="hpc-index.html" >Meteo France HPC environment</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Create a User Environment from scratch</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
+  </body>
+</html>

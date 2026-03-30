@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.initTG &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,25 +49,23 @@
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="c1"># General python modules</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
 
 <span class="c1"># snowtools modules</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_file_period</span><span class="p">,</span> <span class="n">save_file_const</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_forcing</span><span class="w"> </span><span class="kn">import</span> <span class="n">forcinput_select</span><span class="p">,</span> <span class="n">forcinput_applymask</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirFileException</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.execute</span><span class="w"> </span><span class="kn">import</span> <span class="n">callSurfexOrDie</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">get_file_period</span><span class="p">,</span> <span class="n">save_file_const</span>
+<span class="kn">from</span> <span class="nn">snowtools.tools.change_forcing</span> <span class="kn">import</span> <span class="n">forcinput_select</span><span class="p">,</span> <span class="n">forcinput_applymask</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">DirFileException</span><span class="p">,</span> <span class="n">FileNameException</span>
+<span class="kn">from</span> <span class="nn">snowtools.tools.execute</span> <span class="kn">import</span> <span class="n">callSurfexOrDie</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="n">INTERPOL_BIN_CEN</span>
 
 
-<div class="viewcode-block" id="create_env">
-<a class="viewcode-back" href="../../code/tools.html#tools.initTG.create_env">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_env</span><span class="p">(</span><span class="n">diroutput</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create working directory and directories to save outputs</span>
+<div class="viewcode-block" id="create_env"><a class="viewcode-back" href="../../code/tools.html#tools.initTG.create_env">[docs]</a><span class="k">def</span> <span class="nf">create_env</span><span class="p">(</span><span class="n">diroutput</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create working directory and directories to save outputs</span>
 
 <span class="sd">    :param diroutput: output directory</span>
 <span class="sd">    :type diroutput: str</span>
@@ -87,11 +87,8 @@
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">dirwork</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="get_meteo_for_clim">
-<a class="viewcode-back" href="../../code/tools.html#tools.initTG.get_meteo_for_clim">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_meteo_for_clim</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">geolist</span><span class="p">,</span> <span class="n">list_forcing</span><span class="o">=</span><span class="p">[]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the meteorological forcing files required to compute a climatology</span>
+<div class="viewcode-block" id="get_meteo_for_clim"><a class="viewcode-back" href="../../code/tools.html#tools.initTG.get_meteo_for_clim">[docs]</a><span class="k">def</span> <span class="nf">get_meteo_for_clim</span><span class="p">(</span><span class="n">forcingpath</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">geolist</span><span class="p">,</span> <span class="n">list_forcing</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;Get the meteorological forcing files required to compute a climatology</span>
 <span class="sd">    This is a recursive function until all files are found.</span>
 
 <span class="sd">    :param forcingpath: directory where are stored the forcing files</span>
@@ -124,7 +121,18 @@
             <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;input.nc&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="s1">&#39;GRID.nc&#39;</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">geolist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;GRID.nc&quot;</span><span class="p">)</span>
-            <span class="n">callSurfexOrDie</span><span class="p">(</span><span class="n">SNOWTOOLS_DIR</span> <span class="o">+</span> <span class="s2">&quot;/interpolation/interpol&quot;</span><span class="p">,</span> <span class="n">moderun</span><span class="o">=</span><span class="s1">&#39;MPIRUN&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SNOWTOOLS_INTERPOL&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SNOWTOOLS_INTERPOL&#39;</span><span class="p">)):</span>
+                <span class="n">bin_interpol</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SNOWTOOLS_INTERPOL&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">INTERPOL_BIN_CEN</span><span class="p">):</span>
+                <span class="n">bin_interpol</span> <span class="o">=</span> <span class="n">INTERPOL_BIN_CEN</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="s1">&#39;interpolation&#39;</span><span class="p">,</span> <span class="s1">&#39;interpol&#39;</span><span class="p">)):</span>
+                <span class="n">bin_interpol</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="s1">&#39;interpolation&#39;</span><span class="p">,</span> <span class="s1">&#39;interpol&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span>
+                    <span class="s1">&#39;interpol binary not found in current directory &#39;</span>
+                    <span class="s1">&#39;nor defined with SNOWTOOLS_INTERPOL environment variable. &#39;</span>
+                    <span class="s1">&#39;Please check you have compiled interpol binary.&#39;</span><span class="p">)</span>
+            <span class="n">callSurfexOrDie</span><span class="p">(</span><span class="n">bin_interpol</span><span class="p">,</span> <span class="n">moderun</span><span class="o">=</span><span class="s1">&#39;MPIRUN&#39;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;output.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING.nc&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="s2">&quot;FORCING_base.nc&quot;</span><span class="p">)</span>
@@ -143,11 +151,8 @@
     <span class="k">return</span> <span class="n">list_forcing</span></div>
 
 
-
-<div class="viewcode-block" id="generate_clim">
-<a class="viewcode-back" href="../../code/tools.html#tools.initTG.generate_clim">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_clim</span><span class="p">(</span><span class="n">list_forcing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a temperature climatology from meteorological forcing files</span>
+<div class="viewcode-block" id="generate_clim"><a class="viewcode-back" href="../../code/tools.html#tools.initTG.generate_clim">[docs]</a><span class="k">def</span> <span class="nf">generate_clim</span><span class="p">(</span><span class="n">list_forcing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a temperature climatology from meteorological forcing files</span>
 
 <span class="sd">    :param list_forcing: List of forcing files addresses</span>
 <span class="sd">    :type list_forcing: list of str</span>
@@ -170,11 +175,8 @@
     <span class="n">initTGfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-
-<div class="viewcode-block" id="clim">
-<a class="viewcode-back" href="../../code/tools.html#tools.initTG.clim">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">clim</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a temperature climatology from S2M options</span>
+<div class="viewcode-block" id="clim"><a class="viewcode-back" href="../../code/tools.html#tools.initTG.clim">[docs]</a><span class="k">def</span> <span class="nf">clim</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a temperature climatology from S2M options</span>
 
 <span class="sd">    :param options: S2M options</span>
 <span class="sd">    :type options: dict</span>
@@ -199,16 +201,15 @@
 
     <span class="c1"># Back to initial directory</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">initcurrentdirectory</span><span class="p">)</span></div>
-
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -216,13 +217,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -240,8 +241,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

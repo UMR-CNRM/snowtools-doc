@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Get simulation files through vortex &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Extract and post-processing observations" href="scripts-extract-obs.html" />
     <link rel="prev" title="Scripts" href="scripts.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,9 +49,9 @@
           <div class="body" role="main">
             
   <section id="get-simulation-files-through-vortex">
-<h1>Get simulation files through vortex<a class="headerlink" href="#get-simulation-files-through-vortex" title="Link to this heading">¶</a></h1>
+<h1>Get simulation files through vortex<a class="headerlink" href="#get-simulation-files-through-vortex" title="Permalink to this headline">¶</a></h1>
 <section id="reanalysis">
-<h2>Reanalysis<a class="headerlink" href="#reanalysis" title="Link to this heading">¶</a></h2>
+<h2>Reanalysis<a class="headerlink" href="#reanalysis" title="Permalink to this headline">¶</a></h2>
 <p>Script <code class="docutils literal notranslate"><span class="pre">scripts/extract/vortex/get_reanalysis.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: get_reanalysis.py [-h] [--geometry GEOMETRY] [-b BEGIN] [-e END]
                          [--meteo] [--prep] [--pgd] [--nativemeteo] [--snow]
@@ -89,13 +91,13 @@ options:
 </div>
 </section>
 <section id="module-scripts.extract.vortex.get_reforecast">
-<span id="reforecast"></span><h2>Reforecast<a class="headerlink" href="#module-scripts.extract.vortex.get_reforecast" title="Link to this heading">¶</a></h2>
+<span id="reforecast"></span><h2>Reforecast<a class="headerlink" href="#module-scripts.extract.vortex.get_reforecast" title="Permalink to this headline">¶</a></h2>
 <p>Created on dec. 2018
 &#64;author: Vernay</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="scripts.extract.vortex.get_reforecast.ReforecastExtractor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.extract.vortex.get_reforecast.</span></span><span class="sig-name descname"><span class="pre">ReforecastExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/vortex/get_reforecast.html#ReforecastExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">S2MTaskMixIn</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">scripts.extract.vortex.get_reforecast.</span></span><span class="sig-name descname"><span class="pre">ReforecastExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/vortex/get_reforecast.html#ReforecastExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">vortex.layout.nodes.Task</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">cen.layout.nodes.S2MTaskMixIn</span></code></p>
 <p>Some class variables may have an impact on GetByTag behaviour:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_tag_default</span></code>: Sets the default <code class="docutils literal notranslate"><span class="pre">tag</span></code> (if the <code class="docutils literal notranslate"><span class="pre">tag</span></code> attribute is
@@ -109,7 +111,7 @@ method allows to retrieve the list of Classes sharing the same list of tags</p><
 </ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="scripts.extract.vortex.get_reforecast.ReforecastExtractor.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/vortex/get_reforecast.html#ReforecastExtractor.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor.process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scripts/extract/vortex/get_reforecast.html#ReforecastExtractor.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract method: perform the task to do.</p>
 </dd></dl>
 
@@ -117,7 +119,7 @@ method allows to retrieve the list of Classes sharing the same list of tags</p><
 
 </section>
 <section id="escroc">
-<h2>Escroc<a class="headerlink" href="#escroc" title="Link to this heading">¶</a></h2>
+<h2>Escroc<a class="headerlink" href="#escroc" title="Permalink to this headline">¶</a></h2>
 <p>Script <code class="docutils literal notranslate"><span class="pre">scripts/extract/vortex/get_escroc.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: python get_escroc.py --site=xxx [--nmembers=xx] --escroc=xx [--byear=YYYY --eyear=YYYY] [--bdate=YYYYMMDDHH --eyear=YYYYMMDDHH]
 
@@ -141,36 +143,24 @@ Options:
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Get simulation files through vortex</a><ul>
 <li><a class="reference internal" href="#reanalysis">Reanalysis</a></li>
-<li><a class="reference internal" href="#module-scripts.extract.vortex.get_reforecast">Reforecast</a><ul>
-<li><a class="reference internal" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor"><code class="docutils literal notranslate"><span class="pre">ReforecastExtractor</span></code></a><ul>
-<li><a class="reference internal" href="#scripts.extract.vortex.get_reforecast.ReforecastExtractor.process"><code class="docutils literal notranslate"><span class="pre">ReforecastExtractor.process()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-scripts.extract.vortex.get_reforecast">Reforecast</a></li>
 <li><a class="reference internal" href="#escroc">Escroc</a></li>
 </ul>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="scripts.html"
-                          title="previous chapter">Scripts</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="scripts-extract-obs.html"
-                          title="next chapter">Extract and post-processing observations</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="scripts.html"
+                        title="previous chapter">Scripts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="scripts-extract-obs.html"
+                        title="next chapter">Extract and post-processing observations</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -178,7 +168,7 @@ Options:
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -186,13 +176,13 @@ Options:
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -216,8 +206,8 @@ Options:
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

@@ -1,0 +1,1199 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>SURFEX-Crocus user documentation for cen_dev branch &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Development in progress in SURFEX-Crocus" href="surfex-dev-in-progress.html" />
+    <link rel="prev" title="External use of Crocus for other Land Surface Models" href="surfex-extern.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surfex-dev-in-progress.html" title="Development in progress in SURFEX-Crocus"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="surfex-extern.html" title="External use of Crocus for other Land Surface Models"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="surfex-index.html" accesskey="U">Surfex documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="surfex-crocus-user-documentation-for-cen-dev-branch">
+<h1>SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch<a class="headerlink" href="#surfex-crocus-user-documentation-for-cen-dev-branch" title="Permalink to this headline">¶</a></h1>
+<p>This page describe the SURFEX-Crocus model as it is present in <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch of the SURFEX_CEN repository.</p>
+<section id="multiphysics">
+<h2>1-Multiphysics<a class="headerlink" href="#multiphysics" title="Permalink to this headline">¶</a></h2>
+<section id="basic-information">
+<h3>Basic information<a class="headerlink" href="#basic-information" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : M Lafaysse and B Cluzet</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 08/2015</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> : 62a95d3e</p></li>
+<li><p><strong>Commit and tag after development</strong> :</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="description-of-the-development">
+<h3>Description of the development<a class="headerlink" href="#description-of-the-development" title="Permalink to this headline">¶</a></h3>
+<p>Implementation of various physical options for all the main processes.</p>
+<p>Scientific details: <a class="reference external" href="https://www.the-cryosphere.net/11/1173/2017/">https://www.the-cryosphere.net/11/1173/2017/</a></p>
+</section>
+<section id="changes-in-namelist">
+<h3>Changes in namelist<a class="headerlink" href="#changes-in-namelist" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_ISBA_SNOWn
+    <span class="nv">CSNOWRAD</span> <span class="o">=</span> <span class="s1">&#39;B92&#39;</span>, <span class="s1">&#39;T17&#39;</span> option <span class="k">for</span> absorption of solar radiation, default : B92
+    <span class="nv">CSNOWMETAMO</span> <span class="o">=</span> <span class="s1">&#39;B21&#39;</span>,<span class="s1">&#39;F06&#39;</span>,<span class="s1">&#39;T07&#39;</span>,<span class="s1">&#39;S-B&#39;</span>,<span class="s1">&#39;S-F&#39;</span>  option <span class="k">for</span> metamorphism, default : B21
+    <span class="nv">CSNOWFALL</span> <span class="o">=</span> <span class="s1">&#39;V12&#39;</span>,<span class="s1">&#39;S02&#39;</span>,<span class="s1">&#39;A76&#39;</span>,<span class="s1">&#39;P75&#39;</span>,<span class="s1">&#39;NZE&#39;</span> option <span class="k">for</span> falling snow density, default : V12
+    <span class="nv">CSNOWCOMP</span> <span class="o">=</span> <span class="s1">&#39;B92&#39;</span>, <span class="s1">&#39;S14&#39;</span>, <span class="s1">&#39;T11&#39;</span>  option <span class="k">for</span> compaction, default : B92
+    <span class="nv">CSNOWCOND</span> <span class="o">=</span> <span class="s1">&#39;Y81&#39;</span>, <span class="s1">&#39;I02&#39;</span>,<span class="s1">&#39;C11&#39;</span> option <span class="k">for</span> snow thermal conductivity, default : Y81
+    <span class="nv">CSNOWHOLD</span> <span class="o">=</span> <span class="s1">&#39;B92&#39;</span>, <span class="s1">&#39;SPK&#39;</span>,<span class="s1">&#39;O04&#39;</span>,<span class="s1">&#39;B02&#39;</span> option <span class="k">for</span> liquid water holding capacity, default B92
+
+<span class="p">&amp;</span>NAM_ISBAn
+    <span class="nv">CSNOWRES</span> <span class="o">=</span> <span class="s1">&#39;DEF&#39;</span>, <span class="s1">&#39;RIL&#39;</span>, <span class="s1">&#39;M98&#39;</span> option <span class="k">for</span> turbulent fluxes over snow, default : DEF
+    <span class="nv">XCVHEATF</span> <span class="o">=</span> <span class="m">0</span>.2 Modify Cv to compensate biases <span class="k">in</span> ground temperature <span class="o">(</span><span class="m">0</span>.2 <span class="o">=</span> default<span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="full-description">
+<h3>Full Description<a class="headerlink" href="#full-description" title="Permalink to this headline">¶</a></h3>
+<p><strong>CSNOWRAD</strong> : radiative transfer scheme in the snowpack</p>
+<ul class="simple">
+<li><p>‘B92’ 3 band scheme from Brun et al, 1992 with empirical parameterization of ageing in the visible band (default)</p></li>
+<li><p>‘T17’ 2 flow spectral scheme TARTES (Libois et al, 2013) with explicit impact of SSA, impurities, and zenithal angle on spectral reflectances. Increase computing time by a factor of 10. Require a careful setting of impurities deposition.</p></li>
+</ul>
+<p><strong>CSNOWMETAMO</strong> : snow metamorphism</p>
+<ul class="simple">
+<li><p>‘B92’ obsolete option which will be removed in a next version : empirical evolution of dendricity, sphericity and size from Brun et al 1992</p></li>
+<li><p>‘B21’ Translation of B92 option in terms of Optical Diameter and Sphericity (default). NB: this is a correction of C13 option which is not supported now</p></li>
+<li><p>‘F06’ Evolution law of the optical diameter from Flanner and Zender (2006), which fits the model outputs of a snow microstructure model representing the diffusive vapour fluxes among the grains.</p></li>
+<li><p>‘S-B’ Experimental evolution law of Optical Diameter from Schleef et al, 2014 for the first 48 hours after snowfall, then B21 option</p></li>
+<li><p>‘S-F’ Experimental evolution law of Optical Diameter from Schleef et al, 2014 for the first 48 hours after snowfall, then F06 option</p></li>
+<li><p>‘T07’ Experimental evolution law of Optical Diameter from Taillandier et al, 2007</p></li>
+</ul>
+<p><strong>CSNOWFALL</strong> : parameterization of falling snow density</p>
+<ul class="simple">
+<li><p>‘V12’ function of air temperature and wind speed following Vionnet et al 2012 from experiments of Pahaut at Col de Porte (default)</p></li>
+<li><p>‘S02’ function of air temperature and wind speed following Schmucki et al 2014, law used in the swiss SNOWPACK model (at least since 2002) Take care, the option was called S14 in Lafaysse et al, 2017.</p></li>
+<li><p>‘A76’ function of air temperature from Anderson, 1976 (law used in ISBA-ES)</p></li>
+<li><p>‘NZE’ constant at 200 kg/m3 for maritime climates (New Zealand)</p></li>
+</ul>
+<p><strong>CSNOWCOMP</strong> : parameterization of snow compaction</p>
+<ul class="simple">
+<li><p>‘B92’ visco-elastic model using a viscosity function of density and air temperature from Brun et al, 1992 (default)</p></li>
+<li><p>‘T11’ visco-elastic model using a viscosity function of density and air temperature from Teufelsbauer (2011) fitting the data of separate experimental works</p></li>
+<li><p>‘S14’ non-linear relationship between settlement, stress and SSA decrease due to metamorphism from Schleef et al. (2014) for the first 48 h after snowfall. Then, B92 option.</p></li>
+</ul>
+<p><strong>CSNOWCOND</strong> : parameterization of snow thermal conductivity from snow density</p>
+<ul class="simple">
+<li><p>‘Y81’ Yen et al 1981 (Default) from experimental values</p></li>
+<li><p>‘I02’ from ISBA-ES (Boone, 2002; Sun et al., 1999) The law depends not only on density but also on snow temperature and it has a higher conductivity than experimental values to indirectly compensate for the fact that latent heat fluxes due to vapour fluxes are not represented in the model. This is expected to increase vertical heat transfer as temperature increases.</p></li>
+</ul>
+<p><strong>CSNOWHOLD</strong> : parameterization of maximum liquid water holding capacity in the bucket parameterization</p>
+<ul class="simple">
+<li><p>‘B92’ fixed maximal percentage of the pores’ volumes from Pahaut 1975</p></li>
+<li><p>‘SPK’ parameterization of the swiss SNOWPACK model (Wever et al 2014) fitting the experiments of Coléou and Lesaffre (1998)</p></li>
+<li><p>‘B02’ maximal liquid water mass fraction. This parameterization has an opposite behaviour : the higher the density, the higher the maximal volumetric liquid water content.</p></li>
+</ul>
+</section>
+</section>
+<section id="explicit-representation-of-light-absorbing-particles">
+<h2>2-Explicit representation of Light-Absorbing Particles<a class="headerlink" href="#explicit-representation-of-light-absorbing-particles" title="Permalink to this headline">¶</a></h2>
+<section id="id1">
+<h3>Basic information<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : F Tuzet</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 2015</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> :</p></li>
+<li><p><strong>Commit and tag after development</strong> :</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Description of the development<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Explicit representation of Light-Absorbing Particles as well as TARTES radiative transfer scheme.
+It is noteworthy that the s2m command to launch is the same as a classic Crocus run, only the namelist (and eventually the atmospheric forcing file) must be modified.
+These changes are detailed hereafter for each block of the namelist.</p>
+</section>
+<section id="mandatory-changes-in-namelist">
+<h3>Mandatory Changes in namelist<a class="headerlink" href="#mandatory-changes-in-namelist" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_PREP_ISBA_SNOW
+    <span class="nv">NIMPUR</span><span class="o">=</span><span class="m">0</span>/1/2        <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>
+
+<span class="p">&amp;</span>NAM_IO_OFFLINE
+    <span class="nv">LSPECSNOW</span> <span class="o">=</span> .TRUE.  <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>.FALSE. <span class="c1"># Enable spectral computation inside SURFEX/Crocus</span>
+    <span class="nv">NIMPUROF</span><span class="o">=</span><span class="m">0</span>/1/2      <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>       <span class="c1"># Initialize number of LAP types. NIMPUROF=NIMPUR.</span>
+
+<span class="p">&amp;</span>NAM_DIAG_ISBAn
+    <span class="nv">LPROBANDS</span><span class="o">=</span> .TRUE.   <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>.FALSE. <span class="c1"># Enable spectral resolution of Crocus diagnostics, ratio diagnostics</span>
+
+<span class="p">&amp;</span>NAM_ISBA_SNOWn
+    <span class="nv">CSNOWRAD</span><span class="o">=</span><span class="s1">&#39;T17&#39;</span>      <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>B92     <span class="c1"># Set radiative transfer scheme to TARTES+LAP as in Tuzet et al. (2017)</span>
+    <span class="nv">LATMORAD</span><span class="o">=</span>.FALSE.    <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>.FALSE. <span class="c1"># Not stable. Setting it to .TRUE. will cause some errors</span>
+
+<span class="p">&amp;</span>NAM_WRITE_DIAG_SURFn
+    CSELECT:  You have to add <span class="s1">&#39;SNOWIMP1&#39;</span>,<span class="s1">&#39;SNOWIMP2&#39;</span>,<span class="s1">&#39;SPEC_ALB&#39;</span>, <span class="s1">&#39;DIFF_RATIO&#39;</span>, <span class="s1">&#39;SPEC_TOT&#39;</span> <span class="k">in</span> this field.
+</pre></div>
+</div>
+<p>NIMPUR is the number of Light-Absorbing Particles types you want to use in your simulation. You can set:</p>
+<ul class="simple">
+<li><p>NIMPUR=1 if you want to run simulations with Black Carbon only</p></li>
+<li><p>NIMPUR=2 if you want to run simulations with Black Carbon and Dust.</p></li>
+<li><p>If you want to run a simulation with Dust only you can set NIMPUR=2 and prescribe no BC deposition.</p></li>
+</ul>
+<p>CSELECT makes a selection of the diagnostics you want to compute in your output NetCDF file (PRO file):</p>
+<ul class="simple">
+<li><p>SNOWIMP1 is the Black Carbon concentration in each snow layer (g/g_of_snow)</p></li>
+<li><p>SNOWIMP2 is the Dust concentration in each snow layer (g/g_of_snow)</p></li>
+<li><p>SPEC_ALB is the spectral albedo for the 186 Crocus spectral bands (from 300 to 4000nm included by step of 20nm; i.e [300,320…,3980,4000])</p></li>
+<li><p>DIFF_RATIO is the spectral direct to diffuse ratio for the 186 Crocus spectral bands (from 300 to 4000nm included by step of 20nm; i.e [300,320…,3980,4000])</p></li>
+<li><p>SPEC_TOT is the total incoming irradiance after spectral repartition i.e the spectral irradiance used by TARTES for radiative transfer computations</p></li>
+</ul>
+<p><em>NB: LATMORAD is supposed to compute the direct/diffuse ratio directly from atmospheric informations (AOD, Ozone column, Water column..). Set to FALSE, not stable yet.</em></p>
+</section>
+<section id="optional-changes-in-namelist-to-activate-light-absorbing-particles-deposition">
+<h3>Optional Changes in namelist to activate Light-Absorbing Particles deposition<a class="headerlink" href="#optional-changes-in-namelist-to-activate-light-absorbing-particles-deposition" title="Permalink to this headline">¶</a></h3>
+<p>The following changes set the way you want to prescribe your deposition fluxes as input of SURFEX/Crocus.
+You can either feed the model with prescribed and constant deposition fluxes or introduce a wet and dry deposition field directly in the forcing file.
+If you want to prescribe constant deposition fluxes over time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_SURF_SNOW_CSTS
+    XIMPUR_WET<span class="o">(</span><span class="m">1</span><span class="o">)=</span><span class="m">5</span>.e-11   <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>.
+    XIMPUR_WET<span class="o">(</span><span class="m">2</span><span class="o">)=</span><span class="m">5</span>.e-9    <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>.
+    XIMPUR_DRY<span class="o">(</span><span class="m">1</span><span class="o">)=</span><span class="m">1</span>.e-11   <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>.
+    XIMPUR_DRY<span class="o">(</span><span class="m">2</span><span class="o">)=</span><span class="m">1</span>.e-9    <span class="p">;</span> <span class="nv">default</span><span class="o">=</span><span class="m">0</span>.
+</pre></div>
+</div>
+<p>These variable set the different depositions fluxes and are expressed in g m^(-2) s^(-1).
+BE CAREFULL THERE IS A BUG IN SOME VERSION OF FORTRAN WHEN SETTING A NAMELIST VARIABLE TO 1.E-10.</p>
+<ul class="simple">
+<li><p>XIMPUR_WET corresponds to the initial amount of Light-Absorbing Particles present in the falling snow (wet deposition) for each impurity type, activated in case of rain or snow.</p></li>
+<li><p>XIMPUR_DRY corresponds to the dry deposition coefficient always activated.</p></li>
+</ul>
+<p>The type of Light-Absorbing Particles into parenthesis as done above. e.g XIMPUR_WET(1)=1.e-9 set the wet depostion coefficient of Black Carbon to 1.e-9 g m^(-2) s^(-1)</p>
+<p>If you want to prescribe directly the deposition fluxes at each model time step from a forcing file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_IO_OFFLINE
+    <span class="nv">LFORCIMP</span> <span class="o">=</span> .TRUE.         <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>.FALSE.
+    <span class="nv">LFORCATMOTARTES</span> <span class="o">=</span>.FALSE.  <span class="p">;</span> <span class="nv">default</span><span class="o">=</span>.FALSE. <span class="c1"># currently unavailable, setting it to .TRUE. will cause some errors</span>
+</pre></div>
+</div>
+<p>When you activate LFORCIMP by setting it to .TRUE., you have to add new variables in your forcing file.</p>
+<p>You have two variables to add for each type of Light-Absorbing Particles: IMPWET (wet deposition coefficient) and IMPDRY (dry deposition coefficient). Both these deposition fluxes have to be in g m^(-2) s^(-1).
+* If you have one type of Light-Absorbing Particles you will need IMPWET1 and IMPDRY1.
+* If you have two type of Light-Absorbing Particles you will need IMPWET1 and IMPDRY1 (Black Carbon) and IMPWET2 and IMPDRY2 (Dust).
+These new variables must be defined with the same dimension as the snowfall rate for exemple.
+Note that if you activate LFORCIMP the deposition values contained in NAM_SURF_SNOW_CSTS are ignored.</p>
+<p><em>NB: LFORCATMOTARTES, as LATMORAD, is not stable yet. It should activates prescription of aerosol optical depth and ozone column from forcing file. When you activate LFORCATMOTARTES by setting it to .TRUE., you have to add new variables in your forcing file : AODTOT (total aerosol optical depth) and OZONE (total ozone column). These new variables must be defined with the same dimension as the snowfall rate for exemple. If those variables are not defined in your forcing files you will get an error when running the simulation.</em></p>
+</section>
+<section id="optional-changes-in-namelist-to-initialize-an-user-prescribed-snowpack-with-lap">
+<h3>Optional Changes in namelist to initialize an user prescribed snowpack with LAP<a class="headerlink" href="#optional-changes-in-namelist-to-initialize-an-user-prescribed-snowpack-with-lap" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_PREP_ISBA_SNOW
+    XIMPURSNOW<span class="o">(</span>:,1<span class="o">)=</span> <span class="m">0</span>,0,5e-9,0,0    <span class="c1"># BC concentration (g/g_of_snow) in each layer (5 layers here)</span>
+    XIMPURSNOW<span class="o">(</span>:,2<span class="o">)=</span> <span class="m">0</span>,0,5000e-9,0,0 <span class="c1"># Dust concentration (g/g_of_snow) in each layer(5 layers here)</span>
+</pre></div>
+</div>
+<p>By default the concentration in all layers will be 0.</p>
+</section>
+<section id="optional-changes-in-namelist-scavenging-of-impurities-through-the-snowpack-with-melt-water">
+<h3>Optional Changes in namelist: scavenging of impurities through the snowpack with melt water<a class="headerlink" href="#optional-changes-in-namelist-scavenging-of-impurities-through-the-snowpack-with-melt-water" title="Permalink to this headline">¶</a></h3>
+<p>As fully explained in the original article (Tuzet et al. 2017), it is possible to activate the scavenging of impurities through the snowpack with mel water.
+The representation of water percolation in Crocus are, for now, quite simple and might be affected by large uncertainties so the scavenging of impurities is disabled by default.
+If you want to run a simulation including the scavenging of impurities, you have to adapt the following example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_PREP_ISBA_SNOW
+    XSCAVEN_COEF<span class="o">(</span><span class="m">1</span><span class="o">)=</span><span class="m">0</span>.2     <span class="c1"># 20% of Black Carbon scavenged with percolating water</span>
+    XSCAVEN_COEF<span class="o">(</span><span class="m">2</span><span class="o">)=</span><span class="m">0</span>.05    <span class="c1"># 5% of dust scavenged with percolating water</span>
+</pre></div>
+</div>
+<p>Note : A scavenging coefficient &lt;1 means that the percolating water is less concentrated in impurities than the layer from which the water is leaving.
+This leads to an enrichement of impurities as water is percolating through the snowpack.</p>
+</section>
+<section id="information-on-default-values-new-diagnostics-and-top-layer-behaviour">
+<h3>Information on default values, new diagnostics and top layer behaviour<a class="headerlink" href="#information-on-default-values-new-diagnostics-and-top-layer-behaviour" title="Permalink to this headline">¶</a></h3>
+<p>Default values:</p>
+<ul class="simple">
+<li><p>The refractive of ice is taken from Warren and Brandt. 2008.</p></li>
+<li><p>The values of the shape parameters B and g used in Kokhanovsky and Zege(2004) theory are set to 1.6 and 0.845 respectively (according to Libois et al. 2013 and Dumont et al. 2017)</p></li>
+<li><p>The Mass Absoprtion Efficiency (MAE) of black carbon is based on refractive index advised by Bond and Bergstrom 2006, with a value of 11.25 kg m-1 at 550nm as in Tuzet et al. 2019.</p></li>
+<li><p>The Mass Absoprtion Efficiency (MAE) of mineral dust is based on refractive index found in Caponi et al. 2017 for Lybian dust of PM 2.5</p></li>
+</ul>
+<p>New diagnostics:</p>
+<ul class="simple">
+<li><p>The Light-Absorbing Particles concentration diagnostics (SNOWIMP) have classic dimensions (time,number of point,number of snow layers).</p></li>
+<li><p>The spectral diagnostics (SPEC_ALB,DIFF_TOT and SPEC_TOT) have special dimensions (time,number of spectral bands,number of snow layers). For now the spectral bands run from 300 to 4000 (included) by step of 20, meaning 186 spectral bands. (300,320,340,……,3980,4000)</p></li>
+</ul>
+<p>Top layer behaviour:</p>
+<ul class="simple">
+<li><p>At the end of the snow season, when scavenging is disabled, the Light-Absorbing Particles present in melting layers accumulate in the uppermost layers. This is the enrichement of the surface in Light-Absorbing Particles content, described for instance in Sterle et al. (2013).</p></li>
+<li><p>In Crocus, this uppermost layer have its own dynamics, and its thickness can strongly vary from one timestep to another. When the mass of Light-Absorbing Particles in the uppermost layer is important (&gt;1 microgram of black carbon for instance), the thickness of the uppermost layer strongly influences the radiative transfer. The spectral albedo then shows a strong dependence to the thickness of the top layer, and hence to the timestep while the mass of impurity is the same.</p></li>
+<li><p>This behavior is just a numerical artifact that is not desired in Crocus simulations. To minimize this effect, the mass of Light-Absorbing Particles in the uppermost layer is equally reparted in the 10 first millimeters of SWE at each timestep. This way, the impact of the surface mass of Light-Absorbing Particles on snow radiative transfer does not depend on the numerical thickness of the uppermost layer. It is noteworthy that the default values of Light-Absorbing Particles mass absorption efficiency have been modified since the original article.</p></li>
+</ul>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<p>Bond, T. C. and Bergstrom, R. W.: Light absorption by carbonaceous particles: An investigative review, Aerosol science and technology, 40,
+27–67, 2006</p>
+<p>Caponi, L., Formenti, P., Massabo, D., Biagio, C. D., Cazaunau, M., Pangui, E., Chevaillier, S., Landrot, G., Andreae, M. O., Kandler, K.,
+et al.: Spectral-and size-resolved mass absorption efficiency of mineral dust aerosols in the shortwave spectrum: a simulation chamber
+study, Atmospheric Chemistry and Physics, 17, 7175–7191, 2017.</p>
+<p>Dumont, M., Arnaud, L., Picard, G., Libois, Q., Lejeune, Y., Nabat, P., Voisin, D., and Morin, S.: In situ continuous visible and near-infrared
+spectroscopy of an alpine snowpack, The Cryosphere, 11, 1091–1110, <a class="reference external" href="https://doi.org/10.5194/tc-11-1091-2017">https://doi.org/10.5194/tc-11-1091-2017</a>, <a class="reference external" href="http://www.the-cryosphere">http://www.the-cryosphere</a>.
+net/11/1091/2017/, 2017.</p>
+<p>Kokhanovsky, A. and Zege, E.: Scattering optics of snow, Applied Optics, 43(7), 1589–1602, <a class="reference external" href="https://doi.org/doi:10.1364/AO.43.0001589">https://doi.org/doi:10.1364/AO.43.0001589</a>,
+2004.</p>
+<p>Sterle, K.M., McConnell, J.R., Dozier, J., Edwards, R. and Flanner, M.G., 2013. Retention and radiative forcing of black carbon in eastern Sierra Nevada snow. The Cryosphere, 7(1), pp.365-374.</p>
+<p>Libois, Q., Picard, G., France, J. L., Arnaud, L., Dumont, D., Carmagnola, C. M., and King, M. D.: Influence of grain shape on light penetration
+in snow, The Cryosphere, 7, 1803–1818, <a class="reference external" href="https://doi.org/10.5194/tc-7-1803-2013">https://doi.org/10.5194/tc-7-1803-2013</a>, 2013.</p>
+<p>Tuzet, F., Dumont, M., Lafaysse, M., Picard, G., Arnaud, L., Voisin, D., Lejeune, Y., Charrois, L., Nabat, P., and Morin, S.: A multilayer
+physically based snowpack model simulating direct and indirect radiative impacts of light-absorbing impurities in snow, The Cryosphere,
+11, 2633–2653, 2017</p>
+<p>Tuzet, F. et al. (In discussion) :Influence of light absorbing particles on snow spectral irradiance profiles, TCD 2019</p>
+<p>Warren S, Brandt R. : Optical constants of ice from the ultraviolet to the microwave: A revised compilation. Journal of Geophysical Research: Atmospheres. 2008</p>
+</section>
+</section>
+<section id="radiation-on-slopes">
+<h2>3-Radiation on slopes<a class="headerlink" href="#radiation-on-slopes" title="Permalink to this headline">¶</a></h2>
+<section id="id3">
+<h3>Basic information<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : M Lafaysse</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 08/2017</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> : 002687be</p></li>
+<li><p><strong>Commit and tag after development</strong> :</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev ? VERIFIER]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>Description of the development<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Correct parameterization of incoming radiations for homogeneous explicit slopes</p>
+<p>This parameterization considers there is an homogeneous and infinite slope.
+It replaces the parameterization LNOSOF = FALSE which is wrong in that case
+(I do not know if LNOSOF = FALSE parameterization is correct in some other SURFEX configurations).</p>
+<p>The LSLOPE parameterization must be used when the shortwave direct radiation has already been projected on the slope.
+The incoming diffuse shortwave and longwave radiations are horizontal and isotropic.
+The modifications of these fluxes is only due to a sky view factor which is estimated for an infinite slope.</p>
+<p>The longwave radiation of the complementary solid angle is computed assuming
+the surface of the opposite slopes have the same temperature.</p>
+<p>The shortwave radiation reflected by the opposite slopes are neglected.</p>
+<p><strong>Do not modify the direct radiation which must be projected in the forcing file.</strong></p>
+</section>
+<section id="id5">
+<h3>Changes in namelist<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_SURF_ATM
+    <span class="nv">LSLOPE</span> <span class="o">=</span> .TRUE.
+</pre></div>
+</div>
+</section>
+<section id="warning">
+<h3>WARNING<a class="headerlink" href="#warning" title="Permalink to this headline">¶</a></h3>
+<p><strong>Forcing files must have the radiations projected on the slopes.</strong></p>
+<p>This is the case if the sloppy forcing is generated by snowtools_git.</p>
+<p><strong>This can not be the case with old forcing files.</strong></p>
+</section>
+</section>
+<section id="output-diagnostics">
+<h2>4-Output diagnostics<a class="headerlink" href="#output-diagnostics" title="Permalink to this headline">¶</a></h2>
+<section id="id6">
+<h3>Basic information<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : M Lafaysse</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 10/2017</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> : 3fae7763</p></li>
+<li><p><strong>Commit and tag after development</strong> : 3169a5f2 (cen)</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev ? VERIFIER]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Description of the development<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>Option to write all topographic metadata in output files: ZS, aspect, slope, massif_number</p>
+<p>Note that snowtools forces this option to TRUE in the namelists.</p>
+</section>
+<section id="id8">
+<h3>Changes in namelist<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_IO_OFFLINE
+    <span class="nv">LWRITE_TOPO</span> <span class="o">=</span> .TRUE.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="crocus-resort">
+<h2>5-Crocus Resort<a class="headerlink" href="#crocus-resort" title="Permalink to this headline">¶</a></h2>
+<section id="id9">
+<h3>Basic information<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : P Spandre and C Carmagnola</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 2013 (V1) - 2018 (V2)</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> :</p></li>
+<li><p><strong>Commit and tag after development</strong> : 87d0598cbee (cen_dev)</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="description-of-the-development-first-version">
+<h3>Description of the development (first version)<a class="headerlink" href="#description-of-the-development-first-version" title="Permalink to this headline">¶</a></h3>
+<p>The understanding and implementation of snow management in detailed snowpack models is a major step towards a more realistic assessment of the evolution of snow conditions in ski resorts concerning past, present and future climate conditions. In this context, a new module accounting for snow management processes (grooming, snowmaking), named Crocus-Resort, has been integrated into the snowpack model Crocus. As for grooming, the effect of the tiller is explicitly taken into account and its effects on snow properties (density, snow microstructure) are simulated in addition to the compaction induced by the weight of the grooming machine. As for snowmaking, the production of machine-made snow is carried out with respect to specific rules and current meteorological conditions. Crocus-Resort has been proven to provide realistic simulations of snow conditions on ski slopes</p>
+</section>
+<section id="id10">
+<h3>Changes in namelist<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_ISBA_SNOWn
+    <span class="nv">CSNOWMETAMO</span> <span class="o">=</span> <span class="s1">&#39;B21&#39;</span>, <span class="s1">&#39;C13&#39;</span>, <span class="s1">&#39;T07&#39;</span>, <span class="s1">&#39;F06&#39;</span>   other options bring some errors
+    <span class="nv">LSNOWCOMPACT_BOOL</span> <span class="o">=</span> .TRUE.                 activate grooming
+    <span class="nv">LSNOWTILLER</span>       <span class="o">=</span> .TRUE.                 activate tiller effect <span class="o">(</span><span class="k">if</span> LSNOWCOMPACT_BOOL is <span class="nb">true</span><span class="o">)</span>
+    <span class="nv">LSNOWMAK_BOOL</span>     <span class="o">=</span> .TRUE.                 activate snowmaking
+    <span class="nv">LSNOWMAK_PROP</span>     <span class="o">=</span> .TRUE.                 activate machine-made snow properties <span class="o">(</span><span class="k">if</span> LSNOWMAK_BOOL is <span class="nb">true</span><span class="o">)</span>
+    <span class="nv">LSELF_PROD</span>        <span class="o">=</span> .TRUE.                 activate automatic control of snow production
+
+<span class="p">&amp;</span>NAM_SURF_SNOW_CSTS
+    <span class="nv">XRHO_SNOWMAK</span> <span class="o">=</span> <span class="m">600</span>         Machine-made snow density.<span class="o">(</span>kg/m3<span class="o">)</span>
+    <span class="nv">XPTA_SEUIL</span>   <span class="o">=</span> <span class="m">267</span>.15      Wet bulb temperature threshold <span class="k">for</span> machine-made snow production.
+    <span class="nv">XPROD_SCHEME</span> <span class="o">=</span> <span class="m">300</span>,450     Production target <span class="o">(</span>water consumption kg/m2, one <span class="k">for</span> each simulation point<span class="o">)</span>
+    <span class="nv">XSM_END</span>      <span class="o">=</span> <span class="m">4</span>,30,4,30   Month and day to stop grooming <span class="o">(</span><span class="k">for</span> <span class="nv">LSNOWMAK_BOOL</span> <span class="o">=</span> F and <span class="k">for</span> <span class="nv">LSNOWMAK_BOOL</span> <span class="o">=</span> T, respectively<span class="o">)</span>.
+    <span class="nv">XFREQ_GRO</span>    <span class="o">=</span> <span class="m">1</span>           Grooming frequency <span class="o">(</span>usually <span class="m">1</span>/day<span class="o">)</span>.
+    <span class="nv">XPP_D1</span>       <span class="o">=</span> <span class="m">342</span>.        Beginning of base-layer generation production period <span class="o">(</span>default 1st of November <span class="o">[</span><span class="m">11</span>*31+1<span class="o">=</span><span class="m">342</span><span class="o">])</span>
+    <span class="nv">XPP_D2</span>       <span class="o">=</span> <span class="m">387</span>.        End of base-layer generation production period <span class="o">(</span>default 15th of December <span class="o">[</span><span class="m">12</span>*31+15<span class="o">=</span><span class="m">387</span><span class="o">])</span>
+    <span class="nv">XPP_D3</span>       <span class="o">=</span> <span class="m">124</span>.        End of reinforcement production period <span class="o">(</span>default 31st of March <span class="o">[</span><span class="m">3</span>*31+31<span class="o">=</span><span class="m">124</span><span class="o">])</span>
+
+    <span class="nv">XPP_H1</span>       <span class="o">=</span> <span class="m">0</span>.          Beginning of base-layer generation production period <span class="o">(</span>seconds<span class="o">)</span>
+    <span class="nv">XPP_H2</span>       <span class="o">=</span> <span class="m">86400</span>.      End of base-layer generation production period <span class="o">(</span>seconds<span class="o">)</span>
+                               Default: production during this period is allowed all day <span class="o">(</span>0s to 86400s<span class="o">)</span>
+
+    <span class="nv">XPP_H3</span>       <span class="o">=</span> <span class="m">64800</span>.      Beginning of reinforcement production period <span class="o">(</span>seconds<span class="o">)</span>
+    <span class="nv">XPP_H4</span>       <span class="o">=</span> <span class="m">28800</span>.      End of reinforcement production period <span class="o">(</span>econds<span class="o">)</span>
+                               Default: production during this period is allowed from 6pm <span class="o">(</span>64800s<span class="o">)</span> to 8am <span class="o">(</span>28800s<span class="o">)</span>
+
+    <span class="nv">XPR_A</span>        <span class="o">=</span> -3.94       Adjustable coefficients depending on snow-gun <span class="nb">type</span> <span class="o">(</span>Hanzer et al., <span class="m">2014</span><span class="o">)</span>
+    <span class="nv">XPR_B</span>        <span class="o">=</span> -4.23       Adjustable coefficients depending on snow-gun <span class="nb">type</span> <span class="o">(</span>Hanzer et al., <span class="m">2014</span><span class="o">)</span>
+    <span class="nv">XWT</span>          <span class="o">=</span> <span class="m">4</span>.2         Wind speed threshold <span class="k">for</span> snowmaking <span class="o">(</span>m/s<span class="o">)</span>
+    <span class="nv">XPT</span>          <span class="o">=</span> <span class="m">150</span>.        Water consumption threshold during base-layer generation production period <span class="o">(</span>kg/m2<span class="o">)</span>
+    <span class="nv">XPTR</span>         <span class="o">=</span> <span class="m">0</span>.60        Total <span class="o">(</span>natural+machine-made<span class="o">)</span> snow height threshold during reinforcement production period <span class="o">(</span>m<span class="o">)</span>
+
+<span class="p">&amp;</span>NAM_WRITE_DIAG_SURFn
+    <span class="nv">CSELECT</span><span class="o">=</span><span class="s1">&#39;WBT&#39;</span>,<span class="s1">&#39;MMP_VEG&#39;</span>    Wet bulb temperature <span class="o">(</span>°C<span class="o">)</span> and cumulative water consumption <span class="k">for</span> snowmaking <span class="o">(</span>kg/m2<span class="o">)</span>.
+</pre></div>
+</div>
+</section>
+<section id="more-informations-on-options">
+<h3>More informations on options<a class="headerlink" href="#more-informations-on-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>LSNOWCOMPACT_BOOL</strong>: Grooming apply only if SWE &gt; 20 kg/m2 and between 20h and 21h (and also 6h-9h is there is some snowfall during the night</p>
+<p><strong>LSNOWTILLER</strong>: Tiller effect, which applies down to 35 kg/m2 below the surface</p>
+<p><strong>LSNOWMAK_BOOL</strong>: Snowmaking only applies if the wind speed is &lt; 10 km/h, during all the day during the period 01/11-15/12 and between 18h-8h during the period 15/12-31/03.
+During the first period (base-layer generation), the production is allowed until reaching a water consumption of XPT (= 150 kg/m2 in namelist above).
+During the second period (snowpack reinforcement), the production is allowed if the total (natural+machine-made) snow height is &lt; 60 cm.
+Finally, a loss of 30% in the snow production process is applied in every condition.</p>
+<p><strong>LSNOWMAK_PROP</strong>: Switch for the activation of machine-made snow properties (F = same as natural snow).
+The machine-made snow properties are set as follows: SSA = 23 m2/kg, Sphericity = 0.9.</p>
+<p><strong>LSELF_PROD</strong>: Control of snow production.
+If T, the production follows the automatic control defined above (threshold of XPT during base-layer generation period, threshold of XPTR during snowpack reinforcement period).
+If F, the production is forced to match the pre-set production scheme defined by XPROD_SCHEME in namelist</p>
+<p><strong>XPROD_SCHEME</strong>: If LSELF_PROD=F, XPROD_SCHEME is the target water consumption (kg/m2)</p>
+<p>XPROD_SCHEME is an array whose values correspond to different points (the first value is attributed to the first point, and so on).</p>
+<p><strong>WBT</strong>: Wet bulb temperature is computed even if LSNOWMAK_BOOL=F and is a diagnostic variable that can be shown by selecting CSELECT=’WBT’ in the namelist</p>
+<p><strong>MMP_VEG</strong>: During base-layer generation period, the production is then allowed as long as MMP &lt; XPT (if LSELF_PROD=T) or MMP &lt; XPROD_SCHEME(1) (if LSELF_PROD=F).</p>
+<p>The value of MMP is written in the PREP.nc file and therefore it can be carried over between different simulation runs.</p>
+<p>The value of MMP can be displayed by selecting CSELECT=’MMP_VEG’ in the namelist.</p>
+</section>
+<section id="other-informations">
+<h3>Other informations<a class="headerlink" href="#other-informations" title="Permalink to this headline">¶</a></h3>
+<p>The snow production rate is wet bulb temperature-dependent.
+The linear dependency of the rate on the temperature has been implemented according to Hanzer et al., 2014.
+The 2 adjustable coefficients XPR_A and XPR_B, that can be adapted depending on the snow-gun type (lances or fences, for instance).
+Assuming a machine-made snow density of 400 kg/m3, the production rate is computed as XPR_A*WBT+XPR_B and expressed in m²/h.</p>
+<p>The default value of 150 kg/m2 for XPT is due to an average water availability of = 1500 m3/ha.</p>
+<p>In Crocus:
+* the decisions to produce machine-made snow are defined in the routine snow_making.F90
+* the impact of snowmaking and grooming on snow properties is coded in the routine snowcro.F90 (sub-routines SNOWNLFALL_UPGRID, SNOWCROCOMPACTN and SNOWGROOMING)</p>
+</section>
+<section id="id11">
+<h3>References<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>Pierre Spandre, S. Morin, M. Lafaysse, Y. Lejeune, H. François, E. George-Marcelpoil: Integration of snow management processes into a detailed snowpack model, Cold Regions Science and Technology, <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2016.01.002">https://doi.org/10.1016/j.coldregions.2016.01.002</a></p>
+<p>Florian Hanzer, Thomas Marke, Ulrich Strasser: Distributed, explicit modeling of technical snow production for a ski area in the Schladming region (Austrian Alps), Cold Regions Science and Technology, <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2014.08.003">https://doi.org/10.1016/j.coldregions.2014.08.003</a></p>
+<p>Carlo Carmagnola, S. Morin, M. Lafaysse, M. Vernay, H. François,N. Eckert, L. Batté, J. M. Soubeyroux, C. Viel: Combination of climatological information and meteorological forecast for seamless prediction of alpine snow conditions, <a class="reference external" href="https://api.semanticscholar.org/CorpusID:204910621">https://api.semanticscholar.org/CorpusID:204910621</a></p>
+<p>Florian Hanzer, Carlo Maria Carmagnola, Pirmin Philipp Ebner, Franziska Koch, Fabiano Monti, Mathias Bavay, Matthias Bernhardt, Matthieu Lafaysse, Michael Lehning, Ulrich Strasser, Hugues François, Samuel Morin: Simulation of snow management in Alpine ski resorts using three different snow models, Cold Regions Science and Technology, <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2020.102995">https://doi.org/10.1016/j.coldregions.2020.102995</a>.</p>
+</section>
+</section>
+<section id="snow-drift-and-blowing-snow-module-sytron">
+<h2>6-Snow drift and blowing snow module SYTRON<a class="headerlink" href="#snow-drift-and-blowing-snow-module-sytron" title="Permalink to this headline">¶</a></h2>
+<section id="id12">
+<h3>Basic information<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : V Vionnet</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> :</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit and tag before development</strong> :</p></li>
+<li><p><strong>Commit and tag after development</strong> :</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev ? VERIFIER]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>Description of the development<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>The snowdrift scheme increases compaction and metamorphism due to snowdrift (Brun et al, 1997 ; Vionnet et al, 2012) but it does not transfer mass between grid points.</p>
+<p>To activate the scheme, the (now obsolete) LSNOWDRIFT logical key is replaced by <strong>CSNOWDRIFT</strong> option with 4 possible values:
+* <strong>CSNOWDRIFT=’NONE’</strong> snowdrift scheme disactivated
+* <strong>CSNOWDRIFT=’DFLT’</strong> (default) snowdrift scheme activated, properties of falling snow are purely dendritic
+* <strong>CSNOWDRIFT=’VI13’</strong> snowdrift scheme activated, properties of falling snow are taken from Vionnet et al (2013)
+* <strong>CSNOWDRIFT=’GA01’</strong> snowdrift scheme activated, properties of falling snow are taken from Gallée et al (2001)</p>
+<p>The modification of initial microstructure in options VI13 and GA01 affects in particular the threshold wind speed for snow transport when blowing occurs with concurrent snowfall.</p>
+<p>LSNOWSYTRON logical (default FALSE) key allows to activate the blowing snow module SYTRON (Vionnet et al, 2018) which simulates erosion and accumulation between opposite slope aspects in the topographic-based geometry used by MF operational simulations for avalanche hazard forecasting. This option must be maintained to FALSE in all other simulation geometries. It is recommended to combine LSNOWSYTRON=T with CSNOWDRIFT=VI13 (better skill scores in terms of blowing snow occurrence)</p>
+</section>
+<section id="id14">
+<h3>Changes in namelist<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_ISBA_SNOWn
+    <span class="nv">CSNOWDRIFT</span>   <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>, <span class="s1">&#39;DFLT&#39;</span>, <span class="s1">&#39;VI13&#39;</span>, <span class="s1">&#39;GA01&#39;</span>
+    <span class="nv">LSNOWSYTRON</span>  <span class="o">=</span> .TRUE., .FALSE.
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>References<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>Gallée, H., Guyomarc’h, G., &amp; Brun, E. (2001). Impact of snow drift on the Antarctic ice sheet surface mass balance: possible sensitivity to snow-surface properties. Boundary-Layer Meteorology, 99(1), 1-19.</p>
+<p>Vionnet, V., Guyomarc’h, G., Bouvet, F. N., Martin, E., Durand, Y., Bellot, H., … &amp; Puglièse, P. (2013). Occurrence of blowing snow events at an alpine site over a 10-year period: observations and modelling. Advances in Water Resources, 55, 53-63.</p>
+<p>Vionnet, V., Guyomarc’h G., Lafaysse, M., Naaim-Bouvet, F., Giraud, G. and Deliot, Y. : Operational implementation and evaluation of a blowing snow scheme for avalanche hazard forecasting, Cold Reg. Sci. Technol. 147, 1-10, Doi : 10.1016/j.coldregions.2017.12.006, 2018.</p>
+<p>Brun, E., Martin, E., &amp; Spiridonov, V. (1997). Coupling a multi-layered snow model with a GCM. Annals of Glaciology, 25, 66-72.</p>
+<p>Vionnet, V., Brun, E., Morin, S., Boone, A., Faroux, S., Le Moigne, P., Martin, E., and Willemet, J.-M. : The detailed snowpack scheme Crocus and its implementation in SURFEX v7.2, Geosci. Model Dev., 5, 773-791, doi :10.5194/gmd-5-773-2012, 2012.</p>
+</section>
+</section>
+<section id="spatialized-blowing-snow-and-sublimation-module-snowpappus-f90">
+<h2>7-Spatialized blowing snow and sublimation module SNOWPAPPUS.F90<a class="headerlink" href="#spatialized-blowing-snow-and-sublimation-module-snowpappus-f90" title="Permalink to this headline">¶</a></h2>
+<section id="id16">
+<h3>Basic information<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>This documentation is heavily inspired by the Snowpappus user guide written by Matthieu Baron. (see file: <a class="reference external" href="https://doi.org/10.5281/zenodo.7681340">https://doi.org/10.5281/zenodo.7681340</a>)</p>
+<p>The mathematics-style notations used in this user guide are the same as in the SnowPappus description paper. (Baron M., Haddjeri A et al., 2024)</p>
+</section>
+<section id="recommendations-of-general-namelist-options">
+<h3>Recommendations of general namelist options<a class="headerlink" href="#recommendations-of-general-namelist-options" title="Permalink to this headline">¶</a></h3>
+<p>SnowPappus is not designed to work with some other options of SURFEX, in the other snow transport modules (SYTRON, Crocus-Meso-NH), and some options of Crocus. To avoid problems, here is a list of namelist parameters which should
+be fixed to these values :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>  <span class="p">&amp;</span>NAM ISBA SNOWn
+<span class="nv">CSNOWDRIFT</span><span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+<span class="nv">LSNOWDRIFT_SUBLIM</span><span class="o">=</span> .FALSE.
+<span class="nv">LSNOWSYTRON</span><span class="o">=</span>.FALSE. <span class="o">(</span> default <span class="o">)</span>
+</pre></div>
+</div>
+<p>More justification about some of these requirements will be given in the fol-
+lowing sections. More generally, SnowPappus has currently be tested with the
+”default” Crocus options. They are given in the provided namelists. The con-
+sistent behaviour of SnowPappus with other physical options (metamorphism,
+compaction, properties of falling snow) should be carefully evaluated before any
+large scale application.</p>
+</section>
+<section id="snowpappus-specific-namelist-parameters">
+<h3>Snowpappus specific namelist parameters<a class="headerlink" href="#snowpappus-specific-namelist-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Snowpappus options ( to activate or disactivate SnowPappus and different sub-
+processes, choose the parameterizations … ). They are all gathered in the group
+&amp;NAM ISBA SNOWn .</p>
+<p><strong>Activating or disactivating SnowPappus</strong>: LSNOWPAPPUS ( logical ) :
+Activates SnowPappus if set to .TRUE. . If .FALSE. (default) , the program
+does not run SnowPappus code.</p>
+<p><strong>Snowfall, blowing snow occurence and wind-induced snow metamorphism</strong>: Blowing snow occurrence detection depends mainly on :</p>
+<ol class="arabic simple">
+<li><p>The parameterization linking surface properties to threshold friction velocity</p></li>
+<li><p>The properties of snowfall (in terms on microstructure and possibly density)</p></li>
+</ol>
+<p>An important thing to know is that :</p>
+<ol class="arabic simple">
+<li><p>Wind-induced snow metamorphism can be computed by the SNOWCRO routine ( Crocus main routine )</p></li>
+<li><p>Several options are available for fresh snow properties</p></li>
+<li><p>Activating or disactivating wind-induced snow metamorphism interacts with the snowfall properties option.</p></li>
+</ol>
+<p>First of all, we will explain how it works in Crocus without SnowPappus.
+Second, we will explain the modifications and additional SnowPappus option.
+In Crocus without SnowPappus :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;CSNOWFALL&#39;</span> controls falling snow density <span class="o">(</span> see SURFEX documentation <span class="k">for</span> more details <span class="o">)</span>
+
+<span class="s1">&#39;CSNOWDRIFT&#39;</span> controls wind-induced snow metamorphism and falling
+snow microstructure.<span class="s1">&#39;NONE&#39;</span>: falling snow microstructure as described <span class="k">in</span>
+Vionnet et al. <span class="m">2012</span> and Guyomar<span class="sb">`</span>ch et al. <span class="m">1998</span>, no wind-induced snow
+metamorphism<span class="p">;</span> <span class="s1">&#39;VI13&#39;</span>: falling snow microstructure as described <span class="k">in</span> Vion-
+net et al. <span class="m">2013</span>, wind-induced snow metamorphism as described <span class="k">in</span> Vionnet
+et al. <span class="m">2012</span><span class="p">;</span> <span class="s1">&#39;DFLT&#39;</span><span class="o">(</span>default<span class="o">)</span> : not described here<span class="p">;</span> <span class="s1">&#39;GA01&#39;</span> : not described
+here<span class="p">;</span> <span class="s1">&#39;PAPP&#39;</span> : using pappus threshold wind speed to compute the mobility
+index <span class="o">(</span> see Vionnet et al. <span class="m">2012</span> <span class="k">for</span> more details <span class="o">)</span>.
+
+<span class="s1">&#39;CSNOWMOB&#39;</span>: gives the option <span class="k">for</span> threshold wind speed. Threshold
+wind speed is computed <span class="k">in</span> the SNOWCRO routine.
+</pre></div>
+</div>
+<p>For SnowPappus use, we have to set CSNOWDRIFT=’NONE’ so that all
+snow transport-related computations are done by SnowPappus. In order to
+keep control on falling snow properties, we enabled independent selection of
+wind-induced snow metamorphism option and snowfall properties</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;CSNOWFPAPPUS&#39;</span> overcomes <span class="s1">&#39;CSNOWDRIFT&#39;</span> to <span class="k">select</span> falling snow microstructure.<span class="s1">&#39;GM98&#39;</span>
+<span class="o">(</span>Guyomar<span class="sb">`</span>ch <span class="p">&amp;</span> merindol <span class="m">1998</span>, Vionnet <span class="m">2012</span><span class="o">)</span> <span class="p">;</span> <span class="s1">&#39;VI13&#39;</span> Vionnet <span class="m">2013</span>,
+<span class="s1">&#39;NONE&#39;</span><span class="o">(</span>default<span class="o">)</span> : no effect, CSNOWDRIFT prevails.
+
+<span class="s1">&#39;CSNOWMOB&#39;</span> : Chooses the way threshold wind speed is computed <span class="k">in</span>
+SnowPappus when surface snow age is superior to the threshold value
+XAGELIMPAPPUS <span class="o">(</span> and <span class="k">in</span> snowcro <span class="k">if</span> <span class="nv">HSNOWDRIFT</span><span class="o">=</span>.TRUE. <span class="o">)</span>. <span class="s1">&#39;GM98&#39;</span>
+<span class="o">(</span>default<span class="o">)</span> historical version, Guyomar<span class="sb">`</span>ch et Mérindol <span class="o">(</span><span class="m">1998</span><span class="o">)</span>, see SnowPap-
+pus description article ,<span class="s1">&#39;CONS&#39;</span> threshold wind speed is constant equalling
+<span class="m">9</span> m/s <span class="o">(</span> at 5m height <span class="o">)</span>, see SnowPappus description article, <span class="s1">&#39;VI12&#39;</span> param-
+eterization described <span class="k">in</span> Vionnet et al <span class="m">2012</span>, <span class="s1">&#39;LI07&#39;</span> parameterization as a
+<span class="k">function</span> of density as described <span class="k">in</span> Liston et al. <span class="m">2007</span>, <span class="s1">&#39;COGM&#39;</span> constant at
+<span class="m">9</span> m/s <span class="k">if</span> snow is non-dendritic, given by GM98 parameterization <span class="k">for</span> den-
+dritic snow <span class="o">(</span> beware: this option is also used <span class="k">for</span> Crocus alone or Sytron.
+Only <span class="s1">&#39;GM98&#39;</span> and <span class="s1">&#39;VI12&#39;</span> work <span class="k">in</span> these cases <span class="o">)</span>
+</pre></div>
+</div>
+<p><strong>other options</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;OPAPPUDEBUG&#39;</span> : Boolean. If True triggers snowpappus debug mode.
+This option displays additional information on the computation. It dis-
+plays warnings, swe conservation verification results, <span class="nb">time</span> and date during
+computation <span class="k">for</span> easier debugging. And proof of SnowPappus mass con-
+servation. <span class="o">(</span>default .False.<span class="o">)</span>
+
+<span class="s1">&#39;CSALTPAPPUS&#39;</span> : <span class="s1">&#39;P90&#39;</span> <span class="o">(</span>default<span class="o">)</span> : Saltation transport given by Pomeroy
+<span class="m">1990</span> formulation, <span class="s1">&#39;S04&#39;</span> : Sorensen <span class="m">2004</span> - Vionnet <span class="m">2012</span> formulation. More
+details about it <span class="k">in</span> Baron et al. <span class="m">2023</span> Snowpappus description paper
+
+<span class="s1">&#39;CLIMVFALL&#39;</span> : <span class="s1">&#39;DEND&#39;</span> fall speed of suspended snow particles is com-
+puted as old snow <span class="k">if</span> snow is non-dendritic,<span class="s1">&#39;PREC&#39;</span> old <span class="nv">snow</span> <span class="o">=</span> non-dendritic
+OR age &lt; XAGELIMPAPPUS2, <span class="s1">&#39;MIXT&#39;</span> <span class="o">(</span>default<span class="o">)</span> old snow <span class="k">for</span> non-dendritic,
+new snow <span class="k">for</span> dendritic and age &lt; XAGELIMPAPPUS2 , weighted average
+<span class="k">if</span> dendritic more aged snow, the option is described <span class="k">in</span> SnowPappus de-
+scription paper
+
+<span class="s1">&#39;CPAPPUSSUBLI&#39;</span> : <span class="s1">&#39;NONE&#39;</span> : no sublimation <span class="k">in</span> pappus transport scheme,
+<span class="s1">&#39;SBSM&#39;</span>: SBSM sublimation parametrisation, <span class="s1">&#39;BJ10&#39;</span>: Bintanja <span class="m">1998</span> with
+10m wind , <span class="s1">&#39;BJ03&#39;</span> : Bintanja <span class="m">1998</span> with 3m wind, <span class="s1">&#39;GR06&#39;</span> : Gordon <span class="m">2006</span>
+sublimation parameterization.
+
+<span class="s1">&#39;OPAPPULIMTFLUX&#39;</span> : Boolean. If <span class="nv">True</span> <span class="o">=</span> snow transport flux limitation
+activated. It limits the flux on a pixel <span class="k">if</span> there is not enough snow on it to
+avoid removing more snow than there is on it. There is limitations on Q t
+and q subl .
+</pre></div>
+</div>
+<p>The condition is the following :</p>
+<div class="math">
+<p><img src="../_images/math/2ea373f6ba787a774ff0284da0b62ea2f10853eb.png" alt="q_{subl}\leq\frac{P_{SWE}}{Pt_{step}} \\
+Q_t \leq (\frac{P_{SWE}}{Pt_{step}} - q_{subl})\frac{P_{mesh}}{cos(\theta)}"/></p>
+</div><p>with PSWE being the snow mass for each pixel in kg/m 2 , P t step the com-
+putation time step in s, P mesh the pixel size in m and theta the slope angle.
+(default: False) It also limits the mass bilan of snowcro.F90 to XUEPSI.
+It also corrects the water mass flux balance to a precision of XUEPSI. The
+condition is the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WHERE <span class="o">(</span>ZQDEP_TOT<span class="o">(</span>:<span class="o">)</span>&lt;XUEPSI .AND. ZQDEP_TOT<span class="o">(</span>:<span class="o">)</span>&gt;-XUEPSI<span class="o">)</span>
+ZQDEP_TOT<span class="o">(</span>:<span class="o">)</span> <span class="o">=</span> <span class="m">0</span>.
+ENDWHERE
+</pre></div>
+</div>
+<p>The drawback of this condition is that it reduces the mass balance of
+snowpappus (error of xuepsi possible if there is more than 2 pixels con-
+tributing to the mass balance of one pixel) but improves the snowcro one
+by satisfying the snownlfall condition of snowfall xuepsi all the time.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;CSNOWPAPPUSERODEPO&#39;</span> : Determines how the deposition flux q dep is
+computed from Q t <span class="s1">&#39;ERO&#39;</span> : fictive ”pure erosion” <span class="k">case</span> q <span class="nv">dep</span> <span class="o">=</span> - Q l t with
+<span class="nv">l</span> <span class="o">=</span> 250m, <span class="s1">&#39;DEP&#39;</span> : fictive ”pure deposition” <span class="k">case</span> q <span class="nv">dep</span> <span class="o">=</span> + Q l t , <span class="s1">&#39;DIV&#39;</span>
+<span class="o">(</span>default<span class="o">)</span>: q dep computed with a mass balance <span class="o">(</span> needs 2D grids, described
+<span class="k">in</span> SnowPappus article <span class="o">)</span>, <span class="s1">&#39;NON&#39;</span> : q <span class="nv">dep</span> <span class="o">=</span> <span class="nv">0</span> <span class="o">=</span>¿ SnowPappus diagnostics
+are computed but it does not adds or removes any snow. <span class="s1">&#39;ERO&#39;</span>, <span class="s1">&#39;DEP&#39;</span>
+and <span class="s1">&#39;NON&#39;</span> options can be used <span class="k">in</span> point-scale simulations.
+</pre></div>
+</div>
+<p>Constant parameters can be specified in the namelist. They all are in the group
+&amp;NAM SURF SNOW CSTS :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;XAGELIMPAPPUS&#39;</span> : maximum age of snow layer <span class="k">for</span> which wind speed
+threshold is <span class="nb">set</span> to fresh threshold wind speed !<span class="o">(</span>default: <span class="m">0</span>.05 days<span class="o">)</span>
+
+<span class="s1">&#39;XAGELIMPAPPUS2&#39;</span> : maximum age of snow <span class="k">for</span> using Naaim96 formu-
+lation of terminall fall speed <span class="k">in</span> snowpappus <span class="o">(</span>default: <span class="m">0</span>.05 days<span class="o">)</span>
+
+<span class="s1">&#39;XWINDTHRFRESH&#39;</span> : <span class="m">5</span> m wind speed threshold <span class="k">for</span> transport of freshly
+fallen <span class="o">(</span> or deposited <span class="o">)</span> snow <span class="o">(</span>default: <span class="m">6</span> m.s <span class="m">1</span> <span class="o">)</span>·
+
+<span class="s1">&#39;XRHODEPPAPPUS&#39;</span>, <span class="s1">&#39;XDIAMDEPPAPPUS&#39;</span>, <span class="s1">&#39;XSPHDEPPAPPUS&#39;</span> :den-
+sity <span class="o">(</span>kg.m-3<span class="o">)</span>, optical diameter <span class="o">(</span>m<span class="o">)</span> and sphericity of wind blown deposited
+snow <span class="o">(</span>default: <span class="nv">rho</span> <span class="o">=</span> <span class="m">250</span> kg.m-3 , D <span class="nv">opt</span><span class="o">=</span><span class="m">3</span>.10-4 m, <span class="nv">s</span> <span class="o">=</span> <span class="m">1</span> <span class="o">)</span>
+
+<span class="s1">&#39;XLFETCHPAPPUS&#39;</span> : constant fetch distance l fetch applied to all points <span class="k">for</span>
+snowpappus blowing snow flux calculation <span class="o">(</span>m<span class="o">)</span>· <span class="o">(</span>default : l f <span class="nv">etch</span> <span class="o">=</span> 250m <span class="o">)</span>
+
+<span class="s1">&#39;XDEMAXVFALL&#39;</span> : when option MIXT is chosen <span class="k">for</span> terminal fall speed
+calculation, maximum dendricity d max to have pure young snow fall speed.
+<span class="o">(</span>default : d <span class="nv">max</span> <span class="o">=</span> <span class="m">0</span>.3<span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="snowpappus-diagnostic-variables">
+<h3>Snowpappus diagnostic variables<a class="headerlink" href="#snowpappus-diagnostic-variables" title="Permalink to this headline">¶</a></h3>
+<p>In general in SURFEX, the list of diagnostic variables names which are to be
+written in the output file has to be specified in the namelist option CSELECT,
+in group &amp;NAM WRITE DIAG SURFn.</p>
+<p>Here we give the exhaustive list of SnowPappus - related diagnostics.in
+SURFEX, time step at which diagnostic variables are given (namelist option
+XTSTEP OUTPUT in &amp;NAM IO OFFLINE) is not the same as model time
+step. Thus, the output value is either ”instantaneous” ( i.e. the given value is
+the one at the model time step which equals the output time ) or ”cumulated”
+( i.e. the given value is the averaged value on the whole output time step )</p>
+<p><strong>”cumulated” diagnostic variables:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;XQDEP_TOT&#39;</span> : total wind-blown snow net deposition rate q dep <span class="o">(</span>kg.m -2 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XQ_OUT_SUBL&#39;</span> : sublimation rate q subl <span class="o">(</span>kg.m -2 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XQT_TOT&#39;</span> : total wind-blown horizontal vertically integrated snow transport rate Q t <span class="o">(</span>kg.m -1 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XSNOWDEBTC&#39;</span> : cumulated amount of snow which should have been removed on the oint but was not because it became snowfree <span class="o">(</span>kg.m -2 <span class="o">)</span> <span class="o">(</span>see the paragraph ”mass balance” <span class="k">in</span> the article <span class="o">)</span>
+</pre></div>
+</div>
+<p><strong>”instantaneous” diagnostic variables:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;XBLOWSNWFLUX_1M&#39;</span> : horizontal blowing snow flux <span class="m">1</span> m above snow
+surface <span class="o">(</span>kg.m -2 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XBLOWSNWFLUXINT&#39;</span> : average horizontal blowing snow flux between
+<span class="m">0</span>.2 and <span class="m">1</span>.2 m Qt,int <span class="o">(</span>kg.m -1 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XQ_OUT_SALT&#39;</span> : total horizontal transport rate <span class="k">in</span> the saltation layer
+Qsalt <span class="o">(</span>kg.m -1 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XQ_OUT_SUSP&#39;</span> : total horizontal transport rate <span class="k">in</span> the suspension layer
+Qsusp <span class="o">(</span>kg.m -1 .s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XVFRIC_PAPPUS&#39;</span> : wind friction velocity computed by Snowpappus <span class="o">(</span>m.s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XVFRIC_T_PAPPUS&#39;</span> : threshold friction velocity <span class="o">(</span>at ground level<span class="o">)</span> <span class="k">for</span>
+snow transport <span class="o">(</span>m.s -1 <span class="o">)</span>
+
+<span class="s1">&#39;XPZ0_PAPPUS&#39;</span> : roughness length <span class="k">for</span> momentum z0 <span class="o">(</span>m<span class="o">)</span> used by Snowpappus
+
+<span class="s1">&#39;XVFALL_PAPPUS&#39;</span> : mass averaged terminal fall velocity of snow particles
+at the bottom of the suspension layer <span class="o">(</span>m.s -1 <span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>References<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>Baron M., Haddjeri A et al. , SnowPappus v1.0, a blowing-snow model for large-scale applications of the Crocus snow scheme, 2024, <a class="reference external" href="https://doi.org/10.5194/gmd-17-1297-2024">https://doi.org/10.5194/gmd-17-1297-2024</a></p>
+</section>
+</section>
+<section id="meb-crocus-coupling-for-snow-vegetation-interactions">
+<h2>8-MEB-Crocus coupling for snow-vegetation interactions<a class="headerlink" href="#meb-crocus-coupling-for-snow-vegetation-interactions" title="Permalink to this headline">¶</a></h2>
+<section id="id18">
+<h3>Basic information<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : Axel Bouchet - Aaron Boone</p></li>
+<li><p><strong>Status of the development</strong> : [Finished]</p></li>
+<li><p><strong>Date of start of development</strong> : 02/2022</p></li>
+<li><p><strong>Date of end of development</strong> : 09/2022</p></li>
+<li><p><strong>Commit of development</strong> : 676f9308</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen/cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id19">
+<h3>Description of the development<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>This configuration was developed in order to better describe snow-vegetation interactions in temperate midlatitude climates.</p>
+<p>It was initially produced in order to improve snow amount simulations (height and SWE) at the Col de Porte experimental site.
+You can try this parameterization for any other site, even in cold climates like boreal forests (but we need more validations to be sure it makes no major degradation in this kind of vegetation).</p>
+</section>
+<section id="id20">
+<h3>Changes in namelist<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_ISBA
+    <span class="nv">LMEB</span> <span class="o">=</span> .TRUE.
+
+<span class="p">&amp;</span>NAM_MEB_ISBA
+    <span class="nv">LMEB_TALL_VEG</span>       <span class="o">=</span> .TRUE.
+    <span class="nv">LMEB_INT_PHASE_LUN</span>  <span class="o">=</span> .TRUE.
+    <span class="nv">LMEB_INT_UNLOAD_LUN</span> <span class="o">=</span> .TRUE.
+    <span class="nv">LMEB_INT_UNLOAD_SFC</span> <span class="o">=</span> .TRUE.
+</pre></div>
+</div>
+</section>
+<section id="id21">
+<h3>Full Description<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<p><strong>LMEB_TALL_VEG</strong> : enable this key to use vegetation height as a major variable to calculate maximum snow load on trees and turbulent fluxes. It will mainly increase evaporation and sublimation mass loss on tree branches.</p>
+<p><strong>LMEB_INT_PHASE_LUN</strong> : enable this key if you want to use the [Lundquist et al., 2021] intercepted snow melt formulation. When you set this key at True, the snow intercepted by the trees (= the snow which is ON the tree branches) melts faster (4kg.m^-2.K^-1.jour^-1) than using the classical config.</p>
+<p><strong>LMEB_INT_UNLOAD_LUN</strong> : enable this key if you want to use the snow unloading scheme of [Lundquist et al., 2021] (calibration of the [Roesh et al., 2001] scheme). This scheme is globally slowing the solid unloading, which favors snowmelt and sublimation of the intercepted snow as it stays a bit longer on the branches.</p>
+<p><strong>LMEB_INT_UNLOAD_SFC</strong> : enable this key in order to separate snow unloading from snowfalls in Crocus fresh snow incorporation. When the key is set at True, snow unloading will be included into the Crocus snowpack as “old” snow, with properties of melt forms and a density of 200kg.m^-2 .</p>
+</section>
+</section>
+<section id="snava-development-for-snow-avalanche-risk-assessment">
+<h2>9-SNAVA (development for SNow AVAlanche risk assessment)<a class="headerlink" href="#snava-development-for-snow-avalanche-risk-assessment" title="Permalink to this headline">¶</a></h2>
+<section id="id22">
+<h3>Basic information<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Developer name</strong> : D Monteiro</p></li>
+<li><p><strong>Status of the development</strong> : [Evaluation]</p></li>
+<li><p><strong>Date of start of development</strong> : 10/2024</p></li>
+<li><p><strong>Date of end of development</strong> :</p></li>
+<li><p><strong>Commit of development</strong> : fa387a1b0cd08058afb3fdbb9a1e000628162604</p></li>
+<li><p><strong>Branches on which the developpment is present</strong> : [cen_dev]</p></li>
+<li><p><strong>Evaluated against SURFEX test database ?</strong> : [Yes]</p></li>
+<li><p><strong>New test added to database ?</strong> :  [Yes]</p></li>
+</ul>
+</section>
+<section id="id23">
+<h3>Description of the development<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p><strong>Miscellaneous options</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">XSNAVA_SLOPE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CSNAVA_DIAG</span></code></p></li>
+</ul>
+<p><strong>Computation of diagnostics for snow avalanche risk assessment purposes [SNAVA]</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_WET_SNOW</span></code>
+Wet-snow indicators</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_SSI</span></code>
+Structural Stability Index
+(Schweizer et al., 2006)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_AC</span></code>
+Critical crack length
+(Heierli et al., 2008; Schweizer et al., 2011; Reuter et al., 2015)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_ACG</span></code>
+Critical crack length
+(Gaume et al., 2017)</p></li>
+</ul>
+<p><strong>Algorithm for avalanche type problems identification [SNSAT]</strong></p>
+<p>Derived from Reuter et al. (2022).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SNAVA_SAT</span></code></p></li>
+</ul>
+<p><strong>Implementation details</strong></p>
+<p>Most of the developments presented here are gathered in the module
+<code class="docutils literal notranslate"><span class="pre">mode_snow_ava.F90</span></code> and divided into subroutines and functions called
+within <code class="docutils literal notranslate"><span class="pre">snowcro_diag.F90</span></code>.</p>
+</section>
+<section id="scientific-details">
+<h3>Scientific details<a class="headerlink" href="#scientific-details" title="Permalink to this headline">¶</a></h3>
+<p>Publication in preparation.</p>
+</section>
+<section id="id24">
+<h3>Changes in namelist<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span>NAM_SURF_SNOW_CSTS
+    <span class="nv">XSNAVA_SLOPE</span> <span class="o">=</span> <span class="m">0</span>-90 change slope angle used only <span class="k">for</span> mechanics snow avalanche diagnostics computation, default : -1 <span class="o">(</span>disable<span class="o">)</span>
+
+<span class="p">&amp;</span>NAM_ISBA_SNOWn
+    <span class="nv">CSNAVA_DIAG</span> <span class="o">=</span> <span class="s1">&#39;NONE &#39;</span>, <span class="s1">&#39;MEPRA&#39;</span>, <span class="s1">&#39;SNAVA&#39;</span>, <span class="s1">&#39;SNSAT&#39;</span>  enable/disable the computation of some diagnostics within SNOWCRO_DIAG.F90, default : <span class="s1">&#39;MEPRA&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="miscellaneous-options">
+<h3>Miscellaneous options<a class="headerlink" href="#miscellaneous-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>XSNAVA_SLOPE</strong> : slope angle for mechanic diagnostic computations</p>
+<ul class="simple">
+<li><p>‘0-99’ slope angle in degrees, values outside range is not considered (i.e. disable the option)</p></li>
+<li><p>NOTE : The characteristics of the snowpack, including its thickness and all properties such as the surface
+energy balance leading to it usually affected by the slope are not accounted for. This option is only applied
+to the computation of mechanical properties.
+Further dev would be to indicate this value is True in pro files.</p></li>
+</ul>
+<p><strong>CSNAVA_DIAG</strong> : enable/disable the computation of some diagnostics within SNOWCRO_DIAG.F90 routine</p>
+<ul class="simple">
+<li><p>‘NONE ‘ Disable the computation of most diagnostics usually computed in snowcro_diag. Only, MEPRA snow grain type remains calculated</p></li>
+<li><p>‘MEPRA’ ‘NONE ‘+ Enable the computation of all diagnostics used to run MEPRA, including cumulated new snow (thickness and water equivalent). It is the default setting.</p></li>
+<li><p>‘SNAVA’ ‘MEPRA’ + Enable the computation of SNAVA diagnostics (2024-2025 developpments), which are complementary wet-snow indicators, structural stability index and critical crack length. All are described in the following documentation.</p></li>
+<li><p>‘SNSAT’ : ‘SNAVA’ + Enable the algorithm to determine avalanche type problems</p></li>
+</ul>
+</section>
+<section id="wet-snow-indicators-and-ssi">
+<h3>Wet-snow indicators and SSI<a class="headerlink" href="#wet-snow-indicators-and-ssi" title="Permalink to this headline">¶</a></h3>
+<p><strong>Thickness of isothermal snow</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_IH`)</em></p>
+<p>The thickness of isothermal snow is defined as the integrated height of all snow layers with a temperature at or above the melting point (273.15 K).</p>
+<p><strong>Age since last isothermal state</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_HUDAT`)</em></p>
+<p>The age since last isothermal state of the snowpack is the time (in days) since the snowpack was isothermal at or above a fraction of its total height (set here to 0.9).
+The default value is <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>. This variable is present in the PREP as it requires previous time step state to be updated.
+If the snowpack falls below the threshold fraction, the counter is reset to <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code>.</p>
+<p><strong>Volumic ratio of liquid water content</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_WET_SNOW / SNAVA_LWCTV`)</em></p>
+<p>Volumic ratio of the liquid water content of the snowpack (<code class="docutils literal notranslate"><span class="pre">m³/m³</span></code>).
+The default value is <code class="docutils literal notranslate"><span class="pre">XUNDEF</span></code> or <code class="docutils literal notranslate"><span class="pre">NaN</span></code>. This variable is present in the PREP as it requires the previous time step for the SNSAT algorithm computation.</p>
+<p><strong>Structural stability index</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_SSI / SNAVA_SSI`)</em></p>
+<p>This diagnostic is computed as the skier stability index Sk38 (<code class="docutils literal notranslate"><span class="pre">ACC_RAT</span></code>) to which 1 or 2 is added in the case of a structurally homogeneous stratigraphy.
+For each layer (except the top one), the absolute differences in hand hardness (<img class="math" src="../_images/math/a738bd73d33891e0c5082f21fbd75e1b8b4c976e.png" alt="\Delta R"/>) and grain size (<img class="math" src="../_images/math/d558cea506d7732938752a1e0ee2d43632c88a64.png" alt="\Delta E"/>) are calculated in comparison with the upper adjacent layer.</p>
+<p>Then, the SSI is defined as:</p>
+<div class="math">
+<p><img src="../_images/math/08a389a7bddf33b3f14e58b3f2780b54b6992d6e.png" alt="SSI = SK38 + D"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="../_images/math/382677adfd7bb5df53a9bacd7c49da0a70c04689.png" alt="D =
+\begin{cases}
+  0 &amp; \text{if } \Delta R \geq 1.5 \text{ and } \Delta E \geq 0.5\,\text{mm} \\
+  1 &amp; \text{if } \Delta R &lt; 1.5 \text{ or } \Delta E &lt; 0.5\,\text{mm} \\
+  2 &amp; \text{if } \Delta R &lt; 1.5 \text{ and } \Delta E &lt; 0.5\,\text{mm}
+\end{cases}"/></p>
+</div></section>
+<section id="critical-crack-length">
+<h3>Critical crack length<a class="headerlink" href="#critical-crack-length" title="Permalink to this headline">¶</a></h3>
+<p>The critical crack length is intended to represent the propagation of cracks in an avalanche. It gives a theoretical length (m) from which an initial crack in the weak layer will propagate further.**
+Multiple models of it exist; two of them are implemented and described below.</p>
+<p><strong>Anticrack model (SNAVA_AC)</strong></p>
+<p><em>(`mode_snow_ava.F90 / SNAVA_AC / SNAVA_AC`)</em></p>
+<p>In this model, the characteristics of an equivalent slab are represented by a Timoshenko beam fixed on its left side, deforming only on its unsupported part.
+The mechanical behavior of the weak layer, including its deformation, is not taken into account. The weak layer fracture energy is the only property of the weak layer, to which the deformation energy of the slab is compared.</p>
+<p>This approach allows expressing and relating the weak layer fracture energy <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> to the critical crack length <img class="math" src="../_images/math/53064c5a29176bc3778ebab55969e8e8c43a418b.png" alt="a_c"/> and to the characteristics of the slab–weak layer system: slab height <img class="math" src="../_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/>, slab Young modulus <img class="math" src="../_images/math/1815f600df7845409443aed470eac2d449e4ddb0.png" alt="E"/>, and the normal (<img class="math" src="../_images/math/b52df27bfb0b1e3af0c2c68a7b9da459178c2a7d.png" alt="\sigma"/>) and shear (<img class="math" src="../_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/>) stresses due to the weight of the slab over the weak layer:</p>
+<div class="math">
+<p><img src="../_images/math/af6bdab9ddc999be9212e34f3e1573efc105e6ef.png" alt="W_f = \frac{H}{2E}
+\left[
+  w_0
+  + w_1 \frac{a_c}{H}
+  + w_2 \left(\frac{a_c}{H}\right)^2
+  + w_3 \left(\frac{a_c}{H}\right)^3
+  + w_4 \left(\frac{a_c}{H}\right)^4
+\right]"/></p>
+</div><p>with</p>
+<div class="math">
+<p><img src="../_images/math/a0cf6001d5725ad74ae9463e30c4f324d657b928.png" alt="\begin{cases}
+  w_0 = \frac{3\eta^2}{4}\tau^2 \\
+  w_1 = (\pi\gamma + \frac{3\eta}{2})\tau^2 + 3\eta^2\tau\sigma + \pi\gamma\sigma^2 \\
+  w_2 = \tau^2 + \frac{9\eta}{2}\tau\sigma + 3\eta^2\sigma^2 \\
+  w_3 = 3\eta\sigma^2 \\
+  w_4 = 3\sigma^2
+\end{cases}"/></p>
+</div><p>In this formulation,</p>
+<p><img class="math" src="../_images/math/43e9f4e99ad2b398b9279ce3a20bc4562194698b.png" alt="\eta = \sqrt{\frac{4(1+\nu)}{5}}"/>, where <img class="math" src="../_images/math/14eb89266154200b9c81dcfc3bd058638fa221bf.png" alt="\nu"/> is the Poisson’s ratio, set to 0.2 according to Gaume et al., (2017) and Richter et al., (2019), and <img class="math" src="../_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> is the elastic mismatch parameter, set to 1.</p>
+<p>The weight of the slab is decomposed into a shear stress</p>
+<div class="math">
+<p><img src="../_images/math/10884fd60e54880200f9377fd0955ced012a3181.png" alt="\tau = \rho g H \sin{\alpha}"/></p>
+</div><p>and a normal stress</p>
+<div class="math">
+<p><img src="../_images/math/2cc83032bb0131b4a487a3528f7d51604915b8e9.png" alt="\sigma = -\rho g H \cos{\alpha}."/></p>
+</div><p>The slab height is defined as the sum of the thicknesses of all layers <img class="math" src="../_images/math/b6e2c1bc7d8a8ef8bc3878348c32e442f102d286.png" alt="h_i"/> above the weak layer:</p>
+<div class="math">
+<p><img src="../_images/math/e779fca1a075283cfb211840dfe0e8768607dcc1.png" alt="H = \sum_i h_i"/></p>
+</div><p>and the slab density is computed as the thickness-weighted arithmetic mean of the layer densities:</p>
+<div class="math">
+<p><img src="../_images/math/771175323122aea5d6ee1a965a7502e9b8a628a8.png" alt="\rho = \frac{\sum_i \rho_i h_i}{\sum_i h_i}."/></p>
+</div><p>The Young modulus of each layer <img class="math" src="../_images/math/6dee1c45812cc81d4c0c16626aaad62ee2d6fc98.png" alt="E_{i}"/> is determined using the density parameterization of Gerling et al., (2017):</p>
+<div class="math">
+<p><img src="../_images/math/8841a1a93500c4a014221593a5559370b12f0377.png" alt="E_i = 6.5 \times 10^9 \left(\frac{\rho_i}{\rho_{\text{ice}}}\right)^{5.13}."/></p>
+</div><p><strong>Equivalent Young modulus of the slab</strong></p>
+<p>The equivalent Young modulus of the slab is computed using solutions from the theory of laminate plates (cf. Eqs. 8c and 9b in Weisgraeber and Rosendahl, 2023).
+It is noted on page 1489 of this paper that the <img class="math" src="../_images/math/62b6597ba75d51eba63d71eb068a47b3a04b7dcd.png" alt="D_{11}"/> coefficient used here (mode I) characterizes the bending stiffness and allows representing the bridging effect of a snowpack configuration.</p>
+<div class="math">
+<p><img src="../_images/math/a2ca77d7ed3fe765f93b39ec0c553578ef6132f1.png" alt="E_{eq} = 4 \cdot \frac{\sum_i E_i \left(z_{it}^3 - z_{ib}^3\right)}{H^3}"/></p>
+</div><p>with <img class="math" src="../_images/math/6560d9d211e9f54618bf3d3d1ae0ce43a9cfd309.png" alt="z_{it}"/> and <img class="math" src="../_images/math/62841a6c7c5c9046fdb46da9e2ffc07ecc6f8c89.png" alt="z_{ib}"/> respectively the top and bottom height of the layer i.
+Considering only mode II, the equivalent Young modulus becomes:</p>
+<div class="math">
+<p><img src="../_images/math/48710ac8d5177303fe7613405746b067f4fa8034.png" alt="E_{eq} = \frac{\sum_i E_i h_i}{H}"/></p>
+</div><p>Both formulations assume that variations in the Poisson ratio between layers are negligible.</p>
+<p>In the following, <img class="math" src="../_images/math/3e490b5bfa683dbc29106ff8a621e657d6d76429.png" alt="E_{eq}"/> is computed using mode I only.</p>
+<p><strong>Weak layer fracture energy parameterization : solution from Heierli</strong></p>
+<p>The weak layer fracture energy <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> is a property of the weak layer, theoretically dependent on its material and geometric characteristics, for which no direct parameterization applicable to macroscopic snow models is available in the literature.</p>
+<p>In this application, <img class="math" src="../_images/math/ab3d22a18fe2ce7d287baf3ec179c5cf230ae779.png" alt="W_f"/> is linearly related to the min-cut (Hagenmuller et al., 2014), itself parameterized as a function of the weak layer density <img class="math" src="../_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>, with a scaling factor depending on the specific surface area (SSA) <img class="math" src="../_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> and the sphericity <img class="math" src="../_images/math/b988975be41fd13b4d091c10202ba19374643586.png" alt="S"/> of the weak layer.
+This allows discriminating between different grain-type behaviors (see Monteiro et al., in preparation, for further details).</p>
+<div class="math">
+<p><img src="../_images/math/4a3f05f9c4e9329b1fc57e2107b075d66b2203a3.png" alt="W_f = \alpha_{w_f} \, f_{mincut}(\rho, G, S)"/></p>
+</div><p>with <img class="math" src="../_images/math/d260753906b0a144b94c5a47b70731475673af66.png" alt="\alpha_{w_f} = 13.7"/> and</p>
+<div class="math">
+<p><img src="../_images/math/fe994fb4f9cfd3f67c4ed2cdc2e80ab94c550552.png" alt="f_{mincut} =
+\frac{1}{1 + \exp\left(-\alpha_0 - \alpha_S S - \alpha_G G - \alpha_{SG} S G\right)}
+\left(\frac{\phi - \phi_t}{1 - \phi_t}\right)^m"/></p>
+</div><p>where the calibrated parameters are
+<img class="math" src="../_images/math/202cb162db81eba30aaa320167c838f09417146f.png" alt="\alpha_0 = -2.56"/>,
+<img class="math" src="../_images/math/866b820d8ae880d652f1cee6ba57e85120029bab.png" alt="\alpha_S = 4.95"/>,
+<img class="math" src="../_images/math/677860948b2fd02d9a3e3e0d8108d78249f8a019.png" alt="\alpha_G = 0.14"/>,
+<img class="math" src="../_images/math/6ff892f42ca00d3e7c0431b79bb6edb4fce9d241.png" alt="\alpha_{SG} = -0.30"/>,
+<img class="math" src="../_images/math/030a25ba9887b107d2af3eef43d40ad36431fd86.png" alt="\phi_t = 0.04"/>,
+and <img class="math" src="../_images/math/0e467ad3f745eae9781febf362b6771e96db042b.png" alt="m = 2.46"/>.</p>
+<p>Finally, determining the critical crack length <img class="math" src="../_images/math/53064c5a29176bc3778ebab55969e8e8c43a418b.png" alt="a_c"/> reduces to finding the roots of the fourth-degree polynomial equation, which has real and strictly positive coefficients.
+In practice, the roots are computed using a fourth-order polynomial solver <code class="docutils literal notranslate"><span class="pre">R_QUARTIC</span></code> implemented in the module <code class="docutils literal notranslate"><span class="pre">mode_polyroots.F90</span></code>.</p>
+<p><strong>Gaume et al., (2017) model (SNAVA_ACG)</strong>
+<em>(`mode_snow_ava.F90 / SNAVA_ACG / SNAVA_ACG`)</em></p>
+<p>The algorithm is implemented as described in Gaume et al., (2017). Please refer to this publication for full methodological details.</p>
+</section>
+<section id="avalanche-problems-determination-algorithm-snsat">
+<h3>Avalanche problems determination algorithm (SNSAT)<a class="headerlink" href="#avalanche-problems-determination-algorithm-snsat" title="Permalink to this headline">¶</a></h3>
+<p><em>(`mode_snow_ava.F90 / SNSAT / SNSAT`)</em></p>
+<p><strong>Weak layer identification</strong></p>
+<p>This step identifies potential weak layers according to grain types and slab characteristics.
+The algorithm iterates through each snow layer and tags layers fulfilling the following conditions:</p>
+<ul class="simple">
+<li><p>Slab thickness &gt; 0.18 m</p></li>
+<li><p>Slab density &gt; 100 kg m⁻³</p></li>
+</ul>
+<p>A tagged layer is classified as a persistent weak layer (PWL) if the grain type is one of (FC, DH, FC+DH), and as a non-persistent weak layer (NPWL) if the grain type is one of (PP, DF, PP+DF, PPgp, DF+FC).</p>
+<p>The table of tagged weak layers is not an output of the algorithm.</p>
+<p><em>Non implemented:</em> NPWLs are no longer considered after 48 hours without new
+snowfall or snow transport
+(i.e. AGE &gt; 2 days and NEWSNOW48h == 0).
+PWLs become APWLs if <img class="math" src="../_images/math/519ea80e9005b58a4691b527d84aa12598886091.png" alt="a_c &lt; 0.6\,\text{m}"/> and <img class="math" src="../_images/math/b3317c7416886672e63caa9bb1cb79e0092d00e3.png" alt="S &gt; 2"/>.</p>
+<p><strong>Layer tracking</strong></p>
+<p>The algorithm attempts to match snow layers between times <img class="math" src="../_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> and <img class="math" src="../_images/math/7bcad2a761e7bbc9562bbd567947e34cc047e536.png" alt="t-1"/> using their ages. The matching process starts from the top of the snowpack and iterates over the combined number of layers:</p>
+<div class="math">
+<p><img src="../_images/math/001034ca6ac53ec4a11b6837857afe24d848fa8a.png" alt="N_{\text{snow layers}}(t) + N_{\text{snow layers}}(t-1)"/></p>
+</div><p>A parallel traversal of both layer tables is performed, as layer ages are sorted in ascending order. When a match is found, both tables advance.
+Otherwise, the next layer in the table with the smallest age is selected.
+The indices of matching layers at <img class="math" src="../_images/math/7bcad2a761e7bbc9562bbd567947e34cc047e536.png" alt="t-1"/> are stored in the variable <code class="docutils literal notranslate"><span class="pre">SNSAT_IPRE</span></code> with dimensions (Nb_layers, Nb_points, time).</p>
+<p><em>Note:</em> although layer merges are not explicitly handled, they can be inferred from jumps in the index matrix at time <img class="math" src="../_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/>.</p>
+<p><strong>Failure initiation</strong></p>
+<p>This step assesses whether identified weak layers are prone to failure initiation.</p>
+<p>For natural hazard:</p>
+<ul class="simple">
+<li><p>Natural stability <img class="math" src="../_images/math/bed213c1ea33cc687960613a9a9b9ff630e3b275.png" alt="S_n &lt; 2.5"/></p></li>
+<li><p>Expected time to failure <img class="math" src="../_images/math/a5918863b799443510332e6c173f9ab7fcbb3c0c.png" alt="t_f &lt; 27"/> h</p></li>
+</ul>
+<p>For triggered hazard (e.g. skier):</p>
+<ul class="simple">
+<li><p>Skier stability index <img class="math" src="../_images/math/4b6f4d3dc5b8ff391c1acb937802754a224e5f0e.png" alt="S_k &lt; 1"/></p></li>
+</ul>
+<p>Boolean (0, 1) arrays with dimensions (Nb_layers, Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NINIT</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_AINIT</span></code> for triggered hazard.</p>
+<p><strong>Crack propagation</strong></p>
+<p>This step evaluates whether an initiated failure is likely to propagate.
+For both natural and triggered hazard, propagation is assumed if:</p>
+<ul class="simple">
+<li><p>Critical crack length <img class="math" src="../_images/math/a741aabbfda37b2648d3bca7813bb8972435540c.png" alt="a_c &lt; 0.3"/></p></li>
+</ul>
+<p>A boolean (0, 1) array (Nb_layers, Nb_points, time) indicating layers fulfilling propagation conditions is stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_PROP</span></code>.</p>
+<p><strong>Avalanche problems (AP) determination</strong></p>
+<p>For each snow profile presenting a potential avalanche hazard, the avalanche problem types are determined as follows.</p>
+<p><em>Wet-snow avalanche</em></p>
+<p>This is the only avalanche problem that does not rely on initiation or propagation criteria. It requires that at least one persistent or non-persistent weak layer has been identified.</p>
+<p>The onset of the wet-snow avalanche period is defined by:</p>
+<ul class="simple">
+<li><p>Liquid water content (<img class="math" src="../_images/math/32b655138891310677f6e8e5de917162db0ff53c.png" alt="LWC"/>) ≥ critical liquid water content (<img class="math" src="../_images/math/309fe87f9fd19519e575984a424e1e42dcb5e1c7.png" alt="LWC_{crit}"/>), set here to 1 %</p></li>
+</ul>
+<p>After onset, a wet-snow avalanche risk is assumed if:</p>
+<ul class="simple">
+<li><p>Days since isothermal state &lt; 4 days</p></li>
+<li><p><img class="math" src="../_images/math/bbebe509b4dfb594fdc16cfcf8bee93cac814176.png" alt="LWC(t) &gt; LWC(t-1)"/> and <img class="math" src="../_images/math/d1d068811fe619ccce934316fd150aa25ec1e44c.png" alt="LWC(t) &gt; LWC_{crit}"/></p></li>
+</ul>
+<p>A table with values (XUNDEF, 1, 2) and dimensions (Nb_points, time) is stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_WET</span></code>:</p>
+<ul class="simple">
+<li><p>XUNDEF: no avalanche problem</p></li>
+<li><p>1: onset conditions fulfilled</p></li>
+<li><p>2: onset conditions fulfilled and increasing LWC</p></li>
+</ul>
+<p><em>New snow</em></p>
+<p>This avalanche type is related to fresh snow accumulation at the top of the snowpack.</p>
+<p>It is considered if accumulated snowfall exceeds 5 cm per 24 h and if a non-persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NNEW</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_ANEW</span></code> for triggered hazard.</p>
+<p><em>Drifting snow</em></p>
+<p>This avalanche type is associated with wind slab formation.</p>
+<p>It is considered if the transported snow mass exceeds 0.2 kg cm⁻¹ per 24 h and if a non-persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NDRIFT</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_ADRIFT</span></code> for triggered hazard.</p>
+<p><em>Note:</em> at each time step, several variables from SNOWPAPPUS are available in snow3Lisba. Without divergence activated (1D and 2D possible), the following quantities can be accessed: <code class="docutils literal notranslate"><span class="pre">DEK%XQT_TOT(JJ)</span></code>, saltation transport <code class="docutils literal notranslate"><span class="pre">DMK%XQ_OUT_SALT(JJ)</span></code>, and suspension <code class="docutils literal notranslate"><span class="pre">DMK%XQ_OUT_SUSP(JJ)</span></code> (kg m⁻¹ s⁻¹).
+Here, only the saltation transport rate is used, converted to kg cm⁻¹ per 24 h. Since <code class="docutils literal notranslate"><span class="pre">Snowcrodiag</span></code> is called once per hour, transport fluxes are assumed stationary between output time steps.</p>
+<p><em>Persistent weak layer</em></p>
+<p>This avalanche type is associated with the presence of a buried persistent weak layer.</p>
+<p>It is considered if new snow or drifting snow thresholds are exceeded and if a persistent weak layer has been identified. Natural and/or triggered hazard is retained if the corresponding initiation and propagation indicators are critical.</p>
+<p>Boolean (XUNDEF, 1) tables (Nb_points, time) are stored in <code class="docutils literal notranslate"><span class="pre">SNSAT_NPWL</span></code> for natural hazard and <code class="docutils literal notranslate"><span class="pre">SNSAT_APWL</span></code> for triggered hazard.</p>
+</section>
+<section id="id25">
+<h3>References<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<p>Gaume, J., van Herwijnen, A., Chambon, G., Wever, N., &amp; Schweizer, J. (2017).
+Snow fracture in relation to slab avalanche release: Critical state for the onset of crack propagation.
+The Cryosphere, 11(1), 217–228. <a class="reference external" href="https://doi.org/10.5194/tc-11-217-2017">https://doi.org/10.5194/tc-11-217-2017</a></p>
+<p>Gerling, B., Löwe, H., &amp; van Herwijnen, A. (2017).
+Measuring the elastic modulus of snow.
+Geophysical Research Letters, 44(21). <a class="reference external" href="https://doi.org/10.1002/2017GL075110">https://doi.org/10.1002/2017GL075110</a></p>
+<p>Hagenmuller, P., Calonne, N., Chambon, G., Flin, F., Geindreau, C., &amp; Naaim, M. (2014).
+Characterization of the snow microstructural bonding system through the minimum cut density.
+Cold Regions Science and Technology, 108, 72–79.</p>
+<p>Heierli, J., Gumbsch, P., &amp; Zaiser, M. (2008).
+Anticrack nucleation as triggering mechanism for snow slab avalanches.
+Science, 321(5886), 240–243. <a class="reference external" href="https://doi.org/10.1126/science.1153948">https://doi.org/10.1126/science.1153948</a></p>
+<p>Reuter, B., Schweizer, J., &amp; van Herwijnen, A. (2015).
+A process-based approach to estimate point snow instability.
+The Cryosphere, 9(3), 837–847. <a class="reference external" href="https://doi.org/10.5194/tc-9-837-2015">https://doi.org/10.5194/tc-9-837-2015</a></p>
+<p>Richter, B., Schweizer, J., Rotach, M. W., &amp; van Herwijnen, A. (2019).
+Validating modeled critical crack length for crack propagation in the snow cover model SNOWPACK.
+The Cryosphere, 13(12), 3353–3366. <a class="reference external" href="https://doi.org/10.5194/tc-13-3353-2019">https://doi.org/10.5194/tc-13-3353-2019</a></p>
+<p>Schweizer, J., Bellaire, S., Fierz, C., Lehning, M., &amp; Pielmeier, C. (2006).
+Evaluating and improving the stability predictions of the snow cover model SNOWPACK.
+Cold Regions Science and Technology, 46(1), 52–59. <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2006.05.007">https://doi.org/10.1016/j.coldregions.2006.05.007</a></p>
+<p>Schweizer, J., van Herwijnen, A., &amp; Reuter, B. (2011).
+Measurements of weak layer fracture energy.
+Cold Regions Science and Technology, 69(2–3), 139–144. <a class="reference external" href="https://doi.org/10.1016/j.coldregions.2011.06.004">https://doi.org/10.1016/j.coldregions.2011.06.004</a></p>
+<p>Weissgraeber, P., &amp; Rosendahl, P. L. (2023).
+A closed-form model for layered snow slabs.
+The Cryosphere, 17(4), 1475–1496. <a class="reference external" href="https://doi.org/10.5194/tc-17-1475-2023">https://doi.org/10.5194/tc-17-1475-2023</a></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch</a><ul>
+<li><a class="reference internal" href="#multiphysics">1-Multiphysics</a><ul>
+<li><a class="reference internal" href="#basic-information">Basic information</a></li>
+<li><a class="reference internal" href="#description-of-the-development">Description of the development</a></li>
+<li><a class="reference internal" href="#changes-in-namelist">Changes in namelist</a></li>
+<li><a class="reference internal" href="#full-description">Full Description</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#explicit-representation-of-light-absorbing-particles">2-Explicit representation of Light-Absorbing Particles</a><ul>
+<li><a class="reference internal" href="#id1">Basic information</a></li>
+<li><a class="reference internal" href="#id2">Description of the development</a></li>
+<li><a class="reference internal" href="#mandatory-changes-in-namelist">Mandatory Changes in namelist</a></li>
+<li><a class="reference internal" href="#optional-changes-in-namelist-to-activate-light-absorbing-particles-deposition">Optional Changes in namelist to activate Light-Absorbing Particles deposition</a></li>
+<li><a class="reference internal" href="#optional-changes-in-namelist-to-initialize-an-user-prescribed-snowpack-with-lap">Optional Changes in namelist to initialize an user prescribed snowpack with LAP</a></li>
+<li><a class="reference internal" href="#optional-changes-in-namelist-scavenging-of-impurities-through-the-snowpack-with-melt-water">Optional Changes in namelist: scavenging of impurities through the snowpack with melt water</a></li>
+<li><a class="reference internal" href="#information-on-default-values-new-diagnostics-and-top-layer-behaviour">Information on default values, new diagnostics and top layer behaviour</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#radiation-on-slopes">3-Radiation on slopes</a><ul>
+<li><a class="reference internal" href="#id3">Basic information</a></li>
+<li><a class="reference internal" href="#id4">Description of the development</a></li>
+<li><a class="reference internal" href="#id5">Changes in namelist</a></li>
+<li><a class="reference internal" href="#warning">WARNING</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#output-diagnostics">4-Output diagnostics</a><ul>
+<li><a class="reference internal" href="#id6">Basic information</a></li>
+<li><a class="reference internal" href="#id7">Description of the development</a></li>
+<li><a class="reference internal" href="#id8">Changes in namelist</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crocus-resort">5-Crocus Resort</a><ul>
+<li><a class="reference internal" href="#id9">Basic information</a></li>
+<li><a class="reference internal" href="#description-of-the-development-first-version">Description of the development (first version)</a></li>
+<li><a class="reference internal" href="#id10">Changes in namelist</a></li>
+<li><a class="reference internal" href="#more-informations-on-options">More informations on options</a></li>
+<li><a class="reference internal" href="#other-informations">Other informations</a></li>
+<li><a class="reference internal" href="#id11">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#snow-drift-and-blowing-snow-module-sytron">6-Snow drift and blowing snow module SYTRON</a><ul>
+<li><a class="reference internal" href="#id12">Basic information</a></li>
+<li><a class="reference internal" href="#id13">Description of the development</a></li>
+<li><a class="reference internal" href="#id14">Changes in namelist</a></li>
+<li><a class="reference internal" href="#id15">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spatialized-blowing-snow-and-sublimation-module-snowpappus-f90">7-Spatialized blowing snow and sublimation module SNOWPAPPUS.F90</a><ul>
+<li><a class="reference internal" href="#id16">Basic information</a></li>
+<li><a class="reference internal" href="#recommendations-of-general-namelist-options">Recommendations of general namelist options</a></li>
+<li><a class="reference internal" href="#snowpappus-specific-namelist-parameters">Snowpappus specific namelist parameters</a></li>
+<li><a class="reference internal" href="#snowpappus-diagnostic-variables">Snowpappus diagnostic variables</a></li>
+<li><a class="reference internal" href="#id17">References</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#meb-crocus-coupling-for-snow-vegetation-interactions">8-MEB-Crocus coupling for snow-vegetation interactions</a><ul>
+<li><a class="reference internal" href="#id18">Basic information</a></li>
+<li><a class="reference internal" href="#id19">Description of the development</a></li>
+<li><a class="reference internal" href="#id20">Changes in namelist</a></li>
+<li><a class="reference internal" href="#id21">Full Description</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#snava-development-for-snow-avalanche-risk-assessment">9-SNAVA (development for SNow AVAlanche risk assessment)</a><ul>
+<li><a class="reference internal" href="#id22">Basic information</a></li>
+<li><a class="reference internal" href="#id23">Description of the development</a></li>
+<li><a class="reference internal" href="#scientific-details">Scientific details</a></li>
+<li><a class="reference internal" href="#id24">Changes in namelist</a></li>
+<li><a class="reference internal" href="#miscellaneous-options">Miscellaneous options</a></li>
+<li><a class="reference internal" href="#wet-snow-indicators-and-ssi">Wet-snow indicators and SSI</a></li>
+<li><a class="reference internal" href="#critical-crack-length">Critical crack length</a></li>
+<li><a class="reference internal" href="#avalanche-problems-determination-algorithm-snsat">Avalanche problems determination algorithm (SNSAT)</a></li>
+<li><a class="reference internal" href="#id25">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="surfex-extern.html"
+                        title="previous chapter">External use of Crocus for other Land Surface Models</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="surfex-dev-in-progress.html"
+                        title="next chapter">Development in progress in SURFEX-Crocus</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/surfex/surfex-crocus-user-doc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="surfex-dev-in-progress.html" title="Development in progress in SURFEX-Crocus"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="surfex-extern.html" title="External use of Crocus for other Land Surface Models"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="surfex-index.html" >Surfex documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
+  </body>
+</html>

@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.update_namelist &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -45,24 +47,22 @@
 
 
 <span class="c1"># General python modules</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="c1"># Snowtools modules</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_base</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">checkdateafter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">VarDimensionException</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_base</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">checkdateafter</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">VarDimensionException</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.datagrip.namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamelistParser</span>
+<span class="kn">from</span> <span class="nn">bronx.datagrip.namelist</span> <span class="kn">import</span> <span class="n">NamelistParser</span><span class="p">,</span> <span class="n">FIRST_ORDER_SORTING</span>
 
 
-<div class="viewcode-block" id="update_surfex_namelist_file">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_file">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_file</span><span class="p">(</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">namelistfile</span><span class="o">=</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="update_surfex_namelist_file"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_file">[docs]</a><span class="k">def</span> <span class="nf">update_surfex_namelist_file</span><span class="p">(</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">namelistfile</span><span class="o">=</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">,</span>
                                 <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">dateend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                 <span class="n">physicaloptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">snowparameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">nmembers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                 <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cselect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function updates a namelist file through the bronx module. Called by standalone S2M but not by vortex</span>
+    <span class="sd">&quot;&quot;&quot;This function updates a namelist file through the bronx module. Called by standalone S2M but not by vortex</span>
 
 <span class="sd">    :param datebegin: Initial date of simulation</span>
 <span class="sd">    :type datebegin: class:`bronx.stdtypes.date.Date`</span>
@@ -97,17 +97,20 @@
         <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">)</span>
         <span class="n">update_namelist_object_nmembers</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">)</span>
     <span class="n">namSURFEX</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">namSURFEX</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dumps</span><span class="p">())</span>
+    <span class="c1"># Try to write the namelist by alphabetical order (by block and inside each block)</span>
+    <span class="c1"># Except can occurs when things like (:,1) are in namelist</span>
+    <span class="c1"># in that case, alphabetical order just for block and not inside each block</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">namSURFEX</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">sorting</span><span class="o">=</span><span class="n">FIRST_ORDER_SORTING</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+        <span class="n">namSURFEX</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">dumps</span><span class="p">())</span>
     <span class="n">namSURFEX</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-
-<div class="viewcode-block" id="update_surfex_namelist_object">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_object">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_object</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="update_surfex_namelist_object"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_object">[docs]</a><span class="k">def</span> <span class="nf">update_surfex_namelist_object</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span>
                                   <span class="n">dateend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">physicaloptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">snowparameters</span><span class="o">=</span><span class="p">{},</span>
                                   <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cselect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function updates a class:`bronx.datagrip.namelist.NamelistSet` object. Called directly by vortex algos.</span>
+    <span class="sd">&quot;&quot;&quot;This function updates a class:`bronx.datagrip.namelist.NamelistSet` object. Called directly by vortex algos.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified.</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -147,11 +150,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="check_or_create_block">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.check_or_create_block">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">blockname</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new namelist block only if it does not already exist.</span>
+<div class="viewcode-block" id="check_or_create_block"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.check_or_create_block">[docs]</a><span class="k">def</span> <span class="nf">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">blockname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a new namelist block only if it does not already exist.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -162,11 +162,8 @@
         <span class="n">NamelistObject</span><span class="o">.</span><span class="n">newblock</span><span class="p">(</span><span class="n">blockname</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="update_mandatory_settings">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_mandatory_settings">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_mandatory_settings</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Force some options whose values are mandatory to be compatible with snowtools_git</span>
+<div class="viewcode-block" id="update_mandatory_settings"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_mandatory_settings">[docs]</a><span class="k">def</span> <span class="nf">update_mandatory_settings</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Force some options whose values are mandatory to be compatible with snowtools_git</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -177,8 +174,8 @@
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">=</span> <span class="s2">&quot;NETCDF&quot;</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LRESTART</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;The following options are necessary to output homogeneous fluxes among the Crocus community&#39;&#39;&#39;</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;(fluxes averaged over the output time step)&#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;The following options are necessary to output homogeneous fluxes among the Crocus community&#39;&#39;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;(fluxes averaged over the output time step)&#39;&#39;&#39;</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGET</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LRESET_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
@@ -187,11 +184,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="update_dates">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_dates">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_dates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the beginning of the simulation.</span>
+<div class="viewcode-block" id="update_dates"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_dates">[docs]</a><span class="k">def</span> <span class="nf">update_dates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the beginning of the simulation.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -207,11 +201,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="update_loc">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_loc">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_loc</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">forcing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the coordinates of the simulation points.</span>
+<div class="viewcode-block" id="update_loc"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_loc">[docs]</a><span class="k">def</span> <span class="nf">update_loc</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">forcing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the coordinates of the simulation points.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -253,11 +244,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="update_forcingdates">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_forcingdates">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_forcingdates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist limiting the dates to read in a FORCING file longer than the simulation.</span>
+<div class="viewcode-block" id="update_forcingdates"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_forcingdates">[docs]</a><span class="k">def</span> <span class="nf">update_forcingdates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify SURFEX namelist limiting the dates to read in a FORCING file longer than the simulation.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -301,11 +289,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="update_physicaloptions">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_physicaloptions">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_physicaloptions</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify physical options for ESCROC simulations</span>
+<div class="viewcode-block" id="update_physicaloptions"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_physicaloptions">[docs]</a><span class="k">def</span> <span class="nf">update_physicaloptions</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify physical options for ESCROC simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -324,11 +309,8 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<div class="viewcode-block" id="update_snowparameters">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_snowparameters">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_snowparameters</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify physical parameters for ESCROC simulations</span>
+<div class="viewcode-block" id="update_snowparameters"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_snowparameters">[docs]</a><span class="k">def</span> <span class="nf">update_snowparameters</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify physical parameters for ESCROC simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -353,15 +335,12 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">update_cselect</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">cselect</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">update_cselect</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">cselect</span><span class="p">):</span>
     <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s1">&#39;NAM_WRITE_DIAG_SURFN&#39;</span><span class="p">],</span> <span class="s1">&#39;CSELECT&#39;</span><span class="p">,</span> <span class="n">cselect</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="update_namelist_object_nmembers">
-<a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_namelist_object_nmembers">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_namelist_object_nmembers</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify number of members for SODA simulations</span>
+<div class="viewcode-block" id="update_namelist_object_nmembers"><a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_namelist_object_nmembers">[docs]</a><span class="k">def</span> <span class="nf">update_namelist_object_nmembers</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify number of members for SODA simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -376,10 +355,9 @@
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">update_namelist_var</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_file</span><span class="p">):</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Modify snowmaking parameters.</span>
+<span class="k">def</span> <span class="nf">update_namelist_var</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_file</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">shutil</span>
+    <span class="sd">&quot;&quot;&quot; Modify snowmaking parameters.</span>
 <span class="sd">    The function reads &quot;water consumption data for snowmaking&quot; from an external file (data_file)</span>
 <span class="sd">    and updates a namelist (namelist_file) accordingly.</span>
 <span class="sd">    This function was implemented by C. Carmagnola in December 2018 (PROSNOW project).</span>
@@ -436,9 +414,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -446,13 +424,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -470,8 +448,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>plots.maps.quicklookmap &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
-    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -50,19 +52,20 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">epygram</span>
+<span class="kn">import</span> <span class="nn">pyproj</span>
+<span class="kn">import</span> <span class="nn">epygram</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="read_and_preprocess">
-<a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.read_and_preprocess">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span>
+<div class="viewcode-block" id="read_and_preprocess"><a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.read_and_preprocess">[docs]</a><span class="k">def</span> <span class="nf">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span>
                         <span class="n">fid</span><span class="p">,</span>
                         <span class="n">date</span><span class="p">,</span>
                         <span class="n">operation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">global_shift_center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+                        <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">additional_selection_options</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read field in resource, and preprocess if requested.</span>
 
 <span class="sd">    :param resource: epygram resource to read data from</span>
@@ -84,7 +87,7 @@
 <span class="sd">    :rtype: epygram.field</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">field</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">readfield</span><span class="p">(</span><span class="n">fid</span><span class="p">)</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">readfield</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="n">additional_selection_options</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DField</span><span class="p">,</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DVectorField</span><span class="p">)),</span> \
         <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;Oops ! Looks like </span><span class="si">{}</span><span class="s1"> is not known as a horizontal 2D Field by epygram.&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;Add it to ~/.epygram/user_Field_Dict_</span><span class="si">{}</span><span class="s1">.csv ?&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
@@ -106,12 +109,10 @@
     <span class="k">return</span> <span class="n">field</span></div>
 
 
-<div class="viewcode-block" id="wind_map">
-<a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.wind_map">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">wind_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">map_factor_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vectors_subsampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<div class="viewcode-block" id="wind_map"><a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.wind_map">[docs]</a><span class="k">def</span> <span class="nf">wind_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">map_factor_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vectors_subsampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
              <span class="n">wind_components_are_projected_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">&#39;quiver&#39;</span><span class="p">,</span> <span class="n">quiverkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a map of a vector field.</span>
 
 <span class="sd">    :param field: vector field to plot</span>
@@ -151,10 +152,8 @@
     <span class="k">return</span> <span class="n">takeover</span></div>
 
 
-<div class="viewcode-block" id="difference_map">
-<a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.difference_map">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">difference_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="difference_map"><a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.difference_map">[docs]</a><span class="k">def</span> <span class="nf">difference_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a difference map between two fields.</span>
 
 <span class="sd">    :param field: first scalar field</span>
@@ -177,10 +176,8 @@
     <span class="k">return</span> <span class="n">takeover</span></div>
 
 
-<div class="viewcode-block" id="scalar_map">
-<a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.scalar_map">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="scalar_map"><a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.scalar_map">[docs]</a><span class="k">def</span> <span class="nf">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot a map.</span>
 
 <span class="sd">    :param field: field to plot</span>
@@ -194,6 +191,16 @@
 <span class="sd">    .. figure:: /images/20190513T10_snowheight.png</span>
 <span class="sd">       :align: center</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure no bug when the data is full of nan and/or fully masked</span>
+    <span class="k">if</span> <span class="s1">&#39;minmax&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plot_kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is masked</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax_along_colorbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;colorbar_legend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;All data is NaN/masked&#39;</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is NaN</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax_along_colorbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;colorbar_legend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;All data is NaN&#39;</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DVectorField</span><span class="p">):</span>
         <span class="c1"># Scalar field in a vector field is a true color image</span>
@@ -202,16 +209,15 @@
         <span class="n">takeover</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">cartoplot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">takeover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">takeover</span></div>
-
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -219,13 +225,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -243,8 +249,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

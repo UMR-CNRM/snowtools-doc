@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.S2M_standard_file &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,27 +48,27 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">VarNameException</span><span class="p">,</span> <span class="n">UnknownGridTypeException</span><span class="p">,</span> <span class="n">FileNameException</span><span class="p">,</span>\
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">VarNameException</span><span class="p">,</span> <span class="n">UnknownGridTypeException</span><span class="p">,</span> <span class="n">FileNameException</span><span class="p">,</span>\
     <span class="n">TimeUnitsException</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_summary_git</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="n">SNOWTOOLS_CEN</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.git</span> <span class="kn">import</span> <span class="n">get_summary_git</span>
+<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">SNOWTOOLS_DIR</span><span class="p">,</span> <span class="n">SNOWTOOLS_CEN</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">_StandardNC</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">_StandardNC</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    abstract class for S2M netcdf file based on ACDD conventions</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">read_constant_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read_constant_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">RawConfigParser</span><span class="p">()</span>
         <span class="n">rootdir</span> <span class="o">=</span> <span class="n">SNOWTOOLS_DIR</span>
         <span class="n">confile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s1">&#39;conf&#39;</span><span class="p">,</span> <span class="s1">&#39;S2M_Standard_Metadata.ini&#39;</span><span class="p">)</span>
@@ -82,7 +84,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">confile</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
 
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
         <span class="n">reanalysis</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">360</span><span class="p">)</span>  <span class="c1"># Bad condition --&gt; should be changed</span>
@@ -136,12 +138,12 @@
         <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">additionnal_attributes</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">additionnal_attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ZS</span> <span class="o">=</span> <span class="s1">&#39;surface_altitude&#39;</span><span class="p">,</span>
                     <span class="n">time</span>       <span class="o">=</span> <span class="s1">&#39;time&#39;</span>
                     <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">readtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">readtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Vérification du nom de la variable</span>
         <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="n">VarNameException</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">())</span>
@@ -159,7 +161,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">time</span><span class="p">[:],</span> <span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">latname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getlatname</span>
         <span class="n">lonname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getlonname</span>
@@ -194,9 +196,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">geospatial_vertical_units</span> <span class="o">=</span> <span class="s1">&#39;m&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geospatial_vertical_positive</span> <span class="o">=</span> <span class="s1">&#39;up&#39;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">xy2latlon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">pyproj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transformer</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">bronx.datagrip.namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamelistParser</span>
+    <span class="k">def</span> <span class="nf">xy2latlon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>
+        <span class="kn">from</span> <span class="nn">bronx.datagrip.namelist</span> <span class="kn">import</span> <span class="n">NamelistParser</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">NamelistParser</span><span class="p">()</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">)</span>
         <span class="n">gridtype</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="s1">&#39;NAM_PGD_GRID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">CGRID</span>
@@ -222,8 +224,8 @@
 
         <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">addCoord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Routine to add coordinates in the forcing file for the SAFRAN massifs&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">addCoord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Routine to add coordinates in the forcing file for the SAFRAN massifs&#39;&#39;&#39;</span>
         <span class="n">INFOmassifs</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
         <span class="n">dicLonLat</span> <span class="o">=</span> <span class="n">INFOmassifs</span><span class="o">.</span><span class="n">getAllMassifLatLon</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">__version__</span> <span class="o">&gt;=</span> <span class="s1">&#39;1.4.2&#39;</span><span class="p">:</span>
@@ -253,7 +255,7 @@
 
         <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">special_long_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">special_long_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">massifname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getmassifname</span>
         <span class="n">longnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -261,7 +263,7 @@
 
         <span class="k">return</span> <span class="n">longnames</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">dicstd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_names</span><span class="p">()</span>
         <span class="n">diclong</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_long_names</span><span class="p">()</span>
@@ -272,27 +274,25 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">diclong</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="StandardSAFRANetMET">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardSAFRANetMET">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardSAFRANetMET</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
+<div class="viewcode-block" id="StandardSAFRANetMET"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardSAFRANetMET">[docs]</a><span class="k">class</span> <span class="nc">StandardSAFRANetMET</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_constant_attributes</span><span class="p">(</span><span class="s1">&#39;StandardSAFRANetMET&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getlatname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getlatname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;LAT&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getlonname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getlonname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;LON&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getcoordname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getcoordname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">dicfather</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">standard_names</span><span class="p">()</span>
 
@@ -319,12 +319,9 @@
         <span class="k">return</span> <span class="n">dicfather</span></div>
 
 
+<div class="viewcode-block" id="StandardSAFRAN"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardSAFRAN">[docs]</a><span class="k">class</span> <span class="nc">StandardSAFRAN</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">):</span>
 
-<div class="viewcode-block" id="StandardSAFRAN">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardSAFRAN">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardSAFRAN</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardSAFRAN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_constant_attributes</span><span class="p">(</span><span class="s1">&#39;StandardSAFRAN&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="s2">&quot;: meteorological variables&quot;</span>
@@ -335,16 +332,13 @@
                                         <span class="s1">&#39;HOURLY PRECIPITATION AMOUNT,SOLID PRECIPITATION&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getmassifname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getmassifname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;massif_number&#39;</span></div>
 
 
+<div class="viewcode-block" id="StandardCDP"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardCDP">[docs]</a><span class="k">class</span> <span class="nc">StandardCDP</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">):</span>
 
-<div class="viewcode-block" id="StandardCDP">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardCDP">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardCDP</span><span class="p">(</span><span class="n">StandardSAFRANetMET</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardCDP</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_constant_attributes</span><span class="p">(</span><span class="s1">&#39;StandardCDP&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="s2">&quot;: meteorological variables&quot;</span>
@@ -356,12 +350,9 @@
                                         <span class="s1">&#39; PRECIPITATION AMOUNT,SOLID PRECIPITATION&#39;</span></div>
 
 
+<div class="viewcode-block" id="StandardPROSNOW"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardPROSNOW">[docs]</a><span class="k">class</span> <span class="nc">StandardPROSNOW</span><span class="p">(</span><span class="n">StandardSAFRAN</span><span class="p">):</span>
 
-<div class="viewcode-block" id="StandardPROSNOW">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardPROSNOW">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardPROSNOW</span><span class="p">(</span><span class="n">StandardSAFRAN</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardPROSNOW</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_constant_attributes</span><span class="p">(</span><span class="s1">&#39;StandardPROSNOW&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;SAFRAN: meteorological variables&quot;</span>
@@ -382,10 +373,8 @@
                        <span class="s2">&quot; 42: &#39;VALL2&#39;, 43: &#39;ZNZ1&#39;, 44: &#39;ZNZ2&#39;, 45: &#39;ZNZ3&#39;, 46: &#39;Bruneck&#39;, 47: &#39;Deutschnofen&#39;,&quot;</span> \
                        <span class="s2">&quot; 48: &#39;Merbalm&#39;, 49: &#39;PizlaIla&#39;, 50: &#39;Rittnerhorn&#39;, 51: &#39;SterzingFlughaf&#39;}&quot;</span>
 
-<div class="viewcode-block" id="StandardPROSNOW.addCoord">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardPROSNOW.addCoord">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">addCoord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Routine to add coordinates in the forcing file for the SAFRAN massifs&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="StandardPROSNOW.addCoord"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardPROSNOW.addCoord">[docs]</a>    <span class="k">def</span> <span class="nf">addCoord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Routine to add coordinates in the forcing file for the SAFRAN massifs&#39;&#39;&#39;</span>
         <span class="n">massifnumber</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;massif_number&#39;</span><span class="p">]</span>
 
         <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">massifnumber</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
@@ -403,16 +392,12 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;degrees_east&#39;</span><span class="p">)</span>
         <span class="n">var</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">lon</span>
 
-        <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span></div>
-</div>
+        <span class="k">return</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span></div></div>
 
 
+<div class="viewcode-block" id="StandardCROCUS"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardCROCUS">[docs]</a><span class="k">class</span> <span class="nc">StandardCROCUS</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
 
-<div class="viewcode-block" id="StandardCROCUS">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardCROCUS">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardCROCUS</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">GlobalAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardCROCUS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">(</span><span class="o">**</span><span class="n">additionnal_attributes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_constant_attributes</span><span class="p">(</span><span class="s1">&#39;StandardCROCUS&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">+</span> <span class="s2">&quot;: snow variables&quot;</span>
@@ -422,23 +407,23 @@
                                         <span class="s1">&#39;SNOW/ICE TEMPERATURE&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getlatname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getlatname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;latitude&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getlonname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getlonname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;longitude&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getcoordname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getcoordname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getmassifname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getmassifname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;massif_num&#39;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">getsoilgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">bronx.datagrip.namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamelistParser</span>
+    <span class="k">def</span> <span class="nf">getsoilgrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">bronx.datagrip.namelist</span> <span class="kn">import</span> <span class="n">NamelistParser</span>
         <span class="n">n</span> <span class="o">=</span> <span class="n">NamelistParser</span><span class="p">()</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;XSOILGRID&#39;</span> <span class="ow">in</span> <span class="n">N</span><span class="p">[</span><span class="s1">&#39;NAM_ISBA&#39;</span><span class="p">]:</span>
@@ -446,7 +431,7 @@
             <span class="n">top</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">bottom</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">soilgrid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bottom</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+            <span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;PGD.nc&quot;</span><span class="p">):</span>
                 <span class="n">pgd</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="s2">&quot;PGD.nc&quot;</span><span class="p">)</span>
                 <span class="n">nlayers</span> <span class="o">=</span> <span class="n">pgd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;GROUND_LAYER&quot;</span><span class="p">)</span>
@@ -458,8 +443,8 @@
 
                 <span class="n">pgd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">soil_long_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+    <span class="k">def</span> <span class="nf">soil_long_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">re</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
         <span class="c1"># r is None for varname without number: &#39;WGTOT_ISBA&#39;</span>
         <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -475,7 +460,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">dicfather</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">StandardCROCUS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">standard_names</span><span class="p">()</span>
 
@@ -506,7 +491,7 @@
 
         <span class="k">return</span> <span class="n">dicfather</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_standard_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">StandardCROCUS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_standard_names</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">varname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -516,13 +501,9 @@
                                                             <span class="bp">self</span><span class="o">.</span><span class="n">soil_long_names</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="StandardHYDRO">
-<a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardHYDRO">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">StandardHYDRO</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="StandardHYDRO"><a class="viewcode-back" href="../../code/utils-s2mstandardfile.html#utils.S2M_standard_file.StandardHYDRO">[docs]</a><span class="k">class</span> <span class="nc">StandardHYDRO</span><span class="p">(</span><span class="n">_StandardNC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
-
 
 
 </pre></div>
@@ -531,9 +512,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -541,13 +522,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -565,8 +546,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

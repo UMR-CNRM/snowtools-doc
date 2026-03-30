@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>plots.temporal.chrono &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
-    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,28 +51,35 @@
 <span class="sd">@author: lafaysse</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">HourLocator</span><span class="p">,</span> <span class="n">DayLocator</span><span class="p">,</span> <span class="n">MonthLocator</span><span class="p">,</span> <span class="n">YearLocator</span><span class="p">,</span> <span class="n">DateFormatter</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.dates</span> <span class="kn">import</span> <span class="n">HourLocator</span><span class="p">,</span> <span class="n">DayLocator</span><span class="p">,</span> <span class="n">MonthLocator</span><span class="p">,</span> <span class="n">YearLocator</span><span class="p">,</span> <span class="n">DateFormatter</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">NullLocator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.abstracts.figures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mplfigure</span>
+<span class="kn">from</span> <span class="nn">snowtools.plots.abstracts.figures</span> <span class="kn">import</span> <span class="n">Mplfigure</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplot_abstract</span><span class="p">(</span><span class="n">Mplfigure</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">temporalplot_abstract</span><span class="p">(</span><span class="n">Mplfigure</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor for temporalplot_abstract class, redefinied for the child class&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for temporalplot_abstract class, redefinied for the child class&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1">#self.draw = None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">xformatting</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">yformatting</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">displaylegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">xformatting</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xformatting</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_xaxis</span><span class="p">(</span><span class="n">timeOut</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">NullLocator</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">yformatting</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_yaxis</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_xaxis</span><span class="p">(</span><span class="n">timeOut</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_yaxis</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fontsize&quot;</span><span class="p">,</span> <span class="s2">&quot;x-small&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;fontsize&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">displaylegend</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fontsize&quot;</span><span class="p">,</span> <span class="s2">&quot;x-small&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;fontsize&quot;</span><span class="p">])</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_yaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_yaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="s1">&#39;forcemin&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;forcemax&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;forcemin&#39;</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;forcemax&#39;</span><span class="p">]])</span>
@@ -87,7 +96,7 @@
 <span class="c1">#    def draw(self, timeOut, *args, **kwargs):</span>
 <span class="c1">#        self.finalize(timeOut, **kwargs)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="n">linesargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -98,17 +107,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linesargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">linesargs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="s2">&quot;fmt&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1">#self.set_default(&quot;fmt&quot;, &quot;s&quot;, kwargs)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="s2">&quot;markersize&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeOut</span><span class="p">,</span> <span class="n">varOut</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_xaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_xaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">):</span>
 
         <span class="n">duration</span> <span class="o">=</span> <span class="n">timeOut</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">timeOut</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">ndays</span> <span class="o">=</span> <span class="n">duration</span><span class="o">.</span><span class="n">days</span>
@@ -136,49 +145,48 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MonthLocator</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="n">interval</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">formatDate</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> %b</span><span class="se">\n</span><span class="s1">%Y&#39;</span>
         <span class="k">elif</span> <span class="n">ndays</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="mi">365</span><span class="p">):</span>
-            <span class="n">interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndays</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">ndays</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">YearLocator</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
             <span class="n">formatDate</span> <span class="o">=</span> <span class="s1">&#39;%Y&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ndays</span> <span class="o">/</span> <span class="mi">365</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">YearLocator</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
             <span class="n">formatDate</span> <span class="o">=</span> <span class="s1">&#39;%Y&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">DateFormatter</span><span class="p">(</span><span class="n">formatDate</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplot</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">):</span>
+<div class="viewcode-block" id="temporalplot"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplot">[docs]</a><span class="k">class</span> <span class="nc">temporalplot</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for timeseries plot&quot;&quot;&quot;</span>
 
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">figsize</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span></div>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalsubplot</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplots</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">temporalsubplot</span><span class="p">(</span><span class="n">temporalplot_abstract</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplots</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">temporalsubplot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">subplots</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subplots</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">subplots</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">subplots</span>
 
 
-<div class="viewcode-block" id="temporalplotSim">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotSim">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplotSim</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="temporalplotSim"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotSim">[docs]</a><span class="k">class</span> <span class="nc">temporalplotSim</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 1D variable temporal plot</span>
 
 <span class="sd">    Example :</span>
@@ -204,10 +212,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
-<div class="viewcode-block" id="temporalplotSim.draw">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotSim.draw">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="temporalplotSim.draw"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotSim.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method of temporalplotSim class. Used for generating a 1D plot with time formatting.</span>
 
 <span class="sd">        :param timeSim: Array of simulation duration usually given by prosimu.readtime()</span>
@@ -221,15 +227,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;S2M&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-
-<div class="viewcode-block" id="temporalplotObsSim">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsSim">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplotObsSim</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="temporalplotObsSim"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsSim">[docs]</a><span class="k">class</span> <span class="nc">temporalplotObsSim</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for 1D variable temporal plot comparaison with observation</span>
 
 <span class="sd">    Example :</span>
@@ -253,10 +255,8 @@
 <span class="sd">        :align: center</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="temporalplotObsSim.draw">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsSim.draw">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="temporalplotObsSim.draw"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsSim.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method of temporalplotObsSim class. Used for generating comparative 1D plot with time formatting.</span>
 
 <span class="sd">        :param timeObs: Array of Observation duration usually given by prosimu.readtime()</span>
@@ -273,21 +273,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;S2M&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-
-<div class="viewcode-block" id="temporalplotObsMultipleSims">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsMultipleSims">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplotObsMultipleSims</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Kept for bakward compatibility , please refer to temporalplotObsSim</span>
+<div class="viewcode-block" id="temporalplotObsMultipleSims"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsMultipleSims">[docs]</a><span class="k">class</span> <span class="nc">temporalplotObsMultipleSims</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Kept for bakward compatibility , please refer to temporalplotObsSim</span>
 <span class="sd">        Similar to temporalplotObsSim but UGLIER</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="temporalplotObsMultipleSims.draw">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsMultipleSims.draw">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method of temporalplotObsMultipleSims class. Used for generating comparative 1D plot with time formatting.</span>
+<div class="viewcode-block" id="temporalplotObsMultipleSims.draw"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplotObsMultipleSims.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method of temporalplotObsMultipleSims class. Used for generating comparative 1D plot with time formatting.</span>
 <span class="sd">        Similar to temporalplotObsSim but UGLIER</span>
 
 <span class="sd">        :param timeObs: Array of Observation duration usually given by prosimu.readtime()</span>
@@ -300,21 +294,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_points</span><span class="p">(</span><span class="n">timeObs</span><span class="p">,</span> <span class="n">varObs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;S2M&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">varSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
-
-<div class="viewcode-block" id="temporalplot2Axes">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplot2Axes">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">temporalplot2Axes</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Kept for bakward compatibility</span>
+<div class="viewcode-block" id="temporalplot2Axes"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplot2Axes">[docs]</a><span class="k">class</span> <span class="nc">temporalplot2Axes</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Kept for bakward compatibility</span>
 <span class="sd">    LM2B = Looks Broken to Me</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="temporalplot2Axes.addAx2">
-<a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplot2Axes.addAx2">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">addAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labelAx2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="temporalplot2Axes.addAx2"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.temporalplot2Axes.addAx2">[docs]</a>    <span class="k">def</span> <span class="nf">addAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labelAx2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param labelAx2: str of label</span>
 <span class="sd">        :param color:</span>
@@ -327,24 +315,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">labelAx2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">addVarAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varAx2</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">addVarAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeOut</span><span class="p">,</span> <span class="n">varAx2</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">plot_date</span><span class="p">(</span><span class="n">timeOut</span><span class="p">,</span> <span class="n">varAx2</span><span class="p">,</span> <span class="n">linestyle</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">addLegendAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">addLegendAx2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">location</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;x-small&quot;</span><span class="p">)</span></div>
 
 
-
-<span class="k">class</span><span class="w"> </span><span class="nc">prettyensemble</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+<div class="viewcode-block" id="prettyensemble"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.prettyensemble">[docs]</a><span class="k">class</span> <span class="nc">prettyensemble</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">prettyensemble</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1">#         self.fig.subplots_adjust(top=0.85)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="s1">&#39;colorquantiles&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorquantiles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
@@ -361,17 +347,17 @@
                             <span class="n">label</span><span class="o">=</span><span class="n">medianlabel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorquantiles&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">],</span>
                                <span class="n">label</span><span class="o">=</span><span class="n">quantileslabel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">spaghettis</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
+<div class="viewcode-block" id="spaghettis"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.spaghettis">[docs]</a><span class="k">class</span> <span class="nc">spaghettis</span><span class="p">(</span><span class="n">temporalplot</span><span class="p">):</span>
     <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">spaghettis</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="s1">&#39;colorquantiles&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorquantiles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
@@ -387,11 +373,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colormembers&#39;</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorquantiles&#39;</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">medianlabel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;colorquantiles&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">quantileslabel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">spaghettis_with_det</span><span class="p">(</span><span class="n">spaghettis</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="spaghettis_with_det"><a class="viewcode-back" href="../../../code/plots-temporal.html#plots.temporal.chrono.spaghettis_with_det">[docs]</a><span class="k">class</span> <span class="nc">spaghettis_with_det</span><span class="p">(</span><span class="n">spaghettis</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># super(spaghettis_with_det, self).draw(timeSim, ensemble, qmin, qmed, qmax, deterministic, *args, **kwargs)</span>
         <span class="k">if</span> <span class="s1">&#39;commonlabel&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">detlabel</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;Dét.&quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;commonlabel&#39;</span><span class="p">]</span>
@@ -399,16 +385,16 @@
             <span class="n">detlabel</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;Déterministe&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">deterministic</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">detlabel</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">spaghettis_with_det</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">spaghettis_with_det</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">timeSim</span><span class="p">,</span> <span class="n">ensemble</span><span class="p">,</span> <span class="n">qmin</span><span class="p">,</span> <span class="n">qmed</span><span class="p">,</span> <span class="n">qmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -416,13 +402,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -440,8 +426,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

@@ -1,23 +1,25 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Information for SURFEX-Crocus developers &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SURFEX-Crocus user documentation for cen branch" href="surfex-crocus-user-doc.html" />
     <link rel="prev" title="Few informations on SURFEX-Crocus simulations" href="surfex.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,26 +48,19 @@
           <div class="body" role="main">
             
   <section id="information-for-surfex-crocus-developers">
-<h1>Information for SURFEX-Crocus developers<a class="headerlink" href="#information-for-surfex-crocus-developers" title="Link to this heading">¶</a></h1>
+<h1>Information for SURFEX-Crocus developers<a class="headerlink" href="#information-for-surfex-crocus-developers" title="Permalink to this headline">¶</a></h1>
 <section id="git-branches-used-for-develoment">
-<h2>Git branches used for develoment<a class="headerlink" href="#git-branches-used-for-develoment" title="Link to this heading">¶</a></h2>
+<h2>Git branches used for develoment<a class="headerlink" href="#git-branches-used-for-develoment" title="Permalink to this headline">¶</a></h2>
 <p>Currently useful branches for SURFEX-Crocus developers:</p>
 <ul class="simple">
 <li><p>cen: last stable release of the Crocus code (recommended for simple users)</p></li>
 <li><p>cen_hotfix: branch dedicated to publish bug fixes</p></li>
 <li><p>cen_dev: branch for new developments (recommended for all developers)</p></li>
 </ul>
-<p>New branches must be named <code class="docutils literal notranslate"><span class="pre">cen_dev_&lt;project&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code> being the name of the project or clearly describe the goal of the branch and originating from <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code>.
-When you end your developments:</p>
-<ul class="simple">
-<li><p>test your code (see below)</p></li>
-<li><p>merge the cen_dev branch in your code</p></li>
-<li><p>rebase your dev</p></li>
-<li><p>make a pull request for adding your devs to cen_dev branch</p></li>
-</ul>
+<p>New branches must be named <code class="docutils literal notranslate"><span class="pre">cen_dev_&lt;project&gt;</span></code> with <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;</span></code> being the name of the project or clearly describe the goal of the branch and originating from <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code>.</p>
 </section>
 <section id="rules-coding-for-surfex-crocus">
-<h2>Rules coding for SURFEX-Crocus<a class="headerlink" href="#rules-coding-for-surfex-crocus" title="Link to this heading">¶</a></h2>
+<h2>Rules coding for SURFEX-Crocus<a class="headerlink" href="#rules-coding-for-surfex-crocus" title="Permalink to this headline">¶</a></h2>
 <p>If you plan to code in SURFEX-Crocus and to share your work, you must respect 4 main ideas:</p>
 <ul class="simple">
 <li><p>CODE: Readability counts</p></li>
@@ -74,7 +69,7 @@ When you end your developments:</p>
 <li><p>COMMENT: Now is better than never</p></li>
 </ul>
 <section id="code">
-<h3>CODE<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
+<h3>CODE<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Follow the general rules for SURFEX : <a class="reference external" href="https://www.umr-cnrm.fr/surfex/spip.php?rubrique93">https://www.umr-cnrm.fr/surfex/spip.php?rubrique93</a> and in particular the DOCTOR norm for prefixing variables (mandatory).</p></li>
 <li><p>Do not implement IF statements within loops when the condition does not depend on points or layers (i.e. for physical options). Tests are expensive.</p></li>
@@ -87,27 +82,27 @@ When you end your developments:</p>
 </ul>
 </section>
 <section id="test">
-<h3>TEST<a class="headerlink" href="#test" title="Link to this heading">¶</a></h3>
+<h3>TEST<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
 <p>Snowtools provides some developments test for surfex. Run all tests to check that your devs don’t break something.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/tests
-python3<span class="w"> </span>test_dev_surfex.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="nv">$SNOWTOOLS_CEN</span>/snowtools/tests
+python3 test_dev_surfex.py
 </pre></div>
 </div>
 <p>Implement a new test in order to secure your new developments providing a namelist and if necessary a forcing file.
 If sufficient to test your implementation, prefer using the reference FORCING file for the First Test.
 Otherwise, FORCING files must not be added to the snowtools repository but provided in the <code class="docutils literal notranslate"><span class="pre">snowtools.DATA.TESTBASE_DIR</span></code> folder.</p>
 <p>It is also mandatory to check whether external version of Crocus can still be compiled and run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$EXESURFEX</span>/../src/EXT_CROCUS
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="nv">$EXESURFEX</span>/../src/EXT_CROCUS
 make
 ./prog
 </pre></div>
 </div>
 </section>
 <section id="check-numerical-efficiency">
-<h3>CHECK NUMERICAL EFFICIENCY<a class="headerlink" href="#check-numerical-efficiency" title="Link to this heading">¶</a></h3>
+<h3>CHECK NUMERICAL EFFICIENCY<a class="headerlink" href="#check-numerical-efficiency" title="Permalink to this headline">¶</a></h3>
 <p>New developments are not allowed to increase the reference computing time of each routine. This has to be checked by CEN team:</p>
 <p>On belenos:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20230801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20240801</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis_forprep.nam<span class="w"> </span>-s<span class="w"> </span><span class="nv">$HOME</span>/SURFEX/cen/exe<span class="w"> </span>--drhook<span class="w"> </span>-f<span class="w"> </span>reanalysis2025.1@lafaysse<span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-o<span class="w"> </span>reanalysis2025.drhook<span class="w"> </span>-r<span class="w"> </span>alp_allslopes
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research -b <span class="m">20230801</span> -e <span class="m">20240801</span> -n <span class="nv">$SNOWTOOLS_CEN</span>/DATA/OPTIONS_V9_reanalysis_forprep.nam -s <span class="nv">$HOME</span>/SURFEX/cen/exe --drhook -f reanalysis2025.1@lafaysse -m s2m -o reanalysis2025.drhook -r alp_allslopes
 </pre></div>
 </div>
 <p>Get drhook outputs on a laptop or server and run:</p>
@@ -117,26 +112,26 @@ make
 <p>Results in SORT_TOTAL file should exhibit lower computation times than reference computation times for all routines (cf. GMD paper for version3.0).</p>
 </section>
 <section id="comment">
-<h3>COMMENT<a class="headerlink" href="#comment" title="Link to this heading">¶</a></h3>
+<h3>COMMENT<a class="headerlink" href="#comment" title="Permalink to this headline">¶</a></h3>
 <p>Please comment your code in the Fortran files providing units of variables.</p>
 </section>
 </section>
 <section id="debug-surfex-crocus">
-<h2>Debug SURFEX-Crocus<a class="headerlink" href="#debug-surfex-crocus" title="Link to this heading">¶</a></h2>
+<h2>Debug SURFEX-Crocus<a class="headerlink" href="#debug-surfex-crocus" title="Permalink to this headline">¶</a></h2>
 <p>If you are implementing new developments or if you meet unexpected troubles during a run execution, please check the following instructions before contacting the support team :</p>
 <p>Always compile SURFEX with the DEBUG option. Once the development is finished, recompile with O2 optimization level before running your long experiments.</p>
 <p>For problems occurring inside the snow scheme, it is helpful to use a special debugging mode for Crocus, please read the following documentation:
 <a class="reference external" href="https://www.umr-cnrm.fr/surfex/IMG/pdf/doc_crodebug.pdf">https://www.umr-cnrm.fr/surfex/IMG/pdf/doc_crodebug.pdf</a></p>
 <section id="on-meteo-france-supercomputers">
-<h3>On Meteo-France supercomputers<a class="headerlink" href="#on-meteo-france-supercomputers" title="Link to this heading">¶</a></h3>
+<h3>On Meteo-France supercomputers<a class="headerlink" href="#on-meteo-france-supercomputers" title="Permalink to this headline">¶</a></h3>
 <p>To understand unexpected crashes during belenos runs, it is recommended to use use the ddt debugger from ARM-FORGE.</p>
 <section id="install-debugger">
-<h4>Install debugger<a class="headerlink" href="#install-debugger" title="Link to this heading">¶</a></h4>
+<h4>Install debugger<a class="headerlink" href="#install-debugger" title="Permalink to this headline">¶</a></h4>
 <p>First, check the remote version of DDT on the supercomputer with <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">avail</span></code></p>
 <p>Select a version and find the remote installation path for later step: <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">show</span> <span class="pre">arm/forge/22.1.1</span></code></p>
 <p>Locally, download the same version of ddt client on your machine at <a class="reference external" href="https://www.linaroforge.com/downloadForge/">https://www.linaroforge.com/downloadForge/</a> (Since 2023 the ARM forge debugger has a new name, Linaro forge).
 Then untar and run the install on your machine</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar<span class="w"> </span>xvf<span class="w"> </span>arm-forge-22.1.3-linux-x86_64.tar
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tar xvf arm-forge-22.1.3-linux-x86_64.tar
 arm-forge-22.1.3-linux-x86_64/textinstall.sh
 </pre></div>
 </div>
@@ -152,7 +147,7 @@ Remote installation directory: /opt/softs/arm/22.1.1/bin
 <p>Now, you are ready to use the debugger from your PC.</p>
 </section>
 <section id="run-the-debugger-job-on-the-server">
-<h4>Run the debugger job on the server<a class="headerlink" href="#run-the-debugger-job-on-the-server" title="Link to this heading">¶</a></h4>
+<h4>Run the debugger job on the server<a class="headerlink" href="#run-the-debugger-job-on-the-server" title="Permalink to this headline">¶</a></h4>
 <p>Remember, that the binaries must have be compiled in DEBUG mode.
 Then, prepare a simple debug job job_debug.sh following this example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
@@ -163,10 +158,10 @@ Then, prepare a simple debug job job_debug.sh following this example:</p>
 <span class="c1">#SBATCH --ntasks-per-core=1</span>
 <span class="c1">#SBATCH --time=01:00:00</span>
 
-module<span class="w"> </span>load<span class="w"> </span>arm/forge/22.1.1
-<span class="nb">cd</span><span class="w"> </span>/scratch/mtool/username/abort/dump_XXXXXX_reas2m/root/surfex_vortex_task
-<span class="nb">ulimit</span><span class="w"> </span>-s<span class="w"> </span>unlimited
-ddt<span class="w"> </span>--connect<span class="w"> </span>srun<span class="w"> </span>--ntasks<span class="w"> </span><span class="m">80</span><span class="w"> </span>/home/cnrm_other/cen/mrns/lafaysse/SURFEX/cen_dev/exe/OFFLINE-LXifort-SFX-V8-1-1-MPIAUTO-OMP-DEBUG-X0
+module load arm/forge/22.1.1
+<span class="nb">cd</span> /scratch/mtool/username/abort/dump_XXXXXX_reas2m/root/surfex_vortex_task
+<span class="nb">ulimit</span> -s unlimited
+ddt --connect srun --ntasks <span class="m">80</span> /home/cnrm_other/cen/mrns/lafaysse/SURFEX/cen_dev/exe/OFFLINE-LXifort-SFX-V8-1-1-MPIAUTO-OMP-DEBUG-X0
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -188,7 +183,7 @@ You can start using the debugger normally.</p>
 </section>
 </section>
 <section id="add-diagnostic-in-surfex-crocus">
-<h2>Add diagnostic in SURFEX-Crocus<a class="headerlink" href="#add-diagnostic-in-surfex-crocus" title="Link to this heading">¶</a></h2>
+<h2>Add diagnostic in SURFEX-Crocus<a class="headerlink" href="#add-diagnostic-in-surfex-crocus" title="Permalink to this headline">¶</a></h2>
 <p>If you need to add a diagnostic relative to the snowpack simulation, some guidelines are provided below.
 For variables defined for each snow, it is possible to follow instructions applied to ACC_RAT diagnostics which is also defined for each layer of the snowpack.</p>
 <p>Files to modify (a minima) :</p>
@@ -204,7 +199,7 @@ For variables defined for each snow, it is possible to follow instructions appli
 <p>You can imagine the TYPE as an object and you are adding a new attribute to this object.</p>
 <p>In this module, the name of ISBA_Diagnostic is DMI. The way to access to an attribute is via the % sign : DMI%XVAR_NEWDIAG.</p>
 <p>If your diagnostic dimension is (number of points, number of layers), you can follow ACC_RAT for the declaration of your new diagnostic</p>
-<p><strong>diag_misc_isba_initn.F90</strong>:</p>
+<p><strong>diag_isba_initn.F90</strong>:</p>
 <p>In this module, this is the initialisation of ISBA_Diagnostic, named DMA.</p>
 <p>So we are working on DMA%XVAR_NEWDIAG</p>
 <p>For a (number of points, number of layers) diagnostic, you can follow ACC_RAT also.</p>
@@ -237,47 +232,6 @@ Below the case 1 is described.</p>
 <p>Now, you have to compile SURFEX and to test it (do not forget to add your diagnostic in the CSELECT of the namelist).</p>
 <p>Finally, please also add some infos in this documentation (<a class="reference internal" href="surfex.html#avail-diagnostics"><span class="std std-ref">Available diagnostics</span></a>).</p>
 </section>
-<section id="add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus">
-<h2>Add an option and/or a flag for option activation in SURFEX-Crocus<a class="headerlink" href="#add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus" title="Link to this heading">¶</a></h2>
-<p>You can calculate your new diagnostic only if a key is activated in the namelist, usually in NAM_ISBA_SNOW for us.
-It is also possible that your new diagnostic depends on a physical parametrization, so you want to add an option.
-Your option has to start with C (for Character). Your flag has to start with L (for Logical).
-In the code, flags and options belong to IO object.
-So, you’ll implement LNEWFLAG, CNEWOPTION, IO%LNEWFLAG or IO%CNEWOPTION depending on where you are in the code.</p>
-<p>Files to modify (a minima) :</p>
-<ul class="simple">
-<li><p>modn_isban.F90</p></li>
-<li><p>modd_isba_optionsn.F90</p></li>
-<li><p>read_namelist_isban.F90</p></li>
-<li><p>init_isban.F90</p></li>
-<li><p>init_teb_veg_optionsn.F90</p></li>
-<li><p>snow3L_isba.F90</p></li>
-<li><p>default_crocus.F90</p></li>
-<li><p>snowcro.F90</p></li>
-</ul>
-<p><strong>modn_isban.F90</strong>:</p>
-<p>This module contains the declaration of namelist, it details in which part of namelist your flag and/or option is (probably NAM_ISBA_SNOW).
-In that case, you have also to implement INIT_NAM_ISBA_SNOW and UPDATE_NAM_ISBA_SNOW</p>
-<p><strong>modd_isba_optionsn.F90</strong>:</p>
-<p>This module is the declaration of the IO object -&gt; you have to add your flag and option (probably in the snow model option).
-You have also to declare the default value.</p>
-<p><strong>read_namelist_isban.F90</strong>:</p>
-<p>You have to add your flag/option in DEFAULT_CROCUS part</p>
-<p><strong>init_isban.F90</strong></p>
-<p>You have to add your flag/option in the CALL of DEFAULT_CROCUS</p>
-<p><strong>init_teb_veg_optionsn.F90</strong></p>
-<p>TEB is a TOWN scheme. But there are some garden and greenroof in town so it needs two times a call to vegetation.
-You have to add your flag/option in the two CALL of DEFAULT_CROCUS</p>
-<p><strong>snow3L_isba.F90</strong></p>
-<p>Your flag/option is used in snowcro in order to calculate something.
-So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
-<p><strong>default_crocus.F90</strong></p>
-<p>This is the defautt value for your flag (True or False) and/or for your option (which scheme you want by default).</p>
-<p>NB: in there, the flag/option is local. So the flag starts with O and the option starts with H: ONEWFLAG and HNEWOPTION</p>
-<p><strong>snowcro.F90</strong></p>
-<p>This is where the science is made. It’s up to you to know what you want to modify.</p>
-<p>NB: as in default_crocus, ONEWFLAG and HNEWOPTION</p>
-</section>
 </section>
 
 
@@ -285,11 +239,10 @@ So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <div>
-    <h3><a href="../index.html">Table of Contents</a></h3>
-    <ul>
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
 <li><a class="reference internal" href="#">Information for SURFEX-Crocus developers</a><ul>
 <li><a class="reference internal" href="#git-branches-used-for-develoment">Git branches used for develoment</a></li>
 <li><a class="reference internal" href="#rules-coding-for-surfex-crocus">Rules coding for SURFEX-Crocus</a><ul>
@@ -308,22 +261,16 @@ So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#add-diagnostic-in-surfex-crocus">Add diagnostic in SURFEX-Crocus</a></li>
-<li><a class="reference internal" href="#add-an-option-and-or-a-flag-for-option-activation-in-surfex-crocus">Add an option and/or a flag for option activation in SURFEX-Crocus</a></li>
 </ul>
 </li>
 </ul>
 
-  </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="surfex.html"
-                          title="previous chapter">Few informations on SURFEX-Crocus simulations</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="surfex-crocus-user-doc.html"
-                          title="next chapter">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen</span></code> branch</a></p>
-  </div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="surfex.html"
+                        title="previous chapter">Few informations on SURFEX-Crocus simulations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="surfex-crocus-user-doc.html"
+                        title="next chapter">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen</span></code> branch</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -331,7 +278,7 @@ So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -339,13 +286,13 @@ So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -368,8 +315,8 @@ So, your flag/option has to appear in the call of SNOWCRO in snow3L_isba.F90</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>

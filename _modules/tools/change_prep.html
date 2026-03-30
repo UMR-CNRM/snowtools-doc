@@ -1,20 +1,22 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../../">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tools.change_prep &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
-    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -47,28 +49,26 @@
 <span class="sd">&#39;&#39;&#39;</span>
 
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_base</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileNameException</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_base</span>
+<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span>
 
 
-<div class="viewcode-block" id="prep_tomodify">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">prep_tomodify</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class represents a PREP.nc file for SURFEX initial conditions</span>
+<div class="viewcode-block" id="prep_tomodify"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify">[docs]</a><span class="k">class</span> <span class="nc">prep_tomodify</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents a PREP.nc file for SURFEX initial conditions</span>
 <span class="sd">    which has to be modified before SURFEX execution</span>
 
 <span class="sd">    :param prepfile: Address of prep file to modify</span>
 <span class="sd">    :type prepfile: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepfile</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method opens a PREP.nc file ready to be modified&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init method opens a PREP.nc file ready to be modified&quot;&quot;&quot;</span>
 
         <span class="c1"># Names of the prognostic variables in the PREP netcdf file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nsnowlayer&#39;</span><span class="p">:</span> <span class="s1">&#39;SN_VEG_N&#39;</span><span class="p">,</span>
@@ -93,10 +93,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span> <span class="o">=</span> <span class="n">prosimu_base</span><span class="p">(</span><span class="n">prepfile</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nsnowlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;nsnowlayer&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="prep_tomodify.apply_swe_threshold">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.apply_swe_threshold">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply_swe_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swe_threshold</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to apply a threshold on snow water equivalent in a PREP.nc file</span>
+<div class="viewcode-block" id="prep_tomodify.apply_swe_threshold"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.apply_swe_threshold">[docs]</a>    <span class="k">def</span> <span class="nf">apply_swe_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swe_threshold</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method to apply a threshold on snow water equivalent in a PREP.nc file</span>
 
 <span class="sd">        :param swe_threshold: Maximum allowed Snow Water Equivalent (kg/m2)</span>
 <span class="sd">        :type swe_threshold: int or float</span>
@@ -115,11 +113,8 @@
         <span class="k">if</span> <span class="n">closefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="prep_tomodify.change_date">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.change_date">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">change_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdate</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to change the date of a PREP file because a spinup is used to initialize the simulation</span>
+<div class="viewcode-block" id="prep_tomodify.change_date"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.change_date">[docs]</a>    <span class="k">def</span> <span class="nf">change_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdate</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method to change the date of a PREP file because a spinup is used to initialize the simulation</span>
 
 <span class="sd">        :param newdate: New initial date of simulation</span>
 <span class="sd">        :type newdate: class:`datetime.datetime`</span>
@@ -141,11 +136,8 @@
         <span class="k">if</span> <span class="n">closefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="prep_tomodify.fix_version">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.fix_version">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fix_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iversion</span><span class="p">,</span> <span class="n">ibug</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify surfex version in PREP files that were built with an incorrect numbering</span>
+<div class="viewcode-block" id="prep_tomodify.fix_version"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.fix_version">[docs]</a>    <span class="k">def</span> <span class="nf">fix_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iversion</span><span class="p">,</span> <span class="n">ibug</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Modify surfex version in PREP files that were built with an incorrect numbering</span>
 <span class="sd">        :param iversion: fixed version number</span>
 <span class="sd">        :type iversion: int</span>
 <span class="sd">        :param ibug: fixed subversion number</span>
@@ -160,19 +152,13 @@
         <span class="k">if</span> <span class="n">closefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="prep_tomodify.close">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.close">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the PREP file&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="prep_tomodify.close"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close the PREP file&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="prep_tomodify.insert_snow_depth">
-<a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.insert_snow_depth">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">insert_snow_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_name_SRU</span><span class="p">,</span> <span class="n">my_name_SNOWSAT</span><span class="p">,</span> <span class="n">my_name_OBS</span><span class="p">,</span>
+<div class="viewcode-block" id="prep_tomodify.insert_snow_depth"><a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.insert_snow_depth">[docs]</a>    <span class="k">def</span> <span class="nf">insert_snow_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_name_SRU</span><span class="p">,</span> <span class="n">my_name_SNOWSAT</span><span class="p">,</span> <span class="n">my_name_OBS</span><span class="p">,</span>
                           <span class="n">my_name_extprep50</span><span class="p">,</span> <span class="n">my_name_extprep5</span><span class="p">,</span> <span class="n">my_name_var</span><span class="p">,</span> <span class="n">my_name_PREP</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39; This function was implemented by C. Carmagnola in March 2019 (PROSNOW project).</span>
+        <span class="sd">&#39;&#39;&#39; This function was implemented by C. Carmagnola in March 2019 (PROSNOW project).</span>
 <span class="sd">        It modifies a PREP file by inserting measured snow depth values.&#39;&#39;&#39;</span>
 
         <span class="n">swe</span> <span class="o">=</span> <span class="s1">&#39;WSN_VEG&#39;</span>
@@ -317,18 +303,16 @@
                         <span class="n">PREP_ext</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
             <span class="n">OBS_nc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="n">PREP</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-</div>
-
+            <span class="n">PREP</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
+<div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -336,13 +320,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="Related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -360,8 +344,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
     </div>
   </body>
 </html>
