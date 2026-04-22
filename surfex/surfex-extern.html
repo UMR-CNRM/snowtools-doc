@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>External use of Crocus for other Land Surface Models &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SURFEX-Crocus user documentation for cen_dev branch" href="surfex-crocus-user-doc.html" />
     <link rel="prev" title="Information for SURFEX-Crocus developers" href="surfex-dev.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,20 +47,20 @@
           <div class="body" role="main">
             
   <section id="external-use-of-crocus-for-other-land-surface-models">
-<h1>External use of Crocus for other Land Surface Models<a class="headerlink" href="#external-use-of-crocus-for-other-land-surface-models" title="Permalink to this headline">¶</a></h1>
+<h1>External use of Crocus for other Land Surface Models<a class="headerlink" href="#external-use-of-crocus-for-other-land-surface-models" title="Link to this heading">¶</a></h1>
 <p>For users who want to couple Crocus with their own surface scheme, instead of downloading the whole project SURFEX-Crocus, you can download only Crocus and its dependencies.
 We recommend to get the up-to-date source code from the private github repository <a class="reference external" href="https://github.com/UMR-CNRM/SURFEX_CEN">SURFEX_CEN</a>, please ask for access by email to crocus at meteo dot fr.</p>
 <p>To install only Crocus and its dependencies, use the following commands:</p>
 <p>In the download directory:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git init
-git config core.sparseCheckout <span class="nb">true</span>
-git remote add -f origin git@github.com:UMR-CNRM/SURFEX_CEN.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>init
+git<span class="w"> </span>config<span class="w"> </span>core.sparseCheckout<span class="w"> </span><span class="nb">true</span>
+git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>-f<span class="w"> </span>origin<span class="w"> </span>git@github.com:UMR-CNRM/SURFEX_CEN.git
 </pre></div>
 </div>
 <p>Save the attached file <a class="reference external" href="../_static/sparse-checkout">sparse-checkout</a> in <code class="docutils literal notranslate"><span class="pre">.git/info/</span></code></p>
 <p>Then</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git pull
-<span class="nb">cd</span> src/EXT_CROCUS
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>pull
+<span class="nb">cd</span><span class="w"> </span>src/EXT_CROCUS
 make
 </pre></div>
 </div>
@@ -74,7 +72,7 @@ make
 Then in their surface scheme makefile, add option <code class="docutils literal notranslate"><span class="pre">-I</span> <span class="pre">$SRC_SURFEX/EXT_CROCUS/obj</span></code>
 with setting of <code class="docutils literal notranslate"><span class="pre">SRC_SURFEX</span></code> variable to the appropriate path.</p>
 <p>This way, the Fortran source files of the user’s surface scheme can import Crocus by:</p>
-<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="k">USE </span><span class="n">MODI_SNOWCRO</span><span class="w"></span>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="k">USE </span><span class="n">MODI_SNOWCRO</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -83,7 +81,7 @@ with setting of <code class="docutils literal notranslate"><span class="pre">SRC
 </div>
 <p>For SURFEX developers:</p>
 <p>If during development we have to use others files from SURFEX-CROCUS project we add them in <code class="docutils literal notranslate"><span class="pre">.git/info/sparse-checkout</span></code> then tap</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git read-tree -mu HEAD
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>read-tree<span class="w"> </span>-mu<span class="w"> </span>HEAD
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -97,14 +95,18 @@ with setting of <code class="docutils literal notranslate"><span class="pre">SRC
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="surfex-dev.html"
-                        title="previous chapter">Information for SURFEX-Crocus developers</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="surfex-crocus-user-doc.html"
-                        title="next chapter">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch</a></p>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="surfex-dev.html"
+                          title="previous chapter">Information for SURFEX-Crocus developers</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="surfex-crocus-user-doc.html"
+                          title="next chapter">SURFEX-Crocus user documentation for <code class="docutils literal notranslate"><span class="pre">cen_dev</span></code> branch</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -112,7 +114,7 @@ with setting of <code class="docutils literal notranslate"><span class="pre">SRC
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -120,13 +122,13 @@ with setting of <code class="docutils literal notranslate"><span class="pre">SRC
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -150,8 +152,8 @@ with setting of <code class="docutils literal notranslate"><span class="pre">SRC
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

@@ -1,22 +1,20 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.operational_reproductibility.compare2versions &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -50,40 +48,44 @@
 <span class="sd">@author: Matthieu Lafaysse</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">netCDF4</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
 <span class="c1"># nanmean no longer exist in scipy, replace by np.nanmean</span>
 <span class="c1"># from scipy import nanmean</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">VarNameException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">VarNameException</span>
 <span class="c1"># Not necessary to transfer in vortex</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">get_file_period</span><span class="p">,</span> <span class="n">get_file_date</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">checkdateafter</span>
-<span class="kn">from</span> <span class="nn">bronx.stdtypes.date</span> <span class="kn">import</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">yesterday</span><span class="p">,</span> <span class="n">tomorrow</span><span class="p">,</span> <span class="n">daterange</span>
-<span class="kn">from</span> <span class="nn">optparse</span> <span class="kn">import</span> <span class="n">OptionParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_file_period</span><span class="p">,</span> <span class="n">get_file_date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">checkdateafter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">yesterday</span><span class="p">,</span> <span class="n">tomorrow</span><span class="p">,</span> <span class="n">daterange</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">optparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionParser</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">cftime</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cftime</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">cftime</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">usage</span> <span class="o">=</span> <span class="s2">&quot;USAGE compare2versions.py [fichier1 fichier2] [DATEBEGIN DATEEND]&quot;</span>
 
 
-<div class="viewcode-block" id="SimplifiedProsimu"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu">[docs]</a><span class="k">class</span> <span class="nc">SimplifiedProsimu</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Simplified prosimu class&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SimplifiedProsimu">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplifiedProsimu</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified prosimu class&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SimplifiedProsimu</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimplifiedProsimu.listdim"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listdim">[docs]</a>    <span class="k">def</span> <span class="nf">listdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SimplifiedProsimu.listdim">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listdim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        list of dimensions</span>
 
 <span class="sd">        :returns: list of dimensions</span>
@@ -91,8 +93,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimplifiedProsimu.listvar"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listvar">[docs]</a>    <span class="k">def</span> <span class="nf">listvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplifiedProsimu.listvar">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listvar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        list of variables</span>
 
 <span class="sd">        :returns: list of variables</span>
@@ -100,8 +105,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimplifiedProsimu.listattr"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listattr">[docs]</a>    <span class="k">def</span> <span class="nf">listattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplifiedProsimu.listattr">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.listattr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        list of attributes for a variable</span>
 
 <span class="sd">        :param varname: the variable name</span>
@@ -110,8 +118,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span><span class="o">.</span><span class="n">ncattrs</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimplifiedProsimu.getattr"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.getattr">[docs]</a>    <span class="k">def</span> <span class="nf">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">attname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplifiedProsimu.getattr">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.getattr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">attname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get a specific attribute for a specific variable</span>
 
 <span class="sd">        :param varname: the variable name</span>
@@ -122,8 +133,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">attname</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SimplifiedProsimu.readtime"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.readtime">[docs]</a>    <span class="k">def</span> <span class="nf">readtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplifiedProsimu.readtime">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.readtime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">readtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the time dimension of the netCDF file</span>
 
 <span class="sd">        :returns: time axis data</span>
@@ -141,8 +155,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">num2date</span><span class="p">(</span><span class="n">time</span><span class="p">[:],</span> <span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="SimplifiedProsimu.read"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SimplifiedProsimu.read">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.SimplifiedProsimu.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        read variable from NetCDF file.</span>
 
 <span class="sd">        :param varname: variable name</span>
@@ -160,24 +177,33 @@
             <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">varnc</span> <span class="o">==</span> <span class="n">fillvalue</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">varnc</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">array</span> <span class="o">=</span> <span class="n">varnc</span>
-        <span class="k">return</span> <span class="n">array</span></div></div>
+        <span class="k">return</span> <span class="n">array</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ComparisonNetcdf"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf">[docs]</a><span class="k">class</span> <span class="nc">ComparisonNetcdf</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonNetcdf">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComparisonNetcdf</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for Netcdf comparison</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">allowed_ga_differences</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date_created&#39;</span><span class="p">]</span> <span class="c1"># allowed differences in global attributes</span>
 
-<div class="viewcode-block" id="ComparisonNetcdf.report"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ComparisonNetcdf.report">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Define what should be done with the information message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ComparisonNetcdf.getlistvar"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.getlistvar">[docs]</a>    <span class="k">def</span> <span class="nf">getlistvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">afile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonNetcdf.getlistvar">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.getlistvar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getlistvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">afile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get variable list from given file</span>
 
 <span class="sd">        :param afile: file object</span>
@@ -186,8 +212,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">afile</span><span class="o">.</span><span class="n">listvar</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ComparisonNetcdf.compare2files"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.compare2files">[docs]</a>    <span class="k">def</span> <span class="nf">compare2files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">name2</span><span class="p">,</span> <span class="n">checktime</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonNetcdf.compare2files">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonNetcdf.compare2files">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compare2files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">name2</span><span class="p">,</span> <span class="n">checktime</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        main comparison method</span>
 
 <span class="sd">        :param name1: filename of first file</span>
@@ -329,11 +358,15 @@
         <span class="n">file1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">file2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">conform</span></div></div>
+        <span class="k">return</span> <span class="n">conform</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ComparisonS2MIntDev"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev">[docs]</a><span class="k">class</span> <span class="nc">ComparisonS2MIntDev</span><span class="p">(</span><span class="n">ComparisonNetcdf</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComparisonS2MIntDev</span><span class="p">(</span><span class="n">ComparisonNetcdf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is not useful for vortex but is temporarily used while netcdf comparison is not implemented</span>
 <span class="sd">    in the diff toolbox.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -357,7 +390,7 @@
     <span class="n">secondassimruntime</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1">#: runtime of third run of the day</span>
     <span class="n">monthly_analysis_time</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1">#: hour of the monthly reanalysis</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">list_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
@@ -373,8 +406,10 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="n">ComparisonS2MIntDev</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.dirdate"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.dirdate">[docs]</a>    <span class="k">def</span> <span class="nf">dirdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ComparisonS2MIntDev.dirdate">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.dirdate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dirdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get date directory name</span>
 
 <span class="sd">        :param date: rundate</span>
@@ -384,8 +419,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">.</span><span class="n">stdvortex</span> <span class="o">+</span> <span class="n">cutoff</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.getpathint"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathint">[docs]</a>    <span class="k">def</span> <span class="nf">getpathint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.getpathint">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathint">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getpathint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get path of operational simulation</span>
 
 <span class="sd">        :param vconf: vortex vconf</span>
@@ -398,8 +436,11 @@
         <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pathint</span><span class="p">,</span> <span class="n">vconf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_allslopes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpid_int</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirdate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">),</span>
                          <span class="s2">&quot;mb</span><span class="si">%3.3d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.getpathdev"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathdev">[docs]</a>    <span class="k">def</span> <span class="nf">getpathdev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.getpathdev">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.getpathdev">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getpathdev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get path of development simulation</span>
 
 <span class="sd">        :param vconf: vortex vconf</span>
@@ -411,8 +452,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pathdev</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpid_dev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dirdate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">),</span> <span class="s2">&quot;mb</span><span class="si">%3.3d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">member</span><span class="p">,</span> <span class="n">block</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.get_period"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.get_period">[docs]</a>    <span class="k">def</span> <span class="nf">get_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundate</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.get_period">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.get_period">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_period</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundate</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get simulation start date and end date</span>
 
 <span class="sd">        :param rundate: simulation reference date</span>
@@ -450,8 +494,11 @@
 
         <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.compareallmembers"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers">[docs]</a>    <span class="k">def</span> <span class="nf">compareallmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.compareallmembers">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallmembers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compareallmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Comparison loop over members</span>
 
 <span class="sd">        :param vconf: vortex vconf</span>
@@ -533,8 +580,11 @@
             <span class="n">conform</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="n">conform</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.comparealldomains"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains">[docs]</a>    <span class="k">def</span> <span class="nf">comparealldomains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.comparealldomains">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.comparealldomains">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comparealldomains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Comparison loop over all domains (&quot;alp_allslopes&quot;, &quot;pyr_allslopes&quot;, &quot;cor_allslopes&quot;, &quot;postes&quot;)</span>
 <span class="sd">        and &quot;cutoffs&quot; (&quot;A&quot;, &quot;P&quot;) = analysis and forecast</span>
 
@@ -553,8 +603,11 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">domain</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">cutoff</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">conform</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">conform</span></div>
 
-<div class="viewcode-block" id="ComparisonS2MIntDev.compareallruns"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallruns">[docs]</a>    <span class="k">def</span> <span class="nf">compareallruns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MIntDev.compareallruns">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MIntDev.compareallruns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compareallruns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Comparison loop over all runs on a given day</span>
 
 <span class="sd">        :param date: run date</span>
@@ -567,34 +620,48 @@
 
             <span class="n">conform</span> <span class="o">=</span> <span class="n">conform</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparealldomains</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="n">runtime</span><span class="o">.</span><span class="n">hour</span><span class="p">))</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">runtime</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">conform</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">conform</span></div></div>
+        <span class="k">return</span> <span class="n">conform</span></div>
+</div>
 
 
-<div class="viewcode-block" id="FastComparisonS2MIntDev"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev">[docs]</a><span class="k">class</span> <span class="nc">FastComparisonS2MIntDev</span><span class="p">(</span><span class="n">ComparisonS2MIntDev</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fast comparison of operational chain with development chain &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FastComparisonS2MIntDev.getlistvar"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev.getlistvar">[docs]</a>    <span class="k">def</span> <span class="nf">getlistvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">afile</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FastComparisonS2MIntDev">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FastComparisonS2MIntDev</span><span class="p">(</span><span class="n">ComparisonS2MIntDev</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast comparison of operational chain with development chain &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FastComparisonS2MIntDev.getlistvar">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MIntDev.getlistvar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getlistvar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">afile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get reduced list of variables to compare</span>
 
 <span class="sd">        :param afile: file object</span>
 <span class="sd">        :type afile: :py:class:`SimplifiedProsimu`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">vars_to_check</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SNOWDZ&#39;</span><span class="p">,</span> <span class="s1">&#39;Tair&#39;</span><span class="p">,</span> <span class="s1">&#39;Rainf&#39;</span><span class="p">,</span> <span class="s1">&#39;TG1&#39;</span><span class="p">,</span> <span class="s1">&#39;WSN_VEG1&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vars_to_check</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">afile</span><span class="o">.</span><span class="n">listvar</span><span class="p">()))</span></div></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vars_to_check</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">afile</span><span class="o">.</span><span class="n">listvar</span><span class="p">()))</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ComparisonS2MDbleDev"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev">[docs]</a><span class="k">class</span> <span class="nc">ComparisonS2MDbleDev</span><span class="p">(</span><span class="n">ComparisonS2MIntDev</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for comparing dev chain with &quot;chaine en double&quot;. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ComparisonS2MDbleDev">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.ComparisonS2MDbleDev">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComparisonS2MDbleDev</span><span class="p">(</span><span class="n">ComparisonS2MIntDev</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for comparing dev chain with &quot;chaine en double&quot;. &quot;&quot;&quot;</span>
     <span class="n">xpid_int</span> <span class="o">=</span> <span class="s1">&#39;DBLE&#39;</span>  <span class="c1">#: experiment id</span></div>
 
 
-<div class="viewcode-block" id="FastComparisonS2MDbleDev"><a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MDbleDev">[docs]</a><span class="k">class</span> <span class="nc">FastComparisonS2MDbleDev</span><span class="p">(</span><span class="n">FastComparisonS2MIntDev</span><span class="p">,</span> <span class="n">ComparisonS2MDbleDev</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for fast comparison dev chain with &quot;chaine en double&quot;. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FastComparisonS2MDbleDev">
+<a class="viewcode-back" href="../../../code/utils-operational_repro-compare2versions.html#utils.operational_reproductibility.compare2versions.FastComparisonS2MDbleDev">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FastComparisonS2MDbleDev</span><span class="p">(</span><span class="n">FastComparisonS2MIntDev</span><span class="p">,</span> <span class="n">ComparisonS2MDbleDev</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for fast comparison dev chain with &quot;chaine en double&quot;. &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
-<span class="k">def</span> <span class="nf">parse_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s2">&quot;--old&quot;</span><span class="p">,</span>
@@ -673,9 +740,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -683,13 +750,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -707,8 +774,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

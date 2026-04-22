@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Interpolation tools &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Common data shared in DATA directory" href="data.html" />
     <link rel="prev" title="Assimilation" href="assim.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -48,7 +46,7 @@
           <div class="body" role="main">
             
   <section id="interpolation-tools">
-<span id="interpolation"></span><h1>Interpolation tools<a class="headerlink" href="#interpolation-tools" title="Permalink to this headline">¶</a></h1>
+<span id="interpolation"></span><h1>Interpolation tools<a class="headerlink" href="#interpolation-tools" title="Link to this heading">¶</a></h1>
 <p>The SAFRAN reanalysis gives FORCING files for SURFEX-Crocus simulations in the semi-distributed geometry since 1958.</p>
 <p>You can interpol this reanalysis in order to generate:</p>
 <ul class="simple">
@@ -57,15 +55,15 @@
 </ul>
 <p>You need a shapefile which define your geometry and then use the interpolation tools.</p>
 <section id="how-to-create-forcing-files-for-isolated-points">
-<h2>How to create FORCING files for isolated points ?<a class="headerlink" href="#how-to-create-forcing-files-for-isolated-points" title="Permalink to this headline">¶</a></h2>
+<h2>How to create FORCING files for isolated points ?<a class="headerlink" href="#how-to-create-forcing-files-for-isolated-points" title="Link to this heading">¶</a></h2>
 <p>You can use the script <cite>shapefile2NetCDF.py</cite> which use a shapefile of isolated points.
 The documentation is below and you can read it in the header of the python script.</p>
-<span class="target" id="module-interpolation.shapefile2NetCDF"></span><p>This script needs a shapefile (in Lambert 93 coordinates) of points.
+<p id="module-interpolation.shapefile2NetCDF">This script needs a shapefile (in Lambert 93 coordinates) of points.
 It is useful for simulations on several differents points.</p>
 <p>If you want a simulation on a 2D domain delimited by a shapefile:
 see shapefile2NetCDF_2D.py instead.</p>
 <section id="general-documentation-of-shapefile2netcdf-script">
-<h3>General documentation of shapefile2NetCDF script<a class="headerlink" href="#general-documentation-of-shapefile2netcdf-script" title="Permalink to this headline">¶</a></h3>
+<h3>General documentation of shapefile2NetCDF script<a class="headerlink" href="#general-documentation-of-shapefile2netcdf-script" title="Link to this heading">¶</a></h3>
 <p>This script creates a NetCDF with the same points than in shapefile.
 The NetCDF file is necessary to launch Surfex-Crocus simulations.
 It allows to interpolate FORCING values from SAFRAN reanalysis to your shapefile points.
@@ -75,7 +73,7 @@ These skylines are necessary for the –addmask option in SURFEX Crocus simulati
 This script also allows to keep the skyline views if you want to check them.</p>
 <p>Reminder: if the points in your project are planned to last long, copy them in snowtools/DATA/METADATA.xml</p>
 <section id="examples-of-use">
-<h4>EXAMPLES OF USE<a class="headerlink" href="#examples-of-use" title="Permalink to this headline">¶</a></h4>
+<h4>EXAMPLES OF USE<a class="headerlink" href="#examples-of-use" title="Link to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">shapefile2NetCDF</span><span class="o">.</span><span class="n">py</span> <span class="n">path_shapefile</span> <span class="n">station_name_in_shapefile</span> <span class="n">station_id_in_shapefile</span>
         <span class="p">[</span><span class="o">--</span><span class="n">name_alt</span> <span class="n">alti_name_in_shapefile</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">path_name_of_NetCDF_output</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">MNT_alt</span> <span class="n">path_of_MNT_altitude</span><span class="p">]</span>
         <span class="p">[</span><span class="o">--</span><span class="n">list_skyline</span> <span class="nb">all</span> <span class="ow">or</span> <span class="mi">1</span> <span class="mi">5</span> <span class="mi">6</span> <span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">skyline</span> <span class="k">for</span> <span class="n">your</span> <span class="n">id_station</span> <span class="n">number</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span> <span class="ow">and</span> <span class="mi">6</span><span class="p">]</span>
@@ -98,27 +96,27 @@ This script also allows to keep the skyline views if you want to check them.</p>
 </div>
 </section>
 <section id="examples-of-use-of-the-netcdf-file-in-local-simulation">
-<h4>EXAMPLES OF USE OF THE NETCDF FILE IN LOCAL SIMULATION<a class="headerlink" href="#examples-of-use-of-the-netcdf-file-in-local-simulation" title="Permalink to this headline">¶</a></h4>
+<h4>EXAMPLES OF USE OF THE NETCDF FILE IN LOCAL SIMULATION<a class="headerlink" href="#examples-of-use-of-the-netcdf-file-in-local-simulation" title="Link to this heading">¶</a></h4>
 <p>Get the interpolation of the FORCING file, interpol_FORCING:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research -f path_FORCING -b begin_date -e end_date -r path_netcdf.nc -o output_name -g --extractforcing
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span>path_FORCING<span class="w"> </span>-b<span class="w"> </span>begin_date<span class="w"> </span>-e<span class="w"> </span>end_date<span class="w"> </span>-r<span class="w"> </span>path_netcdf.nc<span class="w"> </span>-o<span class="w"> </span>output_name<span class="w"> </span>-g<span class="w"> </span>--extractforcing
 </pre></div>
 </div>
 <p>Obtain the PRO file for the shapefile points:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research -f path_interpol_FORCING -b begin_date -e end_date -o output_name_pour_PRO -g --addmask
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span>path_interpol_FORCING<span class="w"> </span>-b<span class="w"> </span>begin_date<span class="w"> </span>-e<span class="w"> </span>end_date<span class="w"> </span>-o<span class="w"> </span>output_name_pour_PRO<span class="w"> </span>-g<span class="w"> </span>--addmask
 </pre></div>
 </div>
 <p>Example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research -f /rd/cenfic3/cenmod/era40/vortex/s2m/alp_flat/reanalysis/meteo/FORCING_2017080106_2018080106.nc
-             -b <span class="m">20170801</span> -e <span class="m">20180801</span> -r /home/fructusm/git/snowtools_git/interpolation/NetCDF_from_shapefile.nc
-             -o output_test_s2m -g --extractforcing
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span>/rd/cenfic3/cenmod/era40/vortex/s2m/alp_flat/reanalysis/meteo/FORCING_2017080106_2018080106.nc
+<span class="w">             </span>-b<span class="w"> </span><span class="m">20170801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20180801</span><span class="w"> </span>-r<span class="w"> </span>/home/fructusm/git/snowtools_git/interpolation/NetCDF_from_shapefile.nc
+<span class="w">             </span>-o<span class="w"> </span>output_test_s2m<span class="w"> </span>-g<span class="w"> </span>--extractforcing
 
-s2m research -f /home/fructusm/OUTPUT_et_PRO/output_test_s2m/meteo/FORCING_2017080106_2018080106.nc
-             -b <span class="m">20170801</span> -e <span class="m">20180801</span> -o output_test_s2m_Safran -g --addmask
+s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span>/home/fructusm/OUTPUT_et_PRO/output_test_s2m/meteo/FORCING_2017080106_2018080106.nc
+<span class="w">             </span>-b<span class="w"> </span><span class="m">20170801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20180801</span><span class="w"> </span>-o<span class="w"> </span>output_test_s2m_Safran<span class="w"> </span>-g<span class="w"> </span>--addmask
 </pre></div>
 </div>
 </section>
 <section id="examples-of-use-of-the-netcdf-file-in-hpc-simulation">
-<h4>EXAMPLES OF USE OF THE NETCDF FILE IN HPC SIMULATION<a class="headerlink" href="#examples-of-use-of-the-netcdf-file-in-hpc-simulation" title="Permalink to this headline">¶</a></h4>
+<h4>EXAMPLES OF USE OF THE NETCDF FILE IN HPC SIMULATION<a class="headerlink" href="#examples-of-use-of-the-netcdf-file-in-hpc-simulation" title="Link to this heading">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s2m</span> <span class="n">research</span> <span class="o">-</span><span class="n">b</span> <span class="mi">19580801</span> <span class="o">-</span><span class="n">e</span> <span class="mi">20200801</span> <span class="o">-</span><span class="n">m</span> <span class="n">s2m</span> <span class="o">-</span><span class="n">f</span> <span class="n">reanalysis2020</span><span class="mf">.2</span><span class="nd">@lafaysse</span>
              <span class="o">-</span><span class="n">r</span> <span class="n">alp_flat</span><span class="p">:</span><span class="n">orchamp</span><span class="p">:</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">cnrm_other</span><span class="o">/</span><span class="n">cen</span><span class="o">/</span><span class="n">mrns</span><span class="o">/</span><span class="n">fructusm</span><span class="o">/</span><span class="n">NetCDF_from_shapefile</span><span class="o">.</span><span class="n">nc</span>
              <span class="o">-</span><span class="n">o</span> <span class="n">TEST1</span> <span class="o">-</span><span class="n">n</span> <span class="n">OPTIONS_V8</span><span class="mf">.1</span><span class="n">_NEW_OUTPUTS_NC_reanalysis</span><span class="o">.</span><span class="n">nam</span> <span class="o">-</span><span class="n">g</span> <span class="o">--</span><span class="n">addmask</span> <span class="o">-</span><span class="n">a</span> <span class="mi">400</span>
@@ -126,22 +124,22 @@ s2m research -f /home/fructusm/OUTPUT_et_PRO/output_test_s2m/meteo/FORCING_20170
 </div>
 </section>
 <section id="hpc-simulation-climate-simulations">
-<h4>HPC SIMULATION: CLIMATE SIMULATIONS<a class="headerlink" href="#hpc-simulation-climate-simulations" title="Permalink to this headline">¶</a></h4>
+<h4>HPC SIMULATION: CLIMATE SIMULATIONS<a class="headerlink" href="#hpc-simulation-climate-simulations" title="Link to this heading">¶</a></h4>
 <p>Forcing files from SMHI_RCA4_MOHC_HadGEM2_ES_RCP85 (for example) are in Raphaelle Samacoits folders</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research -b <span class="m">20100801</span> -e <span class="m">20990801</span> -m adamont -f CLMcom_CCLM4_8_17_CNRM_CERFACS_CNRM_CM5_RCP45@samacoitsr
-             -r alp_flat:orchamp:/home/cnrm_other/cen/mrns/fructusm/NetCDF_from_shapefile.nc -o TEST_Raphaelle
-             -n OPTIONS_V8.1_NEW_OUTPUTS_NC_reanalysis.nam -x <span class="m">20200801</span> --addmask -a <span class="m">400</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20100801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20990801</span><span class="w"> </span>-m<span class="w"> </span>adamont<span class="w"> </span>-f<span class="w"> </span>CLMcom_CCLM4_8_17_CNRM_CERFACS_CNRM_CM5_RCP45@samacoitsr
+<span class="w">             </span>-r<span class="w"> </span>alp_flat:orchamp:/home/cnrm_other/cen/mrns/fructusm/NetCDF_from_shapefile.nc<span class="w"> </span>-o<span class="w"> </span>TEST_Raphaelle
+<span class="w">             </span>-n<span class="w"> </span>OPTIONS_V8.1_NEW_OUTPUTS_NC_reanalysis.nam<span class="w"> </span>-x<span class="w"> </span><span class="m">20200801</span><span class="w"> </span>--addmask<span class="w"> </span>-a<span class="w"> </span><span class="m">400</span>
 </pre></div>
 </div>
 </section>
 <section id="hpc-simulation-sxcen-transfert">
-<h4>HPC SIMULATION: SXCEN TRANSFERT<a class="headerlink" href="#hpc-simulation-sxcen-transfert" title="Permalink to this headline">¶</a></h4>
+<h4>HPC SIMULATION: SXCEN TRANSFERT<a class="headerlink" href="#hpc-simulation-sxcen-transfert" title="Link to this heading">¶</a></h4>
 <p>Transfer files from Belenos to sxcen:
 Use get_reanalysis which is in snowtools/scripts/extract/vortex</p>
 <p>On SXCEN:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 get_reanalysis.py --geometry<span class="o">=</span>orchamp --snow --xpid<span class="o">=</span>SPINUP@fructusm
-python3 get_reanalysis.py --geometry<span class="o">=</span>orchamp --snow --xpid<span class="o">=</span>TEST_Raphaelle@fructusm
-                          --byear<span class="o">=</span><span class="m">2010</span> --eyear<span class="o">=</span><span class="m">2099</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>get_reanalysis.py<span class="w"> </span>--geometry<span class="o">=</span>orchamp<span class="w"> </span>--snow<span class="w"> </span>--xpid<span class="o">=</span>SPINUP@fructusm
+python3<span class="w"> </span>get_reanalysis.py<span class="w"> </span>--geometry<span class="o">=</span>orchamp<span class="w"> </span>--snow<span class="w"> </span>--xpid<span class="o">=</span>TEST_Raphaelle@fructusm
+<span class="w">                          </span>--byear<span class="o">=</span><span class="m">2010</span><span class="w"> </span>--eyear<span class="o">=</span><span class="m">2099</span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -150,19 +148,21 @@ python3 get_reanalysis.py --geometry<span class="o">=</span>orchamp --snow --xpi
 DO NOT FORGET THE XML FILE IN ORDER TO USE THE MASKS
 REMOVE AVALANCHES DIAG IN CSELECT OF THE NAMELIST  (in that case, massif_num is necessary)</p>
 </div>
+</section>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF.create_NetCDF">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">create_NetCDF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#create_NetCDF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.create_NetCDF" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">create_NetCDF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#create_NetCDF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.create_NetCDF" title="Link to this definition">¶</a></dt>
 <dd><p>Creation of 1D NetCDF for simulation reanalysis-projection from dictionary of lists and output name.
 Dictionary of lists is coming from the shapefile and is built with make_dict_list.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>all_lists</strong> – Dictionary of lists in order to fill NetCDF variables</p></li>
 <li><p><strong>output_name</strong> (<em>str</em>) – output name for the NetCDF file</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>nothing (in a pythonic way). Write a netcdf file.</p>
 </dd>
 </dl>
@@ -170,11 +170,11 @@ Dictionary of lists is coming from the shapefile and is built with make_dict_lis
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF.create_skyline">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">create_skyline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_shapefile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_skyline</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#create_skyline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.create_skyline" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">create_skyline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_shapefile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_skyline</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#create_skyline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.create_skyline" title="Link to this definition">¶</a></dt>
 <dd><p>Add in METADATA.xml the points from shapefile with skylines masks
 (ie the angles of view for the azimuts).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>all_lists</strong> – Dictionary of lists</p></li>
 <li><p><strong>path_MNT_alt</strong> (<em>str</em>) – MNT path for altitude values</p></li>
@@ -183,7 +183,7 @@ Dictionary of lists is coming from the shapefile and is built with make_dict_lis
 <li><p><strong>list_skyline</strong> – List of identification points of shapefile from which we want the skyline.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>nothing (in a pythonic way). Plot the skyline and add lines in METADATA.xml</p>
 </dd>
 </dl>
@@ -191,16 +191,16 @@ Dictionary of lists is coming from the shapefile and is built with make_dict_lis
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF.main">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.main" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.main" title="Link to this definition">¶</a></dt>
 <dd><p>Main program: parse argument then launch the creation of NetCDF and skylines</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF.make_dict_list">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">make_dict_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shapefile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_slop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_slop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#make_dict_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.make_dict_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">make_dict_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shapefile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_slop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_asp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_slop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#make_dict_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.make_dict_list" title="Link to this definition">¶</a></dt>
 <dd><p>Create a dictionary of lists from datas in shapefile and data in MNT</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path_shapefile</strong> (<em>str</em>) – shapefile path</p></li>
 <li><p><strong>id_station</strong> (<em>str</em>) – name of parameter in shapefile for point number (each point has a unique number)</p></li>
@@ -213,7 +213,7 @@ Dictionary of lists is coming from the shapefile and is built with make_dict_lis
 <li><p><strong>path_MNT_slop</strong> (<em>str</em>) – MNT path for slopes</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>dictionary of lists:{ ‘lat’: list_latitude, ‘lon’:list_longitude,
 ‘alt’: list_altitude, ‘asp’: list_aspect,
 ‘m’: list_massif, ‘slop’: list_slope,
@@ -224,13 +224,11 @@ Dictionary of lists is coming from the shapefile and is built with make_dict_lis
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF.parseArguments">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#parseArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.parseArguments" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF.</span></span><span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF.html#parseArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF.parseArguments" title="Link to this definition">¶</a></dt>
 <dd><p>Parsing the arguments when you call the main program.
 :param args: The list of arguments when you call the main program (typically sys.argv[1:] )</p>
 </dd></dl>
 
-</section>
-</section>
 <p>This module is also an executable script:</p>
 <p>Script <code class="docutils literal notranslate"><span class="pre">interpolation/shapefile2NetCDF.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: shapefile2NetCDF.py [-h] [--name_alt NAME_ALT] [--name_asp NAME_ASP]
@@ -268,16 +266,16 @@ options:
 </div>
 </section>
 <section id="how-to-create-forcing-files-for-2d-simulation">
-<h2>How to create FORCING files for 2D simulation ?<a class="headerlink" href="#how-to-create-forcing-files-for-2d-simulation" title="Permalink to this headline">¶</a></h2>
+<h2>How to create FORCING files for 2D simulation ?<a class="headerlink" href="#how-to-create-forcing-files-for-2d-simulation" title="Link to this heading">¶</a></h2>
 <p>You can use the script <cite>shapefile2NetCDF_2D.py</cite> which use a shapefile around the area of interest.
 The documentation is below and you can read it in the header of the python script.</p>
-<span class="target" id="module-interpolation.shapefile2NetCDF_2D"></span><p>This script needs a shapefile (Lambert 93 or (lat-lon) coordinates).
+<p id="module-interpolation.shapefile2NetCDF_2D">This script needs a shapefile (Lambert 93 or (lat-lon) coordinates).
 This shapefile can be in .shp or .kml format.
 This shapefile is delimitating a 2D domain on which you want to make a SURFEX-Crocus simulation.</p>
 <p>If you want to do a simulation for several distincts differents points and not a domain:
 see shapefile2NetCDF.py instead.</p>
 <section id="general-documentation-of-shapefile2netcdf-2d-script">
-<h3>General documentation of shapefile2NetCDF_2D script<a class="headerlink" href="#general-documentation-of-shapefile2netcdf-2d-script" title="Permalink to this headline">¶</a></h3>
+<h3>General documentation of shapefile2NetCDF_2D script<a class="headerlink" href="#general-documentation-of-shapefile2netcdf-2d-script" title="Link to this heading">¶</a></h3>
 <p>This script creates a NetCDF file using the shapefile.
 The NetCDF file is necessary to launch Surfex-Crocus 2D simulations.
 The NetCDF will define a rectangular 2D domain which contains your shapefile.
@@ -302,22 +300,22 @@ After the execution you have some infos for the NAM_IGN part of the namelist.</p
 </div>
 <p>RQ: Massif number can be found in file <cite>snowtools/DATA/METADATA.xml</cite></p>
 <section id="examples-of-use-script-launch">
-<h4>EXAMPLES OF USE (script launch)<a class="headerlink" href="#examples-of-use-script-launch" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 shapefile2NetCDF_2D.py SP_Abries_Ristolas.kml -o NetCDF2D_Ristolas.nc
+<h4>EXAMPLES OF USE (script launch)<a class="headerlink" href="#examples-of-use-script-launch" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>shapefile2NetCDF_2D.py<span class="w"> </span>SP_Abries_Ristolas.kml<span class="w"> </span>-o<span class="w"> </span>NetCDF2D_Ristolas.nc
 </pre></div>
 </div>
 </section>
 <section id="examples-of-use-of-netcdf-file-in-hpc-simulation">
-<h4>EXAMPLES OF USE OF NETCDF FILE IN HPC SIMULATION<a class="headerlink" href="#examples-of-use-of-netcdf-file-in-hpc-simulation" title="Permalink to this headline">¶</a></h4>
+<h4>EXAMPLES OF USE OF NETCDF FILE IN HPC SIMULATION<a class="headerlink" href="#examples-of-use-of-netcdf-file-in-hpc-simulation" title="Link to this heading">¶</a></h4>
 <p>First, push on Belenos with scp:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>scp NetCDF2D_* fructusm@belenos:/home/fructusm/SIMU_TOP2D/.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>scp<span class="w"> </span>NetCDF2D_*<span class="w"> </span>fructusm@belenos:/home/fructusm/SIMU_TOP2D/.
 </pre></div>
 </div>
 <p>Then s2m command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m research --walltime<span class="o">=</span><span class="s1">&#39;2:00:00&#39;</span> -b <span class="m">20190801</span> -e <span class="m">20200801</span> -m s2m -f reanalysis2020.2@lafaysse
-             -r alp_flat:Aussois250:/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/NetCDF2D_Aussois.nc
-             -n /home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/Aussois.nam --geotype grid --ntasks<span class="o">=</span><span class="m">52</span>
-             -g -o Aussois_2D
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>--walltime<span class="o">=</span><span class="s1">&#39;2:00:00&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="m">20190801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20200801</span><span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-f<span class="w"> </span>reanalysis2020.2@lafaysse
+<span class="w">             </span>-r<span class="w"> </span>alp_flat:Aussois250:/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/NetCDF2D_Aussois.nc
+<span class="w">             </span>-n<span class="w"> </span>/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/Aussois.nam<span class="w"> </span>--geotype<span class="w"> </span>grid<span class="w"> </span>--ntasks<span class="o">=</span><span class="m">52</span>
+<span class="w">             </span>-g<span class="w"> </span>-o<span class="w"> </span>Aussois_2D
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -340,19 +338,21 @@ After the execution you have some infos for the NAM_IGN part of the namelist.</p
 <p>File transfert from Belenos to sxcen:
 use get_reanalysis which is in snowtools/scripts/extract/vortex</p>
 <p>On SXCEN:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 get_reanalysis.py --geometry<span class="o">=</span>orchamp --snow --xpid<span class="o">=</span>TEST_Raphaelle@fructusm
-                           -byear<span class="o">=</span><span class="m">2010</span> --eyear<span class="o">=</span><span class="m">2099</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>get_reanalysis.py<span class="w"> </span>--geometry<span class="o">=</span>orchamp<span class="w"> </span>--snow<span class="w"> </span>--xpid<span class="o">=</span>TEST_Raphaelle@fructusm
+<span class="w">                           </span>-byear<span class="o">=</span><span class="m">2010</span><span class="w"> </span>--eyear<span class="o">=</span><span class="m">2099</span>
 </pre></div>
 </div>
+</section>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.clean_the_mess">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">clean_the_mess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_all</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#clean_the_mess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.clean_the_mess" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">clean_the_mess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_all</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#clean_the_mess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.clean_the_mess" title="Link to this definition">¶</a></dt>
 <dd><p>Remove all the temporary files created with the script</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path_shape_shp</strong> (<em>str</em>) – le chemin vers le fichier de shapefile</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>In a pythonic point of view, nothing. Some files are deleted.</p>
 </dd>
 </dl>
@@ -360,17 +360,17 @@ use get_reanalysis which is in snowtools/scripts/extract/vortex</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">conversion_to_L93_if_lat_lon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_four</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#conversion_to_L93_if_lat_lon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">conversion_to_L93_if_lat_lon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_four</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#conversion_to_L93_if_lat_lon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon" title="Link to this definition">¶</a></dt>
 <dd><p>Idea: we have a list bbox [lon_min, lat_min, lon_max, lat_max]. We convert it in Lambert93
 By default, we raise a little in case of
 Criteria: if in bbox, this is not lower than 200, we are already in L93
 Because coordinates are in WGS84 (ie lat-lon -&gt; everything below 200), or in L93</p>
 <p>REMINDER:     L93 = EPSG 2154      WGS84 = EPSG 4326</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>list_of_four</strong> (<em>list</em>) – list of 4 floats ([lon_min, lat_min, lon_max, lat_max])</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a list of 4 values: the same in L93 coordinates</p>
 </dd>
 </dl>
@@ -378,15 +378,15 @@ Because coordinates are in WGS84 (ie lat-lon -&gt; everything below 200), or in 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.convert_kml2shp">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">convert_kml2shp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_kml</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#convert_kml2shp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.convert_kml2shp" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">convert_kml2shp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_kml</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#convert_kml2shp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.convert_kml2shp" title="Link to this definition">¶</a></dt>
 <dd><p>kml files (Keyhole Markup Language, google format) are transform in .shp (format GIS Geographic
 Information System from ESRI) in order to avoid imports from “non standard” librairies in CEN
 actual configuration of PC.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path_shape_kml</strong> (<em>str</em>) – path to kml shapefile</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a string: the path to the .shp file after conversion from the .kml file.</p>
 </dd>
 </dl>
@@ -394,18 +394,18 @@ actual configuration of PC.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.create_MNT_tif">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_MNT_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_given</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_MNT_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_MNT_tif" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_MNT_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_MNT_given</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_MNT_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_MNT_tif" title="Link to this definition">¶</a></dt>
 <dd><p>Use the dictionary with all the information (coordinates of the lower-left and upper-right points, number of pixel
 in x and y direction, resolution in x and y direction) and and a MNT (with the good resolution) to create a .tif
 file with altitude values on the grid define by the information.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dict_info</strong> (<em>dict</em>) – dictionary with all the information for the grid</p></li>
 <li><p><strong>path_MNT_given</strong> (<em>str</em>) – optional, a path for the MNT (without a path, the standard MNT in cenfic3 is used)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>In a pythonic point of view, nothing. A .tif file is created.</p>
 </dd>
 </dl>
@@ -413,18 +413,18 @@ file with altitude values on the grid define by the information.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.create_dict_all_infos">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_dict_all_infos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_four</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resol_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resol_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_dict_all_infos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_dict_all_infos" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_dict_all_infos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_four</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resol_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resol_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_dict_all_infos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_dict_all_infos" title="Link to this definition">¶</a></dt>
 <dd><p>Create a dictionnary with all the important information (coordinates of the lower-left and upper-right points,
 number of pixel in x and y direction, resolution in x and y direction).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>list_of_four</strong> (<em>list</em>) – list of four coordinates in L93 format</p></li>
 <li><p><strong>resol_x</strong> (<em>int</em>) – resolution in x direction</p></li>
 <li><p><strong>resol_y</strong> (<em>int</em>) – resolution in y direction</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a dictionary with all the information</p>
 </dd>
 </dl>
@@ -432,16 +432,16 @@ number of pixel in x and y direction, resolution in x and y direction).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.create_netcdf">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massif_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NetCDF2D_from_shapefile.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_netcdf" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">create_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">massif_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NetCDF2D_from_shapefile.nc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#create_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.create_netcdf" title="Link to this definition">¶</a></dt>
 <dd><p>Creation of the 2D_NetCDF with 2 values: ‘ZS’ for the altitude and ‘Massif number’ for the massif number.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>massif_number</strong> – an integer or a numpy array depending of the percentage of points in the most common massif</p></li>
 <li><p><strong>file_out</strong> (<em>str</em>) – the name of the output for the netcdf file</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>In a pythonic point of view, nothing. A .nc file is created.</p>
 </dd>
 </dl>
@@ -449,16 +449,16 @@ number of pixel in x and y direction, resolution in x and y direction).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.find_most_common_massif">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">find_most_common_massif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#find_most_common_massif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.find_most_common_massif" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">find_most_common_massif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#find_most_common_massif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.find_most_common_massif" title="Link to this definition">¶</a></dt>
 <dd><p>Use the grid info coming from the dictionary and the massif info coming from snowtools to detect what is the most
 common massif on the grid. If there are more than 50% of points in the most common massif, all the points are
 artificially associated with the most common massif. Otherwise, all the points in the grid keep the massif they
 belong.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dict_info</strong> (<em>dict</em>) – dictionary with all the information for the grid</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>an integer (the massif number of the most common massif) or a numpy array (if there is not common massif).</p>
 </dd>
 </dl>
@@ -466,14 +466,14 @@ belong.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.get_bounds">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">get_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_shp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#get_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.get_bounds" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">get_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_shape_shp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#get_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.get_bounds" title="Link to this definition">¶</a></dt>
 <dd><p>sf.bbox return [6.61446151100006, 45.189366518, 6.8154706149867, 45.2979826160001]
 ie [lon_min, lat_min, lon_max, lat_max]</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path_shape_shp</strong> (<em>str</em>) – path to shapefile</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>a list of 4 values [lon_min, lat_min, lon_max, lat_max]</p>
 </dd>
 </dl>
@@ -481,42 +481,40 @@ ie [lon_min, lat_min, lon_max, lat_max]</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.main">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.main" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.main" title="Link to this definition">¶</a></dt>
 <dd><p>Main program: parse argument then launch the creation of NetCDF</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.parseArguments">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#parseArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.parseArguments" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#parseArguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.parseArguments" title="Link to this definition">¶</a></dt>
 <dd><p>Parsing the arguments when you call the main program.
 :param args: The list of arguments when you call the main program (typically sys.argv[1:] )</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="interpolation.shapefile2NetCDF_2D.print_for_namelist">
-<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">print_for_namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#print_for_namelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.print_for_namelist" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">interpolation.shapefile2NetCDF_2D.</span></span><span class="sig-name descname"><span class="pre">print_for_namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/interpolation/shapefile2NetCDF_2D.html#print_for_namelist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#interpolation.shapefile2NetCDF_2D.print_for_namelist" title="Link to this definition">¶</a></dt>
 <dd><p>Just to have a print on the screen in order to have all the relevant information for the namelist used later in the
 Surfex simulations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dict_info</strong> (<em>dict</em>) – dictionary with all the information for the grid</p></li>
 <li><p><strong>output_name</strong> (<em>str</em>) – the name of the output for the netcdf file</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>In a pythonic point of view, nothing. Some information are printed on the screen.</p>
 </dd>
 </dl>
 </dd></dl>
 
-</section>
-</section>
 <p>This module is also an executable script:</p>
 <p>Script <code class="docutils literal notranslate"><span class="pre">interpolation/shapefile2NetCDF_2D.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: shapefile2NetCDF_2D.py [-h] [-o OUTPUT] [-rlon RESOL_LON]
                               [-rlat RESOL_LAT] [--MNT_alt MNT_ALT]
-                              [-m MASSIF_NUMBER] [--slopeinfo]
+                              [-m {map,one,mapfill,force}] [-n MASSIF_NUMBER]
                               path_shape
 
 positional arguments:
@@ -531,15 +529,15 @@ options:
   -rlat RESOL_LAT, --resol_lat RESOL_LAT
                         Latitude Resolution for 2D grid (250 or 30)
   --MNT_alt MNT_ALT     Path for MNT altitude
-  -m MASSIF_NUMBER, --massif_number MASSIF_NUMBER
-                        massif number if you want to choose the massif that
-                        will be applied to your zone
-  --slopeinfo           Add aspect and slope
+  -m {map,one,mapfill,force}, --massif_method {map,one,mapfill,force}
+                        Method to assign massif number
+  -n MASSIF_NUMBER, --massif_number MASSIF_NUMBER
+                        Massif number to assign if --massif_method=force
 </pre></div>
 </div>
 </section>
 <section id="netcdf-add-massif-info-script">
-<h2>Netcdf_add_massif_info script<a class="headerlink" href="#netcdf-add-massif-info-script" title="Permalink to this headline">¶</a></h2>
+<h2>Netcdf_add_massif_info script<a class="headerlink" href="#netcdf-add-massif-info-script" title="Link to this heading">¶</a></h2>
 <p>Script <code class="docutils literal notranslate"><span class="pre">interpolation/Netcdf_add_massif_info.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: Netcdf_add_massif_info.py [-h] [-s PATH_SHAPE] [-p] [-v]
                                  [-o PATH_OUTPUT]
@@ -566,25 +564,25 @@ options:
 </div>
 </section>
 <section id="the-interpolation-tool">
-<h2>The interpolation tool<a class="headerlink" href="#the-interpolation-tool" title="Permalink to this headline">¶</a></h2>
+<h2>The interpolation tool<a class="headerlink" href="#the-interpolation-tool" title="Link to this heading">¶</a></h2>
 <p>The interpolation tool is written in FORTRAN.</p>
 <p>Makefiles for mageia7 PCs and for MF supercomputers are provided.
 Needs MPI and parallel netcdf libraries.</p>
 <dl>
 <dt class="sig sig-object f" id="f/interpolate_safran">
-<em class="property"><span class="pre">program</span>&#160; </em><span class="sig-name descname"><span class="pre">interpolate_safran</span></span><a class="headerlink" href="#f/interpolate_safran" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">program</span>&#160; </em><span class="sig-name descname"><span class="pre">interpolate_safran</span></span><a class="headerlink" href="#f/interpolate_safran" title="Link to this definition">¶</a></dt>
 <dd><p>This program interpolates SAFRAN meteorological data.</p>
 <p>If a namelist called interpolate_safran.nam is present, the configuration information from the namelist is used.
 Otherwise the default configuration is used. An example namelist can be found in sonwtools/DATA.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Default configuration</dt>
+<dt class="field-odd">Default configuration<span class="colon">:</span></dt>
 <dd class="field-odd"><ol class="arabic simple">
 <li><p>A file named “GRID.nc” is read, containing the output grid (2D case) or station (1D case) information.</p></li>
 <li><p>A file named “input.nc” is supposed to contain the data in massif geometry to be interpolated on some grid or station.</p></li>
 <li><p>A file named “ouput.nc” is written containing the interpolated version of the data.</p></li>
 </ol>
 </dd>
-<dt class="field-even">Possible configurations via the namelist</dt>
+<dt class="field-even">Possible configurations via the namelist<span class="colon">:</span></dt>
 <dd class="field-even"><ol class="arabic simple">
 <li><p>Possibility to specify custom filenames (mandatory for multiinput and multioutput options).</p></li>
 <li><p>Iterating over several input files</p>
@@ -602,22 +600,22 @@ Otherwise the default configuration is used. An example namelist can be found in
 <p>Input variables can be of any type in input.nc.
 In output variables, the type of variable of floating points is always single precision, integers types are not modified.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Use </dt>
+<dt class="field-odd">Use <span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs" title="f/subs"><code class="xref f f-mod docutils literal notranslate"><span class="pre">subs</span></code></a></p>
 </dd>
-<dt class="field-even">Call to</dt>
+<dt class="field-even">Call to<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_nml" title="f/subs/read_nml"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nml()</span></code></a>, <a class="reference internal" href="#f/subs/check" title="f/subs/check"><code class="xref f f-func docutils literal notranslate"><span class="pre">check()</span></code></a>, <a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a>, <a class="reference internal" href="#f/subs/read_nc" title="f/subs/read_nc"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nc()</span></code></a>, <a class="reference internal" href="#f/subs/indices2d" title="f/subs/indices2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">indices2d()</span></code></a>, <a class="reference internal" href="#f/subs/abort_interpolate" title="f/subs/abort_interpolate"><code class="xref f f-func docutils literal notranslate"><span class="pre">abort_interpolate()</span></code></a>, <a class="reference internal" href="#f/subs/latlon_ign" title="f/subs/latlon_ign"><code class="xref f f-func docutils literal notranslate"><span class="pre">latlon_ign()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2ddimbefore" title="f/subs/interpolzs2ddimbefore"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2ddimbefore()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2d" title="f/subs/interpolzs2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2d()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2dnotime" title="f/subs/interpolzs2dnotime"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2dnotime()</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <p><strong>Module SUBS</strong></p>
-<span class="target" id="f/subs"></span><p class="rubric">Quick access</p>
+<p class="rubric" id="f/subs">Quick access</p>
 <dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/comm" title="f/subs/comm"><code class="xref f f-var docutils literal notranslate"><span class="pre">comm</span></code></a>, <a class="reference internal" href="#f/subs/dim_name_out" title="f/subs/dim_name_out"><code class="xref f f-var docutils literal notranslate"><span class="pre">dim_name_out</span></code></a>, <a class="reference internal" href="#f/subs/hfilenameg" title="f/subs/hfilenameg"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilenameg</span></code></a>, <a class="reference internal" href="#f/subs/ierr" title="f/subs/ierr"><code class="xref f f-var docutils literal notranslate"><span class="pre">ierr</span></code></a>, <a class="reference internal" href="#f/subs/ipstart" title="f/subs/ipstart"><code class="xref f f-var docutils literal notranslate"><span class="pre">ipstart</span></code></a>, <a class="reference internal" href="#f/subs/ixstart" title="f/subs/ixstart"><code class="xref f f-var docutils literal notranslate"><span class="pre">ixstart</span></code></a>, <a class="reference internal" href="#f/subs/iystart" title="f/subs/iystart"><code class="xref f f-var docutils literal notranslate"><span class="pre">iystart</span></code></a>, <a class="reference internal" href="#f/subs/npoint_proc" title="f/subs/npoint_proc"><code class="xref f f-var docutils literal notranslate"><span class="pre">npoint_proc</span></code></a>, <a class="reference internal" href="#f/subs/nproc" title="f/subs/nproc"><code class="xref f f-var docutils literal notranslate"><span class="pre">nproc</span></code></a>, <a class="reference internal" href="#f/subs/ntime" title="f/subs/ntime"><code class="xref f f-var docutils literal notranslate"><span class="pre">ntime</span></code></a>, <a class="reference internal" href="#f/subs/nx" title="f/subs/nx"><code class="xref f f-var docutils literal notranslate"><span class="pre">nx</span></code></a>, <a class="reference internal" href="#f/subs/nx_proc" title="f/subs/nx_proc"><code class="xref f f-var docutils literal notranslate"><span class="pre">nx_proc</span></code></a>, <a class="reference internal" href="#f/subs/ny" title="f/subs/ny"><code class="xref f f-var docutils literal notranslate"><span class="pre">ny</span></code></a>, <a class="reference internal" href="#f/subs/ny_proc" title="f/subs/ny_proc"><code class="xref f f-var docutils literal notranslate"><span class="pre">ny_proc</span></code></a>, <a class="reference internal" href="#f/subs/proc_id" title="f/subs/proc_id"><code class="xref f f-var docutils literal notranslate"><span class="pre">proc_id</span></code></a>, <a class="reference internal" href="#f/subs/xundef" title="f/subs/xundef"><code class="xref f f-var docutils literal notranslate"><span class="pre">xundef</span></code></a></p>
 </dd>
-<dt class="field-even">Routines</dt>
+<dt class="field-even">Routines<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/abort_interpolate" title="f/subs/abort_interpolate"><code class="xref f f-func docutils literal notranslate"><span class="pre">abort_interpolate()</span></code></a>, <a class="reference internal" href="#f/subs/check" title="f/subs/check"><code class="xref f f-func docutils literal notranslate"><span class="pre">check()</span></code></a>, <a class="reference internal" href="#f/subs/evaluate_aspect" title="f/subs/evaluate_aspect"><code class="xref f f-func docutils literal notranslate"><span class="pre">evaluate_aspect()</span></code></a>, <a class="reference internal" href="#f/subs/evaluate_slope" title="f/subs/evaluate_slope"><code class="xref f f-func docutils literal notranslate"><span class="pre">evaluate_slope()</span></code></a>, <a class="reference internal" href="#f/subs/explicit_slope" title="f/subs/explicit_slope"><code class="xref f f-func docutils literal notranslate"><span class="pre">explicit_slope()</span></code></a>, <a class="reference internal" href="#f/subs/explicit_slope_lat_lon" title="f/subs/explicit_slope_lat_lon"><code class="xref f f-func docutils literal notranslate"><span class="pre">explicit_slope_lat_lon()</span></code></a>, <a class="reference internal" href="#f/subs/fuse_fld_3d" title="f/subs/fuse_fld_3d"><code class="xref f f-func docutils literal notranslate"><span class="pre">fuse_fld_3d()</span></code></a>, <a class="reference internal" href="#f/subs/indices2d" title="f/subs/indices2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">indices2d()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2d" title="f/subs/interpolzs2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2d()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2ddimbefore" title="f/subs/interpolzs2ddimbefore"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2ddimbefore()</span></code></a>, <a class="reference internal" href="#f/subs/interpolzs2dnotime" title="f/subs/interpolzs2dnotime"><code class="xref f f-func docutils literal notranslate"><span class="pre">interpolzs2dnotime()</span></code></a>, <a class="reference internal" href="#f/subs/latlon_ign" title="f/subs/latlon_ign"><code class="xref f f-func docutils literal notranslate"><span class="pre">latlon_ign()</span></code></a>, <a class="reference internal" href="#f/subs/npoint_proc_distributor" title="f/subs/npoint_proc_distributor"><code class="xref f f-func docutils literal notranslate"><span class="pre">npoint_proc_distributor()</span></code></a>, <a class="reference internal" href="#f/subs/read_nc" title="f/subs/read_nc"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nc()</span></code></a>, <a class="reference internal" href="#f/subs/read_nml" title="f/subs/read_nml"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nml()</span></code></a>, <a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a>, <a class="reference internal" href="#f/subs/xy_ign" title="f/subs/xy_ign"><code class="xref f f-func docutils literal notranslate"><span class="pre">xy_ign()</span></code></a>, <a class="reference internal" href="#f/subs/xy_proc_distributor" title="f/subs/xy_proc_distributor"><code class="xref f f-func docutils literal notranslate"><span class="pre">xy_proc_distributor()</span></code></a></p>
 </dd>
 </dl>
@@ -631,112 +629,112 @@ In output variables, the type of variable of floating points is always single pr
 <ul>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/comm">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">comm</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/comm" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">comm</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/comm" title="Link to this definition">¶</a></dt>
 <dd><p>MPI parameter</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/dim_name_out">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">dim_name_out</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=20)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/dim_name_out" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">dim_name_out</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=20)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/dim_name_out" title="Link to this definition">¶</a></dt>
 <dd><p>name of output dimensions</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/hfilenameg">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">hfilenameg</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/hfilenameg" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">hfilenameg</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/hfilenameg" title="Link to this definition">¶</a></dt>
 <dd><p>Filename of the grid definition file</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ierr">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ierr</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ierr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ierr</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ierr" title="Link to this definition">¶</a></dt>
 <dd><p>MPI error code</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ipstart">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ipstart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ipstart" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ipstart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ipstart" title="Link to this definition">¶</a></dt>
 <dd><p>start index in the spatial dimension (points) for the given processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ixstart">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ixstart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ixstart" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ixstart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ixstart" title="Link to this definition">¶</a></dt>
 <dd><p>start index in the x-dimension for the given processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/iystart">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">iystart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/iystart" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">iystart</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/iystart" title="Link to this definition">¶</a></dt>
 <dd><p>start index in the y-dimension for the given processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/npoint_proc">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">npoint_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/npoint_proc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">npoint_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/npoint_proc" title="Link to this definition">¶</a></dt>
 <dd><p>number of indices in the spatial dimension to be treated by the processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/nproc">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nproc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nproc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nproc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nproc" title="Link to this definition">¶</a></dt>
 <dd><p>Number of MPI processors</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ntime">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ntime</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ntime" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ntime</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ntime" title="Link to this definition">¶</a></dt>
 <dd><p>length of time dimension</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/nx">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nx</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nx" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nx</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nx" title="Link to this definition">¶</a></dt>
 <dd><p>length of first spatial dimension</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/nx_proc">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nx_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nx_proc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">nx_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/nx_proc" title="Link to this definition">¶</a></dt>
 <dd><p>number of indices in the x-dimension to be treated by the processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ny">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ny</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ny" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ny</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ny" title="Link to this definition">¶</a></dt>
 <dd><p>length of second spatial dimension</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/ny_proc">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ny_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ny_proc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">ny_proc</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/ny_proc" title="Link to this definition">¶</a></dt>
 <dd><p>number of indices in the y-dimension to be treated by the processor</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/proc_id">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">proc_id</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/proc_id" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">proc_id</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/proc_id" title="Link to this definition">¶</a></dt>
 <dd><p>MPI rank</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/subs/xundef">
-<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xundef</span></span><em> <span class="pre">[</span></em><em><span class="pre">real</span></em><em><span class="pre">,</span></em><em><span class="pre">parameter=</span></em><span class="pre">-</span><span class="pre">9999999</span><span class="pre">.</span><span class="pre">0</span><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/xundef" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xundef</span></span><em> <span class="pre">[</span></em><em><span class="pre">real</span></em><em><span class="pre">,</span></em><em><span class="pre">parameter=</span></em><span class="pre">-</span><span class="pre">9999999</span><span class="pre">.</span><span class="pre">0</span><em><span class="pre">]</span></em><a class="headerlink" href="#f/subs/xundef" title="Link to this definition">¶</a></dt>
 <dd><p>Fill_Value for netcdf</p>
 </dd></dl>
 
@@ -745,13 +743,13 @@ In output variables, the type of variable of floating points is always single pr
 <p class="rubric">Subroutines and functions</p>
 <dl>
 <dt class="sig sig-object f" id="f/subs/abort_interpolate">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">abort_interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ytext</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/abort_interpolate" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">abort_interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ytext</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/abort_interpolate" title="Link to this definition">¶</a></dt>
 <dd><p>Crash the program</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ytext</strong><em> [</em><em>character(len=*)</em><em>,</em><em>in</em><em>]</em></p>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a>, <a class="reference internal" href="#f/subs/check" title="f/subs/check"><code class="xref f f-func docutils literal notranslate"><span class="pre">check()</span></code></a>, <a class="reference internal" href="#f/subs/read_nml" title="f/subs/read_nml"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nml()</span></code></a>, <a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
 </dl>
@@ -759,11 +757,11 @@ In output variables, the type of variable of floating points is always single pr
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/xy_proc_distributor">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xy_proc_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ixydim</span></em>, <em class="sig-param"><span class="pre">iproc_id</span></em>, <em class="sig-param"><span class="pre">inproc</span></em>, <em class="sig-param"><span class="pre">iixstart</span></em>, <em class="sig-param"><span class="pre">inx_proc</span></em>, <em class="sig-param"><span class="pre">iiystart</span></em>, <em class="sig-param"><span class="pre">iny_proc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/xy_proc_distributor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xy_proc_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ixydim</span></em>, <em class="sig-param"><span class="pre">iproc_id</span></em>, <em class="sig-param"><span class="pre">inproc</span></em>, <em class="sig-param"><span class="pre">iixstart</span></em>, <em class="sig-param"><span class="pre">inx_proc</span></em>, <em class="sig-param"><span class="pre">iiystart</span></em>, <em class="sig-param"><span class="pre">iny_proc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/xy_proc_distributor" title="Link to this definition">¶</a></dt>
 <dd><p>Routine used for parallelisation with MPI.</p>
 <p>Defines indices of the two spatial dimensions to be treated by each of the processors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ixydim</strong> (2)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: Dimension lengths of the spatial dimensions</p></li>
 <li><p><strong>iproc_id</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em></p></li>
@@ -774,7 +772,7 @@ In output variables, the type of variable of floating points is always single pr
 <li><p><strong>iny_proc</strong><em> [</em><em>integer </em><em>,</em><em>out</em><em>]</em> :: number of indices in the y-dimension to be treated by the processor</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a></p>
 </dd>
 </dl>
@@ -782,11 +780,11 @@ In output variables, the type of variable of floating points is always single pr
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/npoint_proc_distributor">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">npoint_proc_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ipdim</span></em>, <em class="sig-param"><span class="pre">iproc_id</span></em>, <em class="sig-param"><span class="pre">inproc</span></em>, <em class="sig-param"><span class="pre">iipstart</span></em>, <em class="sig-param"><span class="pre">inp_proc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/npoint_proc_distributor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">npoint_proc_distributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ipdim</span></em>, <em class="sig-param"><span class="pre">iproc_id</span></em>, <em class="sig-param"><span class="pre">inproc</span></em>, <em class="sig-param"><span class="pre">iipstart</span></em>, <em class="sig-param"><span class="pre">inp_proc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/npoint_proc_distributor" title="Link to this definition">¶</a></dt>
 <dd><p>Routine used for parallelisation with MPI.</p>
 <p>Defines indices of the unique spatial dimension in the 1D case to be treated by each of the processors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ipdim</strong> (2)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: Dimension lengths of the spatial dimensions</p></li>
 <li><p><strong>iproc_id</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em></p></li>
@@ -795,7 +793,7 @@ In output variables, the type of variable of floating points is always single pr
 <li><p><strong>inp_proc</strong><em> [</em><em>integer </em><em>,</em><em>out</em><em>]</em> :: number of indices in the spatial dimension to be treated by the processor</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a></p>
 </dd>
 </dl>
@@ -803,10 +801,10 @@ In output variables, the type of variable of floating points is always single pr
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/read_output_grid">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_output_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id_geo</span></em>, <em class="sig-param"><span class="pre">pzsout</span></em>, <em class="sig-param"><span class="pre">kmassifout</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">irank</span></em>, <em class="sig-param"><span class="pre">gt</span></em>, <em class="sig-param"><span class="pre">ilendim</span></em>, <em class="sig-param"><span class="pre">platout</span></em>, <em class="sig-param"><span class="pre">plonout</span></em>, <em class="sig-param"><span class="pre">pyout</span></em>, <em class="sig-param"><span class="pre">pxout</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">kstationout</span></em>, <em class="sig-param"><span class="pre">kmassifgather</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_output_grid" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_output_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_id_geo</span></em>, <em class="sig-param"><span class="pre">pzsout</span></em>, <em class="sig-param"><span class="pre">kmassifout</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">irank</span></em>, <em class="sig-param"><span class="pre">gt</span></em>, <em class="sig-param"><span class="pre">ilendim</span></em>, <em class="sig-param"><span class="pre">platout</span></em>, <em class="sig-param"><span class="pre">plonout</span></em>, <em class="sig-param"><span class="pre">pyout</span></em>, <em class="sig-param"><span class="pre">pxout</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">kstationout</span></em>, <em class="sig-param"><span class="pre">kmassifgather</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_output_grid" title="Link to this definition">¶</a></dt>
 <dd><p>Read the netcdf file containing the output grid definition (default: GRID.nc)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_id_geo</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: Netcdf id of the grid file</p></li>
 <li><p><strong>pzsout</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out,allocatable</em><em>]</em> :: Elevation of output grid</p></li>
@@ -824,10 +822,10 @@ In output variables, the type of variable of floating points is always single pr
 <li><p><strong>kmassifgather</strong> (*,*)<em> [</em><em>integer </em><em>,</em><em>out,allocatable</em><em>]</em> :: Massif number of the output points gathered from all procs</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
-<dt class="field-odd">Call to</dt>
+<dt class="field-odd">Call to<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/check" title="f/subs/check"><code class="xref f f-func docutils literal notranslate"><span class="pre">check()</span></code></a>, <a class="reference internal" href="#f/subs/abort_interpolate" title="f/subs/abort_interpolate"><code class="xref f f-func docutils literal notranslate"><span class="pre">abort_interpolate()</span></code></a>, <a class="reference internal" href="#f/subs/xy_proc_distributor" title="f/subs/xy_proc_distributor"><code class="xref f f-func docutils literal notranslate"><span class="pre">xy_proc_distributor()</span></code></a>, <a class="reference internal" href="#f/subs/npoint_proc_distributor" title="f/subs/npoint_proc_distributor"><code class="xref f f-func docutils literal notranslate"><span class="pre">npoint_proc_distributor()</span></code></a>, <a class="reference internal" href="#f/subs/explicit_slope" title="f/subs/explicit_slope"><code class="xref f f-func docutils literal notranslate"><span class="pre">explicit_slope()</span></code></a>, <a class="reference internal" href="#f/subs/xy_ign" title="f/subs/xy_ign"><code class="xref f f-func docutils literal notranslate"><span class="pre">xy_ign()</span></code></a>, <a class="reference internal" href="#f/subs/explicit_slope_lat_lon" title="f/subs/explicit_slope_lat_lon"><code class="xref f f-func docutils literal notranslate"><span class="pre">explicit_slope_lat_lon()</span></code></a></p>
 </dd>
 </dl>
@@ -835,10 +833,10 @@ In output variables, the type of variable of floating points is always single pr
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/read_nc">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_nc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idficnc</span></em>, <em class="sig-param"><span class="pre">kzsin</span></em>, <em class="sig-param"><span class="pre">kmassifin</span></em>, <em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">pslopein</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_nc" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_nc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idficnc</span></em>, <em class="sig-param"><span class="pre">kzsin</span></em>, <em class="sig-param"><span class="pre">kmassifin</span></em>, <em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">pslopein</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_nc" title="Link to this definition">¶</a></dt>
 <dd><p>Read NetCDF file with forcing data to be interpolated.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>idficnc</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: NetCDF id of the forcing file</p></li>
 <li><p><strong>kzsin</strong> (*)<em> [</em><em>integer </em><em>,</em><em>out,allocatable</em><em>]</em> :: Elevation of the input data points</p></li>
@@ -847,10 +845,10 @@ In output variables, the type of variable of floating points is always single pr
 <li><p><strong>pslopein</strong> (*)<em> [</em><em>real </em><em>,</em><em>out,allocatable</em><em>]</em> :: Slope of the input data points</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
-<dt class="field-odd">Call to</dt>
+<dt class="field-odd">Call to<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/check" title="f/subs/check"><code class="xref f f-func docutils literal notranslate"><span class="pre">check()</span></code></a></p>
 </dd>
 </dl>
@@ -858,12 +856,12 @@ In output variables, the type of variable of floating points is always single pr
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/indices2d">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">indices2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pzsout</span></em>, <em class="sig-param"><span class="pre">kmassifout</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">kzsin</span></em>, <em class="sig-param"><span class="pre">kmassifin</span></em>, <em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">pslopein</span></em>, <em class="sig-param"><span class="pre">kindicesbas</span></em>, <em class="sig-param"><span class="pre">kindiceshaut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/indices2d" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">indices2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pzsout</span></em>, <em class="sig-param"><span class="pre">kmassifout</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">kzsin</span></em>, <em class="sig-param"><span class="pre">kmassifin</span></em>, <em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">pslopein</span></em>, <em class="sig-param"><span class="pre">kindicesbas</span></em>, <em class="sig-param"><span class="pre">kindiceshaut</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/indices2d" title="Link to this definition">¶</a></dt>
 <dd><p>Determines the  indexes of input collection of points to interpolate between in order to obtain the output grid.</p>
 <p>Selects the hight level above and below the hight of the output grid point, at the corresponding massif number and
 aspect</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pzsout</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Elevation of output collection of points</p></li>
 <li><p><strong>kmassifout</strong> (*,*)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: Massif of output collection of points</p></li>
@@ -877,10 +875,10 @@ aspect</p>
 <li><p><strong>kindiceshaut</strong> (*,*)<em> [</em><em>integer </em><em>,</em><em>out,allocatable</em><em>]</em> :: Indices of the input collection of points corresponding to the points above the target point</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
-<dt class="field-odd">Call to</dt>
+<dt class="field-odd">Call to<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/evaluate_slope" title="f/subs/evaluate_slope"><code class="xref f f-func docutils literal notranslate"><span class="pre">evaluate_slope()</span></code></a>, <a class="reference internal" href="#f/subs/evaluate_aspect" title="f/subs/evaluate_aspect"><code class="xref f f-func docutils literal notranslate"><span class="pre">evaluate_aspect()</span></code></a></p>
 </dd>
 </dl>
@@ -888,17 +886,17 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/evaluate_aspect">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">evaluate_aspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">laspect</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/evaluate_aspect" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">evaluate_aspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">kaspectin</span></em>, <em class="sig-param"><span class="pre">paspectout</span></em>, <em class="sig-param"><span class="pre">laspect</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/evaluate_aspect" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate if the aspect of the current input point correspond to the aspect of the current output point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>kaspectin</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: Aspect of input points</p></li>
 <li><p><strong>paspectout</strong><em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Aspect of output points</p></li>
 <li><p><strong>laspect</strong><em> [</em><em>logical </em><em>,</em><em>out</em><em>]</em> :: Aspect correspondence indicator</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/indices2d" title="f/subs/indices2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">indices2d()</span></code></a></p>
 </dd>
 </dl>
@@ -906,17 +904,17 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/evaluate_slope">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">evaluate_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pslopein</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">lslope</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/evaluate_slope" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">evaluate_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pslopein</span></em>, <em class="sig-param"><span class="pre">pslopeout</span></em>, <em class="sig-param"><span class="pre">lslope</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/evaluate_slope" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate if the slope of the current input point correspond to the slope of the current output point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pslopein</strong><em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Aspect of input points</p></li>
 <li><p><strong>pslopeout</strong><em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Aspect of output points</p></li>
 <li><p><strong>lslope</strong><em> [</em><em>logical </em><em>,</em><em>out</em><em>]</em> :: Aspect correspondence indicator</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/indices2d" title="f/subs/indices2d"><code class="xref f f-func docutils literal notranslate"><span class="pre">indices2d()</span></code></a></p>
 </dd>
 </dl>
@@ -924,10 +922,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/interpolzs2d">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2d" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2d" title="Link to this definition">¶</a></dt>
 <dd><p>Linear interpolation between SAFRAN elevation levels over 2D grids</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pvarout</strong> (*,*,*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: Interpolated variable on 2D grid. The first 2 dimensions are the spatial dimensions, the last dimension is the time dimension.</p></li>
 <li><p><strong>pvarin</strong> (*,*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Variable on SAFRAN elevation levels</p></li>
@@ -937,7 +935,7 @@ aspect</p>
 <li><p><strong>kzssafran</strong> (*)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: SAFRAN elevation data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
 </dl>
@@ -945,10 +943,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/interpolzs2ddimbefore">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2ddimbefore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2ddimbefore" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2ddimbefore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2ddimbefore" title="Link to this definition">¶</a></dt>
 <dd><p>Linear interpolation between SAFRAN elevation levels over 2D grids</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pvarout</strong> (*,*,*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: Interpolated variable on 2D grid. The second and third dimension are the spatial dimensions, the last dimension is the time dimension.</p></li>
 <li><p><strong>pvarin</strong> (*,*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Variable on SAFRAN elevation levels</p></li>
@@ -958,7 +956,7 @@ aspect</p>
 <li><p><strong>kzssafran</strong> (*)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: SAFRAN elevation data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
 </dl>
@@ -966,10 +964,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/interpolzs2dnotime">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2dnotime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2dnotime" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">interpolzs2dnotime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">pvarin</span></em>, <em class="sig-param"><span class="pre">kindbas</span></em>, <em class="sig-param"><span class="pre">kindhaut</span></em>, <em class="sig-param"><span class="pre">pzsgrid</span></em>, <em class="sig-param"><span class="pre">kzssafran</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/interpolzs2dnotime" title="Link to this definition">¶</a></dt>
 <dd><p>Linear interpolation between SAFRAN elevation levels over 2D grids</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pvarout</strong> (*,*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: Interpolated variable on 2D grid. The first two dimensions are the spatial dimensions. There is no time dimension.</p></li>
 <li><p><strong>pvarin</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Variable on SAFRAN elevation levels without time dimension.</p></li>
@@ -979,7 +977,7 @@ aspect</p>
 <li><p><strong>kzssafran</strong> (*)<em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: SAFRAN elevation data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
 </dl>
@@ -987,13 +985,13 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/fuse_fld_3d">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">fuse_fld_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout_old</span></em>, <em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">xundef</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/fuse_fld_3d" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">fuse_fld_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pvarout_old</span></em>, <em class="sig-param"><span class="pre">pvarout</span></em>, <em class="sig-param"><span class="pre">xundef</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/fuse_fld_3d" title="Link to this definition">¶</a></dt>
 <dd><p>Merge two 3D fields.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Actions </dt>
+<dt class="field-odd">Actions <span class="colon">:</span></dt>
 <dd class="field-odd"><p>Put values of PVAROUT into PVAROUT_OLD where PVAROUT_OLD == XUNDEF</p>
 </dd>
-<dt class="field-even">Parameters</dt>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>pvarout_old</strong> (*,*,*)<em> [</em><em>real </em><em>,</em><em>inout</em><em>]</em> :: Variable on 2D grid with existing values to be completed.</p></li>
 <li><p><strong>pvarout</strong> (*,*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: Variable on 2D grid with new values to be added.</p></li>
@@ -1005,22 +1003,22 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/latlon_ign">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">latlon_ign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">plat</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">plon</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/latlon_ign" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">latlon_ign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">plat</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">plon</span></em><span class="optional">]</span><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/latlon_ign" title="Link to this definition">¶</a></dt>
 <dd><p>Routine to compute geographical coordinates from lambert conformal coordinates</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>px</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given conformal x-coordinates of the processed points (meters).</p></li>
 <li><p><strong>py</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given conformal y-coordinates of the processed points (meters).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Options</dt>
+<dt class="field-even">Options<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>plat</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out,</em><em>]</em> :: returned geographic latitudes of the processed point (degrees).</p></li>
 <li><p><strong>plon</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out,</em><em>]</em> :: returned geographic longitudes of the processed point (degrees).</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Called from</dt>
+<dt class="field-odd">Called from<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
 </dl>
@@ -1028,10 +1026,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/xy_ign">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xy_ign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">plat</span></em>, <em class="sig-param"><span class="pre">plon</span></em>, <em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/xy_ign" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">xy_ign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">plat</span></em>, <em class="sig-param"><span class="pre">plon</span></em>, <em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/xy_ign" title="Link to this definition">¶</a></dt>
 <dd><p>Routine to compute Lambert coordinates from logitude and latitude</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plat</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given geographic latitudes of the processed points (degrees).</p></li>
 <li><p><strong>plon</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given geographic longitudes of the processed points (degrees).</p></li>
@@ -1039,7 +1037,7 @@ aspect</p>
 <li><p><strong>py</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: returned lambert conformal y-coordinates of the processed points (meters).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a></p>
 </dd>
 </dl>
@@ -1047,10 +1045,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/explicit_slope">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">explicit_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em>, <em class="sig-param"><span class="pre">pzs</span></em>, <em class="sig-param"><span class="pre">psso_slope</span></em>, <em class="sig-param"><span class="pre">psso_dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/explicit_slope" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">explicit_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em>, <em class="sig-param"><span class="pre">pzs</span></em>, <em class="sig-param"><span class="pre">psso_slope</span></em>, <em class="sig-param"><span class="pre">psso_dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/explicit_slope" title="Link to this definition">¶</a></dt>
 <dd><p>calculate resolved slope and aspect on a Lambert conformal grid.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>px</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given Lambert conformal x-coordinates of the processed points (meters).</p></li>
 <li><p><strong>py</strong> (*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given Lambert conformal y-coordinates of the processed points (meters).</p></li>
@@ -1059,7 +1057,7 @@ aspect</p>
 <li><p><strong>psso_dir</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: resolved aspect</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a></p>
 </dd>
 </dl>
@@ -1067,10 +1065,10 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/explicit_slope_lat_lon">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">explicit_slope_lat_lon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em>, <em class="sig-param"><span class="pre">pzs</span></em>, <em class="sig-param"><span class="pre">psso_slope</span></em>, <em class="sig-param"><span class="pre">psso_dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/explicit_slope_lat_lon" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">explicit_slope_lat_lon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">px</span></em>, <em class="sig-param"><span class="pre">py</span></em>, <em class="sig-param"><span class="pre">pzs</span></em>, <em class="sig-param"><span class="pre">psso_slope</span></em>, <em class="sig-param"><span class="pre">psso_dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/explicit_slope_lat_lon" title="Link to this definition">¶</a></dt>
 <dd><p>calculate resolved slope and aspect on a lat/lon grid.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>px</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given longitude coordinates of the processed points (degrees).</p></li>
 <li><p><strong>py</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>in</em><em>]</em> :: given latitude coordinates of the processed points (degrees).</p></li>
@@ -1079,7 +1077,7 @@ aspect</p>
 <li><p><strong>psso_dir</strong> (*,*)<em> [</em><em>real </em><em>,</em><em>out</em><em>]</em> :: resolved aspect</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a></p>
 </dd>
 </dl>
@@ -1087,19 +1085,19 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/check">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">status</span></em>, <em class="sig-param"><span class="pre">line</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/check" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">status</span></em>, <em class="sig-param"><span class="pre">line</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/check" title="Link to this definition">¶</a></dt>
 <dd><p>Handles error messages from the netcdf API</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>status</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: error number</p></li>
 <li><p><strong>line</strong><em> [</em><em>character(len=*)</em><em>,</em><em>in</em><em>]</em> :: description line</p></li>
 </ul>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/subs/read_output_grid" title="f/subs/read_output_grid"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_output_grid()</span></code></a>, <a class="reference internal" href="#f/subs/read_nc" title="f/subs/read_nc"><code class="xref f f-func docutils literal notranslate"><span class="pre">read_nc()</span></code></a>, <a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
-<dt class="field-odd">Call to</dt>
+<dt class="field-odd">Call to<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/abort_interpolate" title="f/subs/abort_interpolate"><code class="xref f f-func docutils literal notranslate"><span class="pre">abort_interpolate()</span></code></a></p>
 </dd>
 </dl>
@@ -1107,27 +1105,27 @@ aspect</p>
 
 <dl>
 <dt class="sig sig-object f" id="f/subs/read_nml">
-<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_nml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">knamunit</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_nml" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">subroutine</span>&#160; </em><span class="sig-prename descclassname"><span class="pre">subs/</span></span><span class="sig-name descname"><span class="pre">read_nml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">knamunit</span></em><span class="sig-paren">)</span><a class="headerlink" href="#f/subs/read_nml" title="Link to this definition">¶</a></dt>
 <dd><p>reads namelist interpolate_safran.nam</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>knamunit</strong><em> [</em><em>integer </em><em>,</em><em>in</em><em>]</em> :: unit number</p>
 </dd>
-<dt class="field-even">Called from</dt>
+<dt class="field-even">Called from<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#f/interpolate_safran" title="f/interpolate_safran"><code class="xref f f-prog docutils literal notranslate"><span class="pre">interpolate_safran</span></code></a></p>
 </dd>
-<dt class="field-odd">Call to</dt>
+<dt class="field-odd">Call to<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/subs/abort_interpolate" title="f/subs/abort_interpolate"><code class="xref f f-func docutils literal notranslate"><span class="pre">abort_interpolate()</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <p><strong>Module MODN_INTERPOL_SAFRAN</strong></p>
-<span class="target" id="f/modn_interpol_safran"></span><p class="rubric">Description</p>
+<p class="rubric" id="f/modn_interpol_safran">Description</p>
 <p>Module with namelist declarations.</p>
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_SWITCHES_INT">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SWITCHES_INT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SWITCHES_INT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SWITCHES_INT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SWITCHES_INT" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/lmultiinput" title="f/modd_interpol_safran/lmultiinput"><code class="xref f f-var docutils literal notranslate"><span class="pre">lmultiinput</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/lmultioutput" title="f/modd_interpol_safran/lmultioutput"><code class="xref f f-var docutils literal notranslate"><span class="pre">lmultioutput</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/lselectvar" title="f/modd_interpol_safran/lselectvar"><code class="xref f f-var docutils literal notranslate"><span class="pre">lselectvar</span></code></a></p>
@@ -1135,57 +1133,57 @@ aspect</p>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_FILENAMES_SINGLE_IN">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_SINGLE_IN</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_SINGLE_IN" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_SINGLE_IN</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_SINGLE_IN" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/hfilein" title="f/modd_interpol_safran/hfilein"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilein</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_FILENAMES_SINGLE_OUT">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_SINGLE_OUT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_SINGLE_OUT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_SINGLE_OUT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_SINGLE_OUT" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/hfileout" title="f/modd_interpol_safran/hfileout"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfileout</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/hgridin" title="f/modd_interpol_safran/hgridin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hgridin</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_MULTIIN_SETTING">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_MULTIIN_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_MULTIIN_SETTING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_MULTIIN_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_MULTIIN_SETTING" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/nnumber_input_files" title="f/modd_interpol_safran/nnumber_input_files"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_input_files</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_MULTIOUT_SETTING">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_MULTIOUT_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_MULTIOUT_SETTING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_MULTIOUT_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_MULTIOUT_SETTING" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/nnumber_output_grids" title="f/modd_interpol_safran/nnumber_output_grids"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_output_grids</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_FILENAMES_MULTI_IN">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_MULTI_IN</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_MULTI_IN" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_MULTI_IN</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_MULTI_IN" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/hfilesin" title="f/modd_interpol_safran/hfilesin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilesin</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_FILENAMES_MULTI_OUT">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_MULTI_OUT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_MULTI_OUT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_FILENAMES_MULTI_OUT</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_FILENAMES_MULTI_OUT" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/hfilesout" title="f/modd_interpol_safran/hfilesout"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilesout</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/hgridsin" title="f/modd_interpol_safran/hgridsin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hgridsin</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_SELECT_VARS_SETTING">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SELECT_VARS_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SELECT_VARS_SETTING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SELECT_VARS_SETTING</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SELECT_VARS_SETTING" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/nnumber_of_variables" title="f/modd_interpol_safran/nnumber_of_variables"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_of_variables</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_SELECT_VARS_NAMES">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SELECT_VARS_NAMES</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SELECT_VARS_NAMES" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_SELECT_VARS_NAMES</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_SELECT_VARS_NAMES" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/hvar_list" title="f/modd_interpol_safran/hvar_list"><code class="xref f f-var docutils literal notranslate"><span class="pre">hvar_list</span></code></a></p>
 </dd></dl>
 
 <dl class="f variable">
 <dt class="sig sig-object f" id="f/modn_interpol_safran/NAM_OTHER_STUFF">
-<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_OTHER_STUFF</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_OTHER_STUFF" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modn_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">NAM_OTHER_STUFF</span></span><em> <span class="pre">[</span></em><em><span class="pre">namelist</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modn_interpol_safran/NAM_OTHER_STUFF" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#f/modd_interpol_safran/ltimechunk" title="f/modd_interpol_safran/ltimechunk"><code class="xref f f-var docutils literal notranslate"><span class="pre">ltimechunk</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/lspatialchunk" title="f/modd_interpol_safran/lspatialchunk"><code class="xref f f-var docutils literal notranslate"><span class="pre">lspatialchunk</span></code></a>
 <a class="reference internal" href="#f/modd_interpol_safran/nlonchunksize" title="f/modd_interpol_safran/nlonchunksize"><code class="xref f f-var docutils literal notranslate"><span class="pre">nlonchunksize</span></code></a>
@@ -1197,11 +1195,11 @@ aspect</p>
 <li><p><a class="reference internal" href="#f/modd_interpol_safran" title="f/modd_interpol_safran: Declarations of namelist variables"><code class="xref f f-mod docutils literal notranslate"><span class="pre">modd_interpol_safran</span></code></a>: Declarations of namelist variables</p></li>
 </ul>
 <p><strong>Module MODD_INTERPOL_SAFRAN</strong></p>
-<span class="target" id="f/modd_interpol_safran"></span><p class="rubric">Description</p>
+<p class="rubric" id="f/modd_interpol_safran">Description</p>
 <p>Declarations of namelist variables</p>
 <p class="rubric">Quick access</p>
 <dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#f/modd_interpol_safran/hfilein" title="f/modd_interpol_safran/hfilein"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilein</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hfileout" title="f/modd_interpol_safran/hfileout"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfileout</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hfilesin" title="f/modd_interpol_safran/hfilesin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilesin</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hfilesout" title="f/modd_interpol_safran/hfilesout"><code class="xref f f-var docutils literal notranslate"><span class="pre">hfilesout</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hgridin" title="f/modd_interpol_safran/hgridin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hgridin</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hgridsin" title="f/modd_interpol_safran/hgridsin"><code class="xref f f-var docutils literal notranslate"><span class="pre">hgridsin</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/hvar_list" title="f/modd_interpol_safran/hvar_list"><code class="xref f f-var docutils literal notranslate"><span class="pre">hvar_list</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/lmultiinput" title="f/modd_interpol_safran/lmultiinput"><code class="xref f f-var docutils literal notranslate"><span class="pre">lmultiinput</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/lmultioutput" title="f/modd_interpol_safran/lmultioutput"><code class="xref f f-var docutils literal notranslate"><span class="pre">lmultioutput</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/lselectvar" title="f/modd_interpol_safran/lselectvar"><code class="xref f f-var docutils literal notranslate"><span class="pre">lselectvar</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/lspatialchunk" title="f/modd_interpol_safran/lspatialchunk"><code class="xref f f-var docutils literal notranslate"><span class="pre">lspatialchunk</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/ltimechunk" title="f/modd_interpol_safran/ltimechunk"><code class="xref f f-var docutils literal notranslate"><span class="pre">ltimechunk</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/nlatchunksize" title="f/modd_interpol_safran/nlatchunksize"><code class="xref f f-var docutils literal notranslate"><span class="pre">nlatchunksize</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/nlonchunksize" title="f/modd_interpol_safran/nlonchunksize"><code class="xref f f-var docutils literal notranslate"><span class="pre">nlonchunksize</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/nnumber_input_files" title="f/modd_interpol_safran/nnumber_input_files"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_input_files</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/nnumber_of_variables" title="f/modd_interpol_safran/nnumber_of_variables"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_of_variables</span></code></a>, <a class="reference internal" href="#f/modd_interpol_safran/nnumber_output_grids" title="f/modd_interpol_safran/nnumber_output_grids"><code class="xref f f-var docutils literal notranslate"><span class="pre">nnumber_output_grids</span></code></a></p>
 </dd>
 </dl>
@@ -1209,119 +1207,119 @@ aspect</p>
 <ul>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hfilein">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilein</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilein" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilein</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilein" title="Link to this definition">¶</a></dt>
 <dd><p>Filename of the input file. Used if LMULTIINPUT=.FALSE.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hfileout">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfileout</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfileout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfileout</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfileout" title="Link to this definition">¶</a></dt>
 <dd><p>Filename of the output file. Used if LMULTIOUTPUT=.FALSE.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hfilesin">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilesin</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilesin" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilesin</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilesin" title="Link to this definition">¶</a></dt>
 <dd><p>Filenames of the input files. Used if LMULTIINPUT=.TRUE.. The number of filenames given must be equal to NNUMBER_INPUT_FILES.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hfilesout">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilesout</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilesout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hfilesout</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hfilesout" title="Link to this definition">¶</a></dt>
 <dd><p>Filenames of the output files. Used if LMULTIOUTPUT=.TRUE.. The number of filenames given must be equal to NNUMBER_OUTPUT_GRIDS.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hgridin">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hgridin</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hgridin" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hgridin</span></span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hgridin" title="Link to this definition">¶</a></dt>
 <dd><p>Filename of the grid definition file. Used if LMULTIOUTPUT=.FALSE.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hgridsin">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hgridsin</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hgridsin" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hgridsin</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=100)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hgridsin" title="Link to this definition">¶</a></dt>
 <dd><p>Filenames of the grid definition files. Used if LMULTIOUTPUT=.TRUE.. The number of filenames given must be equal to NNUMBER_OUTPUT_GRIDS.</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/hvar_list">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hvar_list</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=20)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hvar_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">hvar_list</span></span> <span class="pre">(</span><span class="pre">*</span><span class="pre">)</span><em> <span class="pre">[</span></em><em><span class="pre">character(len=20)</span></em><em><span class="pre">,</span></em><em><span class="pre">allocatable</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/hvar_list" title="Link to this definition">¶</a></dt>
 <dd><p>List of variable names of variables to interpolate. Used if LSELECTVAR=.TRUE..</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/lmultiinput">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lmultiinput</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lmultiinput" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lmultiinput</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lmultiinput" title="Link to this definition">¶</a></dt>
 <dd><p>Set to .TRUE. in order to handle multiple input files</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/lmultioutput">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lmultioutput</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lmultioutput" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lmultioutput</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lmultioutput" title="Link to this definition">¶</a></dt>
 <dd><p>Set to .TRUE. in order to handle multiple output files</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/lselectvar">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lselectvar</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lselectvar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lselectvar</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lselectvar" title="Link to this definition">¶</a></dt>
 <dd><p>Set to .TRUE. to choose variables to interpolate from the input file</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/lspatialchunk">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lspatialchunk</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lspatialchunk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">lspatialchunk</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/lspatialchunk" title="Link to this definition">¶</a></dt>
 <dd><p>Set to .TRUE. to manualy fix chuncksizes for the first and second spatial dimension when writing the output netcdf file(s).</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/ltimechunk">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">ltimechunk</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/ltimechunk" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">ltimechunk</span></span><em> <span class="pre">[</span></em><em><span class="pre">logical</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=.false.</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/ltimechunk" title="Link to this definition">¶</a></dt>
 <dd><p>Set to .TRUE. to write one time step at a time to safe memory when working with larger files</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/nlatchunksize">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nlatchunksize</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=115</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nlatchunksize" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nlatchunksize</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=115</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nlatchunksize" title="Link to this definition">¶</a></dt>
 <dd><p>Chunksize for the second spatial dimension for writing the output netcdf file(s).</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/nlonchunksize">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nlonchunksize</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=115</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nlonchunksize" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nlonchunksize</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=115</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nlonchunksize" title="Link to this definition">¶</a></dt>
 <dd><p>Chunksize for the first spatial dimension for writing the output netcdf file(s).</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/nnumber_input_files">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_input_files</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_input_files" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_input_files</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_input_files" title="Link to this definition">¶</a></dt>
 <dd><p>Number of input files. Used if LMULTIINPUT=.TRUE..</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/nnumber_of_variables">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_of_variables</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_of_variables" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_of_variables</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_of_variables" title="Link to this definition">¶</a></dt>
 <dd><p>Number of variables to interpolate. Used if LSELECTVAR=.TRUE..</p>
 </dd></dl>
 
 </li>
 <li><dl class="f variable">
 <dt class="sig sig-object f" id="f/modd_interpol_safran/nnumber_output_grids">
-<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_output_grids</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_output_grids" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">modd_interpol_safran/</span></span><span class="sig-name descname"><span class="pre">nnumber_output_grids</span></span><em> <span class="pre">[</span></em><em><span class="pre">integer</span></em><em><span class="pre">,</span></em><em><span class="pre">optional/default=1</span></em><em><span class="pre">]</span></em><a class="headerlink" href="#f/modd_interpol_safran/nnumber_output_grids" title="Link to this definition">¶</a></dt>
 <dd><p>Number of output grid files. Used if LMULTIOUTPUT=.TRUE..</p>
 </dd></dl>
 
@@ -1335,10 +1333,11 @@ aspect</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Interpolation tools</a><ul>
 <li><a class="reference internal" href="#how-to-create-forcing-files-for-isolated-points">How to create FORCING files for isolated points ?</a><ul>
 <li><a class="reference internal" href="#general-documentation-of-shapefile2netcdf-script">General documentation of shapefile2NetCDF script</a><ul>
@@ -1349,6 +1348,11 @@ aspect</p>
 <li><a class="reference internal" href="#hpc-simulation-sxcen-transfert">HPC SIMULATION: SXCEN TRANSFERT</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF.create_NetCDF"><code class="docutils literal notranslate"><span class="pre">create_NetCDF()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF.create_skyline"><code class="docutils literal notranslate"><span class="pre">create_skyline()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF.make_dict_list"><code class="docutils literal notranslate"><span class="pre">make_dict_list()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF.parseArguments"><code class="docutils literal notranslate"><span class="pre">parseArguments()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#how-to-create-forcing-files-for-2d-simulation">How to create FORCING files for 2D simulation ?</a><ul>
@@ -1357,6 +1361,17 @@ aspect</p>
 <li><a class="reference internal" href="#examples-of-use-of-netcdf-file-in-hpc-simulation">EXAMPLES OF USE OF NETCDF FILE IN HPC SIMULATION</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.clean_the_mess"><code class="docutils literal notranslate"><span class="pre">clean_the_mess()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.conversion_to_L93_if_lat_lon"><code class="docutils literal notranslate"><span class="pre">conversion_to_L93_if_lat_lon()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.convert_kml2shp"><code class="docutils literal notranslate"><span class="pre">convert_kml2shp()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.create_MNT_tif"><code class="docutils literal notranslate"><span class="pre">create_MNT_tif()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.create_dict_all_infos"><code class="docutils literal notranslate"><span class="pre">create_dict_all_infos()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.create_netcdf"><code class="docutils literal notranslate"><span class="pre">create_netcdf()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.find_most_common_massif"><code class="docutils literal notranslate"><span class="pre">find_most_common_massif()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.get_bounds"><code class="docutils literal notranslate"><span class="pre">get_bounds()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.parseArguments"><code class="docutils literal notranslate"><span class="pre">parseArguments()</span></code></a></li>
+<li><a class="reference internal" href="#interpolation.shapefile2NetCDF_2D.print_for_namelist"><code class="docutils literal notranslate"><span class="pre">print_for_namelist()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#netcdf-add-massif-info-script">Netcdf_add_massif_info script</a></li>
@@ -1365,12 +1380,17 @@ aspect</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="assim.html"
-                        title="previous chapter">Assimilation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="data.html"
-                        title="next chapter">Common data shared in <cite>DATA</cite> directory</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="assim.html"
+                          title="previous chapter">Assimilation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="data.html"
+                          title="next chapter">Common data shared in <cite>DATA</cite> directory</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1378,7 +1398,7 @@ aspect</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -1386,13 +1406,13 @@ aspect</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -1415,8 +1435,8 @@ aspect</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

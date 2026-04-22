@@ -1,22 +1,20 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.Met2Netcdf &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -89,23 +87,23 @@
 <span class="sd">* -p -&gt; the path for this only MET file (required when --one_file is activated)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
 
-<span class="kn">import</span> <span class="nn">psycopg2</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">netCDF4</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.S2M_standard_file</span> <span class="kn">import</span> <span class="n">StandardCDP</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.resources</span> <span class="kn">import</span> <span class="n">get_file_period</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">get_list_dates_files</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
-<span class="kn">from</span> <span class="nn">bronx.meteo.thermo</span> <span class="kn">import</span> <span class="n">Thermo</span>
-<span class="kn">from</span> <span class="nn">bronx.meteo.constants</span> <span class="kn">import</span> <span class="n">T0</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.S2M_standard_file</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardCDP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_file_period</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">get_list_dates_files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.meteo.thermo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Thermo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.meteo.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">T0</span>
 
 <span class="c1">###########################################################################</span>
 <span class="c1"># MUST CHANGE EACH YEAR:</span>
@@ -126,8 +124,10 @@
 <span class="c1">#</span>
 <span class="c1">###########################################################################</span>
 
-<div class="viewcode-block" id="recup_donnees_site"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_donnees_site">[docs]</a><span class="k">def</span> <span class="nf">recup_donnees_site</span><span class="p">(</span><span class="n">numero_site</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="recup_donnees_site">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_donnees_site">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">recup_donnees_site</span><span class="p">(</span><span class="n">numero_site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Give infos (Latitude, longitude, altitude, etc...) from a site (using site number)</span>
 <span class="sd">    More precisely, the infos are: [LAT, LON, UREF, ZREF, ZS, aspect, slope, site number], site name</span>
 
@@ -149,7 +149,8 @@
     <span class="k">return</span> <span class="n">Tab_point</span><span class="p">,</span> <span class="n">name</span></div>
 
 
-<span class="k">def</span> <span class="nf">message_accueil</span><span class="p">(</span><span class="n">option_bool</span><span class="p">,</span> <span class="n">nom_site</span><span class="p">):</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">message_accueil</span><span class="p">(</span><span class="n">option_bool</span><span class="p">,</span> <span class="n">nom_site</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">option_bool</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Completion des donnees MET avec Pression et Direction du vent du site &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nom_site</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#########################################################&#39;</span><span class="p">)</span>
@@ -161,8 +162,10 @@
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#########################################################&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="decoupe_periode"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.decoupe_periode">[docs]</a><span class="k">def</span> <span class="nf">decoupe_periode</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="decoupe_periode">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.decoupe_periode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">decoupe_periode</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    split period of dates in yearly period and give the list of MET files</span>
 <span class="sd">    MET file name is supposed to be in a fix format: MET_1996_1997_fmt</span>
 
@@ -181,8 +184,11 @@
     <span class="k">return</span> <span class="n">list_path_met</span><span class="p">,</span> <span class="n">list_date_debut</span><span class="p">,</span> <span class="n">list_date_fin</span></div>
 
 
-<div class="viewcode-block" id="read_info_met"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.read_info_met">[docs]</a><span class="k">def</span> <span class="nf">read_info_met</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="read_info_met">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.read_info_met">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_info_met</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get informations for an annual MET file: size of the header, begin date, end date.</span>
 <span class="sd">    NB: we suppose that the lines of the header are beginning with a letter.</span>
 <span class="sd">    NB2: 2 date format: YYYYMMDDHH or DD/MM/YYYY HH:M</span>
@@ -215,8 +221,11 @@
     <span class="k">return</span> <span class="n">L</span></div>
 
 
-<div class="viewcode-block" id="recup_cdp"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_cdp">[docs]</a><span class="k">def</span> <span class="nf">recup_cdp</span><span class="p">(</span><span class="n">date_time_deb</span><span class="p">,</span> <span class="n">date_time_fin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="recup_cdp">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_cdp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">recup_cdp</span><span class="p">(</span><span class="n">date_time_deb</span><span class="p">,</span> <span class="n">date_time_fin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get field Wind Direction and Surface Pressure from cdp60mn database</span>
 
 <span class="sd">    :param date_time_deb: starting date</span>
@@ -331,8 +340,11 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="open_met_file_and_create_xr"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.open_met_file_and_create_xr">[docs]</a><span class="k">def</span> <span class="nf">open_met_file_and_create_xr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="open_met_file_and_create_xr">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.open_met_file_and_create_xr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_met_file_and_create_xr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get all differents fields in MET file</span>
 
 <span class="sd">    :param filename: path to MET file</span>
@@ -493,8 +505,11 @@
     <span class="k">return</span> <span class="n">data_xr</span><span class="p">,</span> <span class="n">Liste_date</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Liste_date</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="recup_safran"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_safran">[docs]</a><span class="k">def</span> <span class="nf">recup_safran</span><span class="p">(</span><span class="n">date_1</span><span class="p">,</span> <span class="n">date_2</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="recup_safran">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.recup_safran">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">recup_safran</span><span class="p">(</span><span class="n">date_1</span><span class="p">,</span> <span class="n">date_2</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Complete missing values of the MET file by Safran reanalysis</span>
 
 <span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
@@ -543,8 +558,11 @@
     <span class="k">return</span> <span class="n">xr_safran</span></div>
 
 
-<div class="viewcode-block" id="complete_obs_with_model_1period"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.complete_obs_with_model_1period">[docs]</a><span class="k">def</span> <span class="nf">complete_obs_with_model_1period</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="complete_obs_with_model_1period">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.complete_obs_with_model_1period">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">complete_obs_with_model_1period</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">,</span> <span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a one year period (YYYY080106 - (YYYY+1)080106), return a complete file</span>
 <span class="sd">    This file is made from the MET informations + eventually Psurf and WindDIR from cdp60mn database.</span>
 <span class="sd">    Then, for the missing dates, this is completed with Safran reanalysis.</span>
@@ -575,8 +593,11 @@
     <span class="k">return</span> <span class="n">xr_1period</span></div>
 
 
-<div class="viewcode-block" id="compilation_ttes_periodes"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.compilation_ttes_periodes">[docs]</a><span class="k">def</span> <span class="nf">compilation_ttes_periodes</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="compilation_ttes_periodes">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.compilation_ttes_periodes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compilation_ttes_periodes</span><span class="p">(</span><span class="n">date_entree_debut</span><span class="p">,</span> <span class="n">date_entree_fin</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">option_recup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compilation of all the different one_year period</span>
 
 <span class="sd">    :param site: site of interest (number of 8 figures with string format)</span>
@@ -611,8 +632,11 @@
     <span class="k">return</span> <span class="n">xr_out</span></div>
 
 
-<div class="viewcode-block" id="create_netcdf"><a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.create_netcdf">[docs]</a><span class="k">def</span> <span class="nf">create_netcdf</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">Tableau_valeurs_nbpoint</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="create_netcdf">
+<a class="viewcode-back" href="../../code/utils.html#utils.Met2Netcdf.create_netcdf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_netcdf</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">xr</span><span class="p">,</span> <span class="n">Tableau_valeurs_nbpoint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create NetCDF output file</span>
 
 <span class="sd">    :param output: name of the output file</span>
@@ -677,7 +701,8 @@
     <span class="n">fic_forcing</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">parseArguments</span><span class="p">():</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parseArguments</span><span class="p">():</span>
     <span class="c1"># Create argument parser</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 
@@ -723,9 +748,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -733,13 +758,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -757,8 +782,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

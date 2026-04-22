@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>The mapplotter script &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Plots from operational simulations" href="plots-pearps2m.html" />
     <link rel="prev" title="The proplotter and procompare plotting tools" href="plots-proplotter.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,9 +47,9 @@
           <div class="body" role="main">
             
   <section id="the-mapplotter-script">
-<h1>The mapplotter script<a class="headerlink" href="#the-mapplotter-script" title="Permalink to this headline">¶</a></h1>
+<h1>The mapplotter script<a class="headerlink" href="#the-mapplotter-script" title="Link to this heading">¶</a></h1>
 <section id="command-line-use">
-<h2>Command line use<a class="headerlink" href="#command-line-use" title="Permalink to this headline">¶</a></h2>
+<h2>Command line use<a class="headerlink" href="#command-line-use" title="Link to this heading">¶</a></h2>
 <p>Script <code class="docutils literal notranslate"><span class="pre">plots/maps/mapplotter.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: mapplotter.py [-h] [-f FIELD] [--wU UCOMPONENTOFWIND]
                      [--wV VCOMPONENTOFWIND] --date DATE [-d REFNAME]
@@ -198,35 +196,35 @@ options:
   -v, --verbose         run verbosely. Else, only messages of level Error will
                         be displayed.
 
-End of help for: mapplotter.py (EPyGrAM v2.0.5)
+End of help for: mapplotter.py (EPyGrAM v2.0.4)
 </pre></div>
 </div>
 <p>Example:</p>
 <blockquote>
 <div><blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python snowtools/plots/maps/mapplotter.py -f DSN_T_ISBA --date 20190513T10
-            --parallels <span class="m">0</span>.1 --meridians <span class="m">0</span>.1
-            &lt;testbasedir&gt;/PRO/PRO_2019051300_2019051400.nc
-            -O 20190513T10_snowheight.png
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>-f<span class="w"> </span>DSN_T_ISBA<span class="w"> </span>--date<span class="w"> </span>20190513T10
+<span class="w">            </span>--parallels<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>--meridians<span class="w"> </span><span class="m">0</span>.1
+<span class="w">            </span>&lt;testbasedir&gt;/PRO/PRO_2019051300_2019051400.nc
+<span class="w">            </span>-O<span class="w"> </span>20190513T10_snowheight.png
 </pre></div>
 </div>
 </div></blockquote>
 <figure class="align-center">
 <img alt="../_images/20190513T10_snowheight.png" src="../_images/20190513T10_snowheight.png" />
 </figure>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python snowtools/plots/maps/mapplotter.py -f DSN_T_ISBA --date 20150301T06
-        --diff &lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
-        &lt;testbasedir&gt;/PRO/PRO_second_2014080106_2015080106.nc
-        -O 20150301T06_snowheight_diff.png
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>-f<span class="w"> </span>DSN_T_ISBA<span class="w"> </span>--date<span class="w"> </span>20150301T06
+<span class="w">        </span>--diff<span class="w"> </span>&lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
+<span class="w">        </span>&lt;testbasedir&gt;/PRO/PRO_second_2014080106_2015080106.nc
+<span class="w">        </span>-O<span class="w"> </span>20150301T06_snowheight_diff.png
 </pre></div>
 </div>
 <figure class="align-center">
 <img alt="../_images/20150301T06_snowheight_diff.png" src="../_images/20150301T06_snowheight_diff.png" />
 </figure>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python snowtools/plots/maps/mapplotter.py --wU WSN_T_ISBA --wV SNOMLT_ISBA
-        --date 20150405T06 --wpo grid --vectors_subsampling <span class="m">1</span>
-        &lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
-        -O 20150405T06_pseudo_wind_map.png
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>snowtools/plots/maps/mapplotter.py<span class="w"> </span>--wU<span class="w"> </span>WSN_T_ISBA<span class="w"> </span>--wV<span class="w"> </span>SNOMLT_ISBA
+<span class="w">        </span>--date<span class="w"> </span>20150405T06<span class="w"> </span>--wpo<span class="w"> </span>grid<span class="w"> </span>--vectors_subsampling<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>&lt;testbasedir&gt;/PRO/PRO_first_2014080106_2015080106.nc
+<span class="w">        </span>-O<span class="w"> </span>20150405T06_pseudo_wind_map.png
 </pre></div>
 </div>
 <figure class="align-center">
@@ -235,26 +233,26 @@ End of help for: mapplotter.py (EPyGrAM v2.0.5)
 </div></blockquote>
 </section>
 <section id="module-plots.maps.mapplotter">
-<span id="main-plot-function"></span><h2>Main plot function<a class="headerlink" href="#module-plots.maps.mapplotter" title="Permalink to this headline">¶</a></h2>
+<span id="main-plot-function"></span><h2>Main plot function<a class="headerlink" href="#module-plots.maps.mapplotter" title="Link to this heading">¶</a></h2>
 <p>Created on 17 June 2025</p>
 <dl class="field-list">
-<dt class="field-odd">Authors</dt>
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><p>radanovics</p>
 <p>largely copied from epygram epy_cartoplot.py</p>
 </dd>
 </dl>
 <dl class="py data">
 <dt class="sig sig-object py" id="plots.maps.mapplotter.CFEATURES">
-<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">CFEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['BORDERS',</span> <span class="pre">'COASTLINE',</span> <span class="pre">'COLORS',</span> <span class="pre">'LAKES',</span> <span class="pre">'LAND',</span> <span class="pre">'OCEAN',</span> <span class="pre">'RIVERS',</span> <span class="pre">'STATES']</span></em><a class="headerlink" href="#plots.maps.mapplotter.CFEATURES" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">CFEATURES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['BORDERS',</span> <span class="pre">'COASTLINE',</span> <span class="pre">'COLORS',</span> <span class="pre">'LAKES',</span> <span class="pre">'LAND',</span> <span class="pre">'OCEAN',</span> <span class="pre">'RIVERS',</span> <span class="pre">'STATES']</span></em><a class="headerlink" href="#plots.maps.mapplotter.CFEATURES" title="Link to this definition">¶</a></dt>
 <dd><p>Cartopy features</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="plots.maps.mapplotter.main_cli">
-<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">main_cli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ufid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vfid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_shift_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pcolormesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorsnumber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plasma'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_cmap_on_0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatter_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meridians</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">french_depts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartopy_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors_subsampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quiver'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_components_are_projected_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiverkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_factor_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfilename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figures_dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/mapplotter.html#main_cli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.mapplotter.main_cli" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">plots.maps.mapplotter.</span></span><span class="sig-name descname"><span class="pre">main_cli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ufid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Vfid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diffmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_shift_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pcolormesh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorsnumber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plasma'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_cmap_on_0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatter_kw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meridians</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">french_depts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartopy_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors_subsampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_plot_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quiver'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_components_are_projected_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiverkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_factor_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputfilename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figures_dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/mapplotter.html#main_cli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.mapplotter.main_cli" title="Link to this definition">¶</a></dt>
 <dd><p>Plot fields.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> – name of the file to be processed.</p></li>
 <li><p><strong>fid</strong> – field identifier.</p></li>
@@ -268,7 +266,7 @@ End of help for: mapplotter.py (EPyGrAM v2.0.5)
 </dl>
 <p>Pre-processing:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>operation</strong> – makes the requested operation
 (e.g. {‘operation’:’-‘,’operand’:273.15} or
@@ -282,13 +280,13 @@ to be shifted to a [-180,180] grid, for instance (with -180 argument).</p></li>
 </dl>
 <p>Figure:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>title</strong> – title to be written over plot.</p>
 </dd>
 </dl>
 <p>Graphical settings:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plot_method</strong> – matplotlib plotting method to be used, among
 (‘pcolormesh’, ‘contourf’, ‘contour’, ‘scatter’).</p></li>
@@ -304,7 +302,7 @@ Only for plot_method = ‘scatter’.</p></li>
 </dl>
 <p>Cartography:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parallels</strong> (<em>meridians and</em>) – enable to fine-tune the choice of lines to
 plot, with either:
@@ -320,7 +318,7 @@ plot, with either:
 </dl>
 <p>Vector plots:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vectors_subsampling</strong> – subsampling ratio of vectors plots.</p></li>
 <li><p><strong>vector_plot_method</strong> – among (‘quiver’, ‘barbs’, ‘streamplot’) for vector plots.</p></li>
@@ -336,7 +334,7 @@ to vector due to map factor.</p></li>
 </dl>
 <p>Output:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>savefig</strong> – save figures to file, instead of interactive plot</p></li>
 <li><p><strong>outputfilename</strong> – specify an output filename for the plot,
@@ -355,23 +353,33 @@ including format as extension.</p></li>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">The mapplotter script</a><ul>
 <li><a class="reference internal" href="#command-line-use">Command line use</a></li>
-<li><a class="reference internal" href="#module-plots.maps.mapplotter">Main plot function</a></li>
+<li><a class="reference internal" href="#module-plots.maps.mapplotter">Main plot function</a><ul>
+<li><a class="reference internal" href="#plots.maps.mapplotter.CFEATURES"><code class="docutils literal notranslate"><span class="pre">CFEATURES</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.mapplotter.main_cli"><code class="docutils literal notranslate"><span class="pre">main_cli()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="plots-proplotter.html"
-                        title="previous chapter">The proplotter and procompare plotting tools</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="plots-pearps2m.html"
-                        title="next chapter">Plots from operational simulations</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="plots-proplotter.html"
+                          title="previous chapter">The proplotter and procompare plotting tools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="plots-pearps2m.html"
+                          title="next chapter">Plots from operational simulations</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -379,7 +387,7 @@ including format as extension.</p></li>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -387,13 +395,13 @@ including format as extension.</p></li>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -417,8 +425,8 @@ including format as extension.</p></li>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

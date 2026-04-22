@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>The prosimu simulation reader &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Compare two versions of output NetCDF file" href="utils-operational_repro-compare2versions.html" />
     <link rel="prev" title="The read_snowpack simulation reader" href="utils-readsnowpack.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,12 +47,12 @@
           <div class="body" role="main">
             
   <section id="the-prosimu-simulation-reader">
-<h1>The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader<a class="headerlink" href="#the-prosimu-simulation-reader" title="Permalink to this headline">¶</a></h1>
+<h1>The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader<a class="headerlink" href="#the-prosimu-simulation-reader" title="Link to this heading">¶</a></h1>
 <p>The prosimu class is designed to read netCDF files used in simulations (inputs, outputs).
 It is still maintained but new work should be done with xarray</p>
-<span class="target" id="module-utils.prosimu"></span><p>Created on 4 oct. 2012</p>
+<p id="module-utils.prosimu">Created on 4 oct. 2012</p>
 <dl class="field-list simple">
-<dt class="field-odd">Authors</dt>
+<dt class="field-odd">Authors<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p>lafaysse</p></li>
 <li><p>LVG</p></li>
@@ -62,7 +60,7 @@ It is still maintained but new work should be done with xarray</p>
 </dd>
 </dl>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>This module contains the <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> class used to read simulation files
 (netCDF format) as produced by SURFEX/Crocus for instance.</p>
 <p>More in details, <code class="docutils literal notranslate"><span class="pre">prosimu1d</span></code> and <code class="docutils literal notranslate"><span class="pre">prosimu2d</span></code> classes are provided to
@@ -72,11 +70,11 @@ specific to 1D or 2D files, please use <code class="docutils literal notranslate
 instantiate the appropriate class (<code class="docutils literal notranslate"><span class="pre">prosimu1d</span></code> or <code class="docutils literal notranslate"><span class="pre">prosimu2d</span></code>).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <p>A short example of how to use this module and read time dimension and
 snow density variables (<code class="docutils literal notranslate"><span class="pre">RSN_VEG</span></code>) for all layers at point in massif
 11, 2700m, northern aspect on 40 degree slope:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -89,7 +87,7 @@ for the selected point. As <code class="docutils literal notranslate"><span clas
 the <code class="docutils literal notranslate"><span class="pre">density</span></code> array is a 3D numpy ndarray with dimensions
 (time, layers).</p>
 <p>A short example to get multiple points at once:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -102,7 +100,7 @@ for the selected points (all aspects). The <code class="docutils literal notrans
 first dimension being time, second dimension being layers and the last one is points.</p>
 <p>Example to get total snow water equivalent of the snowpack (variable
 <code class="docutils literal notranslate"><span class="pre">WSN_T_ISBA</span></code>) across time for all points:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu_auto</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
 <span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
@@ -111,7 +109,7 @@ first dimension being time, second dimension being layers and the last one is po
 </div>
 </section>
 <section id="main-methods">
-<h2>Main methods<a class="headerlink" href="#main-methods" title="Permalink to this headline">¶</a></h2>
+<h2>Main methods<a class="headerlink" href="#main-methods" title="Link to this heading">¶</a></h2>
 <p>Most useful methods are:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">prosimuAbstract.gettime()</span></code> to read tim dimension</p></li>
@@ -119,16 +117,17 @@ first dimension being time, second dimension being layers and the last one is po
 <li><p><a class="reference internal" href="#utils.prosimu.prosimuAbstract.read" title="utils.prosimu.prosimuAbstract.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prosimuAbstract.read()</span></code></a> to read data from one variable</p></li>
 <li><p><a class="reference internal" href="#utils.prosimu.prosimuAbstract.get_point" title="utils.prosimu.prosimuAbstract.get_point"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prosimuAbstract.get_point()</span></code></a> to help in selecting a point across spatial dimensions</p></li>
 </ul>
+</section>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu">
-<span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu</span></span><a class="headerlink" href="#utils.prosimu.prosimu" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#utils.prosimu.prosimu1d" title="utils.prosimu.prosimu1d"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu.prosimu1d</span></code></a></p>
+<span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu</span></span><a class="headerlink" href="#utils.prosimu.prosimu" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#utils.prosimu.prosimu1d" title="utils.prosimu.prosimu1d"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimu1d</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu1d">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu1d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu._prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu.prosimuAbstract</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu1d" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimuAbstract</span></code></a></p>
 <p>Class to read simulations where simulation points are aggregated along one dimension.
 This is commonly used for semi-distributed simulations.</p>
 <p>forceread : si True force lors de la lecture d’une variable par la
@@ -139,8 +138,8 @@ nécessaires</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu2d">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu2d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu._prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu.prosimuAbstract</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu2d" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimuAbstract</span></code></a></p>
 <p>Class to read simulations where simulation points are aggregated along one dimension.
 This is commonly used for semi-distributed simulations.</p>
 <p>forceread : si True force lors de la lecture d’une variable par la
@@ -151,12 +150,12 @@ nécessaires</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimuAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimuAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract class designed to read simulations files
 Describe the interface provided to access simulations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>path-like</em><em> or </em><em>list</em>) – path of the file to read</p></li>
 <li><p><strong>ncformat</strong> (<em>str</em>) – NetCDF format to use.</p></li>
@@ -186,13 +185,13 @@ cache - utile lorsque de grands nombre d’accès à la même variable sont
 nécessaires</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.close" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.close" title="Link to this definition">¶</a></dt>
 <dd><p>Close the netCDF dataset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.force_read_in_cache">
-<span class="sig-name descname"><span class="pre">force_read_in_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.force_read_in_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.force_read_in_cache" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">force_read_in_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.force_read_in_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.force_read_in_cache" title="Link to this definition">¶</a></dt>
 <dd><p>Force la lecture des variables du netcdf sous forme de tableau numpy.
 Ces tableaux sont stockés dans l’attribut varcache de la classe</p>
 <p>Le cache est utilisé par la méthode read_var, son utilisation n’est pas
@@ -202,13 +201,13 @@ implémentée pour les autres méthodes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.format">
-<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.format" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.format" title="Link to this definition">¶</a></dt>
 <dd><p>Get the format of the undelying netCDF file (e.g. NETCDF3_CLASSIC)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The format of NetCDF file</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -216,21 +215,21 @@ implémentée pour les autres méthodes</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.get_point">
-<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_point" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_point" title="Link to this definition">¶</a></dt>
 <dd><p>Same as <a class="reference internal" href="#utils.prosimu.prosimuAbstract.get_points" title="utils.prosimu.prosimuAbstract.get_points"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_points()</span></code></a> but raise an exception if there is not exactly one point.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.get_points">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_points" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_points" title="Link to this definition">¶</a></dt>
 <dd><p>Return the values of dimension <code class="xref py py-data docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span> <span class="pre">points</span></code> correpsonding to
 a subset defined by variables such as aspect, elevation (ZS), massif_num, slope, latitude, longitude
 according to named arguments passed to the function.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of points</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list</p>
 </dd>
 </dl>
@@ -238,23 +237,23 @@ according to named arguments passed to the function.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.get_time">
-<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_asdatetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_asdatetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.get_time" title="Link to this definition">¶</a></dt>
 <dd><p>Renvoie l’indice de la dimension time correspondant au datetime donné en
 argument</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.getattr">
-<span class="sig-name descname"><span class="pre">getattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getattr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getattr" title="Link to this definition">¶</a></dt>
 <dd><p>Get the value of an attribute of a variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>varname</strong> (<em>str</em>) – the variable name</p></li>
 <li><p><strong>attname</strong> (<em>str</em>) – the attribute name</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the attribute value</p>
 </dd>
 </dl>
@@ -262,16 +261,16 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.getdimvar">
-<span class="sig-name descname"><span class="pre">getdimvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getdimvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getdimvar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getdimvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getdimvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getdimvar" title="Link to this definition">¶</a></dt>
 <dd><p>The dimensions of a specific variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – the variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>dimensions of varname</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy array</p>
 </dd>
 </dl>
@@ -279,13 +278,13 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.getfillvalue">
-<span class="sig-name descname"><span class="pre">getfillvalue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getfillvalue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getfillvalue" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getfillvalue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getfillvalue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getfillvalue" title="Link to this definition">¶</a></dt>
 <dd><p>Get the fill value for a variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – Variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the fill value</p>
 </dd>
 </dl>
@@ -293,13 +292,13 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.getlendim">
-<span class="sig-name descname"><span class="pre">getlendim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getlendim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getlendim" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getlendim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getlendim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getlendim" title="Link to this definition">¶</a></dt>
 <dd><p>Return the length of dimension dimname</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>length of dimension dimname</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
 </dd>
 </dl>
@@ -307,16 +306,16 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.getrankvar">
-<span class="sig-name descname"><span class="pre">getrankvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getrankvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getrankvar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getrankvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.getrankvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.getrankvar" title="Link to this definition">¶</a></dt>
 <dd><p>Get the rank (number of dimensions) of a variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – the variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>rank</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -324,13 +323,13 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.gettiledim">
-<span class="sig-name descname"><span class="pre">gettiledim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.gettiledim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.gettiledim" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">gettiledim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.gettiledim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.gettiledim" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of tile in the file or None if no tile dimension is found.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Number of tile</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int or None</p>
 </dd>
 </dl>
@@ -338,13 +337,13 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.gettypevar">
-<span class="sig-name descname"><span class="pre">gettypevar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.gettypevar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.gettypevar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">gettypevar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.gettypevar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.gettypevar" title="Link to this definition">¶</a></dt>
 <dd><p>Return the dtype of a variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – the variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the corresponding dtype</p>
 </dd>
 </dl>
@@ -352,7 +351,7 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.integration">
-<span class="sig-name descname"><span class="pre">integration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.integration" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">integration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.integration" title="Link to this definition">¶</a></dt>
 <dd><p>Renvoie les valeurs cumulées tous les nstep pas de temps</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
@@ -362,13 +361,13 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.listattr">
-<span class="sig-name descname"><span class="pre">listattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listattr" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">listattr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listattr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listattr" title="Link to this definition">¶</a></dt>
 <dd><p>Get the list of attributtes attached to a variable</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – the variable name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>atributes</p>
 </dd>
 </dl>
@@ -376,19 +375,19 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.listdim">
-<span class="sig-name descname"><span class="pre">listdim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listdim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listdim" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">listdim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listdim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listdim" title="Link to this definition">¶</a></dt>
 <dd><p>Return a copy of the list of dimensions present in the netCDF file</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.listvar">
-<span class="sig-name descname"><span class="pre">listvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listvar" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">listvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.listvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.listvar" title="Link to this definition">¶</a></dt>
 <dd><p>Return the list of variables present in the netCDF file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of variables</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list</p>
 </dd>
 </dl>
@@ -396,7 +395,7 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.moytempo">
-<span class="sig-name descname"><span class="pre">moytempo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.moytempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.moytempo" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">moytempo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nstep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.moytempo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.moytempo" title="Link to this definition">¶</a></dt>
 <dd><p>Même chose que integration mais renvoie une moyenne</p>
 <div class="admonition-todo admonition" id="id2">
 <p class="admonition-title">Todo</p>
@@ -406,15 +405,15 @@ argument</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.read">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill2zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selectpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepfillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">removetile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needmodif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hasDecile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.read" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill2zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selectpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepfillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">removetile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needmodif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hasDecile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.read" title="Link to this definition">¶</a></dt>
 <dd><p>Read data from a variable in the netCDF file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>varname</strong> (<em>str</em>) – the variable name</p></li>
 <li><p><strong>fill2zero</strong> (<em>bool</em>) – if True, will replace undefined data with the value of 0. Otherwise, <code class="docutils literal notranslate"><span class="pre">np.nan</span></code> is used
 except if <code class="docutils literal notranslate"><span class="pre">keepfillvalue</span></code> is set.</p></li>
-<li><p><strong>selectpoint</strong> (<em>integer</em><em> or </em><em>list of integers</em>) – Select a point. If -1 or None, select all points.</p></li>
+<li><p><strong>selectpoint</strong> (<em>integer</em><em> or </em><em>list</em><em> of </em><em>integers</em>) – Select a point. If -1 or None, select all points.</p></li>
 <li><p><strong>tile</strong> (<em>int</em>) – Select a tile.</p></li>
 <li><p><strong>keepfillvalue</strong> (<em>bool</em>) – Do not replace the undefined data with <code class="docutils literal notranslate"><span class="pre">np.nan</span></code> and keep the fill value used in the
 netCDF file.</p></li>
@@ -423,12 +422,12 @@ netCDF file.</p></li>
 <li><p><strong>removetile</strong> – Deprecated, see tile instead.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Numpy data array containing the data of the selected variable.
 Note that order of dimensions is the same as in in file except if selectpoint is a list.
 In this case, the resulting point dimension is appended as the last dimension.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy array</p>
 </dd>
 </dl>
@@ -436,10 +435,10 @@ In this case, the resulting point dimension is appended as the last dimension.</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.read_var">
-<span class="sig-name descname"><span class="pre">read_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.read_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.read_var" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.read_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.read_var" title="Link to this definition">¶</a></dt>
 <dd><p>Read a variable from netCDF file. Note that this function does not support patches.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>variable_name</strong> – nom de la variable</p></li>
 <li><p><strong>kwargs</strong> – spécifier la sous-sélection sous la forme  dimname = value
@@ -447,7 +446,7 @@ ou dimname est le nom de la dimension d’intéret, value est une valeur
 numérique ou un objet slice python pour récupérer une plage de valeurs</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>un tableau numpy.ma.MaskedArray (on peut toujours remplacer les éléments masqués
 par un indicateur de valeur manquante  pas implémenté)</p>
 </dd>
@@ -467,13 +466,13 @@ pour récupérer un point / un instant donné :</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.readtime">
-<span class="sig-name descname"><span class="pre">readtime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.readtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.readtime" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">readtime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.readtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.readtime" title="Link to this definition">¶</a></dt>
 <dd><p>Get the time dimension of the netCDF file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>time axis data</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>numpy array</p>
 </dd>
 </dl>
@@ -481,10 +480,10 @@ pour récupérer un point / un instant donné :</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimuAbstract.readtime_for_copy">
-<span class="sig-name descname"><span class="pre">readtime_for_copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.readtime_for_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.readtime_for_copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">readtime_for_copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimuAbstract.readtime_for_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimuAbstract.readtime_for_copy" title="Link to this definition">¶</a></dt>
 <dd><p>Get the time raw variable and units</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>time variable, time units</p>
 </dd>
 </dl>
@@ -494,18 +493,18 @@ pour récupérer un point / un instant donné :</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu_auto">
-<span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_auto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_auto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_auto" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_auto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_auto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_auto" title="Link to this definition">¶</a></dt>
 <dd><p>Factory function that guess the correct class to return among
 <a class="reference internal" href="#utils.prosimu.prosimu1d" title="utils.prosimu.prosimu1d"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimu1d</span></code></a> or <a class="reference internal" href="#utils.prosimu.prosimu2d" title="utils.prosimu.prosimu2d"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimu2d</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em><em> or </em><em>path-like</em><em> or </em><em>list</em>) – file path or file path list</p></li>
 <li><p><strong>openmode</strong> (<em>str</em>) – Open mode (r, r+ or w generally)</p></li>
 <li><p><strong>kwargs</strong> – Other arguments passed to the instantiated class</p></li>
 </ul>
 </dd>
-<dt class="field-even">Ncformat</dt>
+<dt class="field-even">Ncformat<span class="colon">:</span></dt>
 <dd class="field-even"><p>netCDF format only in case of creation</p>
 </dd>
 </dl>
@@ -513,8 +512,8 @@ pour récupérer un point / un instant donné :</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu_base">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_base" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu._prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu.prosimuAbstract</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_base" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_prosimu1d2d</span></code>, <a class="reference internal" href="#utils.prosimu.prosimuAbstract" title="utils.prosimu.prosimuAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimuAbstract</span></code></a></p>
 <p>Common class that is allowed to read both 1d and 2d simualtions. The selection of points is
 not allowed in this class.</p>
 <p>forceread : si True force lors de la lecture d’une variable par la
@@ -523,7 +522,7 @@ cache - utile lorsque de grands nombre d’accès à la même variable sont
 nécessaires</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu_base.get_points">
-<span class="sig-name descname"><span class="pre">get_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_base.get_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_base.get_points" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_base.get_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_base.get_points" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -532,8 +531,8 @@ nécessaires</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.prosimu.prosimu_old">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_old" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#utils.prosimu.prosimu1d" title="utils.prosimu.prosimu1d"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.prosimu.prosimu1d</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.prosimu.</span></span><span class="sig-name descname"><span class="pre">prosimu_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NETCDF3_CLASSIC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openmode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/prosimu.html#prosimu_old"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.prosimu.prosimu_old" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.prosimu.prosimu1d" title="utils.prosimu.prosimu1d"><code class="xref py py-class docutils literal notranslate"><span class="pre">prosimu1d</span></code></a></p>
 <p>In the old operationnal format (before 2018), some dimensions have different
 names, this class allows to deal with them easily</p>
 <div class="admonition warning">
@@ -547,31 +546,70 @@ nécessaires</p>
 </dd></dl>
 
 </section>
-</section>
 
 
             <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">prosimu</span></code> simulation reader</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 <li><a class="reference internal" href="#main-methods">Main methods</a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu"><code class="docutils literal notranslate"><span class="pre">prosimu</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu1d"><code class="docutils literal notranslate"><span class="pre">prosimu1d</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu2d"><code class="docutils literal notranslate"><span class="pre">prosimu2d</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract</span></code></a><ul>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.close"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.close()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.force_read_in_cache"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.force_read_in_cache()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.format"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.format()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.get_point"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.get_point()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.get_points"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.get_points()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.get_time"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.get_time()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.getattr"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.getattr()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.getdimvar"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.getdimvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.getfillvalue"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.getfillvalue()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.getlendim"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.getlendim()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.getrankvar"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.getrankvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.gettiledim"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.gettiledim()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.gettypevar"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.gettypevar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.integration"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.integration()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.listattr"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.listattr()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.listdim"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.listdim()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.listvar"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.listvar()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.moytempo"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.moytempo()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.read"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.read()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.read_var"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.read_var()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.readtime"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.readtime()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimuAbstract.readtime_for_copy"><code class="docutils literal notranslate"><span class="pre">prosimuAbstract.readtime_for_copy()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu_auto"><code class="docutils literal notranslate"><span class="pre">prosimu_auto()</span></code></a></li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu_base"><code class="docutils literal notranslate"><span class="pre">prosimu_base</span></code></a><ul>
+<li><a class="reference internal" href="#utils.prosimu.prosimu_base.get_points"><code class="docutils literal notranslate"><span class="pre">prosimu_base.get_points()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.prosimu.prosimu_old"><code class="docutils literal notranslate"><span class="pre">prosimu_old</span></code></a></li>
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="utils-readsnowpack.html"
-                        title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="utils-operational_repro-compare2versions.html"
-                        title="next chapter">Compare two versions of output NetCDF file</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils-readsnowpack.html"
+                          title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">read_snowpack</span></code> simulation reader</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="utils-operational_repro-compare2versions.html"
+                          title="next chapter">Compare two versions of output NetCDF file</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -579,7 +617,7 @@ nécessaires</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -587,13 +625,13 @@ nécessaires</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -617,8 +655,8 @@ nécessaires</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

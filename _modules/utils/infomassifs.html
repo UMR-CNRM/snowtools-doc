@@ -1,22 +1,20 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.infomassifs &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,47 +40,59 @@
   <h1>Source code for utils.infomassifs</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">xml.dom.minidom</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">FileParseException</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.dom.minidom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileNameException</span><span class="p">,</span> <span class="n">FileParseException</span>
 
 <span class="c1"># M Lafaysse 04/08/2017</span>
 <span class="c1"># Give metadata about massifs used for avalanche hazard forecasting</span>
 <span class="c1"># Most routines are extracted from SCMtools in snowtools 1 (JM Willemet, M Lafaysse)</span>
 
 
-<div class="viewcode-block" id="MassifError"><a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.MassifError">[docs]</a><span class="k">class</span> <span class="nc">MassifError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="MassifError">
+<a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.MassifError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MassifError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">massif</span> <span class="o">=</span> <span class="n">massif</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Incorrect massif number :&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massif</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AspectError"><a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.AspectError">[docs]</a><span class="k">class</span> <span class="nc">AspectError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AspectError">
+<a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.AspectError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AspectError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;You must choose a number of aspect classes of 2, 4, or 8, or express one aspect in degrees (0,45,90,135,180,225,270,315)&quot;</span></div>
 
 
-<div class="viewcode-block" id="ElevationError"><a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.ElevationError">[docs]</a><span class="k">class</span> <span class="nc">ElevationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ElevationError">
+<a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.ElevationError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ElevationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;The elevation is an integer in meters.&quot;</span></div>
 
 
-<div class="viewcode-block" id="DomainError"><a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.DomainError">[docs]</a><span class="k">class</span> <span class="nc">DomainError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DomainError">
+<a class="viewcode-back" href="../../code/utils-massifs.html#utils.infomassifs.DomainError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DomainError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">area</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Le domaine &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">+</span> <span class="s2">&quot; n est pas connu de l application.&quot;</span></div>
 
 
-<span class="k">class</span> <span class="nc">infomassifs</span><span class="p">():</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">infomassifs</span><span class="p">():</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get massif or point information from file located in</span>
 <span class="sd">        ``snowtools/DATA/METADATA.xml`` (or file given as argument)</span>
 
@@ -238,28 +248,28 @@
             <span class="k">raise</span> <span class="n">FileParseException</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">operregions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">operregions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">listOperRegions</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">opermassifs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opermassifs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operregions</span><span class="p">:</span>
             <span class="n">d</span><span class="p">[</span><span class="n">region</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListMassif_of_region</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
 
-    <span class="k">def</span> <span class="nf">ismassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ismassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">massif</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">liste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opermassifs</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">liste</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">operregionofmassifs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">operregionofmassifs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operregions</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListMassif_of_region</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">massif</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span>
         <span class="k">return</span> <span class="n">d</span>
 
-    <span class="k">def</span> <span class="nf">region2massifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">region2massifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
             <span class="n">list_massifs</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_massifs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -279,7 +289,7 @@
             <span class="n">massifs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListMassif_of_region</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">massifs</span>
 
-    <span class="k">def</span> <span class="nf">get_list_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">liste_pentes</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nclasses</span><span class="p">,</span> <span class="n">liste_pentes</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nclasses</span><span class="p">:</span>
             <span class="n">nclasses</span> <span class="o">=</span> <span class="mi">8</span>
         <span class="k">else</span><span class="p">:</span>
@@ -301,7 +311,7 @@
 
         <span class="k">return</span> <span class="n">liste_expo</span>
 
-    <span class="k">def</span> <span class="nf">check_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevation</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevation</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">elevation</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">elevation</span><span class="p">)</span>
             <span class="k">assert</span> <span class="n">elevation</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">elevation</span> <span class="o">&lt;=</span> <span class="mi">5100</span>
@@ -313,7 +323,7 @@
 
         <span class="k">return</span> <span class="n">elevation</span>
 
-    <span class="k">def</span> <span class="nf">check_and_convert_min_max_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">altmin</span><span class="p">,</span> <span class="n">altmax</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_and_convert_min_max_elevation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">altmin</span><span class="p">,</span> <span class="n">altmax</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">altmin</span><span class="p">:</span>
             <span class="n">altmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_elevation</span><span class="p">(</span><span class="n">altmin</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -328,7 +338,7 @@
 
         <span class="k">return</span> <span class="n">altmin</span><span class="p">,</span> <span class="n">altmax</span>
 
-    <span class="k">def</span> <span class="nf">getListMassif_of_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListMassif_of_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">listMassif</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dicArea</span><span class="p">[</span><span class="n">area</span><span class="p">]</span>
@@ -338,7 +348,7 @@
 
         <span class="k">return</span> <span class="n">listMassif</span>
 
-    <span class="k">def</span> <span class="nf">getListPostes_of_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListPostes_of_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">listPostes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dicPostesArea</span><span class="p">[</span><span class="n">area</span><span class="p">]</span>
@@ -348,7 +358,7 @@
 
         <span class="k">return</span> <span class="n">listPostes</span>
 
-    <span class="k">def</span> <span class="nf">getStringOldMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numMassif</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getStringOldMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numMassif</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="s1">&#39;NUMMASSIF&#39;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="n">oldnumero</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;NUMMASSIF&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;OLD&quot;</span>
@@ -364,11 +374,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStringNewMassif</span><span class="p">(</span><span class="n">numMassif</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">getStringNewMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numMassif</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getStringNewMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numMassif</span><span class="p">):</span>
 
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%0*d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">numMassif</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">infoposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">infoposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="si">%08d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_poste</span><span class="p">):</span>
@@ -378,7 +388,7 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">lati</span><span class="p">,</span> <span class="n">longi</span><span class="p">,</span> <span class="n">alti</span>
 
-    <span class="k">def</span> <span class="nf">infoposte_extensive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">infoposte_extensive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="si">%08d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_poste</span><span class="p">):</span>
@@ -393,7 +403,7 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">lati</span><span class="p">,</span> <span class="n">longi</span><span class="p">,</span> <span class="n">alti</span><span class="p">,</span> <span class="n">uref</span><span class="p">,</span> <span class="n">zref</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">nom</span>
 
-    <span class="k">def</span> <span class="nf">altiposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">altiposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;dicaltistations&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dicaltistations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">altiallstations</span><span class="p">()</span>
@@ -406,7 +416,7 @@
 <span class="c1">#                 break</span>
 <span class="c1">#         return alti</span>
 
-    <span class="k">def</span> <span class="nf">altiallstations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">altiallstations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">dicalti</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
@@ -414,7 +424,7 @@
 
         <span class="k">return</span> <span class="n">dicalti</span>
 
-    <span class="k">def</span> <span class="nf">exposlopeposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exposlopeposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="si">%08d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_poste</span><span class="p">):</span>
                 <span class="n">aspect</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;aspect&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
@@ -422,7 +432,7 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span>
 
-    <span class="k">def</span> <span class="nf">massifposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">massifposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="si">%08d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_poste</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -432,8 +442,8 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">massif</span>
 
-    <span class="k">def</span> <span class="nf">nameposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nameposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get station name for a given station number.</span>
 
 <span class="sd">        :param num_poste: station number</span>
@@ -448,7 +458,7 @@
                 <span class="k">return</span> <span class="n">name</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">maskposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maskposte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_poste</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">poste</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">poste</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="n">num_poste</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -475,7 +485,7 @@
             <span class="n">listmask</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">listazi</span><span class="p">,</span> <span class="n">listmask</span>
 
-    <span class="k">def</span> <span class="nf">getListAlt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListAlt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
 
         <span class="p">(</span><span class="n">altMin</span><span class="p">,</span> <span class="n">altMax</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAltMinMax</span><span class="p">(</span><span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="n">tagname</span><span class="p">)</span>
 
@@ -491,7 +501,7 @@
 
         <span class="k">return</span> <span class="n">listAlt</span>
 
-    <span class="k">def</span> <span class="nf">getListAltMeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListAltMeter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
 
         <span class="n">listAltcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListAlt</span><span class="p">(</span><span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="n">tagname</span><span class="p">)</span>
         <span class="n">listAltMeter</span> <span class="o">=</span> <span class="p">[]</span>
@@ -500,7 +510,7 @@
 
         <span class="k">return</span> <span class="n">listAltMeter</span>
 
-    <span class="k">def</span> <span class="nf">getAltMinMax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getAltMinMax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">tagname</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">massif</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_massif</span><span class="p">:</span>
@@ -510,7 +520,7 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">altMin</span><span class="p">,</span> <span class="n">altMax</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">indAltiArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">indAltiArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
         <span class="c1"># Matthieu L 13/05/2015</span>
         <span class="c1"># Pour tracer des cartes à des niveaux d&#39;altitudes où tous les massifs de la zone ne sont pas définis</span>
         <span class="n">listindices</span> <span class="o">=</span> <span class="p">[]</span>
@@ -520,10 +530,10 @@
                 <span class="n">listindices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">listindices</span>
 
-    <span class="k">def</span> <span class="nf">getMassifNameFromLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getMassifNameFromLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMassifName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getMassifFromLatLon</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tagname</span><span class="p">),</span> <span class="n">tagname</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">getMassifName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getMassifName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_massif</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">tagname</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">massif</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_massif</span><span class="p">:</span>
                 <span class="n">massifName</span> <span class="o">=</span> <span class="n">massif</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
@@ -531,8 +541,8 @@
 
         <span class="k">return</span> <span class="n">massifName</span>  <span class="c1"># in python2 this is type unicode</span>
 
-    <span class="k">def</span> <span class="nf">getAllMassifLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;returns dict with key = Massif Number, value = (lon, lat) &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getAllMassifLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns dict with key = Massif Number, value = (lon, lat) &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dicMassifLatLon</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">dicLonLatMassif</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">tagname</span><span class="p">):</span>
@@ -543,7 +553,7 @@
             <span class="n">dicLonLatMassif</span><span class="p">[</span><span class="n">massifNumber</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dicLonLatMassif</span>
 
-    <span class="k">def</span> <span class="nf">getMassifFromLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getMassifFromLatLon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;dicMassifLatLon&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dicMassifLatLon</span><span class="p">[(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">)]</span>
@@ -555,7 +565,7 @@
 
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">massifNumber</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">getListMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListMassif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
         <span class="n">dicMassif</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">tagname</span><span class="p">):</span>
             <span class="n">massifName</span> <span class="o">=</span> <span class="n">massif</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
@@ -566,13 +576,13 @@
 
         <span class="k">return</span> <span class="n">dicMassif</span>
 
-    <span class="k">def</span> <span class="nf">getListSites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getListSites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">listSites</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">caracLoc</span><span class="o">.</span><span class="n">documentElement</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;Site&quot;</span><span class="p">):</span>
             <span class="n">listSites</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">listSites</span>
 
-    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tagname</span><span class="o">=</span><span class="s2">&quot;Massif&quot;</span><span class="p">):</span>
         <span class="c1"># Print all available massifs</span>
         <span class="n">dicMassif</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListMassif</span><span class="p">(</span><span class="n">tagname</span><span class="o">=</span><span class="n">tagname</span><span class="p">)</span>
         <span class="n">dicNumMassif</span> <span class="o">=</span> <span class="p">{}</span>
@@ -591,7 +601,7 @@
         <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dicArea</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">area</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dicArea</span><span class="p">[</span><span class="n">area</span><span class="p">]))</span>
 
-    <span class="k">def</span> <span class="nf">__ligneplus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__ligneplus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
 </pre></div>
 
@@ -599,9 +609,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -609,13 +619,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -633,8 +643,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

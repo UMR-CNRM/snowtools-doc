@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Xarray with snowtools &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Helpers for massif management : infomassif" href="utils-massifs.html" />
     <link rel="prev" title="Tools for reading simulations : the utils module" href="utils.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,11 +47,11 @@
           <div class="body" role="main">
             
   <section id="xarray-with-snowtools">
-<h1>Xarray with snowtools<a class="headerlink" href="#xarray-with-snowtools" title="Permalink to this headline">¶</a></h1>
+<h1>Xarray with snowtools<a class="headerlink" href="#xarray-with-snowtools" title="Link to this heading">¶</a></h1>
 <p>In order to deal with NetCDF files in general, xarray is a well known tool.
 The interaction with snowtools is made this way (to allows compatibility with old SURFEX simulation for example)</p>
-<span class="target" id="module-utils.xarray_snowtools_backend"></span><section id="opening-a-netcdf-file-with-xarray">
-<h2>Opening a netCDF file with xarray<a class="headerlink" href="#opening-a-netcdf-file-with-xarray" title="Permalink to this headline">¶</a></h2>
+<section id="opening-a-netcdf-file-with-xarray">
+<span id="module-utils.xarray_snowtools_backend"></span><h2>Opening a netCDF file with xarray<a class="headerlink" href="#opening-a-netcdf-file-with-xarray" title="Link to this heading">¶</a></h2>
 <p>The xarray_snowtools_backend module contains all elements defining the xarray entry points for SURFEX Input / Outputs
 in NetCDF format (methods <cite>open_dataset</cite>, <cite>open_dataarray</cite> and <cite>open_mfdataset</cite>, responsible for reading files and
 returning an xarray DataArray or Dataset Object) to be used within the snowtools package.</p>
@@ -92,9 +90,9 @@ This is done by calling the xarray native “transpose” method.</p></li>
 <p>To use these entry points, the native xarray methods <cite>open_dataset</cite>, <cite>open_dataarray</cite> and <cite>open_mfdataset</cite> should
 simply be called with the keyword argument “engine=’snowtools’” except if you have an older xarray version (see below).</p>
 <section id="meteo-france-usage-until-next-xarray-update-from-version-0-16-0">
-<h3>Meteo-France usage (until next xarray update from version 0.16.0)<a class="headerlink" href="#meteo-france-usage-until-next-xarray-update-from-version-0-16-0" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<h3>Meteo-France usage (until next xarray update from version 0.16.0)<a class="headerlink" href="#meteo-france-usage-until-next-xarray-update-from-version-0-16-0" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -102,9 +100,9 @@ simply be called with the keyword argument “engine=’snowtools’” except i
 </div>
 </section>
 <section id="usage-with-xarray-0-18">
-<h3>Usage with xarray &gt; 0.18<a class="headerlink" href="#usage-with-xarray-0-18" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<h3>Usage with xarray &gt; 0.18<a class="headerlink" href="#usage-with-xarray-0-18" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">list_of_files</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
@@ -112,20 +110,22 @@ simply be called with the keyword argument “engine=’snowtools’” except i
 </div>
 </section>
 <section id="use-with-statements">
-<h3>Use with statements!<a class="headerlink" href="#use-with-statements" title="Permalink to this headline">¶</a></h3>
+<h3>Use with statements!<a class="headerlink" href="#use-with-statements" title="Link to this heading">¶</a></h3>
 <p>We encourage you to use with statements as soon as possible to ensure that the files are correctly closed:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
     <span class="o">...</span>  <span class="c1"># Do what you want with the data inside of these files.</span>
 </pre></div>
 </div>
+</section>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_backend.</span></span><span class="sig-name descname"><span class="pre">SnowtoolsBackendEntrypoint</span></span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">xarray.backends.common.BackendEntrypoint</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_backend.</span></span><span class="sig-name descname"><span class="pre">SnowtoolsBackendEntrypoint</span></span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BackendEntrypoint</span></code></p>
 <p>Xarray entry point to deal with snowtools-specific NetCDF files :
 - Ensure backward compatibility in case of a change of variable/dimension name
 - Map between identical variables coming from different sources with different names
@@ -133,8 +133,8 @@ simply be called with the keyword argument “engine=’snowtools’” except i
 <p>This is done by applying a preprocess (see the “preprocess” method) to the
 data before returning the xarray dataset or dataarray object.</p>
 <p>Usage:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 </pre></div>
@@ -143,24 +143,24 @@ data before returning the xarray dataset or dataarray object.</p>
 <p><a class="reference external" href="https://docs.xarray.dev/en/stable/internals/how-to-add-new-backend.html">https://docs.xarray.dev/en/stable/internals/how-to-add-new-backend.html</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open">
-<span class="sig-name descname"><span class="pre">guess_can_open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint.guess_can_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">guess_can_open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint.guess_can_open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open" title="Link to this definition">¶</a></dt>
 <dd><p>guess_can_open is used to identify the proper engine to open your data file automatically in case
 the engine is not specified explicitly.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset">
-<span class="sig-name descname"><span class="pre">open_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_or_obj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint.open_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">open_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_or_obj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_backend.html#SnowtoolsBackendEntrypoint.open_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset" title="Link to this definition">¶</a></dt>
 <dd><p>Snowtools-specific version of the xarray’s “open_dataset” method, which calls the native method
 and carries out a preprocessing of the data before returning the dataset object.
 If a list of paths is provided, the files are automatically opened with “open_mfdataset”.
 WARNING : the direct use of <em>open_mfdataset</em> is recomended whenever you are sure to deal with more
 than one file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filename_or_obj</strong> (<em>str</em><em>, </em><em>Path</em><em>, </em><em>file_like</em><em>, </em><em>DataStore</em><em> or </em><em>nested sequence of paths</em>) – Pathi or list of paths of the file(s) to read</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename_or_obj</strong> (<em>str</em><em>, </em><em>Path</em><em>, </em><em>file_like</em><em>, </em><em>DataStore</em><em> or </em><em>nested sequence</em><em> of </em><em>paths</em>) – Pathi or list of paths of the file(s) to read</p>
 </dd>
-<dt class="field-even">Mapping</dt>
+<dt class="field-even">Mapping<span class="colon">:</span></dt>
 <dd class="field-even"><p>User-defined dictionnary to map variable or dimension names. It can be used as a complement to
 the default mapping dictionnary in case of a code based on variable / dimension names different than
 the standard ones (for example a code written after a SURFEX update).
@@ -171,10 +171,8 @@ This is a snowtools-specific argument.</p>
 
 </dd></dl>
 
-</section>
-</section>
-<span class="target" id="module-utils.xarray_snowtools_accessor"></span><section id="functions-accessors-provided-by-snowtools-adaptation-of-xarray">
-<h2>Functions (accessors) provided by snowtools adaptation of xarray<a class="headerlink" href="#functions-accessors-provided-by-snowtools-adaptation-of-xarray" title="Permalink to this headline">¶</a></h2>
+<section id="functions-accessors-provided-by-snowtools-adaptation-of-xarray">
+<span id="module-utils.xarray_snowtools_accessor"></span><h2>Functions (accessors) provided by snowtools adaptation of xarray<a class="headerlink" href="#functions-accessors-provided-by-snowtools-adaptation-of-xarray" title="Link to this heading">¶</a></h2>
 <p>The module xarray_snowtools_accessor aims at wrapping and extending the xarray module for snowtools-specific usage.
 The wrapping of existing methods is designed to reduce dependency to native xarray method changes (in order to
 centralise required adaptations).</p>
@@ -182,9 +180,9 @@ centralise required adaptations).</p>
 <a class="reference external" href="https://tutorial.xarray.dev/advanced/accessors/01_accessor_examples.html">https://tutorial.xarray.dev/advanced/accessors/01_accessor_examples.html</a></p>
 <p>This accessor is automatically made available when you import <code class="docutils literal notranslate"><span class="pre">snowtools.utils.xarray_snowtools</span></code>.</p>
 <section id="usage-examples">
-<h3>Usage examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<h3>Usage examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 </pre></div>
@@ -217,9 +215,9 @@ elevation, slope and aspect</p></li>
 <ol class="arabic simple" start="5">
 <li><p>Example of groupby with the first-test PRO file:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_2010080106_2011080106.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">dszs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2400</span><span class="p">)</span>
 <span class="n">meanmonthgroup</span> <span class="o">=</span> <span class="n">dszs</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;time.month&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># mean the variables on a monthly base</span>
@@ -230,8 +228,8 @@ elevation, slope and aspect</p></li>
 <ol class="arabic simple" start="6">
 <li><p>Example of resample with the first-test PRO file:</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_2010080106_2011080106.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">dszs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2400</span><span class="p">)</span>
 <span class="n">dszs</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;12h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># time resampling to 12h timestep</span>
@@ -241,8 +239,8 @@ elevation, slope and aspect</p></li>
 <li><p>Use of custom “daily_accumulation” method</p></li>
 </ol>
 <p>Resample Rainf variable from hourly values to daily accumulations, starting at 03:00 :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds_hourly</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;FORCING_test_2d.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds_daily</span> <span class="o">=</span> <span class="n">ds_hourly</span><span class="o">.</span><span class="n">Rainf</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">daily_accumulation</span><span class="p">(</span><span class="n">start_hour</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -257,20 +255,22 @@ centralise required adaptations in case of any change of behavior of the native 
 public API?”)</p></li>
 <li><p><a class="reference external" href="https://docs.xarray.dev/en/v2023.09.0/api.html#api">https://docs.xarray.dev/en/v2023.09.0/api.html#api</a></p></li>
 </ul>
+</section>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.DistributedAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">DistributedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.xarray_snowtools_accessor.SnowtoolsAccessor</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">DistributedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowtoolsAccessor</span></code></a></p>
 <p>Additionnal methods in distributed geometry (ex: EDELWEISS)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble">
-<span class="sig-name descname"><span class="pre">plot_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isolevels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">members</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.plot_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isolevels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">members</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.plot_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble" title="Link to this definition">¶</a></dt>
 <dd><p>Plot field(s) from an ensemble. To control the members of the ensemble to be plotted, use the “members”
 argument.
 The dataset must have a ‘member’ dimension, and the spatial dimensions (‘xx’, ‘yy’). This implies that
 the selection of the time step must be done before calling the method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>variable</strong> (<em>str</em>) – Variable name to plot (Dataset only)</p></li>
 <li><p><strong>vmin</strong> (<em>float</em>) – Min colorbar value.</p></li>
@@ -289,19 +289,19 @@ int: Plot the given ensemble member only.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.DistributedAccessor.proj">
-<span class="sig-name descname"><span class="pre">proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crs_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:2154'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.proj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.proj" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crs_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:2154'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.proj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.proj" title="Link to this definition">¶</a></dt>
 <dd><p>Projection of an xarray dataset or dataarray into a new CRS.
 This method implies a dependency to rioxarray.</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:2154&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ds</strong> (<em>xarray Dataset</em><em> or </em><em>Dataarray</em>) – xarray object to preprocess</p></li>
 <li><p><strong>crs_in</strong> (<em>str</em>) – CRS of the input object</p></li>
@@ -313,12 +313,12 @@ This method implies a dependency to rioxarray.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.DistributedAccessor.sel_stations">
-<span class="sig-name descname"><span class="pre">sel_stations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'longitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.sel_stations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.sel_stations" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sel_stations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">station_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'longitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latitude'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#DistributedAccessor.sel_stations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.DistributedAccessor.sel_stations" title="Link to this definition">¶</a></dt>
 <dd><p>Method used to select a list of points defined by their coordinates from a dataset in a distributed geometry.
 By default, the extracted value comes from the nearest pixel. This default behavior can be modified with
 the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’ method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;liste_stations.txt&#39;</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT_2D.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
@@ -326,7 +326,7 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lons</strong> – List of longitudes of the points to be extracted</p></li>
 <li><p><strong>lons</strong> – array_like</p></li>
@@ -349,12 +349,12 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.MeteoAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">MeteoAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#MeteoAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.MeteoAccessor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.xarray_snowtools_accessor.SnowtoolsAccessor</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">MeteoAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#MeteoAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.MeteoAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowtoolsAccessor</span></code></a></p>
 <p>Accessor designed to deal with meteorological files.</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;FORCING.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">meteo</span><span class="o">.</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
@@ -364,12 +364,12 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SemiDistributedAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SemiDistributedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SemiDistributedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.xarray_snowtools_accessor.SnowtoolsAccessor</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SemiDistributedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SemiDistributedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowtoolsAccessor</span></code></a></p>
 <p>Additionnal methods in semi-distributed geometry (ex: S2M simulaitions)</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">massif_num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="p">[</span><span class="mi">900</span><span class="p">,</span> <span class="mi">1800</span><span class="p">,</span> <span class="mi">2700</span><span class="p">,</span> <span class="mi">3600</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
@@ -377,14 +377,14 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points">
-<span class="sig-name descname"><span class="pre">sel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ZS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SemiDistributedAccessor.sel_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sel_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">massif_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ZS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SemiDistributedAccessor.sel_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points" title="Link to this definition">¶</a></dt>
 <dd><p>Method used to select a user-defined list of points in semi-distributed geometry (SAFRAN massifs geometry)
 from their elevation (ZS), massif number (massif_num), slope and aspect.</p>
 <p><strong>NB :</strong>
 More advanced indexing (for example to select all elevations above 1800m or use a slice as argument), use the
 native xarray “where” method directly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>massif_num</strong> – Massif number(s) of points to select</p></li>
 <li><p><strong>massif_num</strong> – list, range or int</p></li>
@@ -403,17 +403,17 @@ native xarray “where” method directly.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SnowtoolsAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SnowtoolsAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Common snowtools-specific additionnal methods for xarray</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess">
-<span class="sig-name descname"><span class="pre">backtrack_preprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.backtrack_preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">backtrack_preprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.backtrack_preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess" title="Link to this definition">¶</a></dt>
 <dd><p>Method to undo the changes done in the preprocess step if the dataset was opened with the “snowtools” backend.
 Initial variable / dimension names come from the ‘original_name’ attribute created during the preprocess step.</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;old_PRO_20180807032000_002400.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">original</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">backtrack_preprocess</span><span class="p">()</span>
 </pre></div>
@@ -422,7 +422,7 @@ Initial variable / dimension names come from the ‘original_name’ attribute c
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation">
-<span class="sig-name descname"><span class="pre">daily_accumulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.daily_accumulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">daily_accumulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.daily_accumulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation" title="Link to this definition">¶</a></dt>
 <dd><p>Compute 24-hour accumulation starting at <em>strat_hour</em>, with an output label set at the end of the
 accumulation period.
 This method will return the sum of all values between “start_hour” at day J and “start_hour” at day J+1
@@ -455,7 +455,7 @@ so that the new index ‘YYYY-MM-DD O6’ contains the sum of all indices betwee
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>start_hour</strong> (<em>int</em>) – Hour of the day from which the 24-hour accumulation is to be computed</p>
 </dd>
 </dl>
@@ -463,7 +463,7 @@ so that the new index ‘YYYY-MM-DD O6’ contains the sum of all indices betwee
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats">
-<span class="sig-name descname"><span class="pre">snow_cover_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snow_depth_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DSN_T_ISBA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snow_depth_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.snow_cover_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">snow_cover_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snow_depth_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DSN_T_ISBA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snow_depth_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.snow_cover_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats" title="Link to this definition">¶</a></dt>
 <dd><p>Compute snow cover statistics from a snow depth time serie.
 Returned stats are:</p>
 <ul class="simple">
@@ -475,14 +475,14 @@ Returned stats are:</p>
 <p>This method calls the “lcscd” function defined in snowtools/tools/SnowCoverDuration.py, see the associated
 documentation for more information.</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">ds</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_WJF_2010-2016.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">stats</span><span class="o">=</span><span class="n">ds</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">snow_cover_stats</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>snow_depth_variable</strong> – Name of the variable containing the snow depth (default value for SURFEX outpus)</p></li>
 <li><p><strong>threshold</strong> – Snow depth threshold to consider a given point / day as “snow covered”</p></li>
@@ -493,13 +493,13 @@ documentation for more information.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze">
-<span class="sig-name descname"><span class="pre">squeeze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.squeeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">squeeze</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.squeeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze" title="Link to this definition">¶</a></dt>
 <dd><p>Drop dimensions with only 1 coordinate (ex : Number_of_patches / Number_of_tiles)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose">
-<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SnowtoolsAccessor.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose" title="Link to this definition">¶</a></dt>
 <dd><p>Put time dimension as first dimension in case of data processing through numpy arrays</p>
 </dd></dl>
 
@@ -507,12 +507,12 @@ documentation for more information.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SurfexAccessor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SurfexAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.xarray_snowtools_accessor.SnowtoolsAccessor</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools_accessor.</span></span><span class="sig-name descname"><span class="pre">SurfexAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xarray_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor" title="utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowtoolsAccessor</span></code></a></p>
 <p>Accessor designed to deal with SURFEX output files.</p>
 <p>Usage example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">surfex</span><span class="o">.</span><span class="n">decode_time_variable</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
@@ -520,10 +520,10 @@ documentation for more information.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable">
-<span class="sig-name descname"><span class="pre">decode_time_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor.decode_time_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">decode_time_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor.decode_time_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable" title="Link to this definition">¶</a></dt>
 <dd><p>Manually decode any time-like variable from a SURFEX output</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>varname</strong> (<em>str</em>) – Name of the variable to decode</p>
 </dd>
 </dl>
@@ -531,10 +531,10 @@ documentation for more information.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension">
-<span class="sig-name descname"><span class="pre">drop_tile_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor.drop_tile_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">drop_tile_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor.drop_tile_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension" title="Link to this definition">¶</a></dt>
 <dd><p>Select a single value for “tile” dimension (or equivalent) and squeeze the dataset to drop the dimension.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>tile</strong> (<em>int</em>) – Value of the “tile” dimension to select</p>
 </dd>
 </dl>
@@ -543,16 +543,14 @@ documentation for more information.</p>
 </dd></dl>
 
 </section>
-</section>
-</section>
 <section id="good-practices">
-<h1>Good practices<a class="headerlink" href="#good-practices" title="Permalink to this headline">¶</a></h1>
+<h1>Good practices<a class="headerlink" href="#good-practices" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p>Use lazy loading / lazy indexing to ensure to load data in memory AFTER the sub-data selection step (<a class="reference external" href="https://docs.xarray.dev/en/latest/internals/internal-design.html#lazy-loading">https://docs.xarray.dev/en/latest/internals/internal-design.html#lazy-loading</a>).</p></li>
 </ul>
 <p>For example, to compute the maximum of snow depth over time for one specific point (lon, lat), do :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -562,8 +560,8 @@ documentation for more information.</p>
 </pre></div>
 </div>
 <p>instead of :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">snowtools.utils</span> <span class="kn">import</span> <span class="n">xarray_snowtools</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -583,10 +581,11 @@ documentation for more information.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Xarray with snowtools</a><ul>
 <li><a class="reference internal" href="#opening-a-netcdf-file-with-xarray">Opening a netCDF file with xarray</a><ul>
 <li><a class="reference internal" href="#meteo-france-usage-until-next-xarray-update-from-version-0-16-0">Meteo-France usage (until next xarray update from version 0.16.0)</a></li>
@@ -594,8 +593,37 @@ documentation for more information.</p>
 <li><a class="reference internal" href="#use-with-statements">Use with statements!</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint"><code class="docutils literal notranslate"><span class="pre">SnowtoolsBackendEntrypoint</span></code></a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open"><code class="docutils literal notranslate"><span class="pre">SnowtoolsBackendEntrypoint.guess_can_open()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset"><code class="docutils literal notranslate"><span class="pre">SnowtoolsBackendEntrypoint.open_dataset()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#functions-accessors-provided-by-snowtools-adaptation-of-xarray">Functions (accessors) provided by snowtools adaptation of xarray</a><ul>
 <li><a class="reference internal" href="#usage-examples">Usage examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.DistributedAccessor"><code class="docutils literal notranslate"><span class="pre">DistributedAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.DistributedAccessor.plot_ensemble"><code class="docutils literal notranslate"><span class="pre">DistributedAccessor.plot_ensemble()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.DistributedAccessor.proj"><code class="docutils literal notranslate"><span class="pre">DistributedAccessor.proj()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.DistributedAccessor.sel_stations"><code class="docutils literal notranslate"><span class="pre">DistributedAccessor.sel_stations()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.MeteoAccessor"><code class="docutils literal notranslate"><span class="pre">MeteoAccessor</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor"><code class="docutils literal notranslate"><span class="pre">SemiDistributedAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SemiDistributedAccessor.sel_points"><code class="docutils literal notranslate"><span class="pre">SemiDistributedAccessor.sel_points()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.backtrack_preprocess"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor.backtrack_preprocess()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.daily_accumulation"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor.daily_accumulation()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.snow_cover_stats"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor.snow_cover_stats()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.squeeze"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor.squeeze()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose"><code class="docutils literal notranslate"><span class="pre">SnowtoolsAccessor.transpose()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor.decode_time_variable()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor.drop_tile_dimension()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -603,12 +631,17 @@ documentation for more information.</p>
 <li><a class="reference internal" href="#good-practices">Good practices</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="utils.html"
-                        title="previous chapter">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="utils-massifs.html"
-                        title="next chapter">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils.html"
+                          title="previous chapter">Tools for reading simulations : the <code class="docutils literal notranslate"><span class="pre">utils</span></code> module</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="utils-massifs.html"
+                          title="next chapter">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -616,7 +649,7 @@ documentation for more information.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -624,13 +657,13 @@ documentation for more information.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -654,8 +687,8 @@ documentation for more information.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

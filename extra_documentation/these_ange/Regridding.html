@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Methods of regridding &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Todo list of the documentation" href="../../misc/todo.html" />
+    <link rel="next" title="Available User Environments (UEnv)" href="uenv.html" />
     <link rel="prev" title="Masks" href="Masks.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -32,7 +30,7 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../../misc/todo.html" title="Todo list of the documentation"
+          <a href="uenv.html" title="Available User Environments (UEnv)"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Masks.html" title="Masks"
@@ -49,9 +47,9 @@
           <div class="body" role="main">
             
   <section id="methods-of-regridding">
-<h1>Methods of regridding<a class="headerlink" href="#methods-of-regridding" title="Permalink to this headline">¶</a></h1>
+<h1>Methods of regridding<a class="headerlink" href="#methods-of-regridding" title="Link to this heading">¶</a></h1>
 <section id="spatial-regrid-with-esmf">
-<h2>Spatial regrid with <a class="reference external" href="https://earthsystemmodeling.org/">ESMF</a><a class="headerlink" href="#spatial-regrid-with-esmf" title="Permalink to this headline">¶</a></h2>
+<h2>Spatial regrid with <a class="reference external" href="https://earthsystemmodeling.org/">ESMF</a><a class="headerlink" href="#spatial-regrid-with-esmf" title="Link to this heading">¶</a></h2>
 <p>In some situation it can be interesing to regrid simulations files.
 For my PhD I had to downgrade high resolution simulation from 30m to 250m.
 The advantage of regriding with <a class="reference external" href="https://earthsystemmodeling.org/">ESMF</a> is that the dimension of the input file is not limited
@@ -66,7 +64,7 @@ or regrid non-map data.</p>
 <p><a class="reference external" href="https://ncar.github.io/esds/posts/2022/cam-se-regridding/">https://ncar.github.io/esds/posts/2022/cam-se-regridding/</a></p>
 </div>
 <section id="basic-principle">
-<h3>Basic principle:<a class="headerlink" href="#basic-principle" title="Permalink to this headline">¶</a></h3>
+<h3>Basic principle:<a class="headerlink" href="#basic-principle" title="Link to this heading">¶</a></h3>
 <div class="line-block">
 <div class="line">Resample a 30m simulation to 250m using conservative method. The two simulations are named <em>S18_30</em> (30m) and <em>S18</em> (250m).</div>
 <div class="line"><strong>Need esmpy python library</strong> (the python wraper of ESMF regrid lib)</div>
@@ -112,18 +110,18 @@ or regrid non-map data.</p>
 </ol>
 </section>
 <section id="function-to-format-dataset-for-esmf">
-<h3>Function to format dataset for ESMF<a class="headerlink" href="#function-to-format-dataset-for-esmf" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ESMF_format_dataset</span> <span class="p">(</span><span class="n">input_data</span><span class="p">,</span><span class="n">clean_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">inputpEPSG</span><span class="o">=</span><span class="mi">2154</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<h3>Function to format dataset for ESMF<a class="headerlink" href="#function-to-format-dataset-for-esmf" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ESMF_format_dataset</span> <span class="p">(</span><span class="n">input_data</span><span class="p">,</span><span class="n">clean_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">inputpEPSG</span><span class="o">=</span><span class="mi">2154</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format dataset to be used in ESMF to regrif lamb93 data</span>
 <span class="sd">    :param input_data: the dataset to be formated</span>
 <span class="sd">    :param inputpEPSG: the epsg code of the datset</span>
 <span class="sd">    :param clean_dataset: remove variable in the dataset to keep only used values</span>
 <span class="sd">    :return: input_data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">CRS</span>
-    <span class="kn">from</span> <span class="nn">pyproj</span> <span class="kn">import</span> <span class="n">Transformer</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyproj</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRS</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyproj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transformer</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Made with</span><span class="se">\033</span><span class="s2">[0;31m &lt;3 </span><span class="se">\033</span><span class="s2">[0;30mby Ange&quot;</span><span class="p">)</span>
     <span class="c1"># test inputs</span>
@@ -259,8 +257,8 @@ or regrid non-map data.</p>
 
     <span class="k">return</span> <span class="n">input_data</span>
 
-<span class="k">def</span> <span class="nf">grid_create_from_coordinates</span><span class="p">(</span><span class="n">xcoords</span><span class="p">,</span> <span class="n">ycoords</span><span class="p">,</span> <span class="n">xcorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ycorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">corners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">domask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">doarea</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ctk</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">TypeKind</span><span class="o">.</span><span class="n">R8</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">grid_create_from_coordinates</span><span class="p">(</span><span class="n">xcoords</span><span class="p">,</span> <span class="n">ycoords</span><span class="p">,</span> <span class="n">xcorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ycorners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">corners</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">domask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">doarea</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ctk</span><span class="o">=</span><span class="n">esmpy</span><span class="o">.</span><span class="n">TypeKind</span><span class="o">.</span><span class="n">R8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a 2 dimensional Grid using the bounds of the x and y coordiantes.</span>
 <span class="sd">    :param xcoords: The 1st dimension or &#39;x&#39; coordinates at cell centers, as a Python list or numpy Array</span>
 <span class="sd">    :param ycoords: The 2nd dimension or &#39;y&#39; coordinates at cell centers, as a Python list or numpy Array</span>
@@ -323,7 +321,7 @@ or regrid non-map data.</p>
 </div>
 </section>
 <section id="example-of-script-to-spatially-resample-simulation-from-30m-to-250m">
-<h3>Example of script to spatially resample simulation from 30m to 250m:<a class="headerlink" href="#example-of-script-to-spatially-resample-simulation-from-30m-to-250m" title="Permalink to this headline">¶</a></h3>
+<h3>Example of script to spatially resample simulation from 30m to 250m:<a class="headerlink" href="#example-of-script-to-spatially-resample-simulation-from-30m-to-250m" title="Link to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">S18_30</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/hendrix/grandesroussesfull30louissafran/Safran_tc_pap/pro/PRO_2018080106_2019080106.nc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;xx&#39;</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;yy&#39;</span><span class="p">:</span><span class="s1">&#39;y&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;2019-05-13T10:00&#39;</span><span class="p">)</span>
 <span class="c1"># donéee haute resolution a regriller</span>
 
@@ -337,7 +335,7 @@ or regrid non-map data.</p>
 <span class="n">source_grid</span><span class="o">=</span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t30</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t30</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t30</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">dest_grid</span><span class="o">=</span><span class="n">grid_create_from_coordinates</span><span class="p">(</span><span class="n">t250</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">t250</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">xcorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">x_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">ycorners</span><span class="o">=</span><span class="n">t250</span><span class="o">.</span><span class="n">y_bnds</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span><span class="n">corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">esmpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">esmpy</span>
 <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;DSN_T_ISBA&quot;</span> <span class="c1"># variable a regriller</span>
 <span class="n">twrite</span><span class="o">=</span><span class="n">t250</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="c1"># variable du dataset 250m a remplacer (on garde les coordonées et les attributs)</span>
 <span class="n">time_slice</span> <span class="o">=</span> <span class="n">t30</span><span class="o">.</span><span class="n">time</span> <span class="c1"># dimension temporelle</span>
@@ -363,10 +361,10 @@ or regrid non-map data.</p>
 </section>
 </section>
 <section id="temporal-regrid-with-xarray">
-<h2>Temporal regrid with xarray<a class="headerlink" href="#temporal-regrid-with-xarray" title="Permalink to this headline">¶</a></h2>
+<h2>Temporal regrid with xarray<a class="headerlink" href="#temporal-regrid-with-xarray" title="Link to this heading">¶</a></h2>
 <p>Time re-gridding may be necessary to calculate smod from september to september.
 This can be achieved with xarray. In this following example we average simulations to a single value a day:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">tc_pap_lsm</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="s1">&#39;/scratch/mtool/haddjeria/hendrix/gr250ls/Safran_tc_pap/pro/*&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">yy</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span> <span class="c1"># ouverture de toutes les simulations</span>
 <span class="n">pap_lsm</span><span class="o">=</span><span class="n">tc_pap_lsm</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="s1">&#39;2018-09-01T00:00&#39;</span><span class="p">,</span><span class="s1">&#39;2019-09-01T00:00&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">DSN_T_ISBA</span><span class="o">.</span><span class="n">chunk</span><span class="p">((</span><span class="mi">15000</span><span class="p">,</span><span class="mi">101</span><span class="p">,</span><span class="mi">143</span><span class="p">))</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;1D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># on chunk le netcdf selon la dimension temp, choix d&#39;une année =&gt; on moyenne la valeur de htn</span>
 <span class="c1">#pap_lsm.persist() # start computation asynchonous</span>
@@ -374,14 +372,15 @@ This can be achieved with xarray. In this following example we average simulatio
 </pre></div>
 </div>
 <section id="regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y">
-<h3>Regridding PDG or transpose Number_of_points to cartesian (X, Y)<a class="headerlink" href="#regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y" title="Permalink to this headline">¶</a></h3>
-<a class="reference internal image-reference" href="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png"><img alt="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" src="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" style="width: 600px;" /></a>
+<h3>Regridding PDG or transpose Number_of_points to cartesian (X, Y)<a class="headerlink" href="#regridding-pdg-or-transpose-number-of-points-to-cartesian-x-y" title="Link to this heading">¶</a></h3>
+<a class="reference internal image-reference" href="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png"><img alt="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" src="https://i.ibb.co/2d2xwPM/Capture-d-cran-2024-05-23-16-43-01.png" style="width: 600px;" />
+</a>
 <p>In some situations, it can be interesting to transpose PGD or PREP files from Number_of_points to X Y. I put the following code for
 the records. It does a transposition from Number_of_points to X Y dims, interpolate the variables to a new grid an then stack back
 the X Y coordinates to Number_of_points.
 The first part of the code can be used to only transpose Number_of_points to (X, Y) coordinates.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;~/PGD_gr250ls.nc&#39;</span><span class="p">)</span><span class="c1"># fichier a interpoler avec Number_of_points</span>
 <span class="n">i</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;~/scriptMNT30.nc&#39;</span><span class="p">)</span><span class="c1"># grille source d&#39;interpolation</span>
@@ -407,10 +406,11 @@ The first part of the code can be used to only transpose Number_of_points to (X,
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Methods of regridding</a><ul>
 <li><a class="reference internal" href="#spatial-regrid-with-esmf">Spatial regrid with ESMF</a><ul>
 <li><a class="reference internal" href="#basic-principle">Basic principle:</a></li>
@@ -426,12 +426,17 @@ The first part of the code can be used to only transpose Number_of_points to (X,
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="Masks.html"
-                        title="previous chapter">Masks</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../../misc/todo.html"
-                        title="next chapter">Todo list of the documentation</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Masks.html"
+                          title="previous chapter">Masks</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="uenv.html"
+                          title="next chapter">Available User Environments (UEnv)</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -439,7 +444,7 @@ The first part of the code can be used to only transpose Number_of_points to (X,
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -447,13 +452,13 @@ The first part of the code can be used to only transpose Number_of_points to (X,
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -466,7 +471,7 @@ The first part of the code can be used to only transpose Number_of_points to (X,
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../../misc/todo.html" title="Todo list of the documentation"
+          <a href="uenv.html" title="Available User Environments (UEnv)"
              >next</a> |</li>
         <li class="right" >
           <a href="Masks.html" title="Masks"
@@ -477,8 +482,8 @@ The first part of the code can be used to only transpose Number_of_points to (X,
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

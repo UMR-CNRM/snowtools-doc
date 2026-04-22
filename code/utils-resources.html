@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Managing resources (files, filenames, copy, memory) &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Snowtools Exceptions" href="utils-exceptions.html" />
     <link rel="prev" title="Helpers for massif management : infomassif" href="utils-massifs.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,10 +47,10 @@
           <div class="body" role="main">
             
   <section id="module-utils.resources">
-<span id="managing-resources-files-filenames-copy-memory"></span><h1>Managing resources (files, filenames, copy, memory)<a class="headerlink" href="#module-utils.resources" title="Permalink to this headline">¶</a></h1>
+<span id="managing-resources-files-filenames-copy-memory"></span><h1>Managing resources (files, filenames, copy, memory)<a class="headerlink" href="#module-utils.resources" title="Link to this heading">¶</a></h1>
 <p>Created on 30 Aug. 2017</p>
 <dl class="field-list simple">
-<dt class="field-odd">Authord</dt>
+<dt class="field-odd">Authord<span class="colon">:</span></dt>
 <dd class="field-odd"><ol class="upperalpha simple" start="13">
 <li><p>Lafaysse</p></li>
 </ol>
@@ -61,11 +59,11 @@
 <p>This module contains all file manipulations.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="utils.resources.InstallException">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">InstallException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#InstallException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.InstallException" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">InstallException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#InstallException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.InstallException" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.resources.InstallException.with_traceback">
-<span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.resources.InstallException.with_traceback" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.resources.InstallException.with_traceback" title="Link to this definition">¶</a></dt>
 <dd><p>Exception.with_traceback(tb) –
 set self.__traceback__ to tb and return self.</p>
 </dd></dl>
@@ -74,14 +72,14 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.resources.absolute_path">
-<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">absolute_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#absolute_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.absolute_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">absolute_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#absolute_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.absolute_path" title="Link to this definition">¶</a></dt>
 <dd><p>Convert a local path in an absolute path.</p>
 <p>The input may be a list of coma-separated paths</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.resources.check_snowtools_install">
-<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">check_snowtools_install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#check_snowtools_install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.check_snowtools_install" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">check_snowtools_install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#check_snowtools_install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.check_snowtools_install" title="Link to this definition">¶</a></dt>
 <dd><p>Check the snowtools installation. More precisely :</p>
 <ul class="simple">
 <li><p>Check that the required folders for a simulation are present in the folder pointed by SNOWTOOLS_CEN</p></li>
@@ -91,16 +89,16 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.resources.check_surfex_exe">
-<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">check_surfex_exe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#check_surfex_exe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.check_surfex_exe" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">check_surfex_exe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#check_surfex_exe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.check_surfex_exe" title="Link to this definition">¶</a></dt>
 <dd><p>Check that SURFEX inaries are present and return their path</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> – The path to look in. If one, fallback to environment variable EXESURFEX.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The path for surfex binaries</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p>BaseException if no path provided or FileNameException if binaries not found</p>
 </dd>
 </dl>
@@ -108,13 +106,13 @@ set self.__traceback__ to tb and return self.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.resources.print_used_memory">
-<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">print_used_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#print_used_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.print_used_memory" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">print_used_memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#print_used_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.print_used_memory" title="Link to this definition">¶</a></dt>
 <dd><p>Print the currently used memory with the <code class="docutils literal notranslate"><span class="pre">free</span></code> linux command</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.resources.smart_copy">
-<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">smart_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nameout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#smart_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.smart_copy" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.resources.</span></span><span class="sig-name descname"><span class="pre">smart_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nameout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preferlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/resources.html#smart_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.resources.smart_copy" title="Link to this definition">¶</a></dt>
 <dd><p>If pathin includes /home do a symbolic link because we probably are on the disk.
 Otherwise, do a hard copy of the file to improve computing times.</p>
 </dd></dl>
@@ -126,14 +124,36 @@ Otherwise, do a hard copy of the file to improve computing times.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="utils-massifs.html"
-                        title="previous chapter">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="utils-exceptions.html"
-                        title="next chapter">Snowtools Exceptions</a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Managing resources (files, filenames, copy, memory)</a><ul>
+<li><a class="reference internal" href="#utils.resources.InstallException"><code class="docutils literal notranslate"><span class="pre">InstallException</span></code></a><ul>
+<li><a class="reference internal" href="#utils.resources.InstallException.with_traceback"><code class="docutils literal notranslate"><span class="pre">InstallException.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utils.resources.absolute_path"><code class="docutils literal notranslate"><span class="pre">absolute_path()</span></code></a></li>
+<li><a class="reference internal" href="#utils.resources.check_snowtools_install"><code class="docutils literal notranslate"><span class="pre">check_snowtools_install()</span></code></a></li>
+<li><a class="reference internal" href="#utils.resources.check_surfex_exe"><code class="docutils literal notranslate"><span class="pre">check_surfex_exe()</span></code></a></li>
+<li><a class="reference internal" href="#utils.resources.print_used_memory"><code class="docutils literal notranslate"><span class="pre">print_used_memory()</span></code></a></li>
+<li><a class="reference internal" href="#utils.resources.smart_copy"><code class="docutils literal notranslate"><span class="pre">smart_copy()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="utils-massifs.html"
+                          title="previous chapter">Helpers for massif management : <code class="docutils literal notranslate"><span class="pre">infomassif</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="utils-exceptions.html"
+                          title="next chapter">Snowtools Exceptions</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -141,7 +161,7 @@ Otherwise, do a hard copy of the file to improve computing times.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -149,13 +169,13 @@ Otherwise, do a hard copy of the file to improve computing times.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -179,8 +199,8 @@ Otherwise, do a hard copy of the file to improve computing times.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

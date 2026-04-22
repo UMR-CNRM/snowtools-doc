@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Testing &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="The s2m command" href="../code/s2m.html" />
     <link rel="prev" title="Snowtools code Documentation" href="doc.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -48,13 +46,13 @@
           <div class="body" role="main">
             
   <section id="testing">
-<span id="sec-test"></span><h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<span id="sec-test"></span><h1>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h1>
 <p>A development with no test will be broken in future evolutions and is impossible to maintain. Test are therefore necessary to ensure the maintainability and perennity of the code.</p>
 <p>Please don’t forget that tests are useful in both situations:
 * running the test to check that your code is not breaking something else
 * adding a test to protect your developments</p>
 <section id="running-the-test">
-<h2>Running the test<a class="headerlink" href="#running-the-test" title="Permalink to this headline">¶</a></h2>
+<h2>Running the test<a class="headerlink" href="#running-the-test" title="Link to this heading">¶</a></h2>
 <p>To run the tests after a new developement. To do so, you can run any <code class="docutils literal notranslate"><span class="pre">test_*</span></code> file in the <code class="docutils literal notranslate"><span class="pre">test</span></code> folder or just run <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">unittest</span></code> or <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pytest</span></code>.</p>
 <p>When running tests, your environment must:</p>
 <blockquote>
@@ -73,7 +71,7 @@
 </ul>
 </div></blockquote>
 <section id="test-server-at-cen">
-<h3>Test server at CEN<a class="headerlink" href="#test-server-at-cen" title="Permalink to this headline">¶</a></h3>
+<h3>Test server at CEN<a class="headerlink" href="#test-server-at-cen" title="Link to this heading">¶</a></h3>
 <p>automatic tests are run on the test server <a class="reference external" href="http://cenmodobs.cen.meteo.fr:8080">http://cenmodobs.cen.meteo.fr:8080</a>
 for each commit on master or dev branch.</p>
 <p>Branches can be manually tested (internal access only)
@@ -81,47 +79,47 @@ for each commit on master or dev branch.</p>
 </section>
 </section>
 <section id="adding-a-test">
-<h2>Adding a test<a class="headerlink" href="#adding-a-test" title="Permalink to this headline">¶</a></h2>
+<h2>Adding a test<a class="headerlink" href="#adding-a-test" title="Link to this heading">¶</a></h2>
 <p>In snowtools, case tests have to be added to the <code class="docutils literal notranslate"><span class="pre">snowtools/test</span></code> directory for each significant development.
 Please note that only test files runnable with unittest are allowed to contain <code class="docutils literal notranslate"><span class="pre">test</span></code> in their names.</p>
 <p>If you need additional files, please do not commit these files but ask for adding the necessary (small) files to the testbase.</p>
 </section>
 <section id="test-of-assimilation-part">
-<h2>Test of assimilation part<a class="headerlink" href="#test-of-assimilation-part" title="Permalink to this headline">¶</a></h2>
+<h2>Test of assimilation part<a class="headerlink" href="#test-of-assimilation-part" title="Link to this heading">¶</a></h2>
 <p>The assimilation tool can be tested with :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="nv">$SNOWTOOLS_CEN</span>/snowtools/tests/test_soda
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/tests/test_soda
 ./test_soda.sh
 </pre></div>
 </div>
 <p>You should see <code class="docutils literal notranslate"><span class="pre">SODA</span> <span class="pre">ENDS</span> <span class="pre">CORRECTLY</span></code> at the end.</p>
 </section>
 <section id="manual-tests-for-s2m-with-vortex">
-<h2>Manual tests for s2m with vortex<a class="headerlink" href="#manual-tests-for-s2m-with-vortex" title="Permalink to this headline">¶</a></h2>
+<h2>Manual tests for s2m with vortex<a class="headerlink" href="#manual-tests-for-s2m-with-vortex" title="Link to this heading">¶</a></h2>
 <p>The success of the following commands (including no errors in jobs execution and full availability of output files) must be checked before a new code release :</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reanalysis test case:</span>
-s2m research -r alp_allslopes -b <span class="m">20220801</span> -e <span class="m">20230801</span> -m safran -f reanalysis2020.2 -o reanalysis_test -n <span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis.nam
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>alp_allslopes<span class="w"> </span>-b<span class="w"> </span><span class="m">20220801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20230801</span><span class="w"> </span>-m<span class="w"> </span>safran<span class="w"> </span>-f<span class="w"> </span>reanalysis2020.2<span class="w"> </span>-o<span class="w"> </span>reanalysis_test<span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis.nam
 
 <span class="c1"># ESCROC test case:</span>
-s2m research -r cdp -b <span class="m">1994100101</span> -e <span class="m">2014100100</span> -x <span class="m">2014100100</span> -m ESM-SnowMIP -f obs@lafaysse -o E2_test --task<span class="o">=</span>escroc --escroc<span class="o">=</span>E2
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>cdp<span class="w"> </span>-b<span class="w"> </span><span class="m">1994100101</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2014100100</span><span class="w"> </span>-x<span class="w"> </span><span class="m">2014100100</span><span class="w"> </span>-m<span class="w"> </span>ESM-SnowMIP<span class="w"> </span>-f<span class="w"> </span>obs@lafaysse<span class="w"> </span>-o<span class="w"> </span>E2_test<span class="w"> </span>--task<span class="o">=</span>escroc<span class="w"> </span>--escroc<span class="o">=</span>E2
 
 <span class="c1"># Stochastic perturbation test case:</span>
-s2m research -r cor_flat -b <span class="m">20200801</span> -e <span class="m">20210801</span> -m s2m -f reanalysis2020.2 -o perturb --task<span class="o">=</span><span class="s1">&#39;croco_perturb&#39;</span> --nmembers<span class="o">=</span><span class="m">80</span>
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>cor_flat<span class="w"> </span>-b<span class="w"> </span><span class="m">20200801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20210801</span><span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-f<span class="w"> </span>reanalysis2020.2<span class="w"> </span>-o<span class="w"> </span>perturb<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;croco_perturb&#39;</span><span class="w"> </span>--nmembers<span class="o">=</span><span class="m">80</span>
 
 <span class="c1"># Croco openloop test case (before running this test case, please define postes_12_csv geometry in $HOME/.vortexrc/geometries.ini as in ~lafaysse/.vortexrc/geometries.ini ) :</span>
-s2m research -r postes_12_csv -b <span class="m">2013080106</span> -e <span class="m">2014063006</span> -x <span class="m">20160801</span> -m safran -f forcing_20132014B_31D_11_t1500_160@fructusm -o testopenloop -n ~lafaysse/croco/OPTIONS_MOTHER_DEP.nam --task<span class="o">=</span><span class="s1">&#39;croco&#39;</span> --croco<span class="o">=</span><span class="s1">&#39;openloop&#39;</span> --escroc<span class="o">=</span>E1notartes --nmembers<span class="o">=</span><span class="m">35</span> --nforcing<span class="o">=</span><span class="m">35</span> --conf<span class="o">=</span>/home/lafaysse/croco/conf.ini -s ~lafaysse/SURFEX/cen/exe_mpi
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>postes_12_csv<span class="w"> </span>-b<span class="w"> </span><span class="m">2013080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2014063006</span><span class="w"> </span>-x<span class="w"> </span><span class="m">20160801</span><span class="w"> </span>-m<span class="w"> </span>safran<span class="w"> </span>-f<span class="w"> </span>forcing_20132014B_31D_11_t1500_160@fructusm<span class="w"> </span>-o<span class="w"> </span>testopenloop<span class="w"> </span>-n<span class="w"> </span>~lafaysse/croco/OPTIONS_MOTHER_DEP.nam<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;croco&#39;</span><span class="w"> </span>--croco<span class="o">=</span><span class="s1">&#39;openloop&#39;</span><span class="w"> </span>--escroc<span class="o">=</span>E1notartes<span class="w"> </span>--nmembers<span class="o">=</span><span class="m">35</span><span class="w"> </span>--nforcing<span class="o">=</span><span class="m">35</span><span class="w"> </span>--conf<span class="o">=</span>/home/lafaysse/croco/conf.ini<span class="w"> </span>-s<span class="w"> </span>~lafaysse/SURFEX/cen/exe_mpi
 
 <span class="c1"># Croco test case with assim of real observations:</span>
-s2m research -r postes_12_csv -b <span class="m">2013080106</span> -e <span class="m">2014063006</span> -x <span class="m">20160801</span> -m safran -f forcing_20132014B_31D_11_t1500_160@fructusm -o test0l -n ~lafaysse/croco/OPTIONS_MOTHER_DEP.nam --task<span class="o">=</span><span class="s1">&#39;croco&#39;</span> --croco<span class="o">=</span><span class="s1">&#39;real&#39;</span> --escroc<span class="o">=</span>E1notartes --nmembers<span class="o">=</span><span class="m">35</span> --nforcing<span class="o">=</span><span class="m">35</span> --conf<span class="o">=</span>/home/lafaysse/croco/conf.ini -s ~lafaysse/SURFEX/cen/exe_mpi --obsxpid<span class="o">=</span>obs@lafaysse --sensor<span class="o">=</span>bdclim
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>postes_12_csv<span class="w"> </span>-b<span class="w"> </span><span class="m">2013080106</span><span class="w"> </span>-e<span class="w"> </span><span class="m">2014063006</span><span class="w"> </span>-x<span class="w"> </span><span class="m">20160801</span><span class="w"> </span>-m<span class="w"> </span>safran<span class="w"> </span>-f<span class="w"> </span>forcing_20132014B_31D_11_t1500_160@fructusm<span class="w"> </span>-o<span class="w"> </span>test0l<span class="w"> </span>-n<span class="w"> </span>~lafaysse/croco/OPTIONS_MOTHER_DEP.nam<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;croco&#39;</span><span class="w"> </span>--croco<span class="o">=</span><span class="s1">&#39;real&#39;</span><span class="w"> </span>--escroc<span class="o">=</span>E1notartes<span class="w"> </span>--nmembers<span class="o">=</span><span class="m">35</span><span class="w"> </span>--nforcing<span class="o">=</span><span class="m">35</span><span class="w"> </span>--conf<span class="o">=</span>/home/lafaysse/croco/conf.ini<span class="w"> </span>-s<span class="w"> </span>~lafaysse/SURFEX/cen/exe_mpi<span class="w"> </span>--obsxpid<span class="o">=</span>obs@lafaysse<span class="w"> </span>--sensor<span class="o">=</span>bdclim
 
 <span class="c1"># Replay operational analysis and forecast:</span>
-s2m oper -b <span class="m">2025091503</span> -r alp --dev
-s2m oper -b <span class="m">2025091503</span> -r alp --task<span class="o">=</span><span class="s1">&#39;forecast&#39;</span> --dev
+s2m<span class="w"> </span>oper<span class="w"> </span>-b<span class="w"> </span><span class="m">2025091503</span><span class="w"> </span>-r<span class="w"> </span>alp<span class="w"> </span>--dev
+s2m<span class="w"> </span>oper<span class="w"> </span>-b<span class="w"> </span><span class="m">2025091503</span><span class="w"> </span>-r<span class="w"> </span>alp<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;forecast&#39;</span><span class="w"> </span>--dev
 
 <span class="c1"># Building of reforecast initial conditions test case:</span>
-s2m research -r vog3_allslopes -b <span class="m">20000801</span> -e <span class="m">20010801</span> -a <span class="m">400</span> -m s2m -f reanalysis_era5.2023 -p reanalysis_era5.2025.2 -o initialconditions_test -n <span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis_forprep.nam --task<span class="o">=</span><span class="s1">&#39;surfex_dailyprep&#39;</span> --walltime<span class="o">=</span><span class="s1">&#39;00:45:00&#39;</span>
+s2m<span class="w"> </span>research<span class="w"> </span>-r<span class="w"> </span>vog3_allslopes<span class="w"> </span>-b<span class="w"> </span><span class="m">20000801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20010801</span><span class="w"> </span>-a<span class="w"> </span><span class="m">400</span><span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-f<span class="w"> </span>reanalysis_era5.2023<span class="w"> </span>-p<span class="w"> </span>reanalysis_era5.2025.2<span class="w"> </span>-o<span class="w"> </span>initialconditions_test<span class="w"> </span>-n<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/OPTIONS_V9_reanalysis_forprep.nam<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;surfex_dailyprep&#39;</span><span class="w"> </span>--walltime<span class="o">=</span><span class="s1">&#39;00:45:00&#39;</span>
 
 <span class="c1"># Reforecast test case</span>
-s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</span> -r vog3_allslopes -n /home/cnrm_other/cen/mrns/lafaysse/PycharmProjects/snowtools_git/snowtools/DATA/OPTIONS_reforecast.nam --task<span class="o">=</span><span class="s1">&#39;reforecast&#39;</span> -m safran -f reforecast_2023 --nmembers<span class="o">=</span><span class="m">11</span> -p initdaily_era5.2025.2@lafaysse -o reforecast_test
+s2m<span class="w"> </span>research<span class="w"> </span>-b<span class="w"> </span><span class="m">20000302</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20000327</span><span class="w"> </span>-r<span class="w"> </span>vog3_allslopes<span class="w"> </span>-n<span class="w"> </span>/home/cnrm_other/cen/mrns/lafaysse/PycharmProjects/snowtools_git/snowtools/DATA/OPTIONS_reforecast.nam<span class="w"> </span>--task<span class="o">=</span><span class="s1">&#39;reforecast&#39;</span><span class="w"> </span>-m<span class="w"> </span>safran<span class="w"> </span>-f<span class="w"> </span>reforecast_2023<span class="w"> </span>--nmembers<span class="o">=</span><span class="m">11</span><span class="w"> </span>-p<span class="w"> </span>initdaily_era5.2025.2@lafaysse<span class="w"> </span>-o<span class="w"> </span>reforecast_test
 </pre></div>
 </div>
 </section>
@@ -132,10 +130,11 @@ s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</spa
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Testing</a><ul>
 <li><a class="reference internal" href="#running-the-test">Running the test</a><ul>
 <li><a class="reference internal" href="#test-server-at-cen">Test server at CEN</a></li>
@@ -148,12 +147,17 @@ s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</spa
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="doc.html"
-                        title="previous chapter">Snowtools code Documentation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../code/s2m.html"
-                        title="next chapter">The s2m command</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="doc.html"
+                          title="previous chapter">Snowtools code Documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../code/s2m.html"
+                          title="next chapter">The s2m command</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -161,7 +165,7 @@ s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</spa
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -169,13 +173,13 @@ s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</spa
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -198,8 +202,8 @@ s2m research -b <span class="m">20000302</span> -e <span class="m">20000327</spa
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

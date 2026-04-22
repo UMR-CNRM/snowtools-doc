@@ -1,22 +1,20 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utils.xarray_snowtools_backend &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/nature.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -178,12 +176,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">xarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.xarray_snowtools_preprocess</span> <span class="kn">import</span> <span class="n">preprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools_preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess</span>
 
-<span class="kn">from</span> <span class="nn">xarray.backends</span> <span class="kn">import</span> <span class="n">BackendEntrypoint</span>
-<span class="kn">from</span> <span class="nn">xarray.backends.common</span> <span class="kn">import</span> <span class="n">BACKEND_ENTRYPOINTS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xarray.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendEntrypoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xarray.backends.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKEND_ENTRYPOINTS</span>
 
 <span class="c1"># WARNING : the following line changes the default behavior of ALL subsequent xarray `open_*`</span>
 <span class="c1"># by forcing the use of the custom `SnowtoolsBackendEntrypoint` entry point.</span>
@@ -194,8 +192,10 @@
 <span class="c1"># plugins.guess_engine = guess_engine</span>
 
 
-<div class="viewcode-block" id="SnowtoolsBackendEntrypoint"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint">[docs]</a><span class="k">class</span> <span class="nc">SnowtoolsBackendEntrypoint</span><span class="p">(</span><span class="n">BackendEntrypoint</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SnowtoolsBackendEntrypoint</span><span class="p">(</span><span class="n">BackendEntrypoint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Xarray entry point to deal with snowtools-specific NetCDF files :</span>
 <span class="sd">    - Ensure backward compatibility in case of a change of variable/dimension name</span>
 <span class="sd">    - Map between identical variables coming from different sources with different names</span>
@@ -220,8 +220,10 @@
 
     <span class="n">available</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Necessary before v.2024.04.0</span>
 
-<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.open_dataset"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">open_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_or_obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.open_dataset">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.open_dataset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_or_obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Snowtools-specific version of the xarray&#39;s &quot;open_dataset&quot; method, which calls the native method</span>
 <span class="sd">        and carries out a preprocessing of the data before returning the dataset object.</span>
 <span class="sd">        If a list of paths is provided, the files are automatically opened with &quot;open_mfdataset&quot;.</span>
@@ -247,14 +249,19 @@
 
             <span class="k">return</span> <span class="n">ds</span></div>
 
+
     <span class="n">open_dataset_parameters</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.guess_can_open"><a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open">[docs]</a>    <span class="k">def</span> <span class="nf">guess_can_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SnowtoolsBackendEntrypoint.guess_can_open">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_backend.SnowtoolsBackendEntrypoint.guess_can_open">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">guess_can_open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        guess_can_open is used to identify the proper engine to open your data file automatically in case</span>
 <span class="sd">        the engine is not specified explicitly.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
+        <span class="k">return</span> <span class="kc">True</span></div>
+</div>
+
 
 
 <span class="c1"># Register the custom &quot;SnowtoolsBackendEntrypoint&quot; among xarray known backend entry points when this module is imported</span>
@@ -268,9 +275,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
@@ -278,13 +285,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -302,8 +309,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

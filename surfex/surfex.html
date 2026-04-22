@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Few informations on SURFEX-Crocus simulations &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Information for SURFEX-Crocus developers" href="surfex-dev.html" />
     <link rel="prev" title="Infos on Namelist and Forcing:" href="surfex-files.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,9 +47,9 @@
           <div class="body" role="main">
             
   <section id="few-informations-on-surfex-crocus-simulations">
-<h1>Few informations on SURFEX-Crocus simulations<a class="headerlink" href="#few-informations-on-surfex-crocus-simulations" title="Permalink to this headline">¶</a></h1>
+<h1>Few informations on SURFEX-Crocus simulations<a class="headerlink" href="#few-informations-on-surfex-crocus-simulations" title="Link to this heading">¶</a></h1>
 <section id="basics-of-a-surfex-crocus-simulation">
-<h2>Basics of a SURFEX-Crocus simulation<a class="headerlink" href="#basics-of-a-surfex-crocus-simulation" title="Permalink to this headline">¶</a></h2>
+<h2>Basics of a SURFEX-Crocus simulation<a class="headerlink" href="#basics-of-a-surfex-crocus-simulation" title="Link to this heading">¶</a></h2>
 <p>The steps of a SURFEX-Crocus simulation are :</p>
 <ul class="simple">
 <li><p><strong>PGD</strong>: build physiography files (grid system, soil and vegetation properties, and all main parameters which are constant over time)</p></li>
@@ -67,7 +65,7 @@ It uses specific files (eg ecoclimapI_covers_param.bin) which gives an ecosystem
 <p>The <strong>OFFLINE</strong> step is the simulation of the snow cover between the two dates of the simulation. It must have a meteorological file for that : the FORCING file.</p>
 </section>
 <section id="input-files">
-<h2>Input files<a class="headerlink" href="#input-files" title="Permalink to this headline">¶</a></h2>
+<h2>Input files<a class="headerlink" href="#input-files" title="Link to this heading">¶</a></h2>
 <p>What is needed to launch a SURFEX-Crocus simulation ?</p>
 <ul class="simple">
 <li><p>files to define the PGD (some of them are included in SURFEX package, some of them have to be downloaded from the SURFEX website: <a class="reference external" href="http://www.umr-cnrm.fr/surfex//spip.php?rubrique14">http://www.umr-cnrm.fr/surfex//spip.php?rubrique14</a> depending on your application)</p></li>
@@ -77,7 +75,7 @@ It uses specific files (eg ecoclimapI_covers_param.bin) which gives an ecosystem
 <li><p>namelist : a fortran ascii file which describes the physical options you want to apply for your simulation</p></li>
 </ul>
 <section id="details-on-prep-files">
-<h3>Details on PREP files<a class="headerlink" href="#details-on-prep-files" title="Permalink to this headline">¶</a></h3>
+<h3>Details on PREP files<a class="headerlink" href="#details-on-prep-files" title="Link to this heading">¶</a></h3>
 <p>NB : if you run a simulation in an already existing output directory (via the -o option), the simulation will use the PREP file available in output/prep folder. This is necessary to extend simulations in time, or to perform sensitivity analyses using identical initial conditions.</p>
 <p>The initialisation of SURFEX state variables is associated with a date. So, the file is named PREP_YYYYMMDDHH.nc</p>
 <p>If you are starting a simulation with a PREP_YYYYMMDDHH.nc file :</p>
@@ -90,11 +88,11 @@ It uses specific files (eg ecoclimapI_covers_param.bin) which gives an ecosystem
 </section>
 </section>
 <section id="launch-simulations">
-<h2>Launch simulations<a class="headerlink" href="#launch-simulations" title="Permalink to this headline">¶</a></h2>
+<h2>Launch simulations<a class="headerlink" href="#launch-simulations" title="Link to this heading">¶</a></h2>
 <p>Snowtools is a library made for launching simulations, pre or post processing simulations, visualise simulations. The launching command is <code class="docutils literal notranslate"><span class="pre">s2m</span></code> provided by snowtools package. Run <code class="docutils literal notranslate"><span class="pre">s2m</span> <span class="pre">research</span> <span class="pre">--help</span></code> for details.</p>
 </section>
 <section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">¶</a></h2>
 <p>After the first test, there is a folder named « output » (or another name if you change the -o option of the s2m command) which is created. This folder contains 5 subfolders:</p>
 <ul class="simple">
 <li><p><strong>meteo</strong> :
@@ -129,11 +127,11 @@ However, these directories can contain useful informations to understand the ori
 </ul>
 </section>
 <section id="the-cselect-options">
-<h2>The CSELECT options<a class="headerlink" href="#the-cselect-options" title="Permalink to this headline">¶</a></h2>
+<h2>The CSELECT options<a class="headerlink" href="#the-cselect-options" title="Link to this heading">¶</a></h2>
 <p>In the namelist, CSELECT allows you to choose output. For example, in the standard namelist, you have:
 <code class="docutils literal notranslate"><span class="pre">CSELECT='time','ZS','aspect','slope','massif_num','station','TG1','WG1','WGI1','TG4','ASN_VEG'...</span></code></p>
 <section id="available-diagnostics">
-<h3>Available diagnostics<a class="headerlink" href="#available-diagnostics" title="Permalink to this headline">¶</a></h3>
+<h3>Available diagnostics<a class="headerlink" href="#available-diagnostics" title="Link to this heading">¶</a></h3>
 <p id="avail-diagnostics">Here you can find long name for a part of these variables (alphabetical order for shortname).</p>
 <p>NB: If short name ends by _VEG, it means that this is a prognostic variable also used in PREP files</p>
 <ul class="simple">
@@ -187,7 +185,7 @@ However, these directories can contain useful informations to understand the ori
 </ul>
 </section>
 <section id="snowpappus">
-<h3>SNOWPAPPUS<a class="headerlink" href="#snowpappus" title="Permalink to this headline">¶</a></h3>
+<h3>SNOWPAPPUS<a class="headerlink" href="#snowpappus" title="Link to this heading">¶</a></h3>
 <p>SNOWPAPPUS cumulated outputs: (MPI grid only)</p>
 <ul class="simple">
 <li><p>QDEP_TOT = total wind-blown snow net deposition rate q dep (kg.m -2 .s -1 )</p></li>
@@ -210,7 +208,7 @@ However, these directories can contain useful informations to understand the ori
 </ul>
 </section>
 <section id="impurities">
-<h3>Impurities<a class="headerlink" href="#impurities" title="Permalink to this headline">¶</a></h3>
+<h3>Impurities<a class="headerlink" href="#impurities" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>SNOWIMP1 = Concentration of Soot (g/g)</p></li>
 <li><p>SNOWIMP2 = Concentration of Dust (g/g)</p></li>
@@ -220,7 +218,7 @@ However, these directories can contain useful informations to understand the ori
 </ul>
 </section>
 <section id="mepra">
-<h3>MEPRA<a class="headerlink" href="#mepra" title="Permalink to this headline">¶</a></h3>
+<h3>MEPRA<a class="headerlink" href="#mepra" title="Link to this heading">¶</a></h3>
 <p>Note that the MEPRA outputs depends on the selected output timestep (configuration in SURFEX namelist).
 The operational value used at Météo-France is 3h.</p>
 <p>stress/strength stability index :</p>
@@ -247,7 +245,7 @@ The operational value used at Météo-France is 3h.</p>
 <p>An aggregated natural index is computed in the variable <code class="docutils literal notranslate"><span class="pre">naturalIndex</span></code>. Range from 0 to 8. The indicator is the maximum for all aspects of the mean of natural risk for all elevations with a weighting of the 6 levels of risk (higher risk have a higher importance) and weighting of elevations used (more importance to middle elevations typical of avalanche areas across the Alps).</p>
 </section>
 <section id="full-documentation">
-<h3>Full documentation<a class="headerlink" href="#full-documentation" title="Permalink to this headline">¶</a></h3>
+<h3>Full documentation<a class="headerlink" href="#full-documentation" title="Link to this heading">¶</a></h3>
 <p>You can find other variables in SURFEX documentation:
 <a class="reference external" href="https://www.umr-cnrm.fr/surfex/spip.php?article30">https://www.umr-cnrm.fr/surfex/spip.php?article30</a></p>
 </section>
@@ -259,10 +257,11 @@ The operational value used at Météo-France is 3h.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Few informations on SURFEX-Crocus simulations</a><ul>
 <li><a class="reference internal" href="#basics-of-a-surfex-crocus-simulation">Basics of a SURFEX-Crocus simulation</a></li>
 <li><a class="reference internal" href="#input-files">Input files</a><ul>
@@ -283,12 +282,17 @@ The operational value used at Météo-France is 3h.</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="surfex-files.html"
-                        title="previous chapter">Infos on Namelist and Forcing:</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="surfex-dev.html"
-                        title="next chapter">Information for SURFEX-Crocus developers</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="surfex-files.html"
+                          title="previous chapter">Infos on Namelist and Forcing:</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="surfex-dev.html"
+                          title="next chapter">Information for SURFEX-Crocus developers</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -296,7 +300,7 @@ The operational value used at Météo-France is 3h.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -304,13 +308,13 @@ The operational value used at Météo-France is 3h.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -334,8 +338,8 @@ The operational value used at Météo-France is 3h.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

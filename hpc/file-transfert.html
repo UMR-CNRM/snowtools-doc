@@ -1,25 +1,23 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>File transfers with hendrix archive and sxcen &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Create a User Environment from scratch" href="uenv.html" />
     <link rel="prev" title="Install VORTEX" href="vortex-install.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -49,19 +47,19 @@
           <div class="body" role="main">
             
   <section id="file-transfers-with-hendrix-archive-and-sxcen">
-<h1>File transfers with hendrix archive and sxcen<a class="headerlink" href="#file-transfers-with-hendrix-archive-and-sxcen" title="Permalink to this headline">¶</a></h1>
+<h1>File transfers with hendrix archive and sxcen<a class="headerlink" href="#file-transfers-with-hendrix-archive-and-sxcen" title="Link to this heading">¶</a></h1>
 <p>When a simulation is launched on belenos or taranis, Vortex automatically downloads input files from hendrix or the belenos/taranis cache (/scratch/mtool/&lt;yourname&gt;/cache/vortex/), and uploads the output of the simulations on hendrix and the cache. To allow Vortex to use ftserv from belenos/taranis to hendrix, it is necessary to register your password by running the following command on belenos/taranis:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse -h hendrix.meteo.fr -u &lt;yourname&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse<span class="w"> </span>-h<span class="w"> </span>hendrix.meteo.fr<span class="w"> </span>-u<span class="w"> </span>&lt;yourname&gt;
 </pre></div>
 </div>
 <p>The same procedure applies if you’d like to upload light output data to your laptop or any server other than hendrix, e.g. sxcen.cnrm.meteo.fr :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse -h sxcen.cnrm.meteo.fr -u &lt;yourname&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ftmotpasse<span class="w"> </span>-h<span class="w"> </span>sxcen.cnrm.meteo.fr<span class="w"> </span>-u<span class="w"> </span>&lt;yourname&gt;
 </pre></div>
 </div>
 <p>Do not forget to re-run these commands every time you change your password (as Météo-France asks you on a 6-month basis). Otherwise, the authentication for the transfer of outputs will fail.</p>
 </section>
 <section id="file-transfers-to-a-local-machine">
-<h1>File transfers to a local machine<a class="headerlink" href="#file-transfers-to-a-local-machine" title="Permalink to this headline">¶</a></h1>
+<h1>File transfers to a local machine<a class="headerlink" href="#file-transfers-to-a-local-machine" title="Link to this heading">¶</a></h1>
 <p>Make sure that your user creditals for hendrix are stored in your .netrc file (in the home directory). There should be a line like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">machine</span> <span class="n">hendrix</span><span class="o">.</span><span class="n">meteo</span><span class="o">.</span><span class="n">fr</span> <span class="n">login</span> <span class="o">&lt;</span><span class="n">yourusername</span><span class="o">&gt;</span> <span class="n">password</span> <span class="o">&lt;</span><span class="n">yourpassword</span><span class="o">&gt;</span>
 </pre></div>
@@ -79,20 +77,26 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">File transfers with hendrix archive and sxcen</a></li>
 <li><a class="reference internal" href="#file-transfers-to-a-local-machine">File transfers to a local machine</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="vortex-install.html"
-                        title="previous chapter">Install VORTEX</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="uenv.html"
-                        title="next chapter">Create a User Environment from scratch</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="vortex-install.html"
+                          title="previous chapter">Install VORTEX</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="uenv.html"
+                          title="next chapter">Create a User Environment from scratch</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -100,7 +104,7 @@
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -108,13 +112,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -138,8 +142,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

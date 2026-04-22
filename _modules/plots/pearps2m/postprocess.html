@@ -1,22 +1,20 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>plots.pearps2m.postprocess &#8212; Snowtools  documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../../_static/snow.ico"/>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -55,37 +53,37 @@
 <span class="sd">    #) Creates spaghetti plots for all massifs and stations</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">locale</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">locale</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
 <span class="c1"># import matplotlib.pyplot as plt</span>
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
-<span class="kn">import</span> <span class="nn">matplotlib.style</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.style</span>
 <span class="c1">#import rpy2.robjects as robjects</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">gamma</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">gamma</span>
 
-<span class="kn">from</span> <span class="nn">snowtools.utils.prosimu</span> <span class="kn">import</span> <span class="n">prosimu</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.dates</span> <span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">pretty_date</span>
-<span class="kn">from</span> <span class="nn">snowtools.plots.temporal.chrono</span> <span class="kn">import</span> <span class="n">spaghettis_with_det</span><span class="p">,</span> <span class="n">spaghettis</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.infomassifs</span> <span class="kn">import</span> <span class="n">infomassifs</span>
-<span class="kn">from</span> <span class="nn">snowtools.utils.FileException</span> <span class="kn">import</span> <span class="n">DirNameException</span>
-<span class="kn">from</span> <span class="nn">snowtools.DATA</span> <span class="kn">import</span> <span class="n">LUSTRE_NOSAVE_USER_DIR</span><span class="p">,</span> <span class="n">SNOWTOOLS_DATA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_and_convert_date</span><span class="p">,</span> <span class="n">pretty_date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.temporal.chrono</span><span class="w"> </span><span class="kn">import</span> <span class="n">spaghettis_with_det</span><span class="p">,</span> <span class="n">spaghettis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirNameException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">LUSTRE_NOSAVE_USER_DIR</span><span class="p">,</span> <span class="n">SNOWTOOLS_DATA</span>
 
-<span class="kn">from</span> <span class="nn">bronx.stdtypes.date</span> <span class="kn">import</span> <span class="n">today</span>
-<span class="kn">from</span> <span class="nn">bronx.syntax.externalcode</span> <span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">today</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
 
 <span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">&#39;cartopy&#39;</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">cartopy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cartopy</span>
 <span class="n">echecker_pyproj</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">&#39;pyproj&#39;</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">echecker_pyproj</span> <span class="k">as</span> <span class="n">echecker_register</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pyproj</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
     <span class="n">echecker_register</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">pyproj</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="s1">&#39;fast&#39;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
@@ -96,8 +94,10 @@
 <span class="c1"># matplotlib.rcParams[&quot;figure.dpi&quot;] = 75</span>
 
 
-<div class="viewcode-block" id="build_filename"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.build_filename">[docs]</a><span class="k">def</span> <span class="nf">build_filename</span><span class="p">(</span><span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="build_filename">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.build_filename">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_filename</span><span class="p">(</span><span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a filename from massif and altitude information.</span>
 
 <span class="sd">    :param massif: a massif number</span>
@@ -111,8 +111,11 @@
     <span class="k">return</span> <span class="n">filename</span></div>
 
 
-<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Config">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Config">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configuration passed to S2MExtractor and to be used in vortex toolboxes.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -133,8 +136,10 @@
     <span class="c1">#: 35 for determinstic member, 36 for sytron, 0-34 for PEARP members</span>
     <span class="n">list_members</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">36</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Config.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Config.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OPTIONS</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Config.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Config.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OPTIONS</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        #) checks and converts dates</span>
 <span class="sd">        #) creates output directories if they don&#39;t exist.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -171,17 +176,23 @@
             <span class="nb">delattr</span><span class="p">(</span><span class="n">Config</span><span class="p">,</span> <span class="s1">&#39;alternate_xpid&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">list_geometry</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;jur4_allslopes_reforecast&#39;</span><span class="p">,</span> <span class="s1">&#39;mac11_allslopes_reforecast&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;vog3_allslopes_reforecast&#39;</span><span class="p">,</span> <span class="s1">&#39;alp27_allslopes&#39;</span><span class="p">,</span>
-                                  <span class="s1">&#39;pyr24_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;cor2_allslopes&#39;</span><span class="p">]</span></div></div>
+                                  <span class="s1">&#39;pyr24_allslopes&#39;</span><span class="p">,</span> <span class="s1">&#39;cor2_allslopes&#39;</span><span class="p">]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="Ensemble"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble">[docs]</a><span class="k">class</span> <span class="nc">Ensemble</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ensemble</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Describes an ensemble of simulations</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Ensemble.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Ensemble.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: data dict with variable names as keys and np.arrays as values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1">#: list of prosimu objects with simulation file</span>
@@ -192,13 +203,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1">#: :ivar npoints: total number of spatial points :vartype npoints: int</span></div>
 
 
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">spatialdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Name of spatial dimension&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spatialdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of spatial dimension&quot;&quot;&quot;</span>
         <span class="k">return</span>  <span class="s2">&quot;Number_of_points&quot;</span>
 
-<div class="viewcode-block" id="Ensemble.open"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listmembers</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Ensemble.open">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.open">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listmembers</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Opens simulation files</span>
 
 <span class="sd">        :param listmembers: list of ensemble members (filenames)</span>
@@ -223,8 +237,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">indpoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_points</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_npoints</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Ensemble.select_points"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.select_points">[docs]</a>    <span class="k">def</span> <span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.select_points">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.select_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of spatial indices from the spatial dimension</span>
 <span class="sd">        length in the first simulation file.</span>
 
@@ -234,8 +251,11 @@
         <span class="n">indpoints</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatialdim</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">indpoints</span></div>
 
-<div class="viewcode-block" id="Ensemble.get_npoints"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_npoints">[docs]</a>    <span class="k">def</span> <span class="nf">get_npoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.get_npoints">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_npoints">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_npoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the number of spatial points.</span>
 
 <span class="sd">        :return: total number of spatial points</span>
@@ -250,8 +270,11 @@
 
         <span class="k">return</span> <span class="n">npoints</span></div>
 
-<div class="viewcode-block" id="Ensemble.read"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.read">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read a variable and store it in :py:attr:`~.ensemble`</span>
 
 <span class="sd">        :param varname: name of the variable to be read</span>
@@ -265,7 +288,7 @@
 
         <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">):</span>
             <span class="c1"># print(&quot;read &quot; + varname + &quot; for member&quot; + str(m))</span>
-            <span class="kn">import</span> <span class="nn">datetime</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
             <span class="n">before</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indpoints</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
@@ -287,8 +310,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span> <span class="o">==</span> <span class="mf">6.</span><span class="p">,</span>
                                                        <span class="mf">0.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Ensemble.read_geovar"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.read_geovar">[docs]</a>    <span class="k">def</span> <span class="nf">read_geovar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.read_geovar">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.read_geovar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_geovar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read a variable from the first simulation file.</span>
 
 <span class="sd">        :param varname: NetCDF variable name of the variable to read</span>
@@ -309,8 +335,11 @@
             <span class="n">kwargs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spatialdim</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indpoints</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="n">varname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ensemble.probability"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.probability">[docs]</a>    <span class="k">def</span> <span class="nf">probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">seuilinf</span><span class="o">=-</span><span class="mf">999999999.</span><span class="p">,</span> <span class="n">seuilsup</span><span class="o">=</span><span class="mf">999999999.</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.probability">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.probability">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">seuilinf</span><span class="o">=-</span><span class="mf">999999999.</span><span class="p">,</span> <span class="n">seuilsup</span><span class="o">=</span><span class="mf">999999999.</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates probability as the proportion of ensemble members with</span>
 <span class="sd">        values larger than :py:attr:`seuilinf`</span>
 <span class="sd">        and smaller than :py:attr:`seuilsup`.</span>
@@ -330,10 +359,13 @@
         <span class="n">probability</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmembers</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">][:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span></div>
+
         <span class="c1"># On renvoit des nan quand ensemble n&#39;est pas défini</span>
 
-<div class="viewcode-block" id="Ensemble.emos_csg_nonorm_allstations_newsnow"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.emos_csg_nonorm_allstations_newsnow">[docs]</a>    <span class="k">def</span> <span class="nf">emos_csg_nonorm_allstations_newsnow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Ensemble.emos_csg_nonorm_allstations_newsnow">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.emos_csg_nonorm_allstations_newsnow">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">emos_csg_nonorm_allstations_newsnow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies Censored Shifted Gamma (CSG) EMOS trained for 24h new snow variable and all stations in the Alps without</span>
 <span class="sd">        normalisation (internship Benoit Gacon 2024)</span>
 <span class="sd">        to variable &quot;varname&quot; and returns the quantiles given in &quot;levels&quot; of the CSG distribution.</span>
@@ -356,8 +388,11 @@
 
         <span class="k">return</span> <span class="n">quantile</span></div>
 
-<div class="viewcode-block" id="Ensemble.get_csg_predictive_dist_nonorm_allstations"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_csg_predictive_dist_nonorm_allstations">[docs]</a>    <span class="k">def</span> <span class="nf">get_csg_predictive_dist_nonorm_allstations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.get_csg_predictive_dist_nonorm_allstations">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_csg_predictive_dist_nonorm_allstations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_csg_predictive_dist_nonorm_allstations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get the censored shifted gamma regression coefficients and climatological</span>
 <span class="sd">        paramters for each lead time and apply them to the ensemble forecast</span>
 <span class="sd">        and return the parameters mu, sigma and delta of the predictive censored shifted gamma distribution.</span>
@@ -428,8 +463,11 @@
 
         <span class="k">return</span> <span class="n">csgmean</span><span class="p">,</span> <span class="n">csgstd</span><span class="p">,</span> <span class="n">csgdelta</span></div>
 
-<div class="viewcode-block" id="Ensemble.csg_mean_nonorm"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.csg_mean_nonorm">[docs]</a>    <span class="k">def</span> <span class="nf">csg_mean_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">ensmean</span><span class="p">,</span> <span class="n">ensPOP</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.csg_mean_nonorm">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.csg_mean_nonorm">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csg_mean_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">ensmean</span><span class="p">,</span> <span class="n">ensPOP</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate mu of predictive censored shifted gamma distribution from regression coefficients alpha 1 to</span>
 <span class="sd">        alpha 4, ensemble mean and probability of non-zero values of the ensemble.</span>
 
@@ -450,8 +488,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">a2</span> <span class="o">+</span> <span class="n">a3</span> <span class="o">*</span> <span class="n">ensPOP</span> <span class="o">+</span> <span class="n">a4</span> <span class="o">*</span> <span class="n">ensmean</span><span class="p">))</span> <span class="o">/</span> <span class="n">a1</span></div>
 
-<div class="viewcode-block" id="Ensemble.csg_std_nonorm"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.csg_std_nonorm">[docs]</a>    <span class="k">def</span> <span class="nf">csg_std_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">muclim</span><span class="p">,</span> <span class="n">sigmaclim</span><span class="p">,</span> <span class="n">csgmean</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.csg_std_nonorm">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.csg_std_nonorm">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">csg_std_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">muclim</span><span class="p">,</span> <span class="n">sigmaclim</span><span class="p">,</span> <span class="n">csgmean</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate sigma of predictive censored shifted gamma distribution from regression coefficients</span>
 <span class="sd">        beta 1, climatological mu and sigma and csg mu parameter.</span>
 
@@ -468,8 +509,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">b1</span> <span class="o">*</span> <span class="n">sigmaclim</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">csgmean</span> <span class="o">/</span> <span class="n">muclim</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ensemble.quantiles_CSGD"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.quantiles_CSGD">[docs]</a>    <span class="k">def</span> <span class="nf">quantiles_CSGD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csgmean</span><span class="p">,</span> <span class="n">csgstd</span><span class="p">,</span> <span class="n">csgdelta</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.quantiles_CSGD">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.quantiles_CSGD">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantiles_CSGD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csgmean</span><span class="p">,</span> <span class="n">csgstd</span><span class="p">,</span> <span class="n">csgdelta</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        get quantiles of the censored shifted gamma (CSG) distribution with given mu, sigma and delta.</span>
 
 <span class="sd">        :param csgmean: mu parameter of CSG</span>
@@ -492,8 +536,11 @@
         <span class="c1"># return np.where(tmp &gt;= 0, tmp, 0)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tmp</span> <span class="o">&lt;</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ensemble.quantile"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.quantile">[docs]</a>    <span class="k">def</span> <span class="nf">quantile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.quantile">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.quantile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates ensemble percentiles for a given variable and given percentile levels.</span>
 
 <span class="sd">        :param varname: Variable name</span>
@@ -511,8 +558,11 @@
                             <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">level</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">quantile</span></div>
 
-<div class="viewcode-block" id="Ensemble.mean"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.mean">[docs]</a>    <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.mean">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate ensemble mean for a given variable.</span>
 
 <span class="sd">        :param varname: variable name</span>
@@ -526,8 +576,11 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ensemble.spread"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.spread">[docs]</a>    <span class="k">def</span> <span class="nf">spread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.spread">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.spread">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate ensemble spread (standard deviation) for a given variable.</span>
 
 <span class="sd">        :param varname: variable name</span>
@@ -542,8 +595,11 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="p">[</span><span class="n">varname</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Ensemble.close"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.close">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close simulation files and remove data from :py:attr:`ensemble`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -551,8 +607,11 @@
             <span class="n">member</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensemble</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Ensemble.get_metadata"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.get_metadata">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a tuple with spatial indices.</span>
 
 <span class="sd">        :return: indpoints, indpoints</span>
@@ -560,8 +619,11 @@
         <span class="n">indpoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_points</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">indpoints</span><span class="p">,</span> <span class="n">indpoints</span></div>
 
-<div class="viewcode-block" id="Ensemble.get_alti"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_alti">[docs]</a>    <span class="k">def</span> <span class="nf">get_alti</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.get_alti">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_alti">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_alti</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get altitude variable from the first simulation file.</span>
 
 <span class="sd">        :return: altitude variable</span>
@@ -571,8 +633,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">alti</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_geovar</span><span class="p">(</span><span class="s2">&quot;ZS&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alti</span></div>
 
-<div class="viewcode-block" id="Ensemble.get_aspect"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_aspect">[docs]</a>    <span class="k">def</span> <span class="nf">get_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Ensemble.get_aspect">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.Ensemble.get_aspect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get aspect variable from the first simulation file.</span>
 
 <span class="sd">        :return: aspect variable</span>
@@ -580,11 +645,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;aspect&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_geovar</span><span class="p">(</span><span class="s2">&quot;aspect&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span></div>
+</div>
 
 
-<div class="viewcode-block" id="_EnsembleMassif"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif">[docs]</a><span class="k">class</span> <span class="nc">_EnsembleMassif</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_EnsembleMassif</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metaclass for ensemble simulations on a massif geometry (SAFRAN like).</span>
 
 <span class="sd">    :ivar InfoMassifs: Information of Massifs</span>
@@ -593,16 +662,18 @@
     <span class="n">InfoMassifs</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Geometry</span>
 
 <span class="sd">        :return: &quot;massifs&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;massifs&quot;</span>
 
-<div class="viewcode-block" id="_EnsembleMassif.read"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="_EnsembleMassif.read">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read data for a given variable name into the :py:attr:`ensemble` instance variable.</span>
 
 <span class="sd">        :param varname: variable name</span>
@@ -617,8 +688,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="_EnsembleMassif.get_massifdim"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_massifdim">[docs]</a>    <span class="k">def</span> <span class="nf">get_massifdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif.get_massifdim">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_massifdim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_massifdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read massif_num variable from the first simulation file.</span>
 
 <span class="sd">        :return: massif numbers</span>
@@ -628,8 +702,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">massifdim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_geovar</span><span class="p">(</span><span class="s2">&quot;massif_num&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">massifdim</span></div>
 
-<div class="viewcode-block" id="_EnsembleMassif.get_massifvar"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_massifvar">[docs]</a>    <span class="k">def</span> <span class="nf">get_massifvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif.get_massifvar">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_massifvar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_massifvar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read &quot;massif&quot; variable from the first simulation file.</span>
 
 <span class="sd">        :return: massif numbers</span>
@@ -639,8 +716,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">massifvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s2">&quot;massif&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">massifvar</span></div>
 
-<div class="viewcode-block" id="_EnsembleMassif.get_metadata"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nolevel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif.get_metadata">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nolevel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct filenames and plot titles from massif and altitude</span>
 <span class="sd">        variables in the first simulation file.</span>
 
@@ -659,8 +739,11 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">build_filename</span><span class="p">(</span><span class="n">mas</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span> <span class="k">for</span> <span class="n">mas</span><span class="p">,</span> <span class="n">alt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">)],</span> \
                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">build_title</span><span class="p">(</span><span class="n">mas</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span> <span class="k">for</span> <span class="n">mas</span><span class="p">,</span> <span class="n">alt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="_EnsembleMassif.build_filename"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.build_filename">[docs]</a>    <span class="k">def</span> <span class="nf">build_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif.build_filename">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.build_filename">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a filename from massif and altitude information.</span>
 
 <span class="sd">        :param massif: a massif number</span>
@@ -673,8 +756,11 @@
             <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">alti</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">filename</span></div>
 
-<div class="viewcode-block" id="_EnsembleMassif.build_title"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.build_title">[docs]</a>    <span class="k">def</span> <span class="nf">build_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="_EnsembleMassif.build_title">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess._EnsembleMassif.build_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a figure title from massif and altitude information.</span>
 
 <span class="sd">        :param massif: a massif number</span>
@@ -685,36 +771,48 @@
         <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InfoMassifs</span><span class="o">.</span><span class="n">getMassifName</span><span class="p">(</span><span class="n">massif</span><span class="p">)</span>  <span class="c1"># type unicode</span>
         <span class="k">if</span> <span class="n">alti</span><span class="p">:</span>
             <span class="n">title</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{:d}</span><span class="s2">m&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">alti</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">title</span>  <span class="c1"># matplotlib needs unicode</span></div></div>
+        <span class="k">return</span> <span class="n">title</span>  <span class="c1"># matplotlib needs unicode</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleFlatMassif"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleFlatMassif">[docs]</a><span class="k">class</span> <span class="nc">EnsembleFlatMassif</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleFlatMassif">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleFlatMassif">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleFlatMassif</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for ensemble simulations on a massif geometry (SAFRAN like)</span>
 <span class="sd">    where all data points are considered</span>
 <span class="sd">    on flat terrain (zero slope and no orientation information).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EnsembleFlatMassif.select_points"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleFlatMassif.select_points">[docs]</a>    <span class="k">def</span> <span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleFlatMassif.select_points">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleFlatMassif.select_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select spatial indices from the first simulation file</span>
 <span class="sd">        where aspect=-1 (zero slope, no orientation information).</span>
 
 <span class="sd">        :return: spatial indices to be read from simulation files</span>
 <span class="sd">        :rtype: numpy boolean array</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleNorthSouthMassif"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleNorthSouthMassif">[docs]</a><span class="k">class</span> <span class="nc">EnsembleNorthSouthMassif</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleNorthSouthMassif">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleNorthSouthMassif">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleNorthSouthMassif</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for ensemble simulations on a massif geometry (SAFRAN like)</span>
 <span class="sd">    where data points are considered at a</span>
 <span class="sd">    slope of 40 degrees and two orientations: North and South.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EnsembleNorthSouthMassif.select_points"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleNorthSouthMassif.select_points">[docs]</a>    <span class="k">def</span> <span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleNorthSouthMassif.select_points">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleNorthSouthMassif.select_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Select spatial indices from the first simulation file</span>
 <span class="sd">        where slope=40 and aspect either 0 or 180.</span>
 
@@ -727,15 +825,21 @@
         <span class="c1"># self.simufiles[0].get_points(aspect = 180, slope = 40))))</span>
         <span class="c1"># TAKE CARE : It is extremely more efficient to read regular sections of the netcdf files</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleMassifPoint"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint">[docs]</a><span class="k">class</span> <span class="nc">EnsembleMassifPoint</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleMassifPoint">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleMassifPoint</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for extracting one specific point in massif geometry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EnsembleMassifPoint.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif_num</span><span class="p">,</span> <span class="n">alti</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="p">):</span>
+<div class="viewcode-block" id="EnsembleMassifPoint.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">massif_num</span><span class="p">,</span> <span class="n">alti</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">massif_num</span> <span class="o">=</span> <span class="n">massif_num</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alti</span> <span class="o">=</span> <span class="n">alti</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aspect</span> <span class="o">=</span> <span class="n">aspect</span>
@@ -743,16 +847,23 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleMassifPoint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnsembleMassifPoint.select_points"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint.select_points">[docs]</a>    <span class="k">def</span> <span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Select index of the corresponding point&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleMassifPoint.select_points">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleMassifPoint.select_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select index of the corresponding point&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">massif_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">massif_num</span><span class="p">,</span>
                                             <span class="n">aspect</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aspect</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slope</span><span class="p">,</span>
-                                            <span class="n">ZS</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alti</span><span class="p">)</span></div></div>
+                                            <span class="n">ZS</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alti</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleStation"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation">[docs]</a><span class="k">class</span> <span class="nc">EnsembleStation</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleStation">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleStation</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for ensemble simulations at station locations.</span>
 
 <span class="sd">    :ivar InfoMassifs: Information on the Massif the station is situated.</span>
@@ -761,16 +872,18 @@
     <span class="n">InfoMassifs</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">geo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Geometry information.</span>
 
 <span class="sd">        :return: &quot;stations&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;stations&quot;</span>
 
-<div class="viewcode-block" id="EnsembleStation.get_station"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.get_station">[docs]</a>    <span class="k">def</span> <span class="nf">get_station</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleStation.get_station">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.get_station">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_station</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read station numbers from the first simulation file.</span>
 
 <span class="sd">        :return: station numbers</span>
@@ -778,8 +891,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s2">&quot;station&quot;</span><span class="p">,</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indpoints</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnsembleStation.get_metadata"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleStation.get_metadata">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.get_metadata">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct filenames and plot titles from altitude and station information</span>
 
 <span class="sd">        :param kwargs:</span>
@@ -791,8 +907,11 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">build_filename</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span> <span class="k">for</span> <span class="n">stat</span><span class="p">,</span> <span class="n">alt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">)],</span> \
                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">build_title</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span> <span class="k">for</span> <span class="n">stat</span><span class="p">,</span> <span class="n">alt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="EnsembleStation.build_filename"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.build_filename">[docs]</a>    <span class="k">def</span> <span class="nf">build_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleStation.build_filename">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.build_filename">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a filename from a station number</span>
 
 <span class="sd">        :param station: station number</span>
@@ -802,8 +921,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%08d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">station</span></div>
 
-<div class="viewcode-block" id="EnsembleStation.build_title"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.build_title">[docs]</a>    <span class="k">def</span> <span class="nf">build_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleStation.build_title">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleStation.build_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">,</span> <span class="n">alti</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Construct a title from a station number and altitude level.</span>
 
 <span class="sd">        :param station: station number</span>
@@ -813,23 +935,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># nameposte gives unicode</span>
         <span class="c1"># matplotlib expects unicode</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">InfoMassifs</span><span class="o">.</span><span class="n">nameposte</span><span class="p">(</span><span class="n">station</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; </span><span class="si">%d</span><span class="s2"> m&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">alti</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">InfoMassifs</span><span class="o">.</span><span class="n">nameposte</span><span class="p">(</span><span class="n">station</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; </span><span class="si">%d</span><span class="s2"> m&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">alti</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleDiags"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags">[docs]</a><span class="k">class</span> <span class="nc">EnsembleDiags</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleDiags">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleDiags</span><span class="p">(</span><span class="n">Ensemble</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Probabilities and quantiles from ensembles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="EnsembleDiags.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleDiags.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proba</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: probabilities</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#: percentiles</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnsembleDiags.diags"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.diags">[docs]</a>    <span class="k">def</span> <span class="nf">diags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_var</span><span class="p">,</span> <span class="n">list_quantiles</span><span class="p">,</span> <span class="n">list_seuils</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleDiags.diags">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.diags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_var</span><span class="p">,</span> <span class="n">list_quantiles</span><span class="p">,</span> <span class="n">list_seuils</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate quantiles and exceedance probabilities</span>
 <span class="sd">        for a list of variables, quantiles and thresholds.</span>
 <span class="sd">        The quantiles are stored in :py:attr:`~.quantiles`</span>
@@ -853,20 +984,27 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compute quantile &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">quantile</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; for variable &quot;</span> <span class="o">+</span> <span class="n">var</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">quantile</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="EnsembleDiags.close"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleDiags.close">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleDiags.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close simulation files and remove data from</span>
 <span class="sd">        :py:attr:`~.plots.pearps2m.postprocess.Ensemble.ensemble`,</span>
 <span class="sd">        :py:attr:`.proba` and :py:attr:`.quantiles`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proba</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleOperDiags"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags">[docs]</a><span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EnsembleOperDiags</span><span class="p">(</span><span class="n">EnsembleDiags</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiags">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags">[docs]</a>
+<span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleOperDiags</span><span class="p">(</span><span class="n">EnsembleDiags</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for operationally used plots.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: plot format</span>
@@ -910,17 +1048,25 @@
     <span class="c1">#: list of quantiles</span>
     <span class="n">list_q</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">80</span><span class="p">]</span>
 
-<div class="viewcode-block" id="EnsembleOperDiags.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EnsembleOperDiags.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiags.alldiags"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.alldiags">[docs]</a>    <span class="k">def</span> <span class="nf">alldiags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiags.alldiags">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.alldiags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">alldiags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate percentiles for all variables in :py:attr:`list_var_spag` and :py:attr:`list_var_map`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_var_spag</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_var_map</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_q</span><span class="p">,</span> <span class="p">{})</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiags.pack_spaghettis"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.pack_spaghettis">[docs]</a>    <span class="k">def</span> <span class="nf">pack_spaghettis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiags.pack_spaghettis">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.pack_spaghettis">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack_spaghettis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce spaghetti plots for all variables in :py:attr:`list_var_spag`.</span>
 
 <span class="sd">        :param suptitle: Suptitle for all plots.</span>
@@ -974,8 +1120,11 @@
 
             <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiags.pack_spaghettis_multipoints"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.pack_spaghettis_multipoints">[docs]</a>    <span class="k">def</span> <span class="nf">pack_spaghettis_multipoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_pairs</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiags.pack_spaghettis_multipoints">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiags.pack_spaghettis_multipoints">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack_spaghettis_multipoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_pairs</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce spaghetti plots with up to four points per plot for variables in :py:attr:`list_var_spag_2points`.</span>
 
 <span class="sd">        Each point gets a different color.</span>
@@ -1040,13 +1189,17 @@
                 <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">formatout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">plotname</span> <span class="o">+</span> <span class="s2">&quot; is available.&quot;</span><span class="p">)</span>
 
-            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleOperDiagsFlatMassif"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsFlatMassif">[docs]</a><span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsFlatMassif">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsFlatMassif">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
 <span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EnsembleOperDiagsFlatMassif</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleFlatMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleOperDiagsFlatMassif</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleFlatMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for operationally plotting maps and spaghetti plots for</span>
 <span class="sd">    ensembles with massif geometry and for the zero slope case.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1060,8 +1213,10 @@
     <span class="n">list_var_spag</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;naturalIndex&#39;</span><span class="p">,</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;WSN_T_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;SNOMLT_ISBA&#39;</span><span class="p">]</span>
     <span class="c1"># list_var_spag = [&#39;DSN_T_ISBA&#39;, &#39;WSN_T_ISBA&#39;, &#39;SNOMLT_ISBA&#39;]</span>
 
-<div class="viewcode-block" id="EnsembleOperDiagsFlatMassif.pack_maps"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsFlatMassif.pack_maps">[docs]</a>    <span class="k">def</span> <span class="nf">pack_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleOperDiagsFlatMassif.pack_maps">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsFlatMassif.pack_maps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce maps for the variables given in :py:attr:`list_var_map`</span>
 <span class="sd">        over the regions given in :py:attr:`domain`</span>
 <span class="sd">        for each available altitude level and time step.</span>
@@ -1079,7 +1234,7 @@
 <span class="sd">        :param diroutput: output directory to save the maps</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">snowtools.plots.maps.cartopy_massifs</span> <span class="kn">import</span> <span class="n">Map_alpes</span><span class="p">,</span> <span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">Map_corse</span><span class="p">,</span> <span class="n">Map_vosges</span><span class="p">,</span> <span class="n">Map_jura</span><span class="p">,</span> \
+        <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps.cartopy_massifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Map_alpes</span><span class="p">,</span> <span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">Map_corse</span><span class="p">,</span> <span class="n">Map_vosges</span><span class="p">,</span> <span class="n">Map_jura</span><span class="p">,</span> \
             <span class="n">Map_central</span>
 
         <span class="n">map_generic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alp</span><span class="o">=</span><span class="n">Map_alpes</span><span class="p">,</span> <span class="n">pyr</span><span class="o">=</span><span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">cor</span><span class="o">=</span><span class="n">Map_corse</span><span class="p">,</span> <span class="n">jur</span><span class="o">=</span><span class="n">Map_jura</span><span class="p">,</span> <span class="n">mac</span><span class="o">=</span><span class="n">Map_central</span><span class="p">,</span>
@@ -1130,13 +1285,17 @@
                     <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">formatout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="n">plotname</span> <span class="o">+</span> <span class="s2">&quot; is available.&quot;</span><span class="p">)</span>
                     <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">(</span><span class="n">rmcbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">()</span></div></div>
+            <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif">[docs]</a><span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
 <span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EnsembleOperDiagsNorthSouthMassif</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleNorthSouthMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleOperDiagsNorthSouthMassif</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleNorthSouthMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for operationally plot maps and spaghetti plots</span>
 <span class="sd">    distinguishing between northern and southern orientation</span>
 <span class="sd">    at each massif.</span>
@@ -1156,15 +1315,20 @@
     <span class="c1">#: ensemble data</span>
     <span class="n">ensemble</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.alldiags"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.alldiags">[docs]</a>    <span class="k">def</span> <span class="nf">alldiags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.alldiags">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.alldiags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">alldiags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate percentiles for all variables in :py:attr:`.list_var_spag_2points` and :py:attr:`.list_var_map`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleOperDiagsNorthSouthMassif</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_var_spag_2points</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_var_map</span><span class="p">),</span>
                                                              <span class="bp">self</span><span class="o">.</span><span class="n">list_q</span><span class="p">,</span> <span class="p">{})</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.get_pairs_ns"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.get_pairs_ns">[docs]</a>    <span class="k">def</span> <span class="nf">get_pairs_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.get_pairs_ns">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.get_pairs_ns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_pairs_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get for each massif and altitude the pair of indices corresponding to</span>
 <span class="sd">        values for the northern and southern slopes.</span>
 
@@ -1186,8 +1350,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_pairs</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.pack_spaghettis_ns"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.pack_spaghettis_ns">[docs]</a>    <span class="k">def</span> <span class="nf">pack_spaghettis_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.pack_spaghettis_ns">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.pack_spaghettis_ns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack_spaghettis_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do spaghetti plots with values for the northern and southern slope on the same plot.</span>
 
 <span class="sd">        :param suptitle: common suptitle for all plots</span>
@@ -1199,8 +1366,11 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">EnsembleOperDiagsNorthSouthMassif</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">pack_spaghettis_multipoints</span><span class="p">(</span><span class="n">list_pairs</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="p">,</span>
                                                                                    <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">versants</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.pack_maps"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.pack_maps">[docs]</a>    <span class="k">def</span> <span class="nf">pack_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsNorthSouthMassif.pack_maps">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsNorthSouthMassif.pack_maps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce maps for the variables given in :py:attr:`.list_var_map`</span>
 <span class="sd">        over the regions given in :py:attr:`.domain`</span>
 <span class="sd">        for each available altitude level and time step.</span>
@@ -1215,7 +1385,7 @@
 <span class="sd">        :param diroutput: output directory to save the maps</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="kn">from</span> <span class="nn">snowtools.plots.maps.cartopy_massifs</span> <span class="kn">import</span> <span class="n">Map_alpes</span><span class="p">,</span> <span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">Map_corse</span><span class="p">,</span> <span class="n">Map_vosges</span><span class="p">,</span> <span class="n">Map_jura</span><span class="p">,</span> \
+        <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps.cartopy_massifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Map_alpes</span><span class="p">,</span> <span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">Map_corse</span><span class="p">,</span> <span class="n">Map_vosges</span><span class="p">,</span> <span class="n">Map_jura</span><span class="p">,</span> \
             <span class="n">Map_central</span>
         <span class="n">map_generic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alp</span><span class="o">=</span><span class="n">Map_alpes</span><span class="p">,</span> <span class="n">pyr</span><span class="o">=</span><span class="n">Map_pyrenees</span><span class="p">,</span> <span class="n">cor</span><span class="o">=</span><span class="n">Map_corse</span><span class="p">,</span> <span class="n">jur</span><span class="o">=</span><span class="n">Map_jura</span><span class="p">,</span> <span class="n">vog</span><span class="o">=</span><span class="n">Map_vosges</span><span class="p">,</span>
                            <span class="n">mac</span><span class="o">=</span><span class="n">Map_central</span><span class="p">)</span>
@@ -1266,12 +1436,16 @@
                     <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">formatout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="n">plotname</span> <span class="o">+</span> <span class="s2">&quot; is available.&quot;</span><span class="p">)</span>
                     <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">(</span><span class="n">rmcbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rminfobox</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">()</span></div></div>
+            <span class="n">m</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">()</span></div>
+</div>
 
-<div class="viewcode-block" id="EnsembleOperDiagsStations"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsStations">[docs]</a><span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+
+<div class="viewcode-block" id="EnsembleOperDiagsStations">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleOperDiagsStations">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
 <span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EnsembleOperDiagsStations</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleStation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleOperDiagsStations</span><span class="p">(</span><span class="n">EnsembleOperDiags</span><span class="p">,</span> <span class="n">EnsembleStation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for operationally plotting spaghetti plots for station based simulations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: list of variables to plot maps for</span>
@@ -1281,13 +1455,18 @@
                      <span class="s1">&#39;WET_TH_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;REFRZTH_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;SNOMLT_ISBA&#39;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EnsemblePostproc"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc">[docs]</a><span class="k">class</span> <span class="nc">EnsemblePostproc</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsemblePostproc">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsemblePostproc</span><span class="p">(</span><span class="n">_EnsembleMassif</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for ensemble post-processing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="EnsemblePostproc.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">inputfiles</span><span class="p">,</span> <span class="n">decile</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="EnsemblePostproc.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">inputfiles</span><span class="p">,</span> <span class="n">decile</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">outdir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
                  <span class="n">outfilename</span><span class="o">=</span><span class="s1">&#39;PRO_post.nc&#39;</span><span class="p">,</span> <span class="n">emosmethod</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param variables: list of variables to process</span>
 <span class="sd">        :param inputfiles: list of input files</span>
 <span class="sd">        :param decile: list of percentiles</span>
@@ -1319,6 +1498,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">emosmethod</span> <span class="o">=</span> <span class="n">Ensemble</span><span class="o">.</span><span class="n">quantile</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">flipaxis</span> <span class="o">=</span> <span class="kc">True</span></div>
+
             <span class="c1"># TODO: to test postprocessing with CSG EMOS inside the vortex Four_Seasons_Task (s2m_postproc algo)</span>
             <span class="c1">#  without changes in vortex, comment the two lines above and uncomment the two lines below.</span>
             <span class="c1"># self.emosmethod = Ensemble.emos_csg_nonorm_allstations_newsnow</span>
@@ -1326,12 +1506,14 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;variables always written to the output file&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;variables always written to the output file&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="s1">&#39;massif_num&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="EnsemblePostproc.create_outfile"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.create_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">create_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsemblePostproc.create_outfile">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.create_outfile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create output data set.</span>
 
 <span class="sd">        :ivar outdataset: output data set</span>
@@ -1342,8 +1524,11 @@
         <span class="c1">#     raise DirNameException(self.outfile)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outfile</span><span class="p">,</span> <span class="n">ncformat</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnsemblePostproc.init_outfile"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.init_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">init_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsemblePostproc.init_outfile">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.init_outfile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy global attributes, dimensions and standard variables from the</span>
 <span class="sd">        first simulation file to the output file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1367,11 +1552,14 @@
                         <span class="c1"># print(self.simufiles[0].getattr(name, att))</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="n">att</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">att</span><span class="p">)})</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simufiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span></div>
+
                 <span class="c1"># print(&#39;data copied&#39;)</span>
         <span class="c1"># print(self.outdataset.listvar())</span>
 
-<div class="viewcode-block" id="EnsemblePostproc.postprocess"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="EnsemblePostproc.postprocess">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.postprocess">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do postprocessing</span>
 
 <span class="sd">        #) create output file</span>
@@ -1391,8 +1579,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EnsemblePostproc.deciles"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.deciles">[docs]</a>    <span class="k">def</span> <span class="nf">deciles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsemblePostproc.deciles">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.deciles">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deciles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates percentiles given in :py:attr:`.decile` for variables in :py:attr:`.variables` and adds them</span>
 <span class="sd">        to the output data set including the corresponding dimension, coordinate variable and attributes applying the</span>
 <span class="sd">        method in :py:attr:`.emosmethod` to obtain the percentiles.</span>
@@ -1422,8 +1613,11 @@
                 <span class="c1"># print(vardecile.shape)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">vardecile</span><span class="p">[:]</span></div>
 
-<div class="viewcode-block" id="EnsemblePostproc.median"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.median">[docs]</a>    <span class="k">def</span> <span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsemblePostproc.median">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostproc.median">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the median for variables in :py:attr:`.variables` and adds the median</span>
 <span class="sd">        to the output data set including the corresponding attributes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1441,36 +1635,46 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">(</span><span class="n">attdict</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">median</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">median</span><span class="p">[:]</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outdataset</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">median</span><span class="p">[:]</span></div>
+</div>
 
 
-<div class="viewcode-block" id="EnsemblePostprocStation"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostprocStation">[docs]</a><span class="k">class</span> <span class="nc">EnsemblePostprocStation</span><span class="p">(</span><span class="n">EnsemblePostproc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsemblePostprocStation">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsemblePostprocStation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsemblePostprocStation</span><span class="p">(</span><span class="n">EnsemblePostproc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for ensemble postprocessing at station locations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;variables always written to the output file&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;variables always written to the output file&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;ZS&#39;</span><span class="p">,</span> <span class="s1">&#39;aspect&#39;</span><span class="p">,</span> <span class="s1">&#39;slope&#39;</span><span class="p">,</span> <span class="s1">&#39;station&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EnsembleHydro"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleHydro">[docs]</a><span class="k">class</span> <span class="nc">EnsembleHydro</span><span class="p">(</span><span class="n">EnsemblePostproc</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnsembleHydro">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.EnsembleHydro">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnsembleHydro</span><span class="p">(</span><span class="n">EnsemblePostproc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to provide a synthesis of ensemble hydrological diagnostics of S2M</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">spatialdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spatialdim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;basin&#39;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardvars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;basin&#39;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="PPQuantiles"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles">[docs]</a><span class="k">class</span> <span class="nc">PPQuantiles</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PPQuantiles">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PPQuantiles</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for handling files containing postprocessed (quantile) forecasts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: maximum height level to be treated</span>
@@ -1490,7 +1694,9 @@
                          <span class="n">label</span><span class="o">=</span><span class="sa">u</span><span class="s1">&#39;Epaisseur de neige fraîche en 24h (cm)&#39;</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="PPQuantiles.__init__"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="PPQuantiles.__init__">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ps</span> <span class="o">=</span> <span class="n">prosimu</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nech</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="o">.</span><span class="n">getlendim</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">aspect</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -1500,9 +1706,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deciles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;decile&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ps</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="PPQuantiles.quantilemaps"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.quantilemaps">[docs]</a>    <span class="k">def</span> <span class="nf">quantilemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="p">,</span>
+
+<div class="viewcode-block" id="PPQuantiles.quantilemaps">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.quantilemaps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantilemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="p">,</span>
                      <span class="n">mapindex</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots maps of quantile forecasts. For example EMOS postprocessed quantiles.</span>
 
 <span class="sd">        :param domain: domain (region) string to determine which map class to use</span>
@@ -1511,7 +1720,7 @@
 <span class="sd">        :param mapindex: array of bool indicating for with indices of the quantile dimension (last dimension of the</span>
 <span class="sd">            data array) maps should be drawn.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">snowtools.plots.maps.cartopy_massifs</span> <span class="kn">import</span> <span class="n">MultiMap_Alps</span><span class="p">,</span> <span class="n">MultiMap_Pyr</span><span class="p">,</span> <span class="n">MultiMap_Cor</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps.cartopy_massifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiMap_Alps</span><span class="p">,</span> <span class="n">MultiMap_Pyr</span><span class="p">,</span> <span class="n">MultiMap_Cor</span>
 
         <span class="n">map_generic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alp</span><span class="o">=</span><span class="n">MultiMap_Alps</span><span class="p">,</span> <span class="n">pyr</span><span class="o">=</span><span class="n">MultiMap_Pyr</span><span class="p">,</span> <span class="n">cor</span><span class="o">=</span><span class="n">MultiMap_Cor</span><span class="p">)</span>
 
@@ -1554,8 +1763,11 @@
             <span class="n">mm</span><span class="o">.</span><span class="n">reset_massifs</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="PPQuantiles.spaghetti_plots"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.spaghetti_plots">[docs]</a>    <span class="k">def</span> <span class="nf">spaghetti_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PPQuantiles.spaghetti_plots">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.PPQuantiles.spaghetti_plots">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spaghetti_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produce spaghetti plots for all variables in :py:attr:`list_var_spag`.</span>
 
 <span class="sd">        :param suptitle: Suptitle for all plots.</span>
@@ -1592,19 +1804,23 @@
                 <span class="n">s</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">plotname</span><span class="p">,</span> <span class="n">formatout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formatplot</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">plotname</span> <span class="o">+</span> <span class="s2">&quot; is available.&quot;</span><span class="p">)</span>
 
-            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
 
 
 
-<div class="viewcode-block" id="pp_plots"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.pp_plots">[docs]</a><span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+
+<div class="viewcode-block" id="pp_plots">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.pp_plots">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
 <span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pp_plots</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pp_plots</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    downloads files with postprocessed quantiles and plots maps and spaghetti plots of them</span>
 
 <span class="sd">    :param c: config</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">snowtools.tasks.oper.get_oper_files</span> <span class="kn">import</span> <span class="n">FutureS2MExtractor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tasks.oper.get_oper_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureS2MExtractor</span>
 
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">diroutput</span><span class="p">)</span>
     <span class="n">S2ME</span> <span class="o">=</span> <span class="n">FutureS2MExtractor</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
@@ -1634,15 +1850,18 @@
         <span class="n">data</span><span class="o">.</span><span class="n">spaghetti_plots</span><span class="p">(</span><span class="n">suptitle</span><span class="p">,</span> <span class="n">diroutput</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">diroutput_plots</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.main">[docs]</a><span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../code/plots-pearps2m.html#plots.pearps2m.postprocess.main">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
 <span class="nd">@echecker_pyproj</span><span class="o">.</span><span class="n">disabled_if_unavailable</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :param c: config</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># The following class has a vortex-dependence</span>
     <span class="c1"># Should not import than above to avoid problems when importing the module from vortex</span>
-    <span class="kn">from</span> <span class="nn">snowtools.tasks.oper.get_oper_files</span> <span class="kn">import</span> <span class="n">FutureS2MExtractor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tasks.oper.get_oper_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">FutureS2MExtractor</span>
 
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">diroutput</span><span class="p">)</span>
     <span class="c1"># if c.dev:</span>
@@ -1715,6 +1934,7 @@
         <span class="k">del</span> <span class="n">E</span></div>
 
 
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">USAGE</span> <span class="o">=</span> <span class="s2">&quot;usage: python postprocess.py [-b YYYYMMDD] [-e YYYYMMDD] [-o diroutput]&quot;</span>
 
@@ -1745,9 +1965,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
@@ -1755,13 +1975,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -1779,8 +1999,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>
