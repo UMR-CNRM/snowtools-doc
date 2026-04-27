@@ -109,7 +109,7 @@ to be shifted to a [-180,180] grid, for instance (with -180 argument).</p></li>
 <p>Usage example (for getting total snow depth field of a 2D PRO file <code class="docutils literal notranslate"><span class="pre">filename</span></code> on a given date):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">epygram</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">quicklookmap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">quicklookmap</span>
 
 <span class="n">resource</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
 <span class="n">field</span> <span class="o">=</span> <span class="n">quicklookmap</span><span class="o">.</span><span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="s1">&#39;2021-12-01&#39;</span><span class="p">)</span>
@@ -140,7 +140,7 @@ Details can be found at:
 </dl>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">maptplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">quicklookmap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">quicklookmap</span>
 
 <span class="n">quicklookmap</span><span class="o">.</span><span class="n">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
 
