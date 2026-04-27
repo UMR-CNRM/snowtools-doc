@@ -46,8 +46,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <section id="module-plots.maps.quicklookmap">
-<span id="map-plotting-tools-for-gridded-data"></span><span id="plots-maps-grid"></span><h1>Map plotting tools for gridded data<a class="headerlink" href="#module-plots.maps.quicklookmap" title="Link to this heading">¶</a></h1>
+  <section id="map-plotting-tools-for-gridded-data">
+<span id="plots-maps-grid"></span><h1>Map plotting tools for gridded data<a class="headerlink" href="#map-plotting-tools-for-gridded-data" title="Link to this heading">¶</a></h1>
+<section id="module-plots.maps.quicklookmap">
+<span id="the-quicklookmap-module-for-plotting-maps-of-2d-data-from-simulation-outputs"></span><h2>The <code class="docutils literal notranslate"><span class="pre">quicklookmap</span></code> module for plotting maps of 2D data from simulation outputs<a class="headerlink" href="#module-plots.maps.quicklookmap" title="Link to this heading">¶</a></h2>
 <p>Created on 24 Mai 2025</p>
 <dl class="field-list">
 <dt class="field-odd">Authors<span class="colon">:</span></dt>
@@ -189,6 +191,120 @@ Details can be found at:
 </dd></dl>
 
 </section>
+<section id="module-plots.maps.map_helpers">
+<span id="helpers-for-pretty-maps"></span><h2>Helpers for pretty maps<a class="headerlink" href="#module-plots.maps.map_helpers" title="Link to this heading">¶</a></h2>
+<p>A collection of functions to help pimping your cartopy maps !</p>
+<p>Use case example, I wanto to plot a total snow depth of a simulation with
+<code class="docutils literal notranslate"><span class="pre">snowtools.plots.maps.quicklookmap</span></code> and add a hillshade, some POIs, and a layer
+representing the hydrography.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.crs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ccrs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">epygram</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps</span><span class="w"> </span><span class="kn">import</span> <span class="n">quicklookmap</span><span class="p">,</span> <span class="n">map_helpers</span>
+
+<span class="n">projection</span> <span class="o">=</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">epsg</span><span class="p">(</span><span class="mi">9794</span><span class="p">)</span>  <span class="c1"># French Lambert projection</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="n">projection</span><span class="p">},</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="c1"># Plot a scalar map of total snow depth</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span>
+<span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+<span class="n">resource</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">quicklookmap</span><span class="o">.</span><span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+<span class="n">quicklookmap</span><span class="o">.</span><span class="n">scalar_map</span><span class="p">(</span>
+    <span class="n">field</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Hauteur de neige totale (m)&quot;</span><span class="p">,</span>
+    <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;fig&#39;</span><span class="p">:</span> <span class="n">fig</span><span class="p">,</span> <span class="s1">&#39;ax&#39;</span><span class="p">:</span> <span class="n">ax</span><span class="p">,</span>
+        <span class="s1">&#39;minmax&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+        <span class="s1">&#39;colormap&#39;</span><span class="p">:</span> <span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;parallels&#39;</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;meridians&#39;</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;epygram_departments&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;cartopy_features&#39;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">})</span>
+
+<span class="c1"># Add points of interset</span>
+<span class="n">POI</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="mf">45.15449</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="mf">6.143825</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Pic de l&#39;</span><span class="n">Étendard</span><span class="s1">&#39;},</span>
+    <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="mf">45.004942</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="mf">6.309428</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;La Meije&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="mf">45.127064</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="mf">6.336827</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Aiguilles d&#39;</span><span class="n">Arves</span><span class="s1">&#39;},</span>
+<span class="p">]</span>
+
+<span class="n">map_helpers</span><span class="o">.</span><span class="n">add_poi</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">POIs</span><span class="o">=</span><span class="n">POI</span><span class="p">)</span>
+
+<span class="c1"># Add a layer from IGN for rivers and hydrography</span>
+<span class="n">map_helpers</span><span class="o">.</span><span class="n">add_IGN_rivers</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="c1"># Add an hillshade from IGN</span>
+<span class="n">map_helpers</span><span class="o">.</span><span class="n">add_IGN_hillshade</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="c1"># Add road layer from IGN</span>
+<span class="n">map_helpers</span><span class="o">.</span><span class="n">add_IGN_feature</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;IGNF_TRANSPORTNETWORKS.ROADS&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../_images/map_helpers_example.png" src="../_images/map_helpers_example.png" />
+</figure>
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.map_helpers.add_IGN_feature">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.map_helpers.</span></span><span class="sig-name descname"><span class="pre">add_IGN_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/map_helpers.html#add_IGN_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.map_helpers.add_IGN_feature" title="Link to this definition">¶</a></dt>
+<dd><p>Add a layer from the IGN map service on the cartopy map
+provided on axis ax.</p>
+<p>For the list of layers available, see IGN documentation :</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://data.geopf.fr/wms-r?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities">https://data.geopf.fr/wms-r?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities</a></p></li>
+<li><p><a class="reference external" href="https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/tutoriels-api/qgis/">https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/tutoriels-api/qgis/</a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – A maptpltlib Axis, with a projection defined</p></li>
+<li><p><strong>layer</strong> (<em>str</em>) – Layer of the IGN index (str descriptor. e.g. : <code class="docutils literal notranslate"><span class="pre">ELEVATION.ELEVATIONGRIDCOVERAGE.SHADOW</span></code>)</p></li>
+<li><p><strong>zorder</strong> (<em>int</em>) – Layer orderning (matplotlib index)</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to matplotlib <code class="docutils literal notranslate"><span class="pre">ax.imshow</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.map_helpers.add_IGN_hillshade">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.map_helpers.</span></span><span class="sig-name descname"><span class="pre">add_IGN_hillshade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/map_helpers.html#add_IGN_hillshade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.map_helpers.add_IGN_hillshade" title="Link to this definition">¶</a></dt>
+<dd><p>Add an Hillshade for relief visualization (from IGN data).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.map_helpers.add_IGN_rivers">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.map_helpers.</span></span><span class="sig-name descname"><span class="pre">add_IGN_rivers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/map_helpers.html#add_IGN_rivers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.map_helpers.add_IGN_rivers" title="Link to this definition">¶</a></dt>
+<dd><p>Add a layer representing hydrography (from IGN data).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="plots.maps.map_helpers.add_poi">
+<span class="sig-prename descclassname"><span class="pre">plots.maps.map_helpers.</span></span><span class="sig-name descname"><span class="pre">add_poi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">POIs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/plots/maps/map_helpers.html#add_poi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#plots.maps.map_helpers.add_poi" title="Link to this definition">¶</a></dt>
+<dd><p>Add point of interests on a map.
+POI is a list of points consisting of dictionnaries with key lat, lon
+(or x, y) and an optional ‘name’ to be plotted on the map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – A maptpltlib Axis, with a projection defined</p></li>
+<li><p><strong>POIs</strong> (<em>list</em><em> of </em><em>dict</em>) – The list of the Point of interests</p></li>
+<li><p><strong>crs_ref</strong> (<em>str</em>) – The CRS of the coordinates describing the POI (lat/lon or x, y). Defaults to lat/lon.</p></li>
+<li><p><strong>kwarks</strong> – Arguments to be passes to ax.scatter
+(nb: marker, color and s are set resp. to o, k and 15 but can be overwritten).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -201,10 +317,20 @@ Details can be found at:
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Map plotting tools for gridded data</a><ul>
+<li><a class="reference internal" href="#module-plots.maps.quicklookmap">The <code class="docutils literal notranslate"><span class="pre">quicklookmap</span></code> module for plotting maps of 2D data from simulation outputs</a><ul>
 <li><a class="reference internal" href="#plots.maps.quicklookmap.difference_map"><code class="docutils literal notranslate"><span class="pre">difference_map()</span></code></a></li>
 <li><a class="reference internal" href="#plots.maps.quicklookmap.read_and_preprocess"><code class="docutils literal notranslate"><span class="pre">read_and_preprocess()</span></code></a></li>
 <li><a class="reference internal" href="#plots.maps.quicklookmap.scalar_map"><code class="docutils literal notranslate"><span class="pre">scalar_map()</span></code></a></li>
 <li><a class="reference internal" href="#plots.maps.quicklookmap.wind_map"><code class="docutils literal notranslate"><span class="pre">wind_map()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-plots.maps.map_helpers">Helpers for pretty maps</a><ul>
+<li><a class="reference internal" href="#plots.maps.map_helpers.add_IGN_feature"><code class="docutils literal notranslate"><span class="pre">add_IGN_feature()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.map_helpers.add_IGN_hillshade"><code class="docutils literal notranslate"><span class="pre">add_IGN_hillshade()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.map_helpers.add_IGN_rivers"><code class="docutils literal notranslate"><span class="pre">add_IGN_rivers()</span></code></a></li>
+<li><a class="reference internal" href="#plots.maps.map_helpers.add_poi"><code class="docutils literal notranslate"><span class="pre">add_poi()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
