@@ -401,8 +401,8 @@
         <span class="n">time_obs_ok</span> <span class="o">=</span> <span class="n">time_obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
         <span class="n">obs_ok</span> <span class="o">=</span> <span class="n">var_obs</span><span class="p">[</span><span class="n">ind_obs_ok</span><span class="p">]</span>
 
-        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs_ok</span><span class="p">)</span>
-        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_obs_ok</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">)</span>
+        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">time_sim</span><span class="p">,</span> <span class="n">time_obs_ok</span><span class="p">)</span>
+        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">time_obs_ok</span><span class="p">,</span> <span class="n">time_sim</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">obsCommon</span> <span class="o">=</span> <span class="n">obs_ok</span><span class="p">[</span><span class="n">mask_obs</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ensCommon</span> <span class="o">=</span> <span class="n">ensemble</span><span class="p">[:,</span> <span class="n">mask_sim</span><span class="p">]</span></div>

@@ -74,7 +74,7 @@
 <li><p>Enter in the virtual environment:  <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">&lt;name_of_your_virtual_env&gt;/bin/activate</span></code></p></li>
 <li><p>Ensure you are at the root of the snowtools repository and install the package by running:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -157,8 +157,9 @@ module<span class="w"> </span>load<span class="w"> </span>intelmpi
 </section>
 <section id="crps-scores">
 <h3>CRPS scores<a class="headerlink" href="#crps-scores" title="Link to this heading">¶</a></h3>
-<p>If you need to use CRPS scoring tools, which parts are written in Fortran, you need to compile them.</p>
-<p>For CRPS scores, go to the <code class="docutils literal notranslate"><span class="pre">snowtools/scores</span></code>, and run <code class="docutils literal notranslate"><span class="pre">./install_ubuntu.sh</span></code> (or <code class="docutils literal notranslate"><span class="pre">./install_belenos.sh</span></code> if you are on a Meteo-France super computer).</p>
+<p>CRPS score is now as an independent package available at <a class="reference external" href="https://github.com/UMR-CNRM/snowtools-crps">https://github.com/UMR-CNRM/snowtools-crps</a></p>
+<p>To install it along with snowtools, just install the optional dependency <code class="docutils literal notranslate"><span class="pre">snowtools[scores]</span></code> (by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all,scores]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all]</span></code>).
+Note that you may need to upgrade pip to version above 23.0 to install scores dependency due to a bug in previous pip versions.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footnote1" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>

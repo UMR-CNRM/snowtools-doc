@@ -346,8 +346,8 @@
         <span class="n">time_sim_unique</span><span class="p">,</span> <span class="n">ind_sim_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">time_sim_ok</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">sim_unique</span> <span class="o">=</span> <span class="n">sim_ok</span><span class="p">[</span><span class="n">ind_sim_unique</span><span class="p">]</span>
 
-        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_sim_unique</span><span class="p">,</span> <span class="n">time_obs_unique</span><span class="p">)</span>
-        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">time_obs_unique</span><span class="p">,</span> <span class="n">time_sim_unique</span><span class="p">)</span>
+        <span class="n">mask_sim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">time_sim_unique</span><span class="p">,</span> <span class="n">time_obs_unique</span><span class="p">)</span>
+        <span class="n">mask_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">time_obs_unique</span><span class="p">,</span> <span class="n">time_sim_unique</span><span class="p">)</span>
         <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="c1"># print(&#39;Compute masks in {0:f}s&#39;.format(t2-t1))</span>
 

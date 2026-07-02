@@ -39,9 +39,9 @@
             
   <p>Script <code class="docutils literal notranslate"><span class="pre">plots/maps/mapplotter.py</span></code> help:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: mapplotter.py [-h] [-f FIELD] [--wU UCOMPONENTOFWIND]
-                     [--wV VCOMPONENTOFWIND] --date DATE [-d REFNAME]
+                     [--wV VCOMPONENTOFWIND] [--date DATE] [-d REFNAME]
                      [-x OPERATION] [--mt MASK_THRESHOLD]
-                     [--wpo {lonlat,grid}] [--mpf]
+                     [--wpo {lonlat,grid}] [--mpf] [--directplot]
                      [--pm {pcolormesh,contourf,contour,scatter}] [-m MINMAX]
                      [-n LEVELSNUMBER] [-c COLORMAP] [-t] [--title TITLE]
                      [--cpyf CARTOPY_FEATURES] [--depts]
@@ -51,10 +51,19 @@
                      [--fd FIGURES_DPI]
                      [--global_shift_center GLOBAL_SHIFT_CENTER]
                      [-C DIFFCOLORMAP] [-T] [-O OUTPUTFILENAME] [-v]
-                     filename
+                     [filename]
 
-An EPyGrAM based tool for simple plots of meteorological or snow cover related
-2D fields from a resource file.
+Tool to plot maps of meteorological or snow cover related 2D
+fields. Provide either a graphical user interface (GUI) or
+do plots based on command line arguments.
+
+To use the Graphical interface, just run this script without
+argument or by providing only filename, and optionnally
+field name and date.
+
+To do directly a plot without graphical interaction, you can
+use all arguments below. Make sure to use --directplot or
+--outputfilename flag.
 
 positional arguments:
   filename              name of the file to be processed.
@@ -97,6 +106,8 @@ options:
                         projected.
   --mpf, --map_factor_correction
                         apply a map factor correction to wind.
+  --directplot          Do a non-interactive plot taking into account all
+                        options rather than using the GUI.
   --pm {pcolormesh,contourf,contour,scatter}, --plot_method {pcolormesh,contourf,contour,scatter}
                         plot method, among (&#39;pcolormesh&#39;, &#39;contourf&#39;,
                         &#39;contour&#39;, &#39;scatter&#39;). Default is &#39;pcolormesh&#39; for
@@ -183,7 +194,7 @@ options:
   -v, --verbose         run verbosely. Else, only messages of level Error will
                         be displayed.
 
-End of help for: mapplotter.py (EPyGrAM v2.0.4)
+(Use EPyGrAM v2.0.4)
 </pre></div>
 </div>
 
