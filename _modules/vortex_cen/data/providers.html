@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.data.providers &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.providers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.data.providers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">providers.py</span>
+<span class="sd">------------</span>
+
+<span class="sd">Specific CEN providers for DATA STORED OUTSIDE THE VORTEX DATA TREE only.</span>
+
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.data.providers</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 1</span>
+
+<span class="sd">.. autoclass:: S2MReanalysisProvider</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: CenSopranoDevProvider</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.util.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericConfigParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.data.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provider</span><span class="p">,</span> <span class="n">Vortex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.syntax.stdattrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">namespacefp</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">member</span><span class="p">,</span> <span class="n">scenario</span><span class="p">,</span> <span class="n">FmtInt</span>
+
+<span class="c1">#: No automatic export</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">map_suffix</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'alp'</span><span class="p">:</span> <span class="s1">'_al'</span><span class="p">,</span> <span class="s1">'pyr'</span><span class="p">:</span> <span class="s1">'_py'</span><span class="p">,</span> <span class="s1">'cor'</span><span class="p">:</span> <span class="s1">'_co'</span><span class="p">,</span> <span class="s1">'mac'</span><span class="p">:</span> <span class="s1">'_mc'</span><span class="p">,</span> <span class="s1">'jur'</span><span class="p">:</span> <span class="s1">'_ju'</span><span class="p">,</span> <span class="s1">'vog'</span><span class="p">:</span> <span class="s1">'_vo'</span><span class="p">}</span>
+
+<span class="n">_config_path</span> <span class="o">=</span> <span class="s1">'vortex_cen.data.cen_stores_configs'</span>
+<span class="n">_config_file</span> <span class="o">=</span> <span class="s1">'cen-map-resources.ini'</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CenCfgParser</span><span class="p">(</span><span class="n">GenericConfigParser</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolvedpath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">vapp</span><span class="p">,</span> <span class="n">vconf</span><span class="p">,</span> <span class="n">resname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Shortcut to retrieve the ``resolvedpath`` entry in the ``resname`` section</span>
+<span class="sd">        of the current config file.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">resname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resname</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resname</span><span class="p">,</span> <span class="s1">'resolvedpath'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="S2MReanalysisProvider">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-providers.html#vortex_cen.data.providers.S2MReanalysisProvider">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MReanalysisProvider</span><span class="p">(</span><span class="n">Provider</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Provider for input of the SAFRAN reanalysis (native observation and guess files).</span>
+<span class="sd">    """</span>
+
+    <span class="c1">#: Path to the uget Store configuration file</span>
+    <span class="n">_config</span> <span class="o">=</span> <span class="n">CenCfgParser</span><span class="p">(</span>
+        <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">open_text</span><span class="p">(</span>
+            <span class="n">_config_path</span><span class="p">,</span>
+            <span class="n">_config_file</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">namespacefp</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Provider for S2M reanalysis input resources (observations and guess)'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m.archive.fr'</span><span class="p">],</span>
+                    <span class="n">optional</span>  <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'hendrix.meteo.fr'</span><span class="p">],</span>
+                    <span class="n">default</span>  <span class="o">=</span> <span class="s1">'hendrix.meteo.fr'</span><span class="p">,</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">tube</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'ftp'</span><span class="p">],</span>
+                    <span class="n">default</span>  <span class="o">=</span> <span class="s1">'ftp'</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'reanalysis'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The actual scheme is the ``tube`` attribute of the current provider."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">netloc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The actual netloc is the ``namespace`` attribute of the current provider."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The actual pathname is the directly obtained from the templated ini file</span>
+<span class="sd">        provided through the ``_config`` class variable.</span>
+<span class="sd">        """</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathinfo</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">'level_one'</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">map_suffix</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s1">'level_one'</span><span class="p">]]</span>
+        <span class="n">season</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">nivologyseason</span>
+        <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'observations'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">part</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'synop'</span><span class="p">,</span> <span class="s1">'precipitation'</span><span class="p">,</span> <span class="s1">'hourlyobs'</span><span class="p">]:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'obs/rs'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+            <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">part</span> <span class="o">==</span> <span class="s1">'nebulosity'</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'neb/n'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'guess'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">source_conf</span> <span class="o">==</span> <span class="s1">'era40'</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_one'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'cep'</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'guess/p'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'packedguess'</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'guess/era5'</span>
+        <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'packedobs'</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'obs'</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">setall</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">resolvedpath</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vapp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vconf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">realkind</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CenSopranoDevProvider">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-providers.html#vortex_cen.data.providers.CenSopranoDevProvider">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CenSopranoDevProvider</span><span class="p">(</span><span class="n">Provider</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Provider for real-time SAFRAN input files.</span>
+
+<span class="sd">    Note : This provider should not be used anymore.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_config</span> <span class="o">=</span> <span class="n">CenCfgParser</span><span class="p">(</span>
+        <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">open_text</span><span class="p">(</span>
+            <span class="n">_config_path</span><span class="p">,</span>
+            <span class="n">_config_file</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">namespacefp</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'CEN Soprano provider'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'cendev.soprano.fr'</span><span class="p">],</span>
+                    <span class="n">optional</span>  <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'guppy.meteo.fr'</span><span class="p">,</span> <span class="s1">'sotrtm35-sidev.meteo.fr'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">tube</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'scp'</span><span class="p">,</span> <span class="s1">'ftp'</span><span class="p">],</span>
+                    <span class="n">default</span>  <span class="o">=</span> <span class="s1">'ftp'</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'SOPRANO dev job provider init </span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'cendev'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The actual scheme is the ``tube`` attribute of the current provider."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">netloc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The actual netloc is the ``namespace`` attribute of the current provider."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The actual pathname is the directly obtained from the templated ini file</span>
+<span class="sd">        provided through the ``config`` footprint attribute.</span>
+<span class="sd">        """</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathinfo</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">'model'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'s2m'</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">'level_one'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vconf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'@'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">map_suffix</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s1">'level_one'</span><span class="p">]]</span>
+        <span class="n">season</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">nivologyseason</span>
+        <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'observations'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">part</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'synop'</span><span class="p">,</span> <span class="s1">'precipitation'</span><span class="p">,</span> <span class="s1">'hourlyobs'</span><span class="p">]:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'obs/rs'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+            <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">part</span> <span class="o">==</span> <span class="s1">'radiosondage'</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'a'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+            <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">part</span> <span class="o">==</span> <span class="s1">'nebulosity'</span><span class="p">:</span>
+                <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'neb/n'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'guess'</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'p'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="k">elif</span> <span class="n">resource</span><span class="o">.</span><span class="n">realkind</span> <span class="o">==</span> <span class="s1">'snowpackstate'</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">'level_two'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'prep'</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="n">suffix</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'sopranodevprovider::pathname info </span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">setall</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">resolvedpath</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vapp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vconf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># class CenDevProvider(Vortex):</span>
+<span class="c1">#     """</span>
+<span class="c1">#     Provider for real-time simulations run by local user</span>
+<span class="c1">#     """</span>
+<span class="c1">#     _SPECIAL_EXPS = ()</span>
+<span class="c1">#</span>
+<span class="c1">#     _footprint = [</span>
+<span class="c1">#         block,</span>
+<span class="c1">#         member,</span>
+<span class="c1">#         namespacefp,</span>
+<span class="c1">#         dict(</span>
+<span class="c1">#             info="Vortex Cen Dev provider",</span>
+<span class="c1">#             attr=dict(</span>
+<span class="c1">#                 experiment=dict(</span>
+<span class="c1">#                     info="Provider experiment id",</span>
+<span class="c1">#                     values=["OPER"],</span>
+<span class="c1">#                     type=str,</span>
+<span class="c1">#                     optional=False,</span>
+<span class="c1">#                     access="rwx",</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 username = dict(</span>
+<span class="c1">#                     info="Provider username",</span>
+<span class="c1">#                     values=["lafaysse"],</span>
+<span class="c1">#                     type=str,</span>
+<span class="c1">#                     optional=False,</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 # vapp = dict(</span>
+<span class="c1">#                 #     values=["s2m"]</span>
+<span class="c1">#                 # ),</span>
+<span class="c1">#                 member=dict(</span>
+<span class="c1">#                     type=FmtInt,</span>
+<span class="c1">#                     args=dict(fmt="03"),</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 namespace=dict(</span>
+<span class="c1">#                     values=[</span>
+<span class="c1">#                         "vortex.archive-legacy.fr",</span>
+<span class="c1">#                         "vortex.cache.fr",</span>
+<span class="c1">#                         "vortex.archive.fr",</span>
+<span class="c1">#                         "vortex.multi.fr",</span>
+<span class="c1">#                         "vortex.stack.fr",</span>
+<span class="c1">#                     ],</span>
+<span class="c1">#                     optional=True,</span>
+<span class="c1">#                     default=None,</span>
+<span class="c1">#                     access="rwx",</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 cache=dict(</span>
+<span class="c1">#                     info="Whether or not to use the cache",</span>
+<span class="c1">#                     type=bool,</span>
+<span class="c1">#                     optional=True,</span>
+<span class="c1">#                     default=None,</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 archive=dict(</span>
+<span class="c1">#                     info="Whether or not to use the archive",</span>
+<span class="c1">#                     type=bool,</span>
+<span class="c1">#                     optional=True,</span>
+<span class="c1">#                     default=None,</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 namebuild=dict(</span>
+<span class="c1">#                     info="The object responsible for building filenames.",</span>
+<span class="c1">#                     optional=True,</span>
+<span class="c1">#                     doc_visibility=footprints.doc.visibility.ADVANCED,</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#                 expected=dict(</span>
+<span class="c1">#                     info="Is the resource expected ?",</span>
+<span class="c1">#                     alias=("promised",),</span>
+<span class="c1">#                     type=bool,</span>
+<span class="c1">#                     optional=True,</span>
+<span class="c1">#                     default=False,</span>
+<span class="c1">#                     doc_zorder=-5,</span>
+<span class="c1">#                 ),</span>
+<span class="c1">#             ),</span>
+<span class="c1">#             fastkeys={"block", "experiment"},</span>
+<span class="c1">#         ),</span>
+<span class="c1">#     ]</span>
+<span class="c1">#</span>
+<span class="c1">#     @property</span>
+<span class="c1">#     def realkind(self):</span>
+<span class="c1">#         return "vortex"</span>
+<span class="c1">#</span>
+<span class="c1">#     def netloc(self, resource):</span>
+<span class="c1">#         """Returns the current ``namespace``."""</span>
+<span class="c1">#         return self.namespace.netloc</span>
+<span class="c1">#</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.providers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

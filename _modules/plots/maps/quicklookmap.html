@@ -7,6 +7,7 @@
     <title>plots.maps.quicklookmap &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,7 +41,7 @@
   <h1>Source code for plots.maps.quicklookmap</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 24 Mai 2025</span>
 
 <span class="sd">:Authors:</span>
@@ -48,7 +49,7 @@
 
 <span class="sd">    largely copied from epygram epy_cartoplot.py</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pyproj</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">epygram</span>
@@ -67,7 +68,7 @@
                         <span class="n">additional_selection_options</span><span class="o">=</span><span class="p">{},</span>
                         <span class="n">nanvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">cap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read field in resource, and preprocess if requested.</span>
 
 <span class="sd">    :param resource: epygram resource to read data from</span>
@@ -77,8 +78,8 @@
 <span class="sd">    :param date: date (with time)</span>
 <span class="sd">    :type date: bronx.Date</span>
 <span class="sd">    :param operation: makes the requested operation</span>
-<span class="sd">        (e.g. {&#39;operation&#39;:&#39;-&#39;,&#39;operand&#39;:273.15} or</span>
-<span class="sd">        {&#39;operation&#39;:&#39;exp&#39;}) on the field before plot. default=None</span>
+<span class="sd">        (e.g. {'operation':'-','operand':273.15} or</span>
+<span class="sd">        {'operation':'exp'}) on the field before plot. default=None</span>
 <span class="sd">    :type operation: dict</span>
 <span class="sd">    :param global_shift_center: for global lon/lat grids, shift the center by the</span>
 <span class="sd">        requested angle (in degrees). Enables a [0,360] grid</span>
@@ -101,15 +102,15 @@
 
 <span class="sd">       from snowtools.plots.maps import quicklookmap</span>
 
-<span class="sd">       resource = epygram.formats.resource(filename, openmode=&#39;r&#39;)</span>
-<span class="sd">       field = quicklookmap.read_and_preprocess(resource, &#39;DSN_T_ISBA&#39;, &#39;2021-12-01&#39;)</span>
+<span class="sd">       resource = epygram.formats.resource(filename, openmode='r')</span>
+<span class="sd">       field = quicklookmap.read_and_preprocess(resource, 'DSN_T_ISBA', '2021-12-01')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">field</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">readfield</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="n">additional_selection_options</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DField</span><span class="p">,</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DVectorField</span><span class="p">)),</span> \
-        <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;Oops ! Looks like </span><span class="si">{}</span><span class="s1"> is not known as a horizontal 2D Field by epygram.&#39;</span><span class="p">,</span>
-                  <span class="s1">&#39;Add it to ~/.epygram/user_Field_Dict_</span><span class="si">{}</span><span class="s1">.csv ?&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+        <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'Oops ! Looks like </span><span class="si">{}</span><span class="s1"> is not known as a horizontal 2D Field by epygram.'</span><span class="p">,</span>
+                  <span class="s1">'Add it to ~/.epygram/user_Field_Dict_</span><span class="si">{}</span><span class="s1">.csv ?'</span><span class="p">])</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
     <span class="n">validity</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">FieldValidity</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getbasis</span><span class="p">())</span>
     <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">getvalidity</span><span class="p">(</span><span class="n">validity</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">spectral</span><span class="p">:</span>
@@ -131,18 +132,18 @@
     <span class="c1"># Cap data</span>
     <span class="k">if</span> <span class="n">cap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cap</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cap</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cap</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;cap should be a list or tuple of two elements&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'cap should be a list or tuple of two elements'</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">data</span>
         <span class="k">if</span> <span class="n">cap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="n">data</span> <span class="o">&lt;</span> <span class="n">cap</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">cap</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">cap</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cap</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">field</span><span class="o">.</span><span class="n">setdata</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">&#39;ellps&#39;</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="s1">&#39;a&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">geoid</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Geod</span><span class="p">(</span><span class="n">ellps</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">&#39;ellps&#39;</span><span class="p">])</span>
-            <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoid</span><span class="o">.</span><span class="n">a</span>
-            <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoid</span><span class="o">.</span><span class="n">b</span>
+    <span class="k">if</span> <span class="s1">'ellps'</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">'a'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">geoid</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Geod</span><span class="p">(</span><span class="n">ellps</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">'ellps'</span><span class="p">])</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">'a'</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoid</span><span class="o">.</span><span class="n">a</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geoid</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoid</span><span class="o">.</span><span class="n">b</span>
     <span class="k">return</span> <span class="n">field</span></div>
 
 
@@ -151,8 +152,8 @@
 <a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.wind_map">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">wind_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">map_factor_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">vectors_subsampling</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
              <span class="n">wind_components_are_projected_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">&#39;quiver&#39;</span><span class="p">,</span> <span class="n">quiverkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+             <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">'quiver'</span><span class="p">,</span> <span class="n">quiverkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot a map of a vector field.</span>
 
 <span class="sd">    :param field: vector field to plot</span>
@@ -166,20 +167,20 @@
 <span class="sd">        10 for a vector every 10 grid points.</span>
 <span class="sd">    :type vectors_subsampling: int</span>
 <span class="sd">    :param wind_components_are_projected_on: inform the plot on which axes the</span>
-<span class="sd">        vector components are projected on (&#39;grid&#39; or &#39;lonlat&#39;).</span>
+<span class="sd">        vector components are projected on ('grid' or 'lonlat').</span>
 <span class="sd">        If None (default), look for information in the field, or raise error.</span>
-<span class="sd">    :param vector_plot_method: among (&#39;quiver&#39;, &#39;barbs&#39;, &#39;streamplot&#39;) for vector plots. default is &#39;quiver&#39;.</span>
+<span class="sd">    :param vector_plot_method: among ('quiver', 'barbs', 'streamplot') for vector plots. default is 'quiver'.</span>
 <span class="sd">    :param quiverkey: options to be passed to plotfield to activate a quiver key</span>
 <span class="sd">        (cf. pyplot.quiverkey).</span>
 <span class="sd">    :param plot_kwargs: every other argument that can be passed to the cartoplot method of an epygram H2D field.</span>
 <span class="sd">                        Details can be found at:</span>
 <span class="sd">                        https://umr-cnrm.github.io/EPyGrAM-doc/library/H2DField.html#epygram.fields.H2DField.H2DField.cartoplot</span>
-<span class="sd">    :return: dict with plot elements: &#39;fig&#39;, &#39;ax&#39;, potentially &#39;colorbar&#39;.</span>
+<span class="sd">    :return: dict with plot elements: 'fig', 'ax', potentially 'colorbar'.</span>
 <span class="sd">    :rtype: dict</span>
 
 <span class="sd">    .. figure:: /images/20150405T06_pseudo_wind_map.png</span>
 <span class="sd">       :align: center</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">takeover</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">cartoplot</span><span class="p">(</span><span class="n">map_factor_correction</span><span class="o">=</span><span class="n">map_factor_correction</span><span class="p">,</span>
                              <span class="n">subsampling</span><span class="o">=</span><span class="n">vectors_subsampling</span><span class="p">,</span>
@@ -198,7 +199,7 @@
 <div class="viewcode-block" id="difference_map">
 <a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.difference_map">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">difference_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot a difference map between two fields.</span>
 
 <span class="sd">    :param field: first scalar field</span>
@@ -208,12 +209,12 @@
 <span class="sd">    :param title: plot title</span>
 <span class="sd">    :type title: str</span>
 <span class="sd">    :param plot_kwargs: every other argument that can be passed to the cartoplot method of an epygram H2D field.</span>
-<span class="sd">    :return: dict with plot elements: &#39;fig&#39;, &#39;ax&#39;, potentially &#39;colorbar&#39; etc.</span>
+<span class="sd">    :return: dict with plot elements: 'fig', 'ax', potentially 'colorbar' etc.</span>
 <span class="sd">    :rtype: dict</span>
 
 <span class="sd">    .. figure:: /images/20150301T06_snowheight_diff.png</span>
 <span class="sd">       :align: center</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">diff_field</span> <span class="o">=</span> <span class="n">field</span> <span class="o">-</span> <span class="n">ref_field</span>
     <span class="c1"># plot diff</span>
     <span class="n">takeover</span> <span class="o">=</span> <span class="n">diff_field</span><span class="o">.</span><span class="n">cartoplot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">takeover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -225,7 +226,7 @@
 <div class="viewcode-block" id="scalar_map">
 <a class="viewcode-back" href="../../../code/plots-maps-grid.html#plots.maps.quicklookmap.scalar_map">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="p">{}):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot a map.</span>
 
 <span class="sd">    :param field: field to plot</span>
@@ -235,7 +236,7 @@
 <span class="sd">    :param plot_kwargs: every other argument that can be passed to the cartoplot method of an epygram H2D field.</span>
 <span class="sd">                        Details can be found at:</span>
 <span class="sd">                        https://umr-cnrm.github.io/EPyGrAM-doc/library/H2DField.html#epygram.fields.H2DField.H2DField.cartoplot</span>
-<span class="sd">    :return: dict with plot elements: &#39;fig&#39;, &#39;ax&#39;, potentially &#39;colorbar&#39; etc.</span>
+<span class="sd">    :return: dict with plot elements: 'fig', 'ax', potentially 'colorbar' etc.</span>
 <span class="sd">    :rtype: dict</span>
 
 <span class="sd">    .. code-block:: python</span>
@@ -250,17 +251,17 @@
 
 <span class="sd">    .. figure:: /images/20190513T10_snowheight.png</span>
 <span class="sd">       :align: center</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Ensure no bug when the data is full of nan and/or fully masked</span>
-    <span class="k">if</span> <span class="s1">&#39;minmax&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plot_kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">'minmax'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plot_kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is masked</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax_along_colorbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;colorbar_legend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;All data is NaN/masked&#39;</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'minmax'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is masked</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'minmax_along_colorbar'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'colorbar_legend'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'All data is NaN/masked'</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is NaN</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;minmax_along_colorbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">&#39;colorbar_legend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;All data is NaN&#39;</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'minmax'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># All data is NaN</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'minmax_along_colorbar'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">plot_kwargs</span><span class="p">[</span><span class="s1">'colorbar_legend'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'All data is NaN'</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">H2DVectorField</span><span class="p">):</span>
         <span class="c1"># Scalar field in a vector field is a true color image</span>

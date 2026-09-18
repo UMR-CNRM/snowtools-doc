@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Constant data managment with User Environments &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="HPC simulations" href="../hpc/hpc-index.html" />
+    <link rel="prev" title="Vortex-cen tools" href="vortex-cen-tools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../hpc/hpc-index.html" title="HPC simulations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-tools.html" title="Vortex-cen tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" accesskey="U">Vortex and associated tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constant data managment with User Environments</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="constant-data-managment-with-user-environments">
+<h1>Constant data managment with User Environments<a class="headerlink" href="#constant-data-managment-with-user-environments" title="Link to this heading">¶</a></h1>
+<dl class="simple">
+<dt>The general documentation of the uenv/uget tool is available here:</dt><dd><p><a class="reference external" href="https://cnrm-gmap.gitlab.meteo.fr/vortex-gco/index.html">https://cnrm-gmap.gitlab.meteo.fr/vortex-gco/index.html</a></p>
+</dd>
+</dl>
+<p>There is a list of useful commands at the end of this section.</p>
+<p>The main motivations to use User Environments are :
+* allowing for reliable, standardized data archiving
+* ensuring the simulations reproductibility
+* facilitating and optimizing the exchange of data between users
+* partitioning the data used in different simulations in a clear and secure way
+* minimizing the number of circulating files</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The source code is available on git.meteo.fr : <a class="reference external" href="https://git.meteo.fr/cnrm-gmap/vortex/-/tree/main/vortex-gco?ref_type=heads">https://git.meteo.fr/cnrm-gmap/vortex/-/tree/main/vortex-gco?ref_type=heads</a></p>
+</div>
+<section id="install-the-vortex-gco-plugin">
+<h2>Install the vortex-gco plugin<a class="headerlink" href="#install-the-vortex-gco-plugin" title="Link to this heading">¶</a></h2>
+<p>On MF HPC:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--find-links<span class="w"> </span>/home/verolive/wheels<span class="w"> </span>vortex-gco
+</pre></div>
+</div>
+<p>On any other MF server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>vortex-gco
+</pre></div>
+</div>
+</section>
+<section id="definition-of-a-user-environment">
+<h2>Definition of a user environment<a class="headerlink" href="#definition-of-a-user-environment" title="Link to this heading">¶</a></h2>
+<p>User environments refer to user-managed collections of coherent static data files. A user environment is the combination of:
+* an ensemble of static data files, potentially owned by different users
+* a catalogue text file associating a unique key (named “gvar”) to identify each file. This catalogue file is refered to as “uenv” in this documentation.</p>
+</section>
+<section id="create-a-user-environment-from-scratch">
+<span id="uenv-creation"></span><h2>Create a User Environment from scratch<a class="headerlink" href="#create-a-user-environment-from-scratch" title="Link to this heading">¶</a></h2>
+<section id="step-by-step">
+<h3>Step by step<a class="headerlink" href="#step-by-step" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Put the file(s) you need in your UEnv in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code></p></li>
+</ol>
+<p>Name your file(s) with a distinctive suffix (version number, git commit or tag,…) : <code class="docutils literal notranslate"><span class="pre">AFirstFile.0</span></code>, <code class="docutils literal notranslate"><span class="pre">ASecondFile.1</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Namelists are a special case : serveral namelist files can be added under <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data/&lt;namelist_dir_XXX&gt;</span></code></p>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Create a text file with a distinctive name which is the name of your UEnv (ex <code class="docutils literal notranslate"><span class="pre">MyFirstUenv.0</span></code>) in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p></li>
+<li><p>In this text file, associate a key to each file:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">FIRST_KEY</span><span class="o">=</span><span class="s2">"uenv:AFirstFile.0@your_username"</span>
+<span class="nv">SECOND_KEY</span><span class="o">=</span><span class="s2">"uenv:ASecondFile.1@your_username"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For namelists, the line looks like :
+NAMELISTS_&lt;MODEL&gt;=”uenv:namelist_dir_XXX&#64;your_username”</p>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>UEnv is ready, you can access to file(s) with the command:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">'uenv:MyFirstUenv.0@your_username'</span>,<span class="w"> </span><span class="nv">gvar</span><span class="o">=</span><span class="s1">'FIRST_KEY'</span>,<span class="w"> </span><span class="nv">unknown</span><span class="o">=</span>True,<span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="s1">'...'</span><span class="o">)</span>
+toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">'uenv:MyFirstUenv.0@your_username'</span>,<span class="w"> </span><span class="nv">gvar</span><span class="o">=</span><span class="s1">'SECOND_KEY'</span>,<span class="w"> </span><span class="nv">unknown</span><span class="o">=</span>True,<span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="s1">'...'</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For namelists, the additional <em>namelist_source</em> entry must be provided to specify the target namelist’s name from the pool of namelists:
+toolbox.input(genv=’uenv:MyFirstUenv.0&#64;your_username’, gvar=’SECOND_KEY’, unknown=True, filename=’…’, namelist_source=&lt;name_of_namelist&gt;)</p>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>In order to archive and share your UEnv :</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uget<span class="w"> </span>push<span class="w"> </span>env<span class="w"> </span>MyFirstUenv.0@your_username
+</pre></div>
+</div>
+<p><strong>NB:</strong> On HPC this can only be done from a TRANSFERT node</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>By convention, the “keys” of SURFEX executables are MASTER_SURFEX_&lt;NAME_OF_EXEC&gt;_MPI or MASTER_SURFEX_&lt;NAME_OF_EXEC&gt;_NOMPI.</p></li>
+<li><p>It is possible to use files from another user’s UEnv in your own UEnv : simply copy the corresponding lines from their UEnv file into yours</p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="user-environments-for-surfex-simulations">
+<h2>User Environments for surfex simulations<a class="headerlink" href="#user-environments-for-surfex-simulations" title="Link to this heading">¶</a></h2>
+<p>Constant files for SURFEX simulations can be grouped in 3 different categories:</p>
+<ul class="simple">
+<li><p>files that do not change frequently, for which a default uenv is commonly used (eccoclimap*, drdt_bst_fit, SandDB, ClayDB).
+The associated default uenv for these files can be set with the “consts_surfex_uenv” configuration variable.</p></li>
+<li><p>SURFEX executables can be provided in a specific uenv identified by the “surfex_uenv” configuration variable.</p></li>
+<li><p>SURFEX namelists can be provided in a specific uenv identified by the “namelists_surfex_env” configuration variables.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Of course it is possible to group all these constant files into a single user environment and simply use the “uenv” configuration variable, following the instructions provided in the next section</p>
+</div>
+<section id="example-create-a-uenv-with-surfex-executables-and-namelists">
+<span id="uenv-surfex"></span><h3>Example : create a UEnv with SURFEX executables and namelists<a class="headerlink" href="#example-create-a-uenv-with-surfex-executables-and-namelists" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="modifying-an-existing-uenv">
+<span id="uenv-modification"></span><h2>Modifying an existing UEnv<a class="headerlink" href="#modifying-an-existing-uenv" title="Link to this heading">¶</a></h2>
+<section id="create-a-copy-of-existing-uenv">
+<h3>1. Create a copy of existing UEnv:<a class="headerlink" href="#create-a-copy-of-existing-uenv" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uget<span class="w"> </span>hack<span class="w"> </span>env<span class="w"> </span>Existing_UEnv.0@username_uenv_owner<span class="w"> </span>into<span class="w"> </span>MyNewUenv.0@your_username
+</pre></div>
+</div>
+<p>Now, A text file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> has been creates in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p>
+<p><strong>NB:</strong> On HPC this can only be done from a TRANSFERT node</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>belenostransfert
+<span class="nb">source</span><span class="w"> </span>path/to/venv/with/vortex-gco/bin/activate
+uget<span class="w"> </span>hack<span class="w"> </span>env<span class="w"> </span>Existing_UEnv.0@username_uenv_owner<span class="w"> </span>into<span class="w"> </span>MyNewUenv.0@your_yousername
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A copy of an existing UEnv should always have a different name than the original one to avoid overwriting it.
+The good practice is to increment a version number or give a new explicit name.</p>
+</div>
+</section>
+<section id="modify-new-uenv-mynewuenv-0">
+<h3>2. Modify new UEnv <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code>:<a class="headerlink" href="#modify-new-uenv-mynewuenv-0" title="Link to this heading">¶</a></h3>
+<ol class="loweralpha simple">
+<li><p>Upgrade a file already in UEnv</p></li>
+</ol>
+<blockquote>
+<div><p>–&gt; Identify the file and key in <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: SSA_PARAMS=”uenv:drdt_bst_fit_60.nc&#64;CONST_CEN”)</p>
+<p class="attribution">—&gt; Place new version of your file in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code> (ex: drdt_bst_fit_60_new.nc)</p>
+</div></blockquote>
+<blockquote>
+<div><p>–&gt; Modify corresponding line in file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: SSA_PARAMS=”uenv:drdt_bst_fit_60_new.nc&#64;your_username”)</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="2">
+<li><p>Add a new file in <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code></p></li>
+</ol>
+<blockquote>
+<div><p>–&gt; Place the file <code class="docutils literal notranslate"><span class="pre">New_File.0</span></code> in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/data</span></code></p>
+<p class="attribution">—&gt; Add a line to the file <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code> (ex: NEW_KEY=”uenv:New_File.0&#64;your_username”)</p>
+</div></blockquote>
+</section>
+</section>
+<section id="concatenation-of-2-existing-uenv">
+<h2>Concatenation of 2 existing UEnv<a class="headerlink" href="#concatenation-of-2-existing-uenv" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Get both UEnv:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uget<span class="w"> </span>hack<span class="w"> </span>env<span class="w"> </span>UEnv1@user_who_own_this_uenv<span class="w"> </span>into<span class="w"> </span>UEnv1_copy@your_username
+uget<span class="w"> </span>hack<span class="w"> </span>env<span class="w"> </span>UEnv2@maybe_another_user<span class="w"> </span>into<span class="w"> </span>UEnv2_copy@your_username
+</pre></div>
+</div>
+<p>Now, the files <code class="docutils literal notranslate"><span class="pre">UEnv1_copy</span></code> and <code class="docutils literal notranslate"><span class="pre">UEnv2_copy</span></code> are copied in <code class="docutils literal notranslate"><span class="pre">$HOME/.vortexrc/hack/uget/your_username/env</span></code></p>
+<ol class="arabic simple" start="2">
+<li><p>Concatenate both files in a new UEnv <code class="docutils literal notranslate"><span class="pre">UEnv1_UEnv2</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>UEnv1_copy<span class="w"> </span>UEnv2_copy<span class="w"> </span>&gt;<span class="w"> </span>UEnv1_UEnv2
+</pre></div>
+</div>
+<p><strong>NB:</strong> it is of course posible to just pick few lines of each files</p>
+</section>
+<section id="using-uenv-targetuenv-x-owned-by-another-user">
+<h2>Using UEnv <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code> owned by another user<a class="headerlink" href="#using-uenv-targetuenv-x-owned-by-another-user" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Explore <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uget<span class="w"> </span>check<span class="w"> </span>env<span class="w"> </span>TargetUEnv.X@the_other_user
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Get the file of interest with his key <code class="docutils literal notranslate"><span class="pre">Key_from_TargetUEnv.X</span></code>:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>toolbox.input<span class="o">(</span><span class="nv">genv</span><span class="o">=</span><span class="s1">'uenv:TargetUEnv.X@the_other_user'</span>,<span class="w"> </span><span class="nv">gvar</span><span class="o">=</span><span class="s1">'Key_from_TargetUEnv.X'</span>,<span class="w"> </span><span class="nv">unknown</span><span class="o">=</span>True,<span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="s1">'...'</span><span class="o">)</span>
+</pre></div>
+</div>
+</section>
+<section id="archiving-a-user-environment">
+<h2>Archiving a User Environment<a class="headerlink" href="#archiving-a-user-environment" title="Link to this heading">¶</a></h2>
+<p>Once you uenv is ready, check that all associated data files exist with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">check</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">target_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The archive your uenv with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">push</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">target_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> : This “freezes” your uenv and makes it available to other users (just as a “git push”), from now on you should not modify anything from this uenv !
+You should also remove the local copies to avoid inconsistencies between local and archived versions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">clean_hack</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To ensure that archived files are not modified, their archive location is voluntarily “encrypted”</p>
+</div>
+<p>If you detect a mistake in one of the files associated to your uenv at this point, create a new version of your uenv with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">former_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A coment line at the begining of the &lt;new_uenv_name&gt; catalogue file is added to track its provenance</p>
+</div>
+<p>and create the new version of the faulty file, if necessary by “hacking” the previous one :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">data</span> <span class="o">&lt;</span><span class="n">faulty_data_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_data_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Do not forget to change the line corresponding to the faulty data file in the &lt;new_uenv_name&gt; catalogue :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FAULTY_DATA_KEY</span><span class="o">=</span><span class="s2">"uget:&lt;new_data_name&gt;@&lt;username&gt;"</span>
+</pre></div>
+</div>
+<p>instead of :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FAULTY_DATA_KEY</span><span class="o">=</span><span class="s2">"uget:&lt;faulty_data_name&gt;@&lt;username&gt;"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The “FAULTY_DATA_KEY” remains unchanged between the two versions</p></li>
+<li><p>No need to change anything else, all other data files remain properly identified in the &lt;new_uenv_name&gt;</p></li>
+</ul>
+</div>
+</section>
+<section id="data-tree">
+<h2>Data tree<a class="headerlink" href="#data-tree" title="Link to this heading">¶</a></h2>
+<p>When retrieved with Vortex, data from a uenv can come from :</p>
+<ul class="simple">
+<li><p>The ‘hack’ data tree under $HOME/.vortexrc/hack/uget/&lt;username&gt;. This data tree should be used only during the creation and test of a new uenv.</p></li>
+<li><p>The ‘Archive’ date tree. This is the data tree from which valid and shared uenv data are retrieved, potentially from different users.</p></li>
+<li><p>The ‘local’ data tree. This is a local copy of the ‘Archive’ date tree, which is created when data is first fetched in order to act as a cache for future use.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Fetching data from the “Archive” or “Local” data trees is transparent to the user in most cases.
+The only exceptions are linked to issues with transfers from the archive (passord updates, call from a login or compute nodes on HPC,…).</p>
+</div>
+</section>
+<section id="examples-of-available-user-environments-uenv">
+<h2>Examples of available User Environments (UEnv)<a class="headerlink" href="#examples-of-available-user-environments-uenv" title="Link to this heading">¶</a></h2>
+<p>Started by Ange Haddjeri, to be continued…</p>
+<p>Digital elevations models available in “uenv:dem.2&#64;vernaym”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DEM_ALP1KM_EPSG4326</span>
+<span class="n">DEM_FRANCE25M_L93</span>
+<span class="n">DEM_GRANDESROUSSES25M_L93</span>
+<span class="n">DEM_PYR1KM_EPSG4326</span>
+<span class="n">RELIEF_FRANGP0025</span>
+<span class="n">RELIEF_GRANDESROUSSES250M_4326</span>
+<span class="n">RELIEF_GRANDESROUSSES250M_L93</span>
+</pre></div>
+</div>
+<p>Shapefiles availables in “uenv:shapefiles.1&#64;vernaym”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FRENCH_CITIES</span>
+<span class="n">MASSIFS_SAFRAN</span>
+<span class="n">WORLD_BOUNDARIES</span>
+</pre></div>
+</div>
+<p>Uenv to reproduce simulations from M.Vernay PhD : “<a class="reference external" href="mailto:edelweiss_gr250_pappus&#46;2&#37;&#52;&#48;vernaym">edelweiss_gr250_pappus<span>&#46;</span>2<span>&#64;</span>vernaym</a>”</p>
+<p>Uenv for latest version of the ANTILOPE post-processing algorithm : “<a class="reference external" href="mailto:edelweiss&#46;3&#37;&#52;&#48;vernaym">edelweiss<span>&#46;</span>3<span>&#64;</span>vernaym</a>”</p>
+</section>
+<section id="uenv-vs-genv">
+<h2>UEnv vs GEnv<a class="headerlink" href="#uenv-vs-genv" title="Link to this heading">¶</a></h2>
+<p>Constant files used in operationnal simulations are managed by the GCO team with the “genv” equivalent of user environments.
+To access data from an operationnal “genv”, simply provide the name of the genv without the ‘uenv:’ prefix nor the ‘&#64;&lt;username&gt;’ suffix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uenv</span> <span class="o">=</span> <span class="n">cen01_cen</span><span class="nd">@s2m</span><span class="o">-</span><span class="n">op2</span><span class="mf">.13</span>
+</pre></div>
+</div>
+<p>identifies an opertional genv, whereas</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uenv</span> <span class="o">=</span> <span class="n">uenv</span><span class="p">:</span><span class="n">cen01_cen</span><span class="nd">@s2m</span><span class="o">-</span><span class="n">op2</span><span class="mf">.13</span><span class="nd">@vernaym</span>
+</pre></div>
+</div>
+<p>identifies the uenv of user “vernaym”.</p>
+</section>
+<section id="usefull-commands">
+<h2>Usefull commands<a class="headerlink" href="#usefull-commands" title="Link to this heading">¶</a></h2>
+<p>List available user environments for a given user :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="nb">list</span> <span class="n">env</span> <span class="kn">from</span><span class="w"> </span><span class="o">&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Check data availability for a specific uenv :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">check</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This returns the location of the catalogue file (“Hack” and/or “Archive”), as well as the list of associated files and their location.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The location can be “Hack” (developments in progress) and/or Archive (target already pushed).</p>
+</div>
+<p>Cloning an existing uenv catalogue file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">target_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Cloning an existing genv catalogue file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">genv</span> <span class="o">&lt;</span><span class="n">target_genv_name</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is recommended to clone an existing uenv / genv rather than to create a new one from scratch whenever possible because it adds a comment to track its provenance.</p>
+</div>
+<p>Cloning an existing data file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">data</span> <span class="o">&lt;</span><span class="n">target_data_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_data_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Cloning an existing operational data file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">hack</span> <span class="n">gdata</span> <span class="o">&lt;</span><span class="n">target_data_name</span><span class="o">&gt;</span> <span class="n">into</span> <span class="o">&lt;</span><span class="n">new_data_name</span><span class="o">&gt;@&lt;</span><span class="n">your_username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Commit / push a uenv and all its associated data files :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">push</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">target_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> : once a uenv catalogue file and its associated data files have been pushed, remove the local copies to avoid inconsistencies between local and archived versions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">clean_hack</span>
+</pre></div>
+</div>
+<p>Commit / push a specific data file :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">push</span> <span class="n">data</span> <span class="o">&lt;</span><span class="n">target_data_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> :</p>
+<p>Compare two catalogues (uenv and/or genv alike), or a uenv catalogue with its “parent” in case it has been properly “hacked” :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">diff</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">first_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">wrt</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">second_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+<span class="n">uget</span> <span class="n">diff</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">wrt</span> <span class="n">genv</span> <span class="o">&lt;</span><span class="n">genv_name</span><span class="o">&gt;</span>
+<span class="n">uget</span> <span class="n">diff</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">wrt</span> <span class="n">parent</span>
+</pre></div>
+</div>
+<p>Get the list of data files that differ between two catalogues:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uget</span> <span class="n">export</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">first_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">wrt</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">second_uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span>
+<span class="n">uget</span> <span class="n">export</span> <span class="n">env</span> <span class="o">&lt;</span><span class="n">uenv_name</span><span class="o">&gt;@&lt;</span><span class="n">username</span><span class="o">&gt;</span> <span class="n">wrt</span> <span class="n">genv</span> <span class="o">&lt;</span><span class="n">genv_name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="faq-frequent-issues">
+<h2>FAQ - Frequent issues<a class="headerlink" href="#faq-frequent-issues" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>On HPC, fetch/save data from a TRANSFERT node because the uget tool is based on ftget/ftput commands, which are unavailable on login/compute nodes and raise the following error:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># [2026/04/21-12:40:16][vortex.tools.systems][spawn:1120][CRITICAL]: Could not call ['ftput', '-o', 'mkdir', '-q', '-h', 'hendrix.meteo.fr', '-u', 'vernaym', 'myuenv', 'uget/env/6/myuenv']</span>
+Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+<span class="o">[</span>...<span class="o">]</span>
+FileNotFoundError:<span class="w"> </span><span class="o">[</span>Errno<span class="w"> </span><span class="m">2</span><span class="o">]</span><span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory:<span class="w"> </span><span class="s1">'ftput'</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Team UEnv (&#64;CONST_CEN, &#64;SAFRAN_CEN and &#64;SURFEX_CEN) are no longer possible with Vortex2 (see snowtools ticket #306 or <a class="reference external" href="https://gitlab.meteo.fr/cnrm-gmap/vortex-gco/-/work_items/4#note_93731">https://gitlab.meteo.fr/cnrm-gmap/vortex-gco/-/work_items/4#note_93731</a> for more information)</p></li>
+<li><p>The name of the repository conatining the SURFEX namelists must be suffixed “.tar” in the uenv.
+The following works fine :</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NAMELIST_SURFEX</span><span class="o">=</span><span class="s2">"uget:namelists_surfex9_0_crocus3_0_2_std.tar@lafaysse"</span>
+</pre></div>
+</div>
+<p>whereas</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NAMELIST_SURFEX</span><span class="o">=</span><span class="s2">"uget:namelists_surfex9_0_crocus3_0_2_std@lafaysse"</span>
+</pre></div>
+</div>
+<p>raises the following error :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># [2026/08/17-12:36:48][vortex.data.abstractstores][incacheget:1180][INFO]: incacheget on uget://uget.hack.fr//data/namelists_surfex9_0_crocus3_0_2_std (to: namelists_surfex9_0_crocus3_0_2_std)</span>
+<span class="c1"># [2026/08/17-12:36:48][vortex.data.abstractstores][incacheget:1199][INFO]: incacheget retrieve rc=True location=/home/cnrm_other/cen/mrns/vernaym/.vortexrc/hack/uget/vernaym/data/namelists_surfex9_0_crocus3_0_2_std</span>
+<span class="c1"># [2026/08/17-12:36:48][vortex_gco.data.stores][ugetget:1664][ERROR]: 'namelists_surfex9_0_crocus3_0_2_std' should be a tarfile</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The lines in uenv catalogue file are sensitive to trailing spaces. The following line (containing a final space character) :</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MASTER_OFFLINE_MPI</span><span class="o">=</span><span class="s2">"uget:ms_offline.cen.mpi.11.crocus3.0.2@vernaym"</span> <span class="o">|&lt;--</span> <span class="n">The</span> <span class="n">line</span> <span class="n">ends</span> <span class="n">here</span>
+</pre></div>
+</div>
+<p>will lead to a non-explicit error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># [2026/09/14-12:59:32][vortex_gco.data.stores][_gspawn:0627][INFO]: gget command: /home/mf/dp/marp/gco/public/bin/gget -host hendrix.meteo.fr -path uget:ms_offline.cen.nompi.11.crocus3.0.2@vernaym"</span>
+<span class="c1"># [2026/09/14-12:59:32][vortex.tools.systems][spawn:1160][WARNING]: Bad return code [1] for ['/home/mf/dp/marp/gco/public/bin/gget', '-host', 'hendrix.meteo.fr', '-path', 'uget:ms_offline.cen.nompi.11.crocus3.0.2@vernaym" ']</span>
+<span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="p">[</span><span class="n">GGet</span><span class="p">::</span><span class="n">Element</span><span class="p">::</span><span class="n">new</span><span class="p">]</span> <span class="n">ms_offline</span><span class="o">.</span><span class="n">cen</span><span class="o">.</span><span class="n">nompi</span><span class="mf">.11</span><span class="o">.</span><span class="n">crocus3</span><span class="mf">.0.2</span><span class="nd">@vernaym</span><span class="s2">" : can't guess type of element</span>
+<span class="c1"># [2026/09/14-12:59:32][vortex.layout.dataflow][_fatal_wrap:0248][ERROR]: Resource ???</span>
+<span class="c1"># [2026/09/14-12:59:32][vortex_gco.data.stores][_gspawn:0627][INFO]: gget command: /home/mf/dp/marp/gco/public/bin/gget -host hendrix.meteo.fr -path uget:ms_offline.cen.nompi.11.crocus3.0.2@vernaym"</span>
+<span class="c1"># [2026/09/14-12:59:33][vortex.tools.systems][spawn:1160][WARNING]: Bad return code [1] for ['/home/mf/dp/marp/gco/public/bin/gget', '-host', 'hendrix.meteo.fr', '-path', 'uget:ms_offline.cen.nompi.11.crocus3.0.2@vernaym" ']</span>
+<span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="p">[</span><span class="n">GGet</span><span class="p">::</span><span class="n">Element</span><span class="p">::</span><span class="n">new</span><span class="p">]</span> <span class="n">ms_offline</span><span class="o">.</span><span class="n">cen</span><span class="o">.</span><span class="n">nompi</span><span class="mf">.11</span><span class="o">.</span><span class="n">crocus3</span><span class="mf">.0.2</span><span class="nd">@vernaym</span><span class="s2">" : can't guess type of element</span>
+<span class="c1"># [2026/09/14-12:59:33][vortex.layout.dataflow][_fatal_wrap:0250][CRITICAL]: Fatal error with action get on ???</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A ticket has be submited on sept. 14 2026 to fix this issue in vortex-gco (<a class="reference external" href="https://git.meteo.fr/cnrm-gmap/vortex/-/work_items/4">https://git.meteo.fr/cnrm-gmap/vortex/-/work_items/4</a>)</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Constant data managment with User Environments</a><ul>
+<li><a class="reference internal" href="#install-the-vortex-gco-plugin">Install the vortex-gco plugin</a></li>
+<li><a class="reference internal" href="#definition-of-a-user-environment">Definition of a user environment</a></li>
+<li><a class="reference internal" href="#create-a-user-environment-from-scratch">Create a User Environment from scratch</a><ul>
+<li><a class="reference internal" href="#step-by-step">Step by step</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#user-environments-for-surfex-simulations">User Environments for surfex simulations</a><ul>
+<li><a class="reference internal" href="#example-create-a-uenv-with-surfex-executables-and-namelists">Example : create a UEnv with SURFEX executables and namelists</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modifying-an-existing-uenv">Modifying an existing UEnv</a><ul>
+<li><a class="reference internal" href="#create-a-copy-of-existing-uenv">1. Create a copy of existing UEnv:</a></li>
+<li><a class="reference internal" href="#modify-new-uenv-mynewuenv-0">2. Modify new UEnv <code class="docutils literal notranslate"><span class="pre">MyNewUenv.0</span></code>:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#concatenation-of-2-existing-uenv">Concatenation of 2 existing UEnv</a></li>
+<li><a class="reference internal" href="#using-uenv-targetuenv-x-owned-by-another-user">Using UEnv <code class="docutils literal notranslate"><span class="pre">TargetUEnv.X</span></code> owned by another user</a></li>
+<li><a class="reference internal" href="#archiving-a-user-environment">Archiving a User Environment</a></li>
+<li><a class="reference internal" href="#data-tree">Data tree</a></li>
+<li><a class="reference internal" href="#examples-of-available-user-environments-uenv">Examples of available User Environments (UEnv)</a></li>
+<li><a class="reference internal" href="#uenv-vs-genv">UEnv vs GEnv</a></li>
+<li><a class="reference internal" href="#usefull-commands">Usefull commands</a></li>
+<li><a class="reference internal" href="#faq-frequent-issues">FAQ - Frequent issues</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="vortex-cen-tools.html"
+                          title="previous chapter">Vortex-cen tools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../hpc/hpc-index.html"
+                          title="next chapter">HPC simulations</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vortex/uenv.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../hpc/hpc-index.html" title="HPC simulations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-tools.html" title="Vortex-cen tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constant data managment with User Environments</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

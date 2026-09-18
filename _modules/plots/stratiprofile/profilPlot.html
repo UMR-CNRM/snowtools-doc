@@ -7,6 +7,7 @@
     <title>plots.stratiprofile.profilPlot &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,7 +41,7 @@
   <h1>Source code for plots.stratiprofile.profilPlot</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 6 avr. 2017</span>
 <span class="sd">Modified 7. apr. 2017 viallon</span>
 
@@ -48,7 +49,7 @@
 <span class="sd">    - Pascal Hagenmuller</span>
 <span class="sd">    - Léo Viallon-Galinier</span>
 <span class="sd">    - Mathieu Fructus</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
@@ -67,9 +68,9 @@
 
 <div class="viewcode-block" id="saisonProfil">
 <a class="viewcode-back" href="../../../code/plots-strati.html#plots.stratiprofile.profilPlot.saisonProfil">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">saisonProfil</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">value_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">saisonProfil</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">'viridis'</span><span class="p">,</span> <span class="n">value_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">cbar_show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylimit</span><span class="o">=</span><span class="kc">None</span><span class="p">,):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot a snow profile along time taking into account layer thicknesses for a realistic</span>
 <span class="sd">    plot.</span>
 
@@ -115,13 +116,13 @@
 
 <span class="sd">       point = 100</span>
 
-<span class="sd">       with prosimu_auto(&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;) as ff:</span>
-<span class="sd">           dz = ff.read(&#39;SNOWDZ&#39;, selectpoint=point, fill2zero=True)</span>
-<span class="sd">           var = ff.read(&#39;SNOWTYPE&#39;, selectpoint=point)</span>
+<span class="sd">       with prosimu_auto('/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc') as ff:</span>
+<span class="sd">           dz = ff.read('SNOWDZ', selectpoint=point, fill2zero=True)</span>
+<span class="sd">           var = ff.read('SNOWTYPE', selectpoint=point)</span>
 <span class="sd">           time = ff.readtime()</span>
 
 <span class="sd">       ax = plt.gca()</span>
-<span class="sd">       saisonProfil(ax, dz, var, time, colormap=&#39;grains&#39;)</span>
+<span class="sd">       saisonProfil(ax, dz, var, time, colormap='grains')</span>
 <span class="sd">       plt.show()</span>
 
 <span class="sd">    .. figure:: /images/plots-strati-1.png</span>
@@ -129,7 +130,7 @@
 
 <span class="sd">       Example of plots that can be obtained with this function (example of the code snippet provided).</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">MidpointNormalize</span><span class="p">(</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vcenter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vcenter</span> <span class="o">=</span> <span class="n">vcenter</span>
@@ -142,7 +143,7 @@
     <span class="n">top_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dz</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
     <span class="n">bottom_y</span> <span class="o">=</span> <span class="n">top_y</span> <span class="o">-</span> <span class="n">dz</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 
-    <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dz</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+    <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dz</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'int'</span><span class="p">)</span>
     <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">left_x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
     <span class="n">right_x</span> <span class="o">=</span> <span class="n">left_x</span> <span class="o">-</span> <span class="mi">1</span>
 
@@ -174,30 +175,30 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">minval</span> <span class="o">=</span> <span class="n">value_min</span>
 
-    <span class="n">extend</span> <span class="o">=</span> <span class="s1">&#39;neither&#39;</span>
-    <span class="k">if</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;grains&#39;</span><span class="p">:</span>
+    <span class="n">extend</span> <span class="o">=</span> <span class="s1">'neither'</span>
+    <span class="k">if</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'grains'</span><span class="p">:</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">Dictionnaries</span><span class="o">.</span><span class="n">grain_colormap</span>
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">14.5</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
         <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>
         <span class="n">vmax</span> <span class="o">=</span> <span class="mf">14.5</span>
-    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;echelle_log&#39;</span><span class="p">:</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;gray_r&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'echelle_log'</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'gray_r'</span><span class="p">)</span>
         <span class="n">vmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="mf">0.0000000001</span><span class="p">)</span>
         <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.000000001</span><span class="p">,</span> <span class="n">maxval</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
-        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">&#39;#fff2fd&#39;</span><span class="p">)</span>
-        <span class="n">extend</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span>
-    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;echelle_log_sahara&#39;</span><span class="p">:</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;gist_heat_r&#39;</span><span class="p">)</span>
+        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">'#fff2fd'</span><span class="p">)</span>
+        <span class="n">extend</span> <span class="o">=</span> <span class="s1">'min'</span>
+    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'echelle_log_sahara'</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'gist_heat_r'</span><span class="p">)</span>
         <span class="n">vmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="mf">0.0000000001</span><span class="p">)</span>
         <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.000000001</span><span class="p">,</span> <span class="n">maxval</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">vmin</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
-        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">&#39;#fff2fd&#39;</span><span class="p">)</span>
-        <span class="n">extend</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span>
-    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;ratio_cisaillement&#39;</span><span class="p">:</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">'#fff2fd'</span><span class="p">)</span>
+        <span class="n">extend</span> <span class="o">=</span> <span class="s1">'min'</span>
+    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'ratio_cisaillement'</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'viridis'</span><span class="p">)</span>
         <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">vmax</span> <span class="o">=</span> <span class="mi">20</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -208,9 +209,9 @@
         <span class="c1"># 3 -&gt; 4 yellow</span>
         <span class="c1"># 4 -&gt; 20 given cmap</span>
         <span class="n">customcmap</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
-                <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
-                <span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+                <span class="s1">'red'</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+                <span class="s1">'green'</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>
+                <span class="s1">'blue'</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
                 <span class="p">}</span>
         <span class="n">cmapl</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">)</span>
         <span class="n">start</span> <span class="o">=</span> <span class="mf">0.16</span>
@@ -220,11 +221,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">cmapl</span>
             <span class="n">iuse</span> <span class="o">=</span> <span class="n">cmapl</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="n">customcmap</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
-            <span class="n">customcmap</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
-            <span class="n">customcmap</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s1">&#39;ratio_cisaillment&#39;</span><span class="p">,</span> <span class="n">customcmap</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;tempK&#39;</span><span class="p">:</span>
+            <span class="n">customcmap</span><span class="p">[</span><span class="s1">'red'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">customcmap</span><span class="p">[</span><span class="s1">'green'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">customcmap</span><span class="p">[</span><span class="s1">'blue'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">[</span><span class="n">iuse</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s1">'ratio_cisaillment'</span><span class="p">,</span> <span class="n">customcmap</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'tempK'</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">vmax</span> <span class="o">=</span> <span class="mf">273.15</span>
         <span class="k">else</span><span class="p">:</span>
@@ -236,10 +237,10 @@
         <span class="n">norm</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
         <span class="c1"># value[value &lt; vmin if ~np.isnan(vmin) else False] = vmin</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">))</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'RdBu_r'</span><span class="p">))</span>
         <span class="n">cmap</span><span class="o">.</span><span class="n">set_over</span><span class="p">((</span><span class="mf">0.32</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.097</span><span class="p">))</span>
-        <span class="n">extend</span> <span class="o">=</span> <span class="s1">&#39;max&#39;</span>
-    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;lwc&#39;</span><span class="p">:</span>
+        <span class="n">extend</span> <span class="o">=</span> <span class="s1">'max'</span>
+    <span class="k">elif</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'lwc'</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">vmax</span> <span class="o">=</span> <span class="mi">35</span>
         <span class="k">else</span><span class="p">:</span>
@@ -249,9 +250,9 @@
         <span class="c1"># value[value &gt; vmax if ~np.isnan(vmax) else False] = vmax</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
         <span class="n">value</span><span class="p">[</span><span class="n">value</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;viridis&#39;</span><span class="p">))</span>
-        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">&#39;#fff2fd&#39;</span><span class="p">)</span>
-        <span class="n">extend</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'viridis'</span><span class="p">))</span>
+        <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="s1">'#fff2fd'</span><span class="p">)</span>
+        <span class="n">extend</span> <span class="o">=</span> <span class="s1">'min'</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
@@ -259,7 +260,7 @@
         <span class="n">vmin</span> <span class="o">=</span> <span class="n">minval</span>
 
     <span class="n">rect</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">PolyCollection</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="n">value</span><span class="p">[(</span><span class="n">dz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>
-                                      <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+                                      <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">'none'</span><span class="p">)</span>
     <span class="n">rect</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
@@ -268,7 +269,7 @@
     <span class="k">if</span> <span class="n">cbar_show</span><span class="p">:</span>
         <span class="n">cbar</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">rect</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="n">extend</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">&#39;grains&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">colormap</span> <span class="o">==</span> <span class="s1">'grains'</span><span class="p">:</span>
             <span class="n">labels</span> <span class="o">=</span> <span class="n">Dictionnaries</span><span class="o">.</span><span class="n">MEPRA_labels</span>
             <span class="n">cbar</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">labels</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -278,15 +279,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">format_ticks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;strftime&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'strftime'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
 
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="n">format_ticks</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">'small'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
@@ -299,8 +300,8 @@
 
 <div class="viewcode-block" id="saison1d">
 <a class="viewcode-back" href="../../../code/plots-strati.html#plots.stratiprofile.profilPlot.saison1d">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">saison1d</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylimit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">saison1d</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'b.'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylimit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the variable value across time for bulk variables (not variables per layer, e.g.</span>
 <span class="sd">    total SWE, albedo, etc.).</span>
 
@@ -327,34 +328,34 @@
 
 <span class="sd">       point = 100</span>
 
-<span class="sd">       with prosimu_auto(&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;) as ff:</span>
-<span class="sd">           var = ff.read(&#39;DSN_T_ISBA&#39;, selectpoint=point)</span>
+<span class="sd">       with prosimu_auto('/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc') as ff:</span>
+<span class="sd">           var = ff.read('DSN_T_ISBA', selectpoint=point)</span>
 <span class="sd">           time = ff.readtime()</span>
 
 <span class="sd">       ax = plt.gca()</span>
-<span class="sd">       saison1d(ax, var, time, title=&#39;Snow depth&#39;)</span>
+<span class="sd">       saison1d(ax, var, time, title='Snow depth')</span>
 <span class="sd">       plt.show()</span>
 
 <span class="sd">    .. figure:: /images/plots-strati-2.png</span>
 <span class="sd">       :align: center</span>
 
 <span class="sd">       Example of plots that can be obtained with this function (example of the code snippet provided).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">format_ticks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;strftime&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'strftime'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
 
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="n">format_ticks</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">'small'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
@@ -368,8 +369,8 @@
 <div class="viewcode-block" id="dateProfil">
 <a class="viewcode-back" href="../../../code/plots-strati.html#plots.stratiprofile.profilPlot.dateProfil">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dateProfil</span><span class="p">(</span><span class="n">axe</span><span class="p">,</span> <span class="n">axe2</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_dz</span><span class="p">,</span> <span class="n">value_grain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value_ram</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlimit</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ylimit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">hauteur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">cbar_show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+               <span class="n">hauteur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'b'</span><span class="p">,</span> <span class="n">cbar_show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot the vertical profile of the snowpack of one variable at a given date.</span>
 <span class="sd">    If grain type and RAM resistance are given, these infos are added in the plot.</span>
 
@@ -384,7 +385,7 @@
 <span class="sd">    :type value_dz: numpy array</span>
 <span class="sd">    :param value_grain: grain type for each layer</span>
 <span class="sd">    :type value_grain: numpy array</span>
-<span class="sd">    :param value_ram: Résistance à l&#39;enfoncement (traduction à trouver)</span>
+<span class="sd">    :param value_ram: Résistance à l'enfoncement (traduction à trouver)</span>
 <span class="sd">    :type value_ram: numpy array</span>
 <span class="sd">    :param xlimit: give the x-limit for the variable (from limits_variable in proreader)</span>
 <span class="sd">    :type xlimit: tuple</span>
@@ -409,11 +410,11 @@
 <span class="sd">       point = 100</span>
 <span class="sd">       time = 100</span>
 
-<span class="sd">       with prosimu_auto(&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;) as ff:</span>
-<span class="sd">           dz = ff.read(&#39;SNOWDZ&#39;, selectpoint=point, fill2zero=True)[time, :]</span>
-<span class="sd">           var = ff.read(&#39;SNOWTEMP&#39;, selectpoint=point)[time, :]</span>
-<span class="sd">           ram = ff.read(&#39;SNOWRAM&#39;, selectpoint=point)[time, :]</span>
-<span class="sd">           grain = ff.read(&#39;SNOWTYPE&#39;, selectpoint=point)[time, :]</span>
+<span class="sd">       with prosimu_auto('/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc') as ff:</span>
+<span class="sd">           dz = ff.read('SNOWDZ', selectpoint=point, fill2zero=True)[time, :]</span>
+<span class="sd">           var = ff.read('SNOWTEMP', selectpoint=point)[time, :]</span>
+<span class="sd">           ram = ff.read('SNOWRAM', selectpoint=point)[time, :]</span>
+<span class="sd">           grain = ff.read('SNOWTYPE', selectpoint=point)[time, :]</span>
 <span class="sd">           time = ff.readtime()[time]</span>
 
 <span class="sd">       ax = plt.gca()</span>
@@ -425,7 +426,7 @@
 <span class="sd">       :align: center</span>
 
 <span class="sd">       Example of plots that can be obtained with this function (example of the code snippet provided).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Créer les épaisseurs cumulées</span>
     <span class="n">epc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">value_dz</span><span class="p">)</span>
     <span class="c1"># Tracé du profil</span>
@@ -446,11 +447,11 @@
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">axe</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">axe</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">legend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %Hh&#39;</span><span class="p">))</span>
-    <span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;RAM - Snowgrain&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.04</span><span class="p">)</span>
+        <span class="n">axe</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">legend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %Hh'</span><span class="p">))</span>
+    <span class="n">axe</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'RAM - Snowgrain'</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.04</span><span class="p">)</span>
 
     <span class="n">axe</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">axe</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">axe</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">'small'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">xlimit</span> <span class="o">!=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">Max</span> <span class="o">=</span> <span class="n">xlimit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -466,7 +467,7 @@
         <span class="n">axe</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ylimit</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">hauteur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">axe</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">hauteur</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="n">axe</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">hauteur</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">'-'</span><span class="p">)</span>
 
     <span class="c1"># Tracé du graphe SNOWTYPE / SNOWRAM</span>
     <span class="k">if</span> <span class="n">value_grain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -480,8 +481,8 @@
             <span class="n">left_x</span> <span class="o">=</span> <span class="n">left_x</span><span class="p">[(</span><span class="n">value_dz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
             <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">left_x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">left_x</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">bottom_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">30</span>
-        <span class="n">right_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">bottom_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+            <span class="n">left_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">bottom_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'int'</span><span class="p">)</span> <span class="o">+</span> <span class="mi">30</span>
+        <span class="n">right_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">bottom_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'int'</span><span class="p">)</span>
 
         <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">bottom_y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_x</span>
@@ -500,7 +501,7 @@
         <span class="n">vmax</span> <span class="o">=</span> <span class="mf">14.5</span>
 
         <span class="n">rect</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">PolyCollection</span><span class="p">(</span><span class="n">vertices</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">array</span><span class="o">=</span><span class="n">value_grain</span><span class="p">[(</span><span class="n">value_dz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>
-                                          <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+                                          <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 
         <span class="n">rect</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
         <span class="n">axe2</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
@@ -519,12 +520,12 @@
 
 <div class="viewcode-block" id="heightplot">
 <a class="viewcode-back" href="../../../code/plots-strati.html#plots.stratiprofile.profilPlot.heightplot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">heightplot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_ep</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">direction_cut</span><span class="o">=</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="n">height_cut</span><span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">heightplot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_ep</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'b'</span><span class="p">,</span> <span class="n">direction_cut</span><span class="o">=</span><span class="s1">'up'</span><span class="p">,</span> <span class="n">height_cut</span><span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">     Plot the variable at a specific place in the snowpack. It is given with a height (in centimeter) and a direction.</span>
-<span class="sd">     direction=&#39;up&#39; means from ground to top of the snowpack</span>
-<span class="sd">     direction=&#39;down&#39; means from top of the snowpack to ground</span>
-<span class="sd">     For example, if you want to plot 5 cm under the snowpack surface, you choose: height_cut=5 and direction_cut=&#39;down&#39;</span>
+<span class="sd">     direction='up' means from ground to top of the snowpack</span>
+<span class="sd">     direction='down' means from top of the snowpack to ground</span>
+<span class="sd">     For example, if you want to plot 5 cm under the snowpack surface, you choose: height_cut=5 and direction_cut='down'</span>
 
 <span class="sd">     :param ax: figure axis</span>
 <span class="sd">     :type ax: matplotlib axis</span>
@@ -543,7 +544,7 @@
 <span class="sd">     :param height_cut: legend for the colorbar</span>
 <span class="sd">     :type height_cut: int</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
 
@@ -554,14 +555,14 @@
     <span class="n">ep_from_topsnow</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">value_ep</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># pas très pythonique: faire un truc avec np.apply_along_axis(np.searchsorted, 1, ep_from, height)</span>
-    <span class="k">if</span> <span class="n">direction_cut</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">direction_cut</span> <span class="o">==</span> <span class="s1">'down'</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ep_from_topsnow</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">ep_from_topsnow</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">height_cut</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">value_ep</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">and</span> \
                     <span class="nb">float</span><span class="p">(</span><span class="n">height_cut</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ep_from_ground</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">ep_from_topsnow</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">height_cut</span><span class="p">))])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">direction_cut</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">direction_cut</span> <span class="o">==</span> <span class="s1">'up'</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ep_from_ground</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">ep_from_ground</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">height_cut</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> \
                     <span class="nb">float</span><span class="p">(</span><span class="n">height_cut</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ep_from_ground</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
@@ -579,15 +580,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">format_ticks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;strftime&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'strftime'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
 
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="n">format_ticks</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">&#39;small&#39;</span><span class="p">)</span></div>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">size</span><span class="o">=</span><span class="s1">'small'</span><span class="p">)</span></div>
 
 </pre></div>
 

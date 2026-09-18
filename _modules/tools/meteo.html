@@ -7,6 +7,7 @@
     <title>tools.meteo &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,7 +41,7 @@
   <h1>Source code for tools.meteo</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">:Authors:</span>
 <span class="sd">    - Diego Monteiro</span>
 <span class="sd">    - LVG</span>
@@ -61,20 +62,20 @@
 <span class="sd">   from bronx.meteo.thermo import Thermo</span>
 
 <span class="sd">   # rh -&gt; qair:</span>
-<span class="sd">   qair = Thermo([&#39;v&#39;, &#39;c&#39;], data=dict(P=PSurf, Huw=hu, T=Tair, rc=np.zeros_like(Tair))).get(&#39;qv&#39;)</span>
+<span class="sd">   qair = Thermo(['v', 'c'], data=dict(P=PSurf, Huw=hu, T=Tair, rc=np.zeros_like(Tair))).get('qv')</span>
 
 <span class="sd">   # qair -&gt; rh</span>
-<span class="sd">   rh = Thermo([&#39;v&#39;, &#39;c&#39;], data=dict(P=PSurf, qv=qair, qt=qair, T=Tair)).get(&#39;Huw&#39;)</span>
+<span class="sd">   rh = Thermo(['v', 'c'], data=dict(P=PSurf, qv=qair, qt=qair, T=Tair)).get('Huw')</span>
 <span class="sd">   # Note: it may be necessary to cap to 100% when there is condensation:</span>
 <span class="sd">   rh[rh &gt; 100] = 100</span>
 <span class="sd">   rh[rh &lt; 0] = 0</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">CO2_CONCENTRATION</span> <span class="o">=</span> <span class="mf">0.00062</span>
-<span class="sd">&quot;&quot;&quot;Mean CO2 concentration&quot;&quot;&quot;</span>
+<span class="sd">"""Mean CO2 concentration"""</span>
 
 
 <div class="viewcode-block" id="splitting_prectot">
@@ -82,7 +83,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">splitting_prectot</span><span class="p">(</span>
     <span class="n">prectot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">tair</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">rh</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.7</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.2</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function used to partition total precipitation into liquid and solid part.</span>
 
 <span class="sd">    The computation is using air temperature and relative humidity.</span>
@@ -105,7 +106,7 @@
 <span class="sd">    :type gamma: float, optional</span>
 <span class="sd">    :return: Tuple of precliq and precsol (same units as the prectot input)</span>
 <span class="sd">    :rtype: Tuple of np.array</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Compute probability of rain and snow using air temperature and relative humidity</span>
     <span class="n">prain</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">tair</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">rh</span><span class="p">))</span>
@@ -125,7 +126,7 @@
 <div class="viewcode-block" id="psurf">
 <a class="viewcode-back" href="../../code/tools.html#tools.meteo.psurf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">psurf</span><span class="p">(</span><span class="n">elevation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the mean air pressure for a given elevation</span>
 <span class="sd">    (hypothesis of standard atmosphere)</span>
 
@@ -133,7 +134,7 @@
 <span class="sd">    :type elevation: float or numpy array</span>
 <span class="sd">    :returns: Surface pressure</span>
 <span class="sd">    :rtype: same as elevation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="mi">101325</span> <span class="o">*</span> <span class="p">((</span><span class="mi">288</span> <span class="o">-</span> <span class="mf">0.0065</span> <span class="o">*</span> <span class="n">elevation</span><span class="p">)</span> <span class="o">/</span> <span class="mi">288</span><span class="p">)</span><span class="o">**</span><span class="mf">5.255</span></div>
 
 </pre></div>

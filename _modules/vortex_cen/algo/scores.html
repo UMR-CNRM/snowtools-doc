@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.scores &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.scores</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.scores</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">scores.py</span>
+<span class="sd">---------</span>
+
+<span class="sd">Algo components for ESCROC scores.</span>
+
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.scores</span>
+<span class="sd">   :top-classes: vortex_cen.algo.components._CenParaBlindRun, vortex_cen.algo.components._CenTaylorRun,</span>
+<span class="sd">                 vortex_cen.algo.components._CenTaylorVortexWorker, vortex_cen.algo.components._CenWorkerBlindRun,</span>
+<span class="sd">                 vortex.algo.components.AlgoComponent, vortex.algo.components.Parallel,</span>
+<span class="sd">                 vortex.algo.components.TaylorRun, vortex.tools.parallelism.TaylorVortexWorker</span>
+<span class="sd">   :private-bases:</span>
+
+<span class="sd">.. autoclass:: Escroc_Score_Member</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Escroc_Score_Ensemble</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Escroc_Score_Subensemble</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Escroc_Optim_Ensemble</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaylorRun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.tools.parallelism</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaylorVortexWorker</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scores.list_scores</span><span class="w"> </span><span class="kn">import</span> <span class="n">ESCROC_list_scores</span><span class="p">,</span> <span class="n">scores_file</span><span class="p">,</span> <span class="n">ensemble_scores_file</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scores.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">ESCROC_EnsembleScores</span>
+
+
+<div class="viewcode-block" id="Escroc_Score_Member">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.scores.Escroc_Score_Member">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Escroc_Score_Member</span><span class="p">(</span><span class="n">TaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    AlgoComponent worker designed to run one member of SURFEX-Crocus experiment</span>
+<span class="sd">    without MPI parallelization.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent worker designed to run one member of SURFEX-Crocus experiment '</span>
+               <span class="s1">'without MPI parallelization.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'scores_escroc'</span><span class="p">],</span>
+            <span class="p">),</span>
+
+            <span class="n">datebegin</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of scores to compute"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of variables for which we want to compute the scores"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">vortex_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">list_pro</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PRO_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span>
+                    <span class="s1">'_mb</span><span class="si">{:04d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".nc"</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">list_pro</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="n">ESCROC_list_scores</span><span class="p">()</span>
+        <span class="n">rdict</span><span class="p">[</span><span class="s2">"scores"</span><span class="p">]</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">compute_scores_allmembers</span><span class="p">(</span><span class="n">list_pro</span><span class="p">,</span> <span class="s2">"obs_insitu.nc"</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">list_scores</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_var</span><span class="p">)</span>
+        <span class="n">rdict</span><span class="p">[</span><span class="s2">"members"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span>  <span class="c1"># because in the report the members can be in a different order</span>
+
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">()]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'DBUG'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Escroc_Score_Ensemble">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.scores.Escroc_Score_Ensemble">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Escroc_Score_Ensemble</span><span class="p">(</span><span class="n">TaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that compute ESCROC scores for the full ensemble."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that compute ESCROC scores for the full ensemble'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'blind'</span><span class="p">]</span>
+            <span class="p">),</span>
+
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'scores_escroc'</span><span class="p">],</span>
+            <span class="p">),</span>
+
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of scores to compute"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of variables for which we want to compute the scores"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"datebegin"</span><span class="p">,</span> <span class="s2">"dateend"</span><span class="p">,</span> <span class="s2">"list_var"</span><span class="p">,</span> <span class="s2">"list_scores"</span><span class="p">]:</span>
+            <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_pre_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_members_by_task</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_post_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boss</span><span class="o">.</span><span class="n">get_report</span><span class="p">()</span>
+
+        <span class="n">scores_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_scores</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_var</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span><span class="p">):</span>
+            <span class="n">scores_task</span> <span class="o">=</span> <span class="n">report</span><span class="p">[</span><span class="s2">"workers_report"</span><span class="p">][</span><span class="n">task</span><span class="p">][</span><span class="s2">"report"</span><span class="p">][</span><span class="s2">"scores"</span><span class="p">]</span>
+<span class="c1">#             members_task = np.array(self.local_members[task]) - self.local_members[0][0]</span>
+            <span class="n">members_task</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">report</span><span class="p">[</span><span class="s2">"workers_report"</span><span class="p">][</span><span class="n">task</span><span class="p">][</span><span class="s2">"report"</span><span class="p">][</span><span class="s2">"members"</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"DEBUG"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">members_task</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">scores_task</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">scores_all</span><span class="p">[:,</span> <span class="n">members_task</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">scores_all</span><span class="p">[:,</span> <span class="n">members_task</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">scores_task</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="n">scores_dataset</span> <span class="o">=</span> <span class="n">scores_file</span><span class="p">(</span><span class="s2">"scores.nc"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_scores</span><span class="p">):</span>
+            <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">scores_all</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"local members"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_members</span><span class="p">[:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">members</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">local_members</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">split_members_by_task</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">nmembers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+
+        <span class="c1"># Numbers of members by task</span>
+        <span class="n">nmembers_by_task_min</span> <span class="o">=</span> <span class="n">nmembers</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span>
+        <span class="n">nmembers_by_task_max</span> <span class="o">=</span> <span class="n">nmembers_by_task_min</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Numbers of tasks running with the maximum value</span>
+        <span class="n">ntasks_with_max</span> <span class="o">=</span> <span class="n">nmembers</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span>
+
+        <span class="n">local_members</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">firstmember</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="o">&lt;</span> <span class="n">ntasks_with_max</span><span class="p">:</span>
+                <span class="n">nmembers_by_task</span> <span class="o">=</span> <span class="n">nmembers_by_task_max</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nmembers_by_task</span> <span class="o">=</span> <span class="n">nmembers_by_task_min</span>
+
+            <span class="n">lastmember</span> <span class="o">=</span> <span class="n">firstmember</span> <span class="o">+</span> <span class="n">nmembers_by_task</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">local_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">firstmember</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">lastmember</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">firstmember</span> <span class="o">=</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">local_members</span></div>
+
+
+
+<div class="viewcode-block" id="Escroc_Score_Subensemble">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.scores.Escroc_Score_Subensemble">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Escroc_Score_Subensemble</span><span class="p">(</span><span class="n">TaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent worker designed to compute ensemble scores for a given subensemble."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent worker designed to compute ensemble scores for a given subensemble.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'optim_escroc'</span><span class="p">],</span>
+            <span class="p">),</span>
+
+            <span class="n">datebegin</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of scores to compute"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of variables for which we want to compute the scores"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">vortex_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">list_pro</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PRO_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span>
+                    <span class="s1">'_mb</span><span class="si">{:04d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".nc"</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">list_pro</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_var</span><span class="p">:</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="n">ESCROC_EnsembleScores</span><span class="p">(</span><span class="n">list_pro</span><span class="p">,</span> <span class="s2">"obs_insitu.nc"</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+            <span class="n">crps</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">CRPS</span><span class="p">()</span>
+            <span class="n">dispersion</span><span class="p">,</span> <span class="n">rmse</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">E</span><span class="o">.</span><span class="n">dispersionEnsemble</span><span class="p">()</span>
+        <span class="n">rdict</span><span class="p">[</span><span class="s2">"scores"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">crps</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">,</span> <span class="n">rmse</span><span class="p">,</span> <span class="n">ss</span><span class="p">]</span>
+        <span class="n">rdict</span><span class="p">[</span><span class="s2">"members"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span>  <span class="c1"># because in the report the members can be in a different order</span>
+
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">()]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'DBUG'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Escroc_Optim_Ensemble">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.scores.Escroc_Optim_Ensemble">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Escroc_Optim_Ensemble</span><span class="p">(</span><span class="n">TaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that compute ESCROC scores for the full ensemble."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that compute ESCROC scores for the full ensemble'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'blind'</span><span class="p">]</span>
+            <span class="p">),</span>
+
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'optim_escroc'</span><span class="p">],</span>
+            <span class="p">),</span>
+
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_scores</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of scores to compute"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">list_var</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of variables for which we want to compute the scores"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+
+            <span class="n">niter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Number of iterations"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="mi">1000</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"datebegin"</span><span class="p">,</span> <span class="s2">"dateend"</span><span class="p">,</span> <span class="s2">"list_var"</span><span class="p">,</span> <span class="s2">"list_scores"</span><span class="p">]:</span>
+            <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_pre_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">35</span><span class="p">:</span>
+            <span class="n">nmembers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nmembers</span> <span class="o">=</span> <span class="mi">35</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_random_members</span><span class="p">(</span><span class="n">nmembers</span><span class="o">=</span><span class="n">nmembers</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">niter</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_post_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boss</span><span class="o">.</span><span class="n">get_report</span><span class="p">()</span>
+
+        <span class="n">ntasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">report</span><span class="p">[</span><span class="s2">"workers_report"</span><span class="p">])</span>
+        <span class="n">crps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">dispersion</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">ntasks</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">members</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">ntasks</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">):</span>
+            <span class="n">crps</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">dispersion</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">rmse</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">ss</span><span class="p">[</span><span class="n">task</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="p">[</span><span class="s2">"workers_report"</span><span class="p">][</span><span class="n">task</span><span class="p">][</span><span class="s2">"report"</span><span class="p">][</span><span class="s2">"scores"</span><span class="p">]</span>
+            <span class="n">members</span><span class="p">[</span><span class="n">task</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">report</span><span class="p">[</span><span class="s2">"workers_report"</span><span class="p">][</span><span class="n">task</span><span class="p">][</span><span class="s2">"report"</span><span class="p">][</span><span class="s2">"members"</span><span class="p">])</span>
+
+        <span class="n">scores_dataset</span> <span class="o">=</span> <span class="n">ensemble_scores_file</span><span class="p">(</span><span class="s2">"scores.nc"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write_members</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"crps"</span><span class="p">,</span> <span class="n">crps</span><span class="p">)</span>
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"dispersion"</span><span class="p">,</span> <span class="n">dispersion</span><span class="p">)</span>
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"rmse"</span><span class="p">,</span> <span class="n">rmse</span><span class="p">)</span>
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"ss"</span><span class="p">,</span> <span class="n">ss</span><span class="p">)</span>
+
+        <span class="n">scores_dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"local members"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_members</span><span class="p">[:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">members</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">local_members</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">select_random_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nmembers</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">niter</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span> <span class="o">==</span> <span class="n">nmembers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">[:]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Initialization</span>
+            <span class="c1"># We want that all sites are tested with the same subensembles,</span>
+            <span class="c1"># this is why we fix the argument of random.seed()</span>
+            <span class="n">rgen</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">()</span>
+            <span class="n">rgen</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">local_members</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">niter</span><span class="p">):</span>
+                <span class="n">listTest</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">candidates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">[:]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">candidates</span><span class="p">))</span>
+                <span class="c1"># Randomly select nmembers members</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
+                    <span class="n">member</span> <span class="o">=</span> <span class="n">rgen</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span>
+                    <span class="n">listTest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+                    <span class="n">candidates</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+                <span class="n">local_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">listTest</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">local_members</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.scores</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

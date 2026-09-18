@@ -7,6 +7,7 @@
     <title>utils.sun &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -49,7 +50,7 @@
 <span class="c1">#                        + write comprehensive commented code</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">interp1d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tab</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the linear interpolation of y for the tab values of the x coordinate</span>
 <span class="sd">    Method designed to avoid the use of scipy.interpolate (avoid the dependency to an external module and environment problems on Bull)</span>
 
@@ -57,7 +58,7 @@
 <span class="sd">       This is not relevant anymore</span>
 
 <span class="sd">    :meta private:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">ind_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
     <span class="n">ind_before</span> <span class="o">=</span> <span class="n">ind_after</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">x_before</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ind_before</span><span class="p">)</span>
@@ -70,9 +71,9 @@
 <div class="viewcode-block" id="sun">
 <a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">sun</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for computation around sun and radiations</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">printmemory</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -82,7 +83,7 @@
 <div class="viewcode-block" id="sun.slope_aspect_correction">
 <a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.slope_aspect_correction">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">slope_aspect_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direct</span><span class="p">,</span> <span class="n">diffus</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat_in</span><span class="p">,</span> <span class="n">lon_in</span><span class="p">,</span> <span class="n">aspect_in</span><span class="p">,</span> <span class="n">slope_in</span><span class="p">,</span> <span class="n">list_list_azim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_list_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lnosof_surfex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_time</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">return_angles</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This routine corrects the direct solar radiation because of explicit slope or surrounding masks</span>
 
 <span class="sd">        :param direct: array of direct solar radiation over an infinite flat surface (time,loc) or (time,x,y)</span>
@@ -101,10 +102,10 @@
 <span class="sd">        :type return_angles: bool</span>
 
 <span class="sd">        :returns: corrected direct solar radiation and optionally, the angular positions of sun</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Docs about solar radiation :</span>
-        <span class="c1"># &quot;Basics in solar radiation at earth surface&quot; (L. Wald) : https://minesparis-psl.hal.science/hal-01676634</span>
-        <span class="c1"># &quot;Wikipedia: solar irradience&quot; : https://en.wikipedia.org/wiki/Solar_irradiance </span>
+        <span class="c1"># "Basics in solar radiation at earth surface" (L. Wald) : https://minesparis-psl.hal.science/hal-01676634</span>
+        <span class="c1"># "Wikipedia: solar irradience" : https://en.wikipedia.org/wiki/Solar_irradiance </span>
         
         <span class="n">tab_direct</span> <span class="o">=</span> <span class="n">direct</span><span class="p">[:]</span>
         <span class="n">tab_diffus</span> <span class="o">=</span> <span class="n">diffus</span><span class="p">[:]</span>
@@ -128,8 +129,8 @@
             <span class="n">tab_time_date</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">deltatime</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tab_time_date</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
-        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">)</span>
+        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tab_time_date</span><span class="p">)):</span>
             <span class="c1"># timetuple list description: </span>
             <span class="c1"># j[0]: year, j[1]: month, j[2]: day, </span>
@@ -165,7 +166,7 @@
             <span class="o">-</span> <span class="mf">7.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">j</span> <span class="o">-</span> <span class="mf">2.027</span><span class="p">)</span> <span class="o">/</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PI</span><span class="p">)</span>
 
         <span class="c1"># --------- Sun declination (delta) ---------</span>
-        <span class="c1"># (angular distance of the sun&#39;s rays north (or south) of the equator)</span>
+        <span class="c1"># (angular distance of the sun's rays north (or south) of the equator)</span>
         <span class="c1"># L. Roussel 03/2024, small changes here, but easier to understand:</span>
         <span class="c1"># 81th days of the year is the spring equinox</span>
         <span class="c1"># equivalent to : 0.4 * np.sin((0.999694 * j - 81.111) / 365 * 2 * PI) ~ 0.4 * sin((j - 81) / 365 * 2.PI) </span>
@@ -283,7 +284,7 @@
         <span class="c1"># --------- Solar masking ---------</span>
         <span class="c1"># if mask are available, mask direct when relief between sun and location</span>
         <span class="c1"># (S. Morin 2014/06/27, taken from meteo.f90 in Crocus)</span>
-        <span class="c1"># Matthieu 2014/09/16 : réécriture parce que les masques changent d&#39;un point à l&#39;autre</span>
+        <span class="c1"># Matthieu 2014/09/16 : réécriture parce que les masques changent d'un point à l'autre</span>
         <span class="n">direct_plane_projected_masked</span> <span class="o">=</span> <span class="n">direct_plane_projected</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">list_list_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># if mask are given</span>
             <span class="n">simu_azimuth_degree</span> <span class="o">=</span> <span class="n">azimuth</span> <span class="o">*</span> <span class="n">RD2DG</span>  <span class="c1"># solar azimuths of the simulation, 0. is North</span>
@@ -342,7 +343,7 @@
                 <span class="k">for</span> <span class="n">ilon</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                     <span class="n">bigvar</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error on indices in upscale_tab&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"error on indices in upscale_tab"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">bigvar</span>
 
@@ -360,14 +361,14 @@
                     <span class="n">bigvar</span><span class="p">[:,</span> <span class="n">ilat</span><span class="p">,</span> <span class="n">ilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error on indices in upscale_tab_time&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"error on indices in upscale_tab_time"</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">bigvar</span>
 
 <div class="viewcode-block" id="sun.coszenith">
 <a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.coszenith">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">coszenith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tab_time_date</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Cosinus of solar zenith angle</span>
 <span class="sd">        (detailed explaination in function slope_aspect_correction)</span>
 
@@ -382,9 +383,9 @@
 <span class="sd">        :param aspect: aspect (degrees), numpy array (floats), length Np</span>
 <span class="sd">        :returns: Cosinus of zenith angle</span>
 <span class="sd">        :rtype: numpy array of shape (Nt, Np)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
-        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">julian_days</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">)</span>
+        <span class="n">decimal_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">tab_time_date</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tab_time_date</span><span class="p">)):</span>
             <span class="c1"># tab_time_date_2[i] = time_init + datetime.timedelta(seconds = tab_time_date[i])</span>
             <span class="n">timetup</span> <span class="o">=</span> <span class="n">tab_time_date</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span>
@@ -431,7 +432,7 @@
 <div class="viewcode-block" id="sun.directdiffus">
 <a class="viewcode-back" href="../../code/utils-sun.html#utils.sun.sun.directdiffus">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">directdiffus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SWglo</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">site</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Separation of direct and diffuse  short wave radiations</span>
 
 <span class="sd">        :param SWglo: global short wave</span>
@@ -443,55 +444,55 @@
 <span class="sd">        :param site: The site code for clear sky decomposition. Must be one of wfj, snb, swa, sap, sod, rme, oas, obs, ojp or cdp)</span>
 
 <span class="sd">        :returns: direct short wave, diffuse short wave</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Clear sky decomposition by Marie Dumont</span>
-        <span class="k">if</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;wfj&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"wfj"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.449042</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.639542</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.745762</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.555133</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;snb&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"snb"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.492804</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.743704</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.870253</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.464349</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;swa&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"swa"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.481555</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.717005</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.838604</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.484631</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;sap&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"sap"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.444924</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">3.506267</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.342956</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mf">0.050087</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;sod&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"sod"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.171899</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.040324</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.335702</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.256246</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;rme&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"rme"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.375236</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.481626</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.653772</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.421807</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;oas&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"oas"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.252006</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.208891</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.443042</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.339813</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;obs&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"obs"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.254170</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.213592</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.446855</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.340464</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;ojp&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"ojp"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.250787</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.205990</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.440420</span>
             <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.339316</span>
-        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">&quot;cdp&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">site</span> <span class="o">==</span> <span class="s2">"cdp"</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.243613</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">5.199838</span>
             <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">4.472389</span>

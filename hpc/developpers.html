@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Documentation for HPC task developpers &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentations from Ange’s PhD (Blowing snow)" href="../extra_documentation/these_ange/these_ange_index.html" />
+    <link rel="prev" title="Launching simulations on MF HPC" href="simulations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../extra_documentation/these_ange/these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="simulations.html" title="Launching simulations on MF HPC"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="hpc-index.html" accesskey="U">HPC simulations</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentation for HPC task developpers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="documentation-for-hpc-task-developpers">
+<h1>Documentation for HPC task developpers<a class="headerlink" href="#documentation-for-hpc-task-developpers" title="Link to this heading">¶</a></h1>
+<section id="tutorial-creation-of-a-minimal-unit-task">
+<span id="minimal-example"></span><h2>Tutorial : creation of a minimal unit task<a class="headerlink" href="#tutorial-creation-of-a-minimal-unit-task" title="Link to this heading">¶</a></h2>
+<section id="writing-a-unit-task">
+<h3>Writing a unit task<a class="headerlink" href="#writing-a-unit-task" title="Link to this heading">¶</a></h3>
+<p>This example illustrates the creation of a “task” with :
+* one input file (a FORCING file)
+* a simple piece of python code (without any explicit parallelisation) extracting a sub-period forom the input forcing file
+* the backup of the generated forcing file over the prescribed sub-period</p>
+<ol class="arabic simple">
+<li><p>create a class deriving from “research_task_base” (itself deriving from a “task” object of the mkjob package) :</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tasks.research_task_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenResearchTask</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractSubPeriod</span><span class="p">(</span><span class="n">_CenResearchTask</span><span class="p">):</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>implement the “get_remote_inputs” method with the input file and set the “local” footprint with the desired file name on the working directory (here “FORCNG_IN.nc”)</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_remote_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Input FORCING'</span><span class="p">)</span>  <span class="c1"># Give an explicit name to find this resource easily in the log</span>
+    <span class="n">input_forcing</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+        <span class="n">kind</span>        <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+        <span class="n">local</span>       <span class="o">=</span> <span class="s1">'FORCING_IN.nc'</span><span class="p">,</span>  <span class="c1"># Name of the file in the working directory</span>
+        <span class="n">experiment</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_xpid'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">),</span>
+        <span class="n">username</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>  <span class="c1"># Default set to $USER by vortex</span>
+        <span class="n">geometry</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_geometry'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+        <span class="n">datebegin</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_datebegin'</span><span class="p">),</span>  <span class="c1"># Must be different than self.conf.datebegin in this example</span>
+        <span class="n">dateend</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_dateend'</span><span class="p">),</span>  <span class="c1"># Must be different than self.conf.dateend in this example</span>
+        <span class="n">block</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_block'</span><span class="p">),</span> <span class="s1">'meteo'</span><span class="p">),</span>
+        <span class="n">nativefmt</span>   <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+        <span class="n">namespace</span>   <span class="o">=</span> <span class="s1">'vortex.multi.fr'</span><span class="p">,</span>
+        <span class="n">namebuild</span>   <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'input forcing ='</span><span class="p">,</span> <span class="n">input_forcing</span><span class="p">)</span> <span class="c1"># display the result nicely in the log</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Naming the variable returned by the vortex.input/output command (here “input_forcing”) is optional most of the time, it is used only to display the result of the command nicely in the log.</p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>implement the “get_local_inputs” method with resources to get on HPC exclusively (doing nothing in this example) :</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_local_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>implement the “algo” method with your python script producing a “FORCING_OUT.nc” file covering a sub-period of time :</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING_IN.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+    <span class="n">shorter_forcing</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">))</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">"FORCING_OUT.nc"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'NETCDF4_CLASSIC'</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>implement the “launch_algo” method (to do nothing in this example) :</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">launch_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>implement the “put_outputs” method to archive the “FORCING_OUT.nc” file :</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">put_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Output FORCING'</span><span class="p">)</span>
+    <span class="n">output_forcing</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">output</span><span class="p">(</span>
+        <span class="n">kind</span>        <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+        <span class="n">local</span>       <span class="o">=</span> <span class="s1">'FORCING_OUT.nc'</span><span class="p">,</span>  <span class="c1"># Name of the file produced by the script</span>
+        <span class="n">experiment</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">,</span>  <span class="c1"># By convention the output "experiment" is always self.conf.xpid</span>
+        <span class="n">datebegin</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+        <span class="n">dateend</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+        <span class="n">geometry</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_geometry'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>  <span class="c1"># Must be the same as the input geometry in this example</span>
+        <span class="n">block</span>       <span class="o">=</span> <span class="s1">'meteo'</span><span class="p">,</span>  <span class="c1"># Force output block at "meteo" (arbitrary choice)</span>
+        <span class="n">nativefmt</span>   <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+        <span class="n">namespace</span>   <span class="o">=</span> <span class="s1">'vortex.cache.fr'</span><span class="p">,</span>  <span class="c1"># Do not archive the output file on Hendrix in this exemple (duplicated data)</span>
+        <span class="n">namebuild</span>   <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Output forcing ='</span><span class="p">,</span> <span class="n">output_forcing</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The task is now ready, you can launch it by following the instructions of section <a class="reference internal" href="#launch-a-unit-task"><span class="std std-ref">Launching a unit task</span></a></p>
+</section>
+<section id="configuration-variables">
+<span id="id1"></span><h3>Configuration variables<a class="headerlink" href="#configuration-variables" title="Link to this heading">¶</a></h3>
+<section id="introduction">
+<h4>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h4>
+<p>As illustrated in section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>, the IOs of a unit task are simply a sequence of call to the vortex.input() and vortex.output() methods.
+These methods expect a specific “footprint” description (a dictionnary) of the target resource file. The values of these dictionnaries can either be a fixed value or a variable one.
+The variable values can/must be defined at runtime by the user through the mkjob command-line variables or a configuration file. These variables are transfered to the task through to a dictionary class variable named “conf”.
+The value of a user-defined “varname” variable can thus be accessed in the task with self.conf.varname.</p>
+</section>
+<section id="naming-convention">
+<h4>Naming convention<a class="headerlink" href="#naming-convention" title="Link to this heading">¶</a></h4>
+<p>Since some footprint “keys” are common for all resources (<em>experiment</em>, <em>geometry</em>, <em>datebegin</em>, <em>dateend</em> and so on). By convention, the associated configuration variables should be named “ressource_key” for input resources, as illustrated in section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>.</p>
+</section>
+<section id="other-configuration-variables">
+<h4>Other configuration variables<a class="headerlink" href="#other-configuration-variables" title="Link to this heading">¶</a></h4>
+<p>It is also possible that the python script in the “algo” method expect some user-defined variable values. The values are specific to the script and do not follow any naming convention.
+For example, the “algo” of the example above could only select one specific date with a variable named “validity_time” :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING_IN.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">validity_time</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">"FORCING_OUT.nc"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="documentation-of-the-task">
+<span id="minimal-task-doc"></span><h3>Documentation of the task<a class="headerlink" href="#documentation-of-the-task" title="Link to this heading">¶</a></h3>
+<p>This section illustrates how to document the minimal unit task described in section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>.
+The general documentation of the task should contain a short description of the task and the list of input and output files.</p>
+<p>The list of mandatory and optional configuration variables must be documented with the “MANDATORY_CONFIGURATION_VARIABLES” and “OPTIONAL_CONFIGURATION_VARIABLES” class attributes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A variable should be considered “mandatory” if not providing it leads the task to crash (any call to self.conf.something).
+Optional variables can have default values (for example self.conf.get(‘something’, ‘default_value’)) or not (if ‘something’ in self.conf)</p>
+</div>
+<p>The configuration variable documentation must include an “help” message and the variable “type”.
+It is also possible to provide:</p>
+<ul class="simple">
+<li><p>a “format” in case a specific format is required</p></li>
+<li><p>a list of possible “choices”</p></li>
+<li><p>a “default” value for optional variables</p></li>
+</ul>
+<p>The documentation of the example task of section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a> would look like :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ExtractSubPeriod</span><span class="p">(</span><span class="n">_CenResearchTask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Extract a sub period in a Forcing file</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">    --------</span>
+<span class="sd">    - FORCING file</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    - FORCING file on a shorter period (but same geometry)</span>
+<span class="sd">    """</span>
+
+    <span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"xpid+help=Experiment identifier;type=str"</span><span class="p">,</span>
+        <span class="s2">"forcing_datebegin+help=Begin date of the input forcing file;type=str or Date"</span><span class="p">,</span>
+        <span class="s2">"forcing_dateend+help=End date of the input forcing file;type=str or Date"</span><span class="p">,</span>
+        <span class="s2">"datebegin+help=Begin date of the output forcing file;type= str or Date"</span><span class="p">,</span>
+        <span class="s2">"dateend+help=End date of the output forcing file;type=str or Date"</span><span class="p">,</span>
+        <span class="s2">"forcing_geometry|geometry+help=The input and output forcing geometry;type=str"</span><span class="p">,</span>  <span class="c1"># Both "geometry" or "forcing_geometry" can be provided with the same result</span>
+    <span class="p">]</span>
+    <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"forcing_xpid+help=Experiment identifier of the input forcing;type=str;default=The current experiment identifier"</span><span class="p">,</span>
+        <span class="s2">"forcing_user+help=Name of the producer of the input forcing;type=str;default=$USER"</span><span class="p">,</span>
+        <span class="s2">"forcing_block+help=*block* level of the input forcing;type=str;default=meteo"</span><span class="p">,</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>For more information on the documentation of configuration variables, see section <a class="reference internal" href="#dynamic-documentation"><span class="std std-ref">Dynamic documentation of unit tasks</span></a>.</p>
+</section>
+<section id="launching-a-unit-task">
+<span id="launch-a-unit-task"></span><h3>Launching a unit task<a class="headerlink" href="#launching-a-unit-task" title="Link to this heading">¶</a></h3>
+<p>In order to launch a unit task, you first need to choose the arbitrary application (<em>vapp</em>) and configuration (<em>vconf</em>) levels.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A same task can appear in several applications / configurations.</p>
+</div>
+<p>Then, you must include the task into a “driver” of tasks.
+To do so, add the following method in the task module itself or a new module: <strong>in a vapp/vconf/drivers/ directory structure:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># vortex_cen/*vapp*/*vconf*/drivers/example.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mkjob.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Driver</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Driver</span><span class="p">(</span>
+        <span class="n">tag</span>    <span class="o">=</span> <span class="s1">'example'</span><span class="p">,</span>
+        <span class="n">ticket</span> <span class="o">=</span> <span class="n">t</span><span class="p">,</span>
+        <span class="n">nodes</span>  <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ExtractSubPeriod</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">'extract_sub_period'</span><span class="p">,</span> <span class="n">ticket</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">kw</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>You also need to provide a configuration file containing the configuration variables values.
+This configuration file should at least have a “DEFAULT” section, but it is recomended to add a “extract_sub_period” section (“extract_sub_period” being the “tag” of the task in the driver above).
+In addition, an optional job configuration can be provided to set the job partition, walltime, number of nodes,…
+This job configuration should be placed in a specific section (for example “extract_sub_period_job”).</p>
+<p>In the example of section <a class="reference internal" href="#minimal-task-doc"><span class="std std-ref">Documentation of the task</span></a>, to extract the month of august 2020 from the s2m reanalysis over Corsica in the “allslopes” geometry, this configuration file (“test.ini”) could look like :</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># vortex_cen/*vapp*/*vconf*/conf/test.ini</span>
+
+<span class="k">[DEFAULT]</span>
+
+<span class="k">[extract_sub_period_job]</span>
+<span class="na">walltime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0:01:00</span>
+<span class="na">partition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">shared</span>
+<span class="na">mem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1G</span>
+
+<span class="k">[extract_sub_period]</span>
+<span class="na">xpid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">test_extract_period</span>
+<span class="na">forcing_datebegin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2020080106</span>
+<span class="na">forcing_dateend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2021080106</span>
+<span class="na">forcing_geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">release_2026.1</span>
+<span class="na">forcing_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">vernaym</span>
+<span class="na">forcing_geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cor2_allslopes</span>
+<span class="na">datebegin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2020010106</span>
+<span class="na">dateend</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="s">2020090106</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> the module containing the definition of the driver and the configuration file should be in a vapp/vconf/ directory structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vortex_cen</span><span class="o">/</span>
+    <span class="n">vapp</span><span class="o">/</span>
+        <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+        <span class="n">vconf</span><span class="o">/</span>
+            <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+            <span class="n">drivers</span><span class="o">/</span>
+                <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+                <span class="n">exemple</span><span class="o">.</span><span class="n">py</span>
+            <span class="n">conf</span><span class="o">/</span>
+                <span class="n">test</span><span class="o">.</span><span class="n">ini</span>
+</pre></div>
+</div>
+<p>You can now launch this new task with the following mkjob command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -j name=extract_sub_period_job task=exemple plugin=drivers profile=rd-belenos-mt -c $SNOWTOOLS_CEN/vortex_cen/*vapp*/*vconf*/conf/test.ini
+</pre></div>
+</div>
+<p>If you want to shorten this command, you can create a job directives file in a “jobs” repository (at the “conf” and “drivers” level) containing the following line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># vortex_cen/*vapp*/*vconf*/jobs/job_directive_file</span>
+
+<span class="n">name</span><span class="o">=</span><span class="n">new_task_job</span> <span class="n">task</span><span class="o">=</span><span class="n">driver_of_new_task</span> <span class="n">plugin</span><span class="o">=</span><span class="n">drivers</span> <span class="n">profile</span><span class="o">=</span><span class="n">rd</span><span class="o">-</span><span class="n">belenos</span><span class="o">-</span><span class="n">mt</span>
+</pre></div>
+</div>
+<p>The following mkjob command is now equivalent to the one above :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -f $SNOWTOOLS_CEN/vortex_cen/*vapp*/*vconf*/jobs/job_directives_file -c $SNOWTOOLS_CEN/vortex_cen/*vapp*/*vconf*/conf/conf_example.ini
+</pre></div>
+</div>
+</section>
+<section id="adding-a-unit-test-for-the-task">
+<h3>Adding a unit test for the task<a class="headerlink" href="#adding-a-unit-test-for-the-task" title="Link to this heading">¶</a></h3>
+<p>To add a unit test, follow the exact same steps than the previous section (<a class="reference internal" href="#launch-a-unit-task"><span class="std std-ref">Launching a unit task</span></a>) with the imposed <strong>vapp=tests</strong> and <strong>vconf=testhpc</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The configuration variables should be set to minimise the execution time, this is only a test !</p>
+</div>
+<p>It is also recommended that you add a reproducibility check by defining a ‘diff’ method.
+In the example of section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>, this would look like :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'"Reproductibility check : FORCING'</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+        <span class="n">kind</span>        <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+        <span class="n">local</span>       <span class="o">=</span> <span class="s1">'FORCING_OUT.nc'</span><span class="p">,</span>
+        <span class="n">experiment</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">diff_xpid</span><span class="p">,</span>
+        <span class="n">username</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'diff_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">datebegin</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+        <span class="n">dateend</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+        <span class="n">geometry</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_geometry'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+        <span class="n">block</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'diff_block'</span><span class="p">,</span> <span class="s1">'extract_subperiod'</span><span class="p">),</span>
+        <span class="n">nativefmt</span>   <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+        <span class="n">namespace</span>   <span class="o">=</span> <span class="s1">'vortex.cache.fr'</span><span class="p">,</span>  <span class="c1"># Do not archive the output file on Hendrix in this exemple (duplicated data)</span>
+        <span class="n">namebuild</span>   <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Output forcing ='</span><span class="p">,</span> <span class="n">output_forcing</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> Do not forget to update the task’s documentation with the optional “diff_xpid”, “diff_user” and “diff_block” variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s2">"diff_xpid+..."</span><span class="p">,</span>
+    <span class="s2">"diff_user+..."</span><span class="p">,</span>
+    <span class="s2">"diff_block+..."</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>In this case, you also have to provide a reference output file for the testbase (by convention under the “reference” <em>xpid</em>).</p>
+</section>
+</section>
+<section id="tutorial-creation-of-an-algo-component">
+<h2>Tutorial : creation of an algo component<a class="headerlink" href="#tutorial-creation-of-an-algo-component" title="Link to this heading">¶</a></h2>
+<p>In the example of the previous section, the core “algorithm” of the task is hard coded in the “algo” method.
+In order to benefit from high-level tools provided by the vortex package, it is better to put this piece of python code in a specific “algo component” object.
+In the vortex-cen plugin, these objects are stored under “vortex_cen/algo”.
+To implement a new algo component you can add it to an existing file that suits your need or create a new one.</p>
+<p><strong>NB</strong> If you add your algo compenent in a new file, make your algo component available by importing this file in the __init__.py of the “algo” folder :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># vortex_cen/algo/__init__.py</span>
+<span class="o">...</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">NewFile</span>
+</pre></div>
+</div>
+<section id="creation-of-a-sequential-algo-component">
+<span id="sequential-algo"></span><h3>Creation of a sequential algo component<a class="headerlink" href="#creation-of-a-sequential-algo-component" title="Link to this heading">¶</a></h3>
+<p>If you only need to execute the piece of python code sequentially, your algo component can directly inherit from the main “AlgoComponent” vortex object.
+You must then choose an arbitrary class name for your algo component, and specify the associated footprint description.
+First, choose an arbitrary (but not already used in any other algo component) <em>kind</em> in order to identify your algo component.
+Then add the “arguments” used by your piece of python code (<em>datebegin</em> and <em>dateend</em> in the example of section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>).
+Finaly, add the code in an “execute” method.</p>
+<p>In the example of section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>, the algo component should look like :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlgoComponent</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Extract_Subperiod</span><span class="p">(</span><span class="n">AlgoComponent</span><span class="p">):</span>  <span class="c1"># Arbitrary class name</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extract_subperiod'</span><span class="p">],</span>  <span class="c1"># Arbitrary 'tag' for this object (must not be use by another algo)</span>
+            <span class="p">),</span>
+            <span class="c1"># Algo component "parameters"</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Begin date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"End date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="c1"># Main execution method</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING_IN.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+    <span class="n">shorter_forcing</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">))</span>
+    <span class="n">shorter_forcing</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'FORCING_OUT.nc'</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'NETCDF4_CLASSIC'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is of course also possible to call an external function in the “execute” method.
+In this case the function be coded with the assumption that the input file(s) (here ‘FORCING_IN.nc’) are already available in the working directory.</p>
+</div>
+<p>To use this algo compenent in the task introduced in section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>, replace the “algo” method of the task by the following code :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">algo</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">task</span><span class="p">(</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="s2">"extract_subperiod"</span><span class="p">,</span>  <span class="c1"># the target algo *kind*</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="s2">"algo"</span><span class="p">,</span>  <span class="c1"># the way the algo should be run</span>
+        <span class="n">datebegin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+        <span class="n">dateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+     <span class="p">)</span>
+     <span class="k">return</span> <span class="n">algo</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <em>engine</em> footprint set the way the algo should be run : “algo” for python code, “blind” for a binary executable</p>
+</div>
+</section>
+<section id="creation-of-a-parallel-algo-component">
+<h3>Creation of a parallel algo component<a class="headerlink" href="#creation-of-a-parallel-algo-component" title="Link to this heading">¶</a></h3>
+<p>The motivation behind working with HPC is to enable high-level parallelisation of your scripts.
+In the example of section <a class="reference internal" href="#minimal-example"><span class="std std-ref">Tutorial : creation of a minimal unit task</span></a>, you might want to deal with an ensemble of N forcing files instead of a single forcing file.
+The optimal way to execute such a script is to make the N independent sub-period extractions in parallel.
+To do so, you can rely on algo components using the “Taylorism” parallelisation tool.
+These algo components split the execution between a set of sub-processes (called “Workers”), each doing a single independent execution of the script.
+The work distribution between the workers and the monitoring of the workers state is done by the main process (called “Boss”).</p>
+<p>To implement a parallelisation based on Taylorism in the Vortex-Cen plugin, the “Boss” should inherit from the abstract <cite>_CenTaylorRun</cite> algo component and the associated “Workers” should inherit from <cite>_CenTaylorVortexWorker</cite>.</p>
+<p>In the “execute” method of the Boss, “individual” (different for each Worker) and “common” (shared by all Workers) instructions can be provided.
+The default behavior in <cite>_CenTaylorRun</cite> is to assign a sub-directory to each worker, in which the “common” set of instructions will be carried out.
+This implies that input files to be processed in parallel should be fetched in different working subdirectories by the <cite>get_remote_inputs</cite> and <cite>get_local_inputs</cite> methods :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_remote_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Input FORCING'</span><span class="p">)</span>
+    <span class="n">input_forcing</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+        <span class="n">role</span>        <span class="o">=</span> <span class="s1">'Forcing'</span><span class="p">,</span>  <span class="c1"># This role will be used to identify the Workers sub-directories (*role_members* footprint of the Boss)</span>
+        <span class="n">kind</span>        <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+        <span class="n">local</span>       <span class="o">=</span> <span class="s1">'mb[member]/FORCING_IN.nc'</span><span class="p">,</span>  <span class="c1"># Add a member-dependend sub-directory in the working directory</span>
+        <span class="n">experiment</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_xpid'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">),</span>
+        <span class="n">username</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">geometry</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_geometry'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+        <span class="n">datebegin</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_datebegin'</span><span class="p">),</span>
+        <span class="n">dateend</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_dateend'</span><span class="p">),</span>
+        <span class="n">block</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_block'</span><span class="p">),</span> <span class="s1">'meteo'</span><span class="p">),</span>
+        <span class="n">member</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_member'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'member'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>  <span class="c1"># "member" or "forcing_member" can be provided indistinctly but are optional</span>
+        <span class="n">nativefmt</span>   <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+        <span class="n">namespace</span>   <span class="o">=</span> <span class="s1">'vortex.multi.fr'</span><span class="p">,</span>
+        <span class="n">namebuild</span>   <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'input forcing ='</span><span class="p">,</span> <span class="n">input_forcing</span><span class="p">)</span> <span class="c1"># display the result nicely in the log</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The FORCING files are now fetched in member-dependend sub-directories (addition of “mb[member]/” in the <em>local</em> footprint), so the working directory will look like :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">workdir</span><span class="o">/</span>
+    <span class="n">mb0001</span><span class="o">/</span>
+        <span class="n">FORCING_IN</span><span class="o">.</span><span class="n">nc</span>
+    <span class="n">mb0002</span><span class="o">/</span>
+        <span class="n">FORCING_IN</span><span class="o">.</span><span class="n">nc</span>
+    <span class="o">...</span>
+    <span class="n">mbXXXX</span><span class="o">/</span>
+        <span class="n">FORCING_IN</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>An optional <em>member</em> footprint has been added (when no “member” or “forcing_member” is provided, the execution is similar to the “deterministic” one)
+–&gt; Do not forget to update the documentation of configuration variables by documenting the optional “forcing_member|member” variable</p></li>
+<li><p>A <em>role</em> footprint has been added, its value will be passed to the Boss trough the <em>role_members</em> footprint to identify the Workers subdirectories</p></li>
+</ul>
+</div>
+<p>The <cite>Extract_Subperiod</cite> Boss can now be created, and do nothing more than <cite>_CenTaylorRun</cite> in this example. The <cite>Extract_Subperiod</cite> Workers do the actual work (through the “_common” method)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenTaylorRun</span><span class="p">,</span> <span class="n">_CenTaylorVortexWorker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
+
+
+<span class="c1"># Definition of the "Boss"</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Extract_Subperiod</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extract_subperiod'</span><span class="p">],</span>  <span class="c1"># The "sequential" algo of the previous section should be removed first</span>
+            <span class="p">),</span>
+            <span class="n">role_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Role of RH inputs to use for members definition"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="c1"># Algo component "parameters"</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Begin date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"End date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Definition of the "Workers"</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Extract_Subperiod_Worker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+
+    <span class="c1"># All footprint values of the Boss are automatically transfered to the Workers</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extract_subperiod'</span><span class="p">],</span>  <span class="c1"># The *kind* of the Workers must be the same than the one of the Boss</span>
+            <span class="p">),</span>
+            <span class="c1"># Algo component "parameters"</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Begin date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"End date of the period to extract"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Comon instructions for all Workers</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING_IN.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+        <span class="n">shorter_forcing</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">))</span>
+        <span class="n">shorter_forcing</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'FORCING_OUT.nc'</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'NETCDF4_CLASSIC'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The “sequential” algo of the previous section should be removed first</p></li>
+<li><p>The <em>kind</em> of the Workers must be the same than the one of the Boss</p></li>
+<li><p>All footprint values of the Boss are automatically transfered to the Workers</p></li>
+</ul>
+</div>
+<p>You can now execute your task in parallel by modifying the algo of section <a class="reference internal" href="#sequential-algo"><span class="std std-ref">Creation of a sequential algo component</span></a> as follow :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">algo</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">task</span><span class="p">(</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="s2">"extract_subperiod"</span><span class="p">,</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="s2">"algo"</span><span class="p">,</span>  <span class="c1"># Still run the algo as python code</span>
+        <span class="n">datebegin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+        <span class="n">dateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+        <span class="n">role_members</span> <span class="o">=</span> <span class="s1">'Forcing'</span><span class="p">,</span>  <span class="c1"># The *role* value of the input</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">algo</span>
+</pre></div>
+</div>
+<p><strong>NB</strong> Of course, you also have to add the <em>member</em> footprint to the output files in your task in order to add the members subdirectories :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">put_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Output FORCING'</span><span class="p">)</span>
+    <span class="n">output_forcing</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">output</span><span class="p">(</span>
+        <span class="n">kind</span>        <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+        <span class="n">local</span>       <span class="o">=</span> <span class="s1">'mb[member]/FORCING_OUT.nc'</span><span class="p">,</span>  <span class="c1"># Add member subdirectory</span>
+        <span class="n">experiment</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">,</span>
+        <span class="n">datebegin</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+        <span class="n">dateend</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+        <span class="n">geometry</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_geometry'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+        <span class="n">block</span>       <span class="o">=</span> <span class="s1">'meteo'</span><span class="p">,</span>
+        <span class="n">member</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_member'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'member'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>  <span class="c1"># Add member as in the input</span>
+        <span class="n">nativefmt</span>   <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+        <span class="n">namespace</span>   <span class="o">=</span> <span class="s1">'vortex.cache.fr'</span><span class="p">,</span>
+        <span class="n">namebuild</span>   <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Output forcing ='</span><span class="p">,</span> <span class="n">output_forcing</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dynamic-documentation-of-unit-tasks">
+<span id="dynamic-documentation"></span><h2>Dynamic documentation of unit tasks<a class="headerlink" href="#dynamic-documentation-of-unit-tasks" title="Link to this heading">¶</a></h2>
+<p>The documentation of all configuration variables used by a given task is build dynamically by the “mkjob-help” script.
+To do so, the list of the name of the configuration variables must be provided in the “MANDATORY_CONFUGURATION_VARIABLES” and “OPTIONAL_CONFIGURATION_VARIABLES” attributes of the task.
+In order to inherit from the documentation of parent classes, these attributes should be extended as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+
+    <span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"new_mandatory_var_1"</span><span class="p">,</span>
+        <span class="s2">"new_mandatory_var_2"</span><span class="p">,</span>
+        <span class="o">...</span>
+    <span class="p">]</span>
+    <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"new_optional_var_1"</span><span class="p">,</span>
+        <span class="s2">"new_optional_var_2"</span><span class="p">,</span>
+        <span class="o">...</span>
+    <span class="p">]</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="p">,</span> <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is also possible to remove the documentation of variables from the parent class with an additional “overwrite” list:
+self.update_attributes(MANDATORY_CONFIGURATION_VARIABLES, OPTIONAL_CONFIGURATION_VARIABLES, overwrite=[remove_var_1, remove_var_2,…])</p>
+</div>
+<p>Any configuration variable not already documented should be added to the “standard_variables” dictionary of the “vortex_cen/tasks/configuration_variables.py” file.
+The minimal information to provide is an help message and the variable type (as string):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">new_mandatory_var_1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">"Help message"</span><span class="p">,</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">"'str', 'int', 'dict', 'list', 'bool'"</span><span class="p">,</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<p>Additional information such as the “default” value, the variable “format” and abvailable “choices” can also be provided.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">new_mandatory_var_1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">"Help message"</span><span class="p">,</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="s2">"str"</span><span class="p">,</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="s2">"const_cen.XX@YYYYYYYY"</span><span class="p">,</span>
+    <span class="nb">format</span> <span class="o">=</span> <span class="s2">" &lt;uenv_name&gt;@&lt;uenv_username&gt;"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In order to lighten the documentation of configuration variables associated to the footprint description of a specific resource, it is possible to use specific “meta variables”.
+These variables are identified with a “metavar=True” attribute in the “standard_variables” dictionnary.
+They should also have a “values” containing the list of actual configuration variables associated to this “meta variable”.</p>
+<p>For example, the following “prep” meta variable includes all possible configuration variables to describe a PREP.nc file :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prep</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">metavar</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">"Footprint description of PREP.nc file(s)"</span><span class="p">,</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"prep_xpid"</span><span class="p">,</span> <span class="s2">"prep_user"</span><span class="p">,</span> <span class="s2">"prep_vapp"</span><span class="p">,</span> <span class="s2">"prep_vconf"</span><span class="p">,</span> <span class="s2">"prep_vortex1"</span><span class="p">,</span> <span class="s2">"prep_member"</span><span class="p">,</span> <span class="s2">"prep_block"</span><span class="p">],</span>
+<span class="p">),</span>
+</pre></div>
+</div>
+<p>This allows to replace the following class documentation :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"prep_xpid"</span><span class="p">,</span>
+    <span class="s2">"prep_user"</span><span class="p">,</span>
+    <span class="s2">"prep_vapp"</span><span class="p">,</span>
+    <span class="s2">"prep_vconf"</span><span class="p">,</span>
+    <span class="s2">"prep_vortex1"</span><span class="p">,</span>
+    <span class="s2">"prep_member"</span><span class="p">,</span>
+    <span class="s2">"prep_block"</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>By the shorter following code :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="s2">"prep"</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Of course, it is still possible to declare only some variables in the group as mandatory or optional.</p>
+</div>
+<p>By default, the mkjob-help script displays only the meta variable information:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prep_</span><span class="o">*</span>               <span class="n">Footprint</span> <span class="n">description</span> <span class="n">of</span> <span class="n">PREP</span><span class="o">.</span><span class="n">nc</span> <span class="n">file</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                     <span class="n">actual</span> <span class="n">variables</span> <span class="p">:</span> <span class="n">prep_xpid</span><span class="p">,</span> <span class="n">prep_user</span><span class="p">,</span> <span class="n">prep_vapp</span><span class="p">,</span> <span class="n">prep_vconf</span><span class="p">,</span> <span class="n">prep_geometry</span><span class="p">,</span> <span class="n">prep_vortex1</span><span class="p">,</span> <span class="n">prep_member</span><span class="p">,</span> <span class="n">prep_block</span>
+</pre></div>
+</div>
+<p>But the user can choose to print all configuration variables included in the group with the “–verbose” argument :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>prep_xpid            Experiment identifier of the PREP file
+                     default : The simulation's *xpid*
+                     type : str
+prep_user            Username of the producer of the PREP file
+                     default : $USER
+                     type : str
+prep_vapp            The *vapp* level of the PREP file
+                     default : The simulation's *vapp*
+                     type : str
+prep_vconf           The *vconf* level of the PREP file
+                     default : The simulation's *vconf*
+                     type : str
+prep_geometry        Geometry of the PREP.nc file. This must be a valid geometry tag in your'$HOME/.vortexrc/geometries.ini' file.
+                     default : The simulation's *geometry*
+                     type : str
+prep_vortex1         Set this value to 'True' if the target PREP file have been produced with a version of vortex &lt;2
+                     default : False
+                     type : bool
+prep_member          The member(s) of the PREP file(s) in case they come from an ensemble (ex: SODA)
+                     default : None
+                     type : int, footprints.stdtypes.FPList (ex : 'first-last-step')
+prep_block           The *block* level of the PREP file(s)
+                     default : prep
+                     type : str
+</pre></div>
+</div>
+<p>It is also possible to document equivalent configuration variables such as “uenv” and “surfex_env” (both these variables can be provided to retrieve SURFEX-related const resources).
+In this case, a “uenv|surfex_uenv” variable can be used to convey this equivalency :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="s2">"uenv|surfex_uenv"</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The associated documentation generated by the mkjob-help script makes the equivalency explicit:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uenv</span> <span class="ow">or</span> <span class="n">surfex_uenv</span>  <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">User</span> <span class="n">Environment</span> <span class="n">containing</span> <span class="n">constant</span> <span class="n">files</span> <span class="o">|</span> <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">User</span> <span class="n">Environment</span> <span class="n">containing</span> <span class="nb">all</span> <span class="n">SURFEX</span> <span class="n">constant</span> <span class="n">files</span>
+</pre></div>
+</div>
+<p>It is also possible to document the action of a given configuration variable on other configuration variables.
+For example, in the “surfex” driver of the Crocus/deterministic configuration, if the optional “climground” configuration variable is set to “True” a “PREP.nc” file is looked for so the “prep” description becomes a valid option.
+This can be documented with the following “var:dependency1,dependency2,…” syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"climground:prep"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The mkjob-help script will add the information that a “prep” description becomes an option if the optional “climground” variable is provided with an “enforce” entry:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">climground</span>           <span class="n">Allow</span> <span class="n">the</span> <span class="n">generation</span> <span class="n">of</span> <span class="n">a</span> <span class="n">ground</span> <span class="n">initialization</span> <span class="n">file</span> <span class="n">by</span> <span class="n">computing</span> <span class="n">a</span> <span class="n">climatological</span> <span class="n">average</span> <span class="n">of</span> <span class="n">air</span> <span class="n">temperature</span> <span class="n">on</span> <span class="n">the</span> <span class="n">provided</span> <span class="n">period</span><span class="o">.</span>
+                     <span class="n">default</span> <span class="p">:</span> <span class="kc">False</span>
+                     <span class="nb">type</span> <span class="p">:</span> <span class="nb">bool</span>
+                     <span class="n">enforce</span> <span class="p">:</span> <span class="n">prep</span><span class="s2">"</span>
+</pre></div>
+</div>
+<p>Finally, it is possible to change default variable attributes from the “standard_variables” dictionnary (separated by ‘;’), with the syntaxe “var+&lt;var_attribute_to_modify&gt;=&lt;new_attribute_value&gt;;…”
+For example, the following class attributes</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"forcing_geometry+help=A list of forcing geometries must be provided for this task;type=list;default=None"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>states that for this given task, the value of the <em>forcing_geometry</em> configuration variable must be a list (instead of ‘str or list’) and that there is no default value.
+This syntax can also be used to document variables not in the “standard_variables” dictionnary. In this case, at least the “help” message and the variable “type” must be provided.</p>
+</section>
+<section id="sphinx-style-documentation-of-unit-tasks">
+<h2>Sphinx style documentation of unit tasks<a class="headerlink" href="#sphinx-style-documentation-of-unit-tasks" title="Link to this heading">¶</a></h2>
+<p>Task classes should also provide a sphinx style documentation of the configuration
+variables used or potentially used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
+<span class="sd">**Task: PreprocessNamelist**</span>
+
+<span class="sd">Task for pre-processing a namelist coming from a User Environment.</span>
+<span class="sd">NB: This is the task to use to guarantee the simulation's reproductibility</span>
+
+<span class="sd">**Mandatory configuration variables:**</span>
+
+<span class="sd">* ``surfex_uenv`` or if not present ``uenv`` User Environment from which the namelist file should be fetched.</span>
+<span class="sd">  Format : uenv:{uenv_name}@{user}</span>
+<span class="sd">* ``namelist_source`` In an UEnv, several namelistes can be present in an *.tar* archive,</span>
+<span class="sd">  the *source*  footprint allows to define the exact name of the nameliste to fetch.</span>
+<span class="sd">  For example, *OPTIONS_default.nam*.</span>
+<span class="sd">* ``forcing_datebegin`` *datebegin* footprint, default self.conf.datebegin</span>
+<span class="sd">  type forcing_datebegin: str, footprints.stdtypes.FPList</span>
+<span class="sd">* ``forcing_dateend`` *dateend* footprint, default self.conf.dateend</span>
+<span class="sd">  type forcing_dateend: str, footprints.stdtypes.FPList</span>
+<span class="sd">* ``forcing_xpid`` Experiment identifier, default self.conf.xpid</span>
+<span class="sd">  type forcing_xpid: str</span>
+<span class="sd">...</span>
+
+<span class="sd">**Optional configuration variables:**</span>
+
+<span class="sd">* ``namelist_path`` absolute path to the namelist file if the namelist is not in the uenv.</span>
+<span class="sd">* ``io_duration`` Argument similar to the one of the `get_list_dates_files` method in</span>
+<span class="sd">  snowtools/utils/dates.py.</span>
+<span class="sd">  Used to retrieve the list of *datebegin* and *dateend* for inputs covering sub-periods.</span>
+<span class="sd">  Possible values : "yearly", "monthly" or "full"</span>
+<span class="sd">  type io_duration: str</span>
+<span class="sd">* ``forcing_vortex1`` Boolean to identify resources produced with vortex1 (filename without geometry)</span>
+<span class="sd">  type forcing_vortex1: bool</span>
+<span class="sd">...</span>
+
+<span class="sd">"""</span>
+</pre></div>
+</div>
+<p>Format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""</span>
+<span class="sd">**Headings:**</span>
+
+<span class="sd">* use bullet list and if the line is too long</span>
+<span class="sd">  there must be exactly two spaces in the beginning of the continuation</span>
+<span class="sd">  line</span>
+<span class="sd">* ``variable name`` emphasise variable names this way</span>
+<span class="sd">    - there might</span>
+<span class="sd">    - be a second level</span>
+<span class="sd">    - of the bullet list</span>
+
+<span class="sd">  don't forget the empty line to end the bullet list.</span>
+
+<span class="sd">"""</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-unit-tasks">
+<h2>Testing unit tasks<a class="headerlink" href="#testing-unit-tasks" title="Link to this heading">¶</a></h2>
+<p>The HPC testbase configuration is under vortex_cen/tests/testhpc.</p>
+<p>In order to launch the entire testbase, simply launch the following command on Belenos :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -f $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/jobs/create_job -c $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/conf/tests_testhpc.ini
+</pre></div>
+</div>
+<p>An monitor the tests results under /scratch/mtool/$USER : Any failed test and the step that caused them to fail will be recorded in a ‘FailTests.txt’ file.
+On the contrary, successfull tests will be recorded in a ‘OKTests.txt’ file.</p>
+<p>If you want to launch a specific test, identify the associated job name with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -f $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/jobs/create_job -c $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/conf/tests_testhpc.ini -l
+</pre></div>
+</div>
+<p>And launch it with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -f $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/jobs/create_job -c $SNOWTOOLS_CEN/vortex_cen/tests/testhpc/conf/tests_testhpc.ini -n &lt;jobname&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The test monitoring is done by Context managers stored in vortex_cen/tools/monitoring.py</p>
+</div>
+<p><strong>NB</strong> There is currently a bug in the netcdf comparison tools of vortex leading to “failed reproductibility check” errors.
+You can either ignore there errors, or install the <cite>mv-diff-netcdf</cite> bug-fix branch of vortex in your “snowtools” virtual environment :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $HOME/Projects
+git clone https://github.com/vernaym/vortex.git vortex-nwp
+cd vortex-nwp
+git checkout -b mv-diff-netcdf
+git branch --set-upstream-to=origin/mv-diff-netcdf mv-diff-netcdf
+git pull
+pip install -e .
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Documentation for HPC task developpers</a><ul>
+<li><a class="reference internal" href="#tutorial-creation-of-a-minimal-unit-task">Tutorial : creation of a minimal unit task</a><ul>
+<li><a class="reference internal" href="#writing-a-unit-task">Writing a unit task</a></li>
+<li><a class="reference internal" href="#configuration-variables">Configuration variables</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#naming-convention">Naming convention</a></li>
+<li><a class="reference internal" href="#other-configuration-variables">Other configuration variables</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation-of-the-task">Documentation of the task</a></li>
+<li><a class="reference internal" href="#launching-a-unit-task">Launching a unit task</a></li>
+<li><a class="reference internal" href="#adding-a-unit-test-for-the-task">Adding a unit test for the task</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tutorial-creation-of-an-algo-component">Tutorial : creation of an algo component</a><ul>
+<li><a class="reference internal" href="#creation-of-a-sequential-algo-component">Creation of a sequential algo component</a></li>
+<li><a class="reference internal" href="#creation-of-a-parallel-algo-component">Creation of a parallel algo component</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dynamic-documentation-of-unit-tasks">Dynamic documentation of unit tasks</a></li>
+<li><a class="reference internal" href="#sphinx-style-documentation-of-unit-tasks">Sphinx style documentation of unit tasks</a></li>
+<li><a class="reference internal" href="#testing-unit-tasks">Testing unit tasks</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="simulations.html"
+                          title="previous chapter">Launching simulations on MF HPC</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../extra_documentation/these_ange/these_ange_index.html"
+                          title="next chapter">Documentations from Ange’s PhD (Blowing snow)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/hpc/developpers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../extra_documentation/these_ange/these_ange_index.html" title="Documentations from Ange’s PhD (Blowing snow)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="simulations.html" title="Launching simulations on MF HPC"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="hpc-index.html" >HPC simulations</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Documentation for HPC task developpers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

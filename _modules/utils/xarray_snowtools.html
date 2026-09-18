@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.xarray_snowtools &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.xarray_snowtools</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">"""</span>
+<span class="sd">Import all tools related to the use of xarray inside snowtools and</span>
+<span class="sd">around SURFEX simulations.</span>
+
+<span class="sd">Provide wrapper for manipulating data archived with Vortex in a research context:</span>
+
+<span class="sd">.. autofunction:: open_vortex_data</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies.loggers</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
+
+<span class="n">vortex_echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'vortex'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">vortex_echecker</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tools.vortex_extractor</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_data</span>
+
+<span class="c1"># Prevent from showing the error log in case of unavailability of external code</span>
+<span class="c1"># (the unavailabilty is still mentionned at WARNING level)</span>
+<span class="n">getLogger</span><span class="p">(</span><span class="s1">'bronx.syntax.externalcode'</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'backend'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools_backend</span> <span class="k">as</span> <span class="n">xsb</span>  <span class="c1"># noqa: F401</span>
+<span class="c1"># Load snowtools-specifi xarray accessors in case the user wants to use them</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools_accessor</span> <span class="k">as</span> <span class="n">xsa</span>  <span class="c1"># noqa: F401, E402</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Standard_Output_Metadata</span> <span class="k">as</span> <span class="n">som</span>  <span class="c1"># noqa: F401, E402</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools_preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess</span>  <span class="c1"># noqa: F401, E402</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'preprocess'</span><span class="p">,</span> <span class="s1">'xsb'</span><span class="p">,</span> <span class="s1">'xsa'</span><span class="p">,</span> <span class="s1">'som'</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="open_vortex_data">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools.open_vortex_data">[docs]</a>
+<span class="nd">@contextmanager</span>
+<span class="nd">@vortex_echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_vortex_data</span><span class="p">(</span><span class="n">configfile</span><span class="p">,</span> <span class="n">configsection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A wrapper for manipulating data archived with Vortex in a research context.</span>
+<span class="sd">    The aim of this wrapper is to perform file manipulation in the background, focusing instead on data manipulation.</span>
+<span class="sd">    It directly returns an `xarray.Dataset` object containing the target data.</span>
+
+<span class="sd">    The vortex/footprint description of the target data primarily comes from a configuration file, provided through the</span>
+<span class="sd">    `configfile` keyword argument.</span>
+<span class="sd">    Footprint-like keyword arguments can also be provided to complete or modify/overwrite the description provided by</span>
+<span class="sd">    the configuration file.</span>
+
+<span class="sd">    **NB:** always check that the provided description match your requirements before any actual extraction.</span>
+<span class="sd">    To do so, it is possible to disable the actual file transfer by providing a `checkonly=True` keyword argument.</span>
+<span class="sd">    This will only print the list of files that would be extracted without `checkonly=True`.</span>
+
+<span class="sd">    The wrapper will download the target data and open it for the duration of the user's session.</span>
+<span class="sd">    All files will be removed from the working directory when the session closes.</span>
+<span class="sd">    However, they are stored in the cache to ensure optimal future reutilisation.</span>
+
+<span class="sd">    **Usage examples:**</span>
+
+<span class="sd">    * With a standard configuration file targeting the S2M reanalysis and keyword arguments to focus</span>
+<span class="sd">      on a single year and geometry :</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from snowtools.utils.xarray_snowtools import open_vortex_data</span>
+
+<span class="sd">        with open_vortex_data(configfile='S2MReanalysis.ini',  configsection='SafranFlatReanalysis',</span>
+<span class="sd">                        datebegin='2022080106', dateend='2023080106', geometry='cor2_flat') as ds:</span>
+<span class="sd">            print(ds)</span>
+<span class="sd">            # A FORCING file has been downloaded in the working directory and opened with xarray:</span>
+<span class="sd">            # `ds` now contains the target Dataset</span>
+<span class="sd">            # Do any data manipulation here</span>
+<span class="sd">            # ...</span>
+
+<span class="sd">        # At this point all files have been removed from the working directory</span>
+
+<span class="sd">    * With a custom configuration file, provide the absolute or relative path to the target file.</span>
+<span class="sd">      If this target file contains only the "DEFAULT" section or a single named section, simply do :</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from snowtools.utils.xarray_snowtools import open_vortex_data</span>
+
+<span class="sd">        with open_vortex_data(configfile='path/to/user/file.ini') as ds:</span>
+<span class="sd">            print(ds)</span>
+<span class="sd">            # Your own code or call to external functions here</span>
+
+<span class="sd">    * With an ensemble simulation:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from snowtools.utils.xarray_snowtools import open_vortex_data</span>
+
+<span class="sd">        with open_vortex_data(configfile='conf.ini', concat_dim='member', combine='nested', chunks='auto') as ds:</span>
+<span class="sd">            print(ds)</span>
+<span class="sd">            # your own code or call to external functions here</span>
+
+<span class="sd">    **Arguments:**</span>
+
+<span class="sd">    :param configfile: Absolute path to the configuration file or filename of an existing configuration file under</span>
+<span class="sd">                       vortex_cen/conf containing a (partial) footprint description of the target resource(s).</span>
+<span class="sd">    :type configfile: str</span>
+<span class="sd">    :param configsection: Name of the target section in the configuration file. If the configuration file has only</span>
+<span class="sd">                          one section, `configsection` is automatically set to the existing section name.</span>
+<span class="sd">                          If the configuration file has no section at all besides 'DEFAULT', a dummy section is</span>
+<span class="sd">                          created to read the variables provided in 'DEFAULT'.</span>
+<span class="sd">    :type configsection: str</span>
+
+<span class="sd">    **Usefull keyword arguments**</span>
+
+<span class="sd">    :param chunks: xarray open_mfdataset *chunks* keyword argument</span>
+<span class="sd">    :type chunks: int, dict, 'auto' or None, optional</span>
+<span class="sd">    :param concat_dim: xarray open_mfdataset *concat_dim* keyword argument</span>
+<span class="sd">    :type concat_dim: str, DataArray, Index or a Sequence of these or None, optional</span>
+<span class="sd">    :param combine: xarray open_mfdataset *combine* keyword argument</span>
+<span class="sd">    :type combine:  {"by_coords", "nested"}, optional</span>
+
+<span class="sd">    Standard keyword arguments for the description of CEN resources include :</span>
+
+<span class="sd">    :param kind: The `kind` of resource to extract (ex: FORCING, PRO, PREP,...)</span>
+<span class="sd">    :type kind: str</span>
+<span class="sd">    :param vapp: The target resource's application</span>
+<span class="sd">    :type vapp: str</span>
+<span class="sd">    :param vconf: The target resource's configuration</span>
+<span class="sd">    :type vconf: str</span>
+<span class="sd">    :param experiment: The target resource's experiment identifier.</span>
+<span class="sd">    :type experiment: str</span>
+<span class="sd">    :param username: The name of the producer of the target resource(s).</span>
+<span class="sd">    :type username: str</span>
+<span class="sd">    :param geometry: The target resource's geometry</span>
+<span class="sd">    :type geometry: str</span>
+<span class="sd">    :param block: The target resource's block (generally the name of the producing unit task)</span>
+<span class="sd">    :type block: str</span>
+<span class="sd">    :param member: The target resource's member (int) or list of members (format 'first-last-step')</span>
+<span class="sd">    :type member: str of FPList</span>
+<span class="sd">    :param datebegin: The begin date of the resources to extract in case they cover a period</span>
+<span class="sd">    :type datebegin: str or Date</span>
+<span class="sd">    :param dateend: The end date of the resources to extract in case they cover a period</span>
+<span class="sd">    :type dateend: str or Date</span>
+<span class="sd">    :param duration: The length of the period covered by individual files ('yearly', 'monthly' ar 'full')</span>
+<span class="sd">    :type duration: str</span>
+<span class="sd">    :param datevalidity: The validity date of the resourcesto extract in case they do not cover a period</span>
+<span class="sd">    :type datevalidity: str or Date</span>
+
+<span class="sd">    The following additional keyword arguments can also be provided :</span>
+
+<span class="sd">    :param checkonly: Disable actual data fetch in a dev or test context</span>
+<span class="sd">    :type checkonly: bool</span>
+<span class="sd">    :param verbose: Overwrite the default vortex verbosity</span>
+<span class="sd">    :type verbose: bool</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># Empty vortex toolbox in case other resources have already been retrieved</span>
+    <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="c1"># Retrive data from vortex cache (or archive)</span>
+    <span class="n">get_data</span><span class="p">(</span><span class="n">configfile</span><span class="o">=</span><span class="n">configfile</span><span class="p">,</span> <span class="n">configsection</span><span class="o">=</span><span class="n">configsection</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="c1"># Get list of retrieved files</span>
+    <span class="n">listfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">vortex</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">inputs</span><span class="p">()]</span>
+    <span class="n">listdir</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">vortex</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">inputs</span><span class="p">()]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">listfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No file matching the provided description"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">listfiles</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="c1"># yield dataset to caller</span>
+            <span class="k">yield</span> <span class="n">ds</span>
+            <span class="c1"># The dataset is automatically closed at exit of `with` statement,</span>
+            <span class="c1"># the files can now be deleted</span>
+            <span class="k">for</span> <span class="n">fic</span> <span class="ow">in</span> <span class="n">listfiles</span><span class="p">:</span>
+                <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fic</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">:</span>
+                <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">utils.xarray_snowtools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

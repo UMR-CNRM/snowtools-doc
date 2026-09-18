@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.data.executables &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.executables</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.data.executables</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">executables.py</span>
+<span class="sd">--------------</span>
+
+<span class="sd">Specific CEN executables.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.data.executables</span>
+<span class="sd">   :top-classes: vortex.data.executables.SurfaceModel, vortex.data.executables.Script</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 4</span>
+
+<span class="sd">.. autoclass:: Safran</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SafranGribFiltering</span>
+<span class="sd">   :show-inheritance:</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.data.executables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Script</span><span class="p">,</span> <span class="n">SurfaceModel</span>
+
+<span class="c1">#: No automatic export</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Safran">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.executables.Safran">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Safran</span><span class="p">(</span><span class="n">SurfaceModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for the Safran model executables."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Safran module'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'safrane'</span><span class="p">,</span> <span class="s1">'safrane_dev'</span><span class="p">,</span> <span class="s1">'syrpluie'</span><span class="p">,</span> <span class="s1">'syrpluie_dev'</span><span class="p">,</span> <span class="s1">'syrmrr'</span><span class="p">,</span> <span class="s1">'syrmrr_dev'</span><span class="p">,</span>
+                              <span class="s1">'sytist'</span><span class="p">,</span> <span class="s1">'sytist_dev'</span><span class="p">,</span> <span class="s1">'syvapr'</span><span class="p">,</span> <span class="s1">'syvapr_dev'</span><span class="p">,</span> <span class="s1">'syrper'</span><span class="p">,</span> <span class="s1">'syrper_dev'</span><span class="p">,</span>
+                              <span class="s1">'syvafi'</span><span class="p">,</span> <span class="s1">'syvafi_dev'</span><span class="p">,</span> <span class="s1">'sypluie'</span><span class="p">,</span> <span class="s1">'sypluie_dev'</span><span class="p">,</span> <span class="s1">'intercep'</span><span class="p">,</span> <span class="s1">'intercep_dev'</span><span class="p">],</span>
+                <span class="p">),</span>
+                <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'master_[kind]'</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">command_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">''</span></div>
+
+
+
+<div class="viewcode-block" id="SafranGribFiltering">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.executables.SafranGribFiltering">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SafranGribFiltering</span><span class="p">(</span><span class="n">Script</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for the creation of P files used by SAFRAN."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Prepare the input files for SAFRAN'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m_filtering_grib'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">cpl_vconf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'pearp'</span><span class="p">,</span> <span class="s1">'pearome'</span><span class="p">,</span> <span class="s1">'arpege'</span><span class="p">,</span> <span class="s1">'arome'</span><span class="p">],</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]'</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'gribfiltering'</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.executables</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

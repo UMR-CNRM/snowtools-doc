@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.tasks.research_task_base &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.research_task_base</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.tasks.research_task_base</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">research_task_base.py</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Main class used for all CEN HPC research tasks.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.tasks.research_task_base</span>
+<span class="sd">   :top-classes: mkjob.nodes.Node</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 4</span>
+
+<span class="sd">.. autoclass:: _CenResearchTask</span>
+<span class="sd">   :members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mkjob.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tasks.oper_research_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">CENTaskMixIn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">footprints.stdtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">FPDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">footprints.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">rangex</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tools.monitoring</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputReportContext</span><span class="p">,</span> <span class="n">OutputReportContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tools.monitoring</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlgoReportContext</span><span class="p">,</span> <span class="n">TestReportContext</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_list_dates_files</span><span class="p">,</span> <span class="n">get_dic_dateend</span>
+
+
+<div class="viewcode-block" id="_CenResearchTask">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenResearchTask</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">CENTaskMixIn</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Abstract class defining the common sequence of actions for CEN's vortex tasks.</span>
+
+<span class="sd">    A vortex task is the sequence of actions to execute a single algo component.</span>
+
+<span class="sd">    It always follows this procedure (definied in the main `process` method) :</span>
+
+<span class="sd">    1. fetch all necessary input resources (files):</span>
+<span class="sd">        - from an archive machine --&gt; on a transfert node ('early-fetch')</span>
+<span class="sd">        - from the local machine --&gt; on a compute node ('fetch')</span>
+
+<span class="sd">    2. execute the algo component (an executable, a script or·a sequence of instructions)</span>
+<span class="sd">        of inputs resources necessary to run an algo component (an executable, a script or a</span>
+<span class="sd">        sequence of instructions) --&gt; 'compute'</span>
+
+<span class="sd">    3. save output resources (files produced or modified by the algo component)</span>
+<span class="sd">        - to the local machine --&gt; on a compute node ('backup')</span>
+<span class="sd">        - to an archive machine --&gt; on a compute node ('late-backup')</span>
+
+<span class="sd">    To implement a new task inheriting from this abstract class, implement a subset of the following methods:</span>
+
+<span class="sd">    * get_remote_inputs</span>
+<span class="sd">    * get_local_inputs</span>
+<span class="sd">    * algo</span>
+<span class="sd">    * launch_algo</span>
+<span class="sd">    * put_outputs</span>
+
+<span class="sd">    See their respective documentation for more details.</span>
+
+<span class="sd">    Doc:</span>
+<span class="sd">    http://intra.cnrm.meteo.fr/algopy/trainings/vortex_dev2022_1/presentation/beamer/vortex_dev_jobs2_presentation.pdf</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initialise class attributes for dynamic documentation.</span>
+<span class="sd">        """</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"datebegin"</span><span class="p">,</span>
+            <span class="s2">"dateend"</span><span class="p">,</span>
+            <span class="s2">"xpid"</span><span class="p">,</span>
+            <span class="s2">"geometry"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"date"</span><span class="p">,</span>
+            <span class="s2">"test"</span><span class="p">,</span>
+            <span class="s2">"localtest"</span><span class="p">,</span>
+            <span class="s2">"debug"</span><span class="p">,</span>
+            <span class="s2">"io_duration"</span><span class="p">,</span>
+            <span class="s2">"namespace_out"</span><span class="p">,</span>
+            <span class="s2">"diff"</span><span class="p">,</span>
+            <span class="s2">"allow_path"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="_CenResearchTask.update_attributes">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.update_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mandatory</span><span class="p">,</span> <span class="n">optional</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Update class attributes for dynamic documentation</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">overwrite</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="c1"># Warning : "remove" removes only 1 element in case of duplicated values.</span>
+                <span class="c1"># However, there should never be duplicates in MANDATORY_CONFIGURATION_VARIABLES and</span>
+                <span class="c1"># OPTIONAL_CONFIGURATION_VARIABLES</span>
+                <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mandatory</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">optional</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.defaults">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.defaults">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extras</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Set toolbox defaults, extended with actual arguments ``extras``.</span>
+
+<span class="sd">        :param extras: items to add to vortex.defaults.</span>
+<span class="sd">        :type extras: dict</span>
+<span class="sd">        """</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">'localtest'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="n">vortex</span><span class="o">.</span><span class="n">active_now</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">vortex</span><span class="o">.</span><span class="n">defaults</span><span class="p">(</span>
+            <span class="c1"># namespace      = self.conf.get('namespace', Namespace('vortex.multi.fr')),</span>
+            <span class="c1"># namespace      = Namespace('vortex.multi.fr'),</span>
+            <span class="c1"># date           = '[dateend]',  # WARNING : research only</span>
+            <span class="c1"># TODO : the 'date' footprint is to be removed for research applications</span>
+            <span class="c1"># experiment     = self.conf.xpid,</span>
+            <span class="c1"># geometry       = self.conf.geometry,</span>
+            <span class="c1"># vapp           = self.conf.vapp,</span>
+            <span class="c1"># vconf          = '[geometry:tag]',  # TODO : à modifier après changement de convention</span>
+            <span class="c1"># model          = self.conf.model,</span>
+            <span class="c1"># namebuild      = 'flat@cen',  # WARNING : research only !</span>
+            <span class="c1"># nativefmt      = 'netcdf',</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">optk</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'cutoff'</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">,</span> <span class="s1">'cycle'</span><span class="p">,</span> <span class="s1">'vortex_set_aside'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">optk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">optk</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">FPDict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">vortex</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">optk</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># Le nombre de process et de tâches peut être associé à la géométrie via un dictionnaire, on récupère</span>
+        <span class="c1"># maintenant la bonne valeur</span>
+        <span class="c1"># TODO : Sortir ce qui suit de research_task_base et essayer de simplifier</span>
+        <span class="k">if</span> <span class="s1">'ntasks'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default value from s2m.</span>
+            <span class="c1"># Maybe it would be better to crash and ask the user to set an explicit value ?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span> <span class="o">=</span> <span class="mi">80</span>
+        <span class="k">if</span> <span class="s1">'nprocs'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No hyperthreading</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span>
+        <span class="k">if</span> <span class="s1">'nnodes'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Format uenv properly : "uenv:{uenv_name}@user" in cas only {uenv_name} is provided</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">"uenv"</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="s1">':'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"uenv:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span>
+                <span class="k">if</span> <span class="s1">'@'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">env</span><span class="p">()[</span><span class="s2">"USER"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># Define a namespace_out variable to apply to all outputs set as the *namespace_out*</span>
+        <span class="c1"># configuration variable if provided by the user or 'vortex.multi.fr' by default</span>
+        <span class="c1"># self.namespace = self.namespace_out</span>
+
+        <span class="n">vortex</span><span class="o">.</span><span class="n">defaults</span><span class="p">(</span><span class="o">**</span><span class="n">extras</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="s1">'Toolbox defaults'</span><span class="p">)</span>
+        <span class="n">vortex</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">namespace_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Namespace for output toolboxes</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'namespace_out'</span><span class="p">,</span> <span class="s1">'vortex.multi.fr'</span><span class="p">)</span>
+
+<div class="viewcode-block" id="_CenResearchTask.force_configuration_variables">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.force_configuration_variables">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">force_configuration_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method to force the value of some configuration variables in specific use cases of the task.</span>
+<span class="sd">        In particular, if an input for the task comes from the output of a previous task in the driver, the "block" of</span>
+<span class="sd">        the input is imposed by the output block of the producing task.</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">allow_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"allow_path"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Enter 'debug' mode to preserve the working directory even after a succesfull execution.</span>
+
+<span class="sd">        **Associated configuration variable:**</span>
+
+<span class="sd">        * ``debug`` Enter 'debug' mode, default : False</span>
+<span class="sd">          type debug: bool</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'debug'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">debug</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="_CenResearchTask.preprocess">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.preprocess">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Pre-processing step to set usefull class variables.</span>
+
+<span class="sd">        **Associated (optional) configuration variables:**</span>
+
+<span class="sd">        * ``io_duration`` Argument similar to the one of the `get_list_dates_files` method in</span>
+<span class="sd">          snowtools/utils/dates.py. It is used to retrieve the list of *datebegin* and</span>
+<span class="sd">          *dateend* footprints for IO covering sub-periods.</span>
+<span class="sd">          Possible values : "yearly", "monthly" or "full"</span>
+<span class="sd">          type io_duration: str</span>
+
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_list_dates</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'io_duration'</span><span class="p">,</span> <span class="s1">'yearly'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_configuration_variables</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.process">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.process">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Main method definig the task's sequence of actions</span>
+<span class="sd">        """</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">'early-fetch'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="c1"># In a multi step job (MTOOL, ...), this step will be run on a TRANSFER NODE.</span>
+            <span class="c1"># Consequently, data that may be missing from the local cache must be fetched here.</span>
+            <span class="c1"># e.g. GCO's genv, data from the mass archive system, ...</span>
+            <span class="c1"># Note: most of the data should be retrieved here since the use of transfer node is costless.</span>
+            <span class="k">with</span> <span class="n">InputReportContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_remote_inputs</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">'fetch'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="c1"># In a multi step job (MTOOL, ...), this step will be run, on a COMPUTE NODE,</span>
+            <span class="c1"># just before the beginning of computations. It is the appropriate place to fetch data produced</span>
+            <span class="c1"># by a previous task (the so-called previous task will have to use the 'backup' step</span>
+            <span class="c1"># in order to make such data available in the local cache).</span>
+            <span class="k">with</span> <span class="n">InputReportContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_local_inputs</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">'compute'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="c1"># The actual computations... (usually a call to the run method of an AlgoComponent)</span>
+            <span class="c1"># This is executed on a COMPUTE NODE.</span>
+            <span class="k">with</span> <span class="n">AlgoReportContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                <span class="n">algo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algo</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s1">'localtest'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">launch_algo</span><span class="p">(</span><span class="n">algo</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">'backup'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="ow">or</span> <span class="s1">'late-backup'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="c1"># In a multi step job (MTOOL, ...), this step will be run on a TRANSFER NODE.</span>
+            <span class="c1"># Consequently, most of the data should be archived here.</span>
+            <span class="k">with</span> <span class="n">OutputReportContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">put_outputs</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">'late-backup'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
+            <span class="c1"># Reproducibility check with reference output (retrieved from the archive on a transfer node only)</span>
+            <span class="k">if</span> <span class="s1">'test'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="ow">and</span> <span class="s1">'localtest'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">TestReportContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">unittest</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="s1">'diff_xpid'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="c1"># Debug mode : make the job crash at the end to preserve the working directory</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'============================================================================'</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'============================================================================'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'INFO :The execution went well, do not take into account the following error'</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.get_remote_inputs">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.get_remote_inputs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_remote_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in your task to fetch all resources stored remotely (on Hendrix, sxcen,...) from</span>
+<span class="sd">        a transfer node.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.get_local_inputs">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.get_local_inputs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_local_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in your task to fetch all resources already stored on the local (HPC) cache from a</span>
+<span class="sd">        compute node.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.algo">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.algo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method to call your task's algo component.</span>
+<span class="sd">        This method should return a valid AlgoComponent object.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"method 'algo' returning a valid AlgoComponent object should be"</span>
+                <span class="s2">"implemented in child class."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.launch_algo">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.launch_algo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in your task's algo component.</span>
+<span class="sd">        The implementation should define how to run the algo component, or call one of the standard</span>
+<span class="sd">        methods: `launch_MPI_executable()`, `launch_python_algo()`</span>
+
+<span class="sd">        :param algo: AlgoComponent object</span>
+<span class="sd">        :param kw:</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"the method 'launch_algo' should be implemented in child class and might call "</span>
+                                  <span class="s2">"'launch_MPI_executable()' or 'launch_python_algo()' if appropriate."</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.launch_MPI_executable">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.launch_MPI_executable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_MPI_executable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="n">mpiopts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Run executable with MPI.</span>
+
+<span class="sd">        :param algo: AlgoComponent object</span>
+<span class="sd">        :param mpiopts: dict with MPI options nnodes=..., nprocs=..., ntasks=...</span>
+
+<span class="sd">        """</span>
+        <span class="c1"># Pour un exécution de binaire, il faut donner l'objet "exécutable" associé (récupéré par la commande</span>
+        <span class="c1"># vortex.executable(...))</span>
+        <span class="c1"># Il est possible de récupérer cet objet avec la ligne suivante :</span>
+        <span class="n">executable</span> <span class="o">=</span> <span class="p">[</span><span class="n">tbx</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">tbx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">executables</span><span class="p">()]</span>
+
+        <span class="c1"># TODO : les valeurs de mpiopts sont définies par défaut dans la méthode "component_runner" de mkjob/nodes.py</span>
+        <span class="c1"># à partir des variables de configuration self.conf.nnodes, self.conf.ntasks, self.conf.nprocs</span>
+        <span class="c1"># --&gt; Réfléchir à la pertinence de faire 2 méthodes "launch_MPI_executable" et "launch_executable" distinctes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_runner</span><span class="p">(</span><span class="n">algo</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">mpiopts</span><span class="o">=</span><span class="n">mpiopts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.launch_executable">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.launch_executable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_executable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        run executable without MPI.</span>
+
+<span class="sd">        :param algo: AlgoComponent object</span>
+<span class="sd">        """</span>
+        <span class="n">executable</span> <span class="o">=</span> <span class="p">[</span><span class="n">tbx</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">tbx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">executables</span><span class="p">()]</span>
+        <span class="c1"># Security : force following configuration variables to 1 because</span>
+        <span class="c1"># mkjob crashes in case of inconsistency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nnodes</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nprocs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ntasks</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_runner</span><span class="p">(</span><span class="n">algo</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">mpiopts</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">nnodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nprocs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ntasks</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.launch_python_algo">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.launch_python_algo">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_python_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Run your task's algo component. For algo components consisting of python code.</span>
+<span class="sd">        :param algo: AlgoComponent object</span>
+<span class="sd">        :param kw: keyword arguments dict</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">algo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">algo</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.put_outputs">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.put_outputs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in your task to save resources remotely (on Hendrix, sxcen,...) from a transfer node.</span>
+<span class="sd">        """</span>
+        <span class="c1"># raise NotImplementedError()</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.unittest">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.unittest">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unittest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in unittest tasks to monitor the test results.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'diff_xpid'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">diff_xpid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.diff">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.diff">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Implement this method in your task to compare output with a reference file.</span>
+<span class="sd">        """</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.get_list_dates">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.get_list_dates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_dates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="s1">'yearly'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the list of datebegin/dateend corresponding to the different time periods covered by IO files</span>
+<span class="sd">        from the actual simulation's datebegin/dateend arguments.</span>
+
+<span class="sd">        :param duration: Time period covered by individual files.</span>
+<span class="sd">        :type duration: str</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'datebegin'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="ow">and</span> <span class="s1">'dateend'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="c1"># Get FORCING input dates</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin_pro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_end_pro</span>  <span class="o">=</span> \
+                <span class="n">get_list_dates_files</span><span class="p">(</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">),</span> <span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">),</span> <span class="n">duration</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_dates_end</span> <span class="o">=</span> <span class="n">get_dic_dateend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_dates_end_pro</span> <span class="o">=</span> <span class="n">get_dic_dateend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin_pro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_end_pro</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'rundate'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>  <span class="c1"># Real-time only --&gt; make a specific default class ?</span>
+            <span class="c1"># TODO : Trouver une meilleur solution que ce comportement implicite</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_dates_end</span>   <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="s1">'date'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>  <span class="c1"># Real-time only --&gt; make a specific default class ?</span>
+            <span class="c1"># TODO : Trouver une meilleur solution que ce comportement implicite</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">date</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">date</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">date</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_dates_end</span>   <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">date</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">date</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.get_list_members">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.get_list_members">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_members</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the complete list of ensemble members from either</span>
+<span class="sd">        - the exact 'member' value (int) --&gt; returns [member]</span>
+<span class="sd">        - the 'members' list (FPList or list) --&gt; returns the list of members</span>
+<span class="sd">        - the number of members 'nmembers' (int) --&gt; returns the list of 'nmembers' values starting from 1</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">member</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rangex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'members'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="c1"># members is the list of ensemble members, ex : range(35), '0-35-1', [1, 2, 3]</span>
+            <span class="k">return</span> <span class="n">rangex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'nmembers'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="c1"># nmembers is the number of ensemble members (int)</span>
+            <span class="k">return</span> <span class="n">rangex</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nmembers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_CenResearchTask.get_forcing">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.research_task_base._CenResearchTask.get_forcing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_forcing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">localname</span><span class="o">=</span><span class="s1">'FORCING_[datebegin:ymdh]_[dateend:ymdh].nc'</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">'vortex.multi.fr'</span><span class="p">,</span>
+            <span class="n">fatal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method to get meteorological forcing file(s) covering the simulation period.</span>
+<span class="sd">        Look for files covering sub-periods defined by the `io_duration` configuration variable (current values:</span>
+<span class="sd">        "monthly", "yearly", "full")</span>
+
+<span class="sd">        :param localname: *local* footprint (how to name the file in the working directory).</span>
+<span class="sd">         This is an algo/task-specific argument. Default name depends on the actual datebegin/dateend of each file.</span>
+<span class="sd">         WARNING : in case a unique value is provided the user should ensure that a single</span>
+<span class="sd">         file will be retrieved</span>
+<span class="sd">        :type localname: str</span>
+<span class="sd">        :param namespace: namespace for fetching the forcing files. Default: vortex.multi.fr</span>
+<span class="sd">        :type namespace: str</span>
+
+<span class="sd">        **Mandatory configuration variables:**</span>
+
+<span class="sd">        * ``forcing_datebegin`` *datebegin* footprint, default self.conf.datebegin</span>
+<span class="sd">          type forcing_datebegin: str, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_dateend`` *dateend* footprint, default self.conf.dateend</span>
+<span class="sd">          type forcing_dateend: str, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_xpid`` Experiment identifier, default self.conf.xpid</span>
+<span class="sd">          type forcing_xpid: str</span>
+<span class="sd">        * ``forcing_geometry`` *geometry* footprint, default self.conf.geometry</span>
+<span class="sd">          type forcing_geometry: str, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_vapp`` *vapp* footprint, default self.conf.vapp</span>
+<span class="sd">          type forcing_vapp: str</span>
+<span class="sd">        * ``forcing_vconf`` *vconf* footprint, default self.conf.vconf</span>
+<span class="sd">          type forcing_vconf: str</span>
+<span class="sd">        * ``forcing_block`` *block* footprint, default "meteo"</span>
+<span class="sd">          type forcing_vconf: str</span>
+<span class="sd">        * ``forcing_namespace`` *namespace* footprint, default "vortex.multi.fr" (hendrix + local cache)</span>
+<span class="sd">          type forcing_namespace: str</span>
+
+<span class="sd">        **Optional configuration variables:**</span>
+
+<span class="sd">        * ``forcing_member`` *member* footprint, default None (or *member* if provided)</span>
+<span class="sd">          type forcing_member: int, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_namebuild`` *namebuild* footprint, default "flat@cen" (will change soon)</span>
+<span class="sd">          type forcing_namebuild: str, values: "flat@cen", "date@cen", "date@std"</span>
+<span class="sd">        * ``forcing_intent`` *intent* footprint (local file permissions), default "in"</span>
+<span class="sd">          Possible values : "in" (read-only), "inout" (read-write)</span>
+<span class="sd">          type forcing_intent: str</span>
+<span class="sd">        * ``forcing_date`` *date* footprint corresponding to the rundate of the forcing.</span>
+<span class="sd">          Useful to get the forcing of the monthly reanalysis for example. default is *forcing_dateend*.</span>
+<span class="sd">        * ``forcing_source_app`` *source_app* footprint, default None</span>
+<span class="sd">          type forcing_source_app: str, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_source_conf`` *source_conf* footprint, default None</span>
+<span class="sd">          type forcing_source_conf: str, footprints.stdtypes.FPList</span>
+<span class="sd">        * ``forcing_source`` Retrieve *source_app* and *source_conf* footrprints dictionnaries for S2M reanalysis</span>
+<span class="sd">          Possible values : 'era5', 'era40'</span>
+<span class="sd">          type forcing_source: str</span>
+<span class="sd">        * ``forcing_cutoff`` *cutoff* footprint (to be made optional for SurfaceIO objects), default None</span>
+<span class="sd">          type forcing_cutoff: str</span>
+<span class="sd">        * ``io_duration`` Argument similar to the one of the `get_list_dates_files` method in</span>
+<span class="sd">          snowtools/utils/dates.py.</span>
+<span class="sd">          Used to retrieve the list of *datebegin* and *dateend* for inputs covering sub-periods.</span>
+<span class="sd">          Possible values : "yearly", "monthly" or "full"</span>
+<span class="sd">          type io_duration: str</span>
+<span class="sd">        * ``forcing_vortex1`` Boolean to identify resources produced with vortex1 (filename without geometry)</span>
+<span class="sd">          type forcing_vortex1: bool</span>
+
+
+<span class="sd">        TODO : prévoir un mécanisme pour rendre des déclarer les arguments obligatoires / optionnels pour</span>
+<span class="sd">         chaque tâche (ex: member)</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span>
+
+        <span class="n">forcing_datebegin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_datebegin'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'datebegin'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">forcing_dateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_dateend'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'dateend'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">forcing_xpid</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_xpid'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">)</span>
+        <span class="n">forcing_user</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">forcing_vapp</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_vapp'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vapp</span><span class="p">)</span>
+        <span class="n">forcing_vconf</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_vconf'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vconf</span><span class="p">)</span>
+        <span class="n">forcing_block</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_block'</span><span class="p">,</span> <span class="s1">'meteo'</span><span class="p">)</span>
+        <span class="n">forcing_member</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_member'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'member'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="c1"># forcing_geometry value may depend on the task's output 'geometry' value</span>
+        <span class="k">if</span> <span class="s1">'forcing_geometry'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">forcing_geometry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">forcing_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">forcing_geometry</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">forcing_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">forcing_geometry</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">forcing_geometry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="c1"># Security : in case of an ensemble of forcing files, get the FORCING of each member in a</span>
+        <span class="c1"># separate directory to avoid overwrinting files.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">forcing_member</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">forcing_member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s1">'member'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">localname</span><span class="p">):</span>
+            <span class="n">localname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'mb[member%04d]/</span><span class="si">{</span><span class="n">localname</span><span class="si">}</span><span class="s1">'</span>
+        <span class="c1"># TODO : modifier le namebuilder par defaut lorsque le nouveau incluant la</span>
+        <span class="c1"># géométrie sera disponible</span>
+        <span class="n">forcing_namebuild</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_namebuild'</span><span class="p">,</span> <span class="s1">'flat@cen'</span><span class="p">)</span>
+        <span class="n">forcing_intent</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_intent'</span><span class="p">,</span> <span class="s1">'in'</span><span class="p">)</span>
+        <span class="c1"># TODO : ne pas utiliser de source_app / source_conf à l'avenir</span>
+        <span class="n">forcing_source_app</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_source_app'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">forcing_source_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_source_conf'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">forcing_cutoff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_cutoff'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">vortex1</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_vortex1'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'io_duration'</span><span class="p">,</span> <span class="s1">'yearly'</span><span class="p">)</span>
+        <span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_list_dates_files</span><span class="p">(</span><span class="n">Date</span><span class="p">(</span><span class="n">forcing_datebegin</span><span class="p">),</span>
+                <span class="n">Date</span><span class="p">(</span><span class="n">forcing_dateend</span><span class="p">),</span> <span class="n">duration</span><span class="p">)</span>
+        <span class="n">dict_dates_end</span> <span class="o">=</span> <span class="n">get_dic_dateend</span><span class="p">(</span><span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span><span class="p">)</span>
+
+        <span class="c1"># Verrue pour gérer les footprints *source_app* et *source_conf* de la réanalyse S2M</span>
+        <span class="k">if</span> <span class="s1">'forcing_source'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="ow">and</span> <span class="n">forcing_source_app</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">forcing_source_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vortex1</span><span class="p">:</span>  <span class="c1"># pour la rétro-compatibilité</span>
+                <span class="n">forcing_source_app</span><span class="p">,</span> <span class="n">forcing_source_conf</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">get_safran_sources</span><span class="p">(</span><span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">era5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">forcing_source</span> <span class="o">==</span> <span class="s1">'era5'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">forcing_source_app</span><span class="p">,</span> <span class="n">forcing_source_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Input forcing (</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s1"> duration)'</span><span class="p">)</span>
+        <span class="n">forcing</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+            <span class="n">role</span>           <span class="o">=</span> <span class="s1">'Forcing'</span><span class="p">,</span>  <span class="c1"># Used for parallelisation and alternates only</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="s1">'MeteorologicalForcing'</span><span class="p">,</span>
+            <span class="n">nativefmt</span>      <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+            <span class="n">datebegin</span>      <span class="o">=</span> <span class="n">list_dates_begin</span><span class="p">,</span>
+            <span class="n">dateend</span>        <span class="o">=</span> <span class="n">dict_dates_end</span><span class="p">,</span>
+            <span class="n">experiment</span>     <span class="o">=</span> <span class="n">forcing_xpid</span><span class="p">,</span>  <span class="c1"># default : self.conf.xpid</span>
+            <span class="n">username</span>       <span class="o">=</span> <span class="n">forcing_user</span><span class="p">,</span>
+            <span class="n">geometry</span>       <span class="o">=</span> <span class="n">forcing_geometry</span><span class="p">,</span>  <span class="c1"># default : self.conf.geometry</span>
+            <span class="n">local</span>          <span class="o">=</span> <span class="n">localname</span><span class="p">,</span>
+            <span class="n">vapp</span>           <span class="o">=</span> <span class="n">forcing_vapp</span><span class="p">,</span>  <span class="c1"># default : self.conf.vapp</span>
+            <span class="n">vconf</span>          <span class="o">=</span> <span class="n">forcing_vconf</span><span class="p">,</span>  <span class="c1"># default : self.conf.vconf</span>
+            <span class="n">block</span>          <span class="o">=</span> <span class="n">forcing_block</span><span class="p">,</span>  <span class="c1"># default : 'meteo' ?</span>
+            <span class="n">member</span>         <span class="o">=</span> <span class="n">forcing_member</span><span class="p">,</span>  <span class="c1"># default : None</span>
+            <span class="n">intent</span>         <span class="o">=</span> <span class="n">forcing_intent</span><span class="p">,</span>  <span class="c1"># default : 'in' ?</span>
+            <span class="n">namespace</span>      <span class="o">=</span> <span class="n">namespace</span><span class="p">,</span>  <span class="c1"># default : 'vortex.multi.fr',</span>
+            <span class="n">namebuild</span>      <span class="o">=</span> <span class="n">forcing_namebuild</span><span class="p">,</span>  <span class="c1"># default recherche : 'flat@cen', defaut oper : None</span>
+            <span class="n">vortex1</span>        <span class="o">=</span> <span class="n">vortex1</span><span class="p">,</span>
+            <span class="n">date</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'forcing_date'</span><span class="p">,</span> <span class="s1">'[dateend]'</span><span class="p">),</span>  <span class="c1"># pas supprimer! C'est necessaire pour reforecast.</span>
+            <span class="n">source_app</span>     <span class="o">=</span> <span class="n">forcing_source_app</span><span class="p">,</span>  <span class="c1"># default = None (ne pas refaire l'erreur)</span>
+            <span class="n">source_conf</span>    <span class="o">=</span> <span class="n">forcing_source_conf</span><span class="p">,</span>  <span class="c1"># default = None (ne pas refaire l'erreur)</span>
+            <span class="n">cutoff</span>         <span class="o">=</span> <span class="n">forcing_cutoff</span><span class="p">,</span>  <span class="c1">#</span>
+            <span class="n">fatal</span>          <span class="o">=</span> <span class="n">fatal</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'FORCING ='</span><span class="p">,</span> <span class="n">forcing</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.research_task_base</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@
     <title>Overview: module code &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -43,7 +44,7 @@
 <li><a href="plots/maps/map_helpers.html">plots.maps.map_helpers</a></li>
 <li><a href="plots/maps/mapplotter.html">plots.maps.mapplotter</a></li>
 <li><a href="plots/maps/quicklookmap.html">plots.maps.quicklookmap</a></li>
-<li><a href="plots/pearps2m/postprocess.html">plots.pearps2m.postprocess</a></li>
+<li><a href="plots/pearps2m/oper_diags_plot.html">plots.pearps2m.oper_diags_plot</a></li>
 <li><a href="plots/scores/moran_scatter.html">plots.scores.moran_scatter</a></li>
 <li><a href="plots/scores/perfdiag.html">plots.scores.perfdiag</a></li>
 <li><a href="plots/stratiprofile/profilPlot.html">plots.stratiprofile.profilPlot</a></li>
@@ -55,7 +56,7 @@
 <li><a href="scores/list_scores.html">scores.list_scores</a></li>
 <li><a href="scores/spatial.html">scores.spatial</a></li>
 <li><a href="scripts/extract/obs/bdquery.html">scripts.extract.obs.bdquery</a></li>
-<li><a href="scripts/extract/vortex/get_reforecast.html">scripts.extract.vortex.get_reforecast</a></li>
+<li><a href="snowtools/utils/xarray_snowtools_preprocess.html">snowtools.utils.xarray_snowtools_preprocess</a></li>
 <li><a href="tools/SnowCoverDuration.html">tools.SnowCoverDuration</a></li>
 <li><a href="tools/change_forcing.html">tools.change_forcing</a></li>
 <li><a href="tools/change_prep.html">tools.change_prep</a></li>
@@ -77,8 +78,51 @@
 <li><a href="utils/read_snowpack.html">utils.read_snowpack</a></li>
 <li><a href="utils/resources.html">utils.resources</a></li>
 <li><a href="utils/sun.html">utils.sun</a></li>
+<li><a href="utils/xarray_snowtools.html">utils.xarray_snowtools</a></li>
 <li><a href="utils/xarray_snowtools_accessor.html">utils.xarray_snowtools_accessor</a></li>
 <li><a href="utils/xarray_snowtools_backend.html">utils.xarray_snowtools_backend</a></li>
+<li><a href="vortex_cen/algo/assim.html">vortex_cen.algo.assim</a></li>
+<li><a href="vortex_cen/algo/components.html">vortex_cen.algo.components</a></li>
+<li><a href="vortex_cen/algo/deterministic.html">vortex_cen.algo.deterministic</a></li>
+<li><a href="vortex_cen/algo/ensemble.html">vortex_cen.algo.ensemble</a></li>
+<li><a href="vortex_cen/algo/forcing.html">vortex_cen.algo.forcing</a></li>
+<li><a href="vortex_cen/algo/obs.html">vortex_cen.algo.obs</a></li>
+<li><a href="vortex_cen/algo/postprocessing.html">vortex_cen.algo.postprocessing</a></li>
+<li><a href="vortex_cen/algo/prep.html">vortex_cen.algo.prep</a></li>
+<li><a href="vortex_cen/algo/prosnow.html">vortex_cen.algo.prosnow</a></li>
+<li><a href="vortex_cen/algo/scores.html">vortex_cen.algo.scores</a></li>
+<li><a href="vortex_cen/data/assim.html">vortex_cen.data.assim</a></li>
+<li><a href="vortex_cen/data/consts.html">vortex_cen.data.consts</a></li>
+<li><a href="vortex_cen/data/executables.html">vortex_cen.data.executables</a></li>
+<li><a href="vortex_cen/data/flow.html">vortex_cen.data.flow</a></li>
+<li><a href="vortex_cen/data/meteo.html">vortex_cen.data.meteo</a></li>
+<li><a href="vortex_cen/data/obs.html">vortex_cen.data.obs</a></li>
+<li><a href="vortex_cen/data/packedfiles.html">vortex_cen.data.packedfiles</a></li>
+<li><a href="vortex_cen/data/postprocess.html">vortex_cen.data.postprocess</a></li>
+<li><a href="vortex_cen/data/providers.html">vortex_cen.data.providers</a></li>
+<li><a href="vortex_cen/data/safran.html">vortex_cen.data.safran</a></li>
+<li><a href="vortex_cen/data/surfex.html">vortex_cen.data.surfex</a></li>
+<li><a href="vortex_cen/tasks/oper_research_mixin.html">vortex_cen.tasks.oper_research_mixin</a></li>
+<li><a href="vortex_cen/tasks/regrid/add_slopes.html">vortex_cen.tasks.regrid.add_slopes</a></li>
+<li><a href="vortex_cen/tasks/regrid/concatenate.html">vortex_cen.tasks.regrid.concatenate</a></li>
+<li><a href="vortex_cen/tasks/regrid/extract_s2m_points.html">vortex_cen.tasks.regrid.extract_s2m_points</a></li>
+<li><a href="vortex_cen/tasks/regrid/extract_subperiod.html">vortex_cen.tasks.regrid.extract_subperiod</a></li>
+<li><a href="vortex_cen/tasks/regrid/interpol.html">vortex_cen.tasks.regrid.interpol</a></li>
+<li><a href="vortex_cen/tasks/regrid/shadows.html">vortex_cen.tasks.regrid.shadows</a></li>
+<li><a href="vortex_cen/tasks/research_task_base.html">vortex_cen.tasks.research_task_base</a></li>
+<li><a href="vortex_cen/tasks/safran/common.html">vortex_cen.tasks.safran.common</a></li>
+<li><a href="vortex_cen/tasks/safran/prep_reforecast.html">vortex_cen.tasks.safran.prep_reforecast</a></li>
+<li><a href="vortex_cen/tasks/safran/reanalysis.html">vortex_cen.tasks.safran.reanalysis</a></li>
+<li><a href="vortex_cen/tasks/safran/reconstruct_obs_safran.html">vortex_cen.tasks.safran.reconstruct_obs_safran</a></li>
+<li><a href="vortex_cen/tasks/safran/reforecast.html">vortex_cen.tasks.safran.reforecast</a></li>
+<li><a href="vortex_cen/tasks/surfex/commons.html">vortex_cen.tasks.surfex.commons</a></li>
+<li><a href="vortex_cen/tasks/surfex/init_clim_ground_temperature.html">vortex_cen.tasks.surfex.init_clim_ground_temperature</a></li>
+<li><a href="vortex_cen/tasks/surfex/offline.html">vortex_cen.tasks.surfex.offline</a></li>
+<li><a href="vortex_cen/tasks/surfex/offline_ensemble.html">vortex_cen.tasks.surfex.offline_ensemble</a></li>
+<li><a href="vortex_cen/tasks/surfex/pgd.html">vortex_cen.tasks.surfex.pgd</a></li>
+<li><a href="vortex_cen/tasks/surfex/pre_process.html">vortex_cen.tasks.surfex.pre_process</a></li>
+<li><a href="vortex_cen/tasks/surfex/prep.html">vortex_cen.tasks.surfex.prep</a></li>
+<li><a href="vortex_cen/tasks/surfex/soda.html">vortex_cen.tasks.surfex.soda</a></li>
 </ul>
 
             <div class="clearer"></div>

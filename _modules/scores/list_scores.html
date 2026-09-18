@@ -7,6 +7,7 @@
     <title>scores.list_scores &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,11 +40,11 @@
             
   <h1>Source code for scores.list_scores</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 21 March 2018</span>
 
 <span class="sd">@author: lafaysse</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
@@ -56,14 +57,14 @@
 <div class="viewcode-block" id="ESCROC_list_scores">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ESCROC_list_scores</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class for all deterministic scores of a given ESM-SnowMIP simulation member</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">'''</span>
 <span class="sd">        Constructor</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeread</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obsread</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">masksim</span> <span class="o">=</span> <span class="p">{}</span>
@@ -73,13 +74,13 @@
 <div class="viewcode-block" id="ESCROC_list_scores.read_data">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.read_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param profile:</span>
 <span class="sd">        :param obsfile:</span>
 <span class="sd">        :param varname:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
 <span class="c1">#         if profile is not self.lastprofileread:</span>
 <span class="c1">#             self.simread = {}</span>
@@ -117,31 +118,31 @@
 <div class="viewcode-block" id="ESCROC_list_scores.compute_scores_1member">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_1member">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_scores_1member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param profile:</span>
 <span class="sd">        :param obsfile:</span>
 <span class="sd">        :param list_scores:</span>
 <span class="sd">        :param list_var:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">tab_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">list_scores</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_var</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">varname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_var</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before read&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"before read"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">varname</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after read&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"after read"</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">list_scores</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">list_scores</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;compute score&quot;</span> <span class="o">+</span> <span class="n">score</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">&quot;bias&quot;</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;compute bias&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"compute score"</span> <span class="o">+</span> <span class="n">score</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">"bias"</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"compute bias"</span><span class="p">)</span>
                     <span class="n">tab_scores</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">bias</span>
-                <span class="k">elif</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">&quot;rmse&quot;</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;compute rmse&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">"rmse"</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"compute rmse"</span><span class="p">)</span>
                     <span class="n">tab_scores</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">rmse</span>
-                <span class="k">elif</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">&quot;mae&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">score</span> <span class="o">==</span> <span class="s2">"mae"</span><span class="p">:</span>
                     <span class="n">tab_scores</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">mae</span>
 
         <span class="k">return</span> <span class="n">tab_scores</span></div>
@@ -150,7 +151,7 @@
 <div class="viewcode-block" id="ESCROC_list_scores.compute_scores_allmembers">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.ESCROC_list_scores.compute_scores_allmembers">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_scores_allmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_pro</span><span class="p">,</span> <span class="n">obsfile</span><span class="p">,</span> <span class="n">list_scores</span><span class="p">,</span> <span class="n">list_var</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        compute scores for every ensemble member</span>
 
 <span class="sd">        :param list_pro: list of simulation files</span>
@@ -159,7 +160,7 @@
 <span class="sd">        :param list_var: list of variables</span>
 <span class="sd">        :return: array of scores dimensions : (score, member, variable)</span>
 <span class="sd">        :rtype: numpy array</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">tab_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">list_scores</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_pro</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_var</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
 
@@ -174,34 +175,34 @@
 <div class="viewcode-block" id="scores_file">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">scores_file</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    class for writing scores with dimensions (member, variable, station)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        open a netcdf dataset and create dimensions.</span>
 
 <span class="sd">        :param args: passed to netCDF4.Dataset</span>
 <span class="sd">        :param kwargs:  passed to netCDF4.Dataset</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">scores_file</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cree_dims</span><span class="p">()</span>
 
 <div class="viewcode-block" id="scores_file.cree_dims">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.scores_file.cree_dims">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        create member, variable and stat dimensions</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;member&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;stat&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">"member"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">"variable"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">"stat"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;member&#39;</span><span class="p">,</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="s1">&#39;stat&#39;</span><span class="p">))</span>
-        <span class="c1"># self.createVariable(scorename, &#39;f8&#39;, (&#39;member&#39;, &#39;variable&#39;))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;write the following table&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="p">(</span><span class="s1">'member'</span><span class="p">,</span> <span class="s1">'variable'</span><span class="p">,</span> <span class="s1">'stat'</span><span class="p">))</span>
+        <span class="c1"># self.createVariable(scorename, 'f8', ('member', 'variable'))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"write the following table"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">scoretab</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">scorename</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">scoretab</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:]</span></div>
 
@@ -218,15 +219,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cree_dims</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">cree_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;iteration&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">"iteration"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s2">"members"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">&quot;members&quot;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;iteration&#39;</span><span class="p">,</span> <span class="s1">&#39;members&#39;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;members&quot;</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">members</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s2">"members"</span><span class="p">,</span> <span class="s1">'int'</span><span class="p">,</span> <span class="p">(</span><span class="s1">'iteration'</span><span class="p">,</span> <span class="s1">'members'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">"members"</span><span class="p">][:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">members</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorename</span><span class="p">,</span> <span class="n">scoretab</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;iteration&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">scorename</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="s1">'iteration'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">scorename</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">scoretab</span><span class="p">[:]</span></div>
 
 
@@ -234,21 +235,21 @@
 <div class="viewcode-block" id="SpatialScoreFile">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialScoreFile</span><span class="p">(</span><span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class for writing spatial scores.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">,</span>
-                 <span class="n">list_of_threshold_increments</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;spatialscores.nc&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+                 <span class="n">list_of_threshold_increments</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"spatialscores.nc"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param list_of_experiments:</span>
 <span class="sd">        :param list_of_kernels:</span>
 <span class="sd">        :param list_of_thresholds:</span>
 <span class="sd">        :param list_of_threshold_increments:</span>
 <span class="sd">        :param filename:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SpatialScoreFile</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SpatialScoreFile</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"NETCDF4"</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">create_dims</span><span class="p">(</span><span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_vars</span><span class="p">(</span><span class="n">list_of_threshold_increments</span><span class="p">)</span>
@@ -256,56 +257,56 @@
 <div class="viewcode-block" id="SpatialScoreFile.create_dims">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_dims">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_dims</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">list_of_kernels</span><span class="p">,</span> <span class="n">list_of_thresholds</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        create experiment, kernel and threshold dimensions</span>
 
 <span class="sd">        :param list_of_experiments:</span>
 <span class="sd">        :param list_of_kernels:</span>
 <span class="sd">        :param list_of_thresholds:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_experiments</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_experiments</span><span class="p">))</span>
         <span class="n">exparray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">list_of_experiments</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;experiment&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;experiment&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">exparray</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_kernels</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;kernel&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_kernels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_thresholds</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;threshold&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_thresholds</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'experiment'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'experiment'</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">exparray</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">'kernel'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_kernels</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'i4'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'kernel'</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_kernels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createDimension</span><span class="p">(</span><span class="s1">'threshold'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_thresholds</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'threshold'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'threshold'</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_thresholds</span></div>
 
 
 <div class="viewcode-block" id="SpatialScoreFile.create_vars">
 <a class="viewcode-back" href="../../code/scores.html#scores.list_scores.SpatialScoreFile.create_vars">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_of_threshold_increments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create threshold_increment and fuzzy score variables</span>
 
 <span class="sd">        :param list_of_threshold_increments:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;threshold_increment&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;threshold_increment&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_threshold_increments</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;POD&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'threshold_increment'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'threshold_increment'</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">list_of_threshold_increments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'POD'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;POD&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;probability of detection&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;FAR&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'POD'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'probability of detection'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'FAR'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;FAR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;false alarm ratio&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;CSI&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'FAR'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'false alarm ratio'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'CSI'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;CSI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;critical success index&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;ETS&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'CSI'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'critical success index'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'ETS'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ETS&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;equitable threat score&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;HK&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'ETS'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'equitable threat score'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'HK'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;HK&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Hanssen and Kuippers skill score or True Skill Statistic&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;ACC&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'HK'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'Hanssen and Kuippers skill score or True Skill Statistic'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'ACC'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ACC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Accuracy&#39;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">&#39;PAG&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel&#39;</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'ACC'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'Accuracy'</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="s1">'PAG'</span><span class="p">,</span> <span class="s1">'f8'</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'kernel'</span><span class="p">,</span> <span class="s1">'threshold'</span><span class="p">),</span>
                             <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;PAG&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Post Agreement&#39;</span><span class="p">})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'PAG'</span><span class="p">]</span><span class="o">.</span><span class="n">setncatts</span><span class="p">({</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'Post Agreement'</span><span class="p">})</span></div>
 </div>
 
 

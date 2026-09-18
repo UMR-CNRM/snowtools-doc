@@ -8,13 +8,14 @@
     <title>Install Snowtools &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Code organization" href="orga.html" />
+    <link rel="next" title="Uninstall an old Snowtools 2 installed as a developer" href="uninstall-snowtools2.html" />
     <link rel="prev" title="Snowtools’s documentation" href="../index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
@@ -30,7 +31,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="orga.html" title="Code organization"
+          <a href="uninstall-snowtools2.html" title="Uninstall an old Snowtools 2 installed as a developer"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Snowtools’s documentation"
@@ -47,84 +48,137 @@
             
   <section id="install-snowtools">
 <span id="sec-install"></span><h1>Install Snowtools<a class="headerlink" href="#install-snowtools" title="Link to this heading">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you are using snowtools on Meteo-France computers, go directly to the last section (<a class="reference internal" href="#sec-install-dev"><span class="std std-ref">Snowtools install for developers</span></a>).</p>
-</div>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
 <p>The snowtools project is mainly designed for a Linux environment.</p>
-<p>The whole project requires at least python 3.6 and classical scientific packages (<code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>…). Some specific parts of the code (especially tests, scores, documentation generation require an extended set of dependencies that are fully described in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>. The vortex toolbox is also needed for run on Meteo-France super-computers.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>On Meteo-France computers, you do not have take care of dependecies that are already on your professional computer !</p>
-</div>
-<section id="install-dependencies-with-pip">
-<h3>Install dependencies with pip<a class="headerlink" href="#install-dependencies-with-pip" title="Link to this heading">¶</a></h3>
-<p>Most of the packages can easily be installed in a virtual environment with <code class="docutils literal notranslate"><span class="pre">pip</span></code> (for instance with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>). This is useless if you plan to then install snowtools with  <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
-<p>Only GDAL python binding need to be installed manually to be installed consistently with your installed <code class="docutils literal notranslate"><span class="pre">libgdal-dev</span></code> version. Please install before the system packages <code class="docutils literal notranslate"><span class="pre">ligdal</span></code> and <code class="docutils literal notranslate"><span class="pre">libgdal-dev</span></code> (or similar) and run: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--no-cache</span> <span class="pre">--force-reinstall</span> <span class="pre">gdal[numpy]==&quot;$(gdal-config</span> <span class="pre">--version).*&quot;</span></code> (Make sure you have <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wheel</span></code> and <code class="docutils literal notranslate"><span class="pre">setuptools&gt;=67</span></code> installed before running tis line. Older pip versions may require the following command line install : <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">GDAL==$(gdal-config</span> <span class="pre">--version)</span> <span class="pre">--global-option=build_ext</span> <span class="pre">--global-option=&quot;$(gdal-config</span> <span class="pre">--cflags)&quot;</span></code>).</p>
-</section>
-</section>
+<p>Please refer to the section corresponding to your case :</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#sec-install-user">You are a simple user of snowtools</a></p></li>
+<li><p><a class="reference internal" href="#sec-install-dev">You are a developper outside of Meteo-France network</a></p></li>
+<li><p><a class="reference internal" href="#sec-install-mf">You are a developper from Meteo-France/CEN staff</a></p></li>
+</ul>
 <section id="snowtools-install-for-users">
-<span id="sec-install-users"></span><h2>Snowtools install for users<a class="headerlink" href="#snowtools-install-for-users" title="Link to this heading">¶</a></h2>
+<span id="sec-install-user"></span><h2>Snowtools install for users<a class="headerlink" href="#snowtools-install-for-users" title="Link to this heading">¶</a></h2>
 <p>If you are only a user of snowtools, you can install the package easily with pip in a virtual environment:</p>
 <ol class="arabic simple">
 <li><p>Download the source code: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/UMR-CNRM/snowtools.git</span></code></p></li>
 <li><p>Create a virtual environment : <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">--system-site-packages</span> <span class="pre">&lt;name_of_your_virtual_env&gt;</span></code></p></li>
 <li><p>Enter in the virtual environment:  <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">&lt;name_of_your_virtual_env&gt;/bin/activate</span></code></p></li>
-<li><p>Ensure you are at the root of the snowtools repository and install the package by running:</p></li>
+<li><p>Ensure you are at the root of the snowtools repository and install the package (with optional dependencies plot) by running:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span><span class="p">[</span><span class="n">plot</span><span class="p">]</span>
 </pre></div>
 </div>
+<ol class="arabic simple" start="5">
+<li><p>Once you have finished working with snowtools, you can leave the virtual environment by typing <code class="docutils literal notranslate"><span class="pre">deactivate</span></code>. You can come back to the environment later by calling again <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">&lt;name_of_your_virtual_env&gt;/bin/activate</span></code>.</p></li>
+</ol>
 </section>
 <section id="snowtools-install-for-developers">
 <span id="sec-install-dev"></span><h2>Snowtools install for developers<a class="headerlink" href="#snowtools-install-for-developers" title="Link to this heading">¶</a></h2>
-<section id="install-dependencies">
-<h3>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading">¶</a></h3>
-<p>Please read <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> and install the necessary dependecies. On Meteo-France computers you only need to install <code class="docutils literal notranslate"><span class="pre">bronx</span></code>, <code class="docutils literal notranslate"><span class="pre">footprints</span></code> and <code class="docutils literal notranslate"><span class="pre">epygram</span></code> packages with <code class="docutils literal notranslate"><span class="pre">pip</span></code> (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">bronx</span> <span class="pre">footprints</span> <span class="pre">epygram</span></code>).</p>
-</section>
-<section id="clone-the-git-repository">
-<h3>Clone the git repository<a class="headerlink" href="#clone-the-git-repository" title="Link to this heading">¶</a></h3>
-<p>Make sure you have a github account, linked to snowtools repository (send a mail to crocus at meteo dot fr) and that you have a SSH key attached to your github account <a class="footnote-reference brackets" href="#footnote1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. You can then clone the git repository on your computer with :</p>
+<section id="get-the-code">
+<h3>Get the code<a class="headerlink" href="#get-the-code" title="Link to this heading">¶</a></h3>
+<p>Make sure you have a github account and that you have a SSH key attached to your github account <a class="footnote-reference brackets" href="#footnote1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Do not hesitate to ask an access to the snowtools code and tickets repository (send a mail to crocus at meteo dot fr). You can then clone the git repository on your computer with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:UMR-CNRM/snowtools.git
 </pre></div>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you had a previous verison of snowtools installed as a developper, you first need to uninstall the previous version.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="uninstall-snowtools2.html">Uninstall an old Snowtools 2 installed as a developer</a></li>
+</ul>
+</div>
+</div>
 </section>
-<section id="install">
-<h3>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h3>
-<p>Make sure you have a github account, linked to snowtools repository (send a mail to crocus at meteo dot fr) and that you have a SSH key attached to your github account <a class="footnote-reference brackets" href="#footnote1" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. You can then clone the git repository on your computer with :</p>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Choose a location where to store your virtual environments (e.g. <code class="docutils literal notranslate"><span class="pre">~/my_envs</span></code>, if you do not have a dedicated folder, create it with <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/my_envs</span></code>).</p></li>
+<li><p>Create a virtual environment :  <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">--system-site-packages</span> <span class="pre">~/my_envs/snowtools_env</span></code>.</p></li>
+<li><p>Enter in the virtual environment:  <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>.</p></li>
+<li><p>Install snowtools and all its dependencies available outside of Meteo-France in editable mode : <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all]</span> <span class="pre">-e</span></code></p></li>
+</ol>
+<p>That’s all for snowtools.</p>
+<p>Each time you will need snowtools, you will have to activate the python virtual environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>. When you have finissed your work, you can leave the virtual environment by using the <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> command.</p>
+</section>
+</section>
+<section id="snowtools-install-for-meteo-france-cen-staff">
+<span id="sec-install-mf"></span><h2>Snowtools install for Meteo-France/CEN staff<a class="headerlink" href="#snowtools-install-for-meteo-france-cen-staff" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h3>Get the code<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>Make sure you have a github account and that you have a SSH key attached to your github account <a class="footnote-reference brackets" href="#footnote1" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. Do not hesitate to ask an access to the snowtools code and tickets repository (send a mail to crocus at meteo dot fr). You can then clone the git repository on your computer with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:UMR-CNRM/snowtools.git
 </pre></div>
 </div>
-<p>You have to add the install folder to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. This can be done by adding these tho following lines to your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">.bash-profile</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SNOWTOOLS_CEN</span><span class="o">=</span>/yourpath/snowtools
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$SNOWTOOLS_CEN</span>
+<div class="admonition-special-case-of-insallation-on-meteo-france-sxcen-and-hpc-machines admonition">
+<p class="admonition-title">Special case of insallation on Meteo-France sxcen and HPC machines</p>
+<p>On sxcen and HPC, we recommend you not to clone the repository directly but to synchronize with the code already present on your PC by using the <code class="docutils literal notranslate"><span class="pre">put</span></code> tool. To do so, run this command <strong>on your PC</strong> :</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># For Belenos</span>
+cenutils/put<span class="w"> </span>snowtools<span class="w"> </span>belenos
+
+<span class="c1"># For SXCEN</span>
+cenutils/put<span class="w"> </span>snowtools<span class="w"> </span>sxcen
 </pre></div>
 </div>
-<p>It is also recommended to create useful aliases for s2m command and proreader graphical user interface in the <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
+</div></blockquote>
 </div>
-<p>You have to add the install folder to your <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>. This can be done by adding these tho following lines to your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">.bash-profile</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">SNOWTOOLS_CEN</span><span class="o">=</span>/yourpath/snowtools
-<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$SNOWTOOLS_CEN</span>
-</pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you had a previous verison of snowtools installed as a developper, you first need to uninstall the previous version.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="uninstall-snowtools2.html">Uninstall an old Snowtools 2 installed as a developer</a></li>
+</ul>
 </div>
-<p>It is also recommended to create useful aliases for s2m command and proreader graphical user interface in the <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">alias</span><span class="w"> </span><span class="nv">s2m</span><span class="o">=</span><span class="s2">&quot;python </span><span class="nv">$SNOWTOOLS_CEN</span><span class="s2">/snowtools/tasks/s2m_command.py&quot;</span>
-<span class="nb">alias</span><span class="w"> </span><span class="nv">proplotter</span><span class="o">=</span><span class="s2">&quot;python3 </span><span class="nv">$SNOWTOOLS_CEN</span><span class="s2">/snowtools/plots/stratiprofile/proplotter.py&quot;</span>
-<span class="nb">alias</span><span class="w"> </span><span class="nv">procompare</span><span class="o">=</span><span class="s2">&quot;python3 </span><span class="nv">$SNOWTOOLS_CEN</span><span class="s2">/snowtools/plots/stratiprofile/procompare.py&quot;</span>
-<span class="nb">alias</span><span class="w"> </span><span class="nv">put</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SNOWTOOLS_CEN</span><span class="s2">/cenutils/put&quot;</span>
-</pre></div>
 </div>
 </section>
+<section id="prerequisites-on-meteo-france-computers">
+<h3>Prerequisites on Meteo-France computers<a class="headerlink" href="#prerequisites-on-meteo-france-computers" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>On HPC you first have to set the correct python version and compiler to use by running : <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">python/3.12.12</span> <span class="pre">gcc/15.2.0</span></code> (<code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">python/3.10.12</span> <span class="pre">gcc/15.2.0</span></code> on taranis)</p></li>
+<li><p>On all Meteo-Frace machines, if you intend to deal with data stored on Meteo-France archive (hendrix), you will have to configure connecton creedentials as explained on page <a class="reference internal" href="../vortex/file-transfert.html#vortex-file-transfer"><span class="std std-ref">File transfers with Vortex at MF</span></a>.</p></li>
+<li><p>You have to configure pip to have an access to the internal repository (nexus) that allow to get internal packages such as <code class="docutils literal notranslate"><span class="pre">vortex-gco</span></code>. To do so, add the following lines to <code class="docutils literal notranslate"><span class="pre">~/.config/pip/pip.conf</span></code>:</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[global]</span>
+<span class="na">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://nexus-sidev.meteo.fr/repository/pypi-group/pypi</span>
+<span class="na">index-url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://nexus-sidev.meteo.fr/repository/pypi-group/simple</span>
+<span class="na">extra-index-url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://nexus.meteo.fr/pypi-vortex-releases/simple</span>
+</pre></div>
+</div>
+<p>Note that this is not required on HPC because the access to Nexus from HPC is currently blocked.</p>
 </section>
-<section id="optional-installations">
-<h2>Optional installations<a class="headerlink" href="#optional-installations" title="Link to this heading">¶</a></h2>
-<section id="vortex-package">
-<h3>Vortex package<a class="headerlink" href="#vortex-package" title="Link to this heading">¶</a></h3>
-<p>Only Météo-France users who need to either extract operational S2M files either to run their own experiments on the HPC system need to install the vortex package by following this link <a class="reference internal" href="../hpc/vortex-install.html#install-vortex"><span class="std std-ref">Install VORTEX</span></a>.</p>
+<section id="id4">
+<h3>Installation<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Choose a location where to store your virtual environments (e.g. <code class="docutils literal notranslate"><span class="pre">~/my_envs</span></code>, if you do not have a dedicated folder, create it with <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/my_envs</span></code>).</p></li>
+<li><p>Create a virtual environment :  <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">--system-site-packages</span> <span class="pre">~/my_envs/snowtools_env</span></code>.</p></li>
+<li><p>Enter in the virtual environment:  <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>.</p></li>
+<li><p>Use the script dedicated to installation of snowtools on Meteo-France machines : <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">cenutils/install_snowtools.py</span> <span class="pre">-o</span> <span class="pre">allmf</span> <span class="pre">-e</span></code>
+(This command will run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> of snowtools, as an editable install and prepare necessary configuration for vortex).</p></li>
+</ol>
+<p>That’s all for snowtools.</p>
+<p>Each time you will need snowtools, you will have to activate the python virtual environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>. When you have finissed your work, you can leave the virtual environment by using the <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> command.</p>
+</section>
+</section>
+<section id="additional-optional-dependencies-and-configuration">
+<h2>Additional optional dependencies and configuration<a class="headerlink" href="#additional-optional-dependencies-and-configuration" title="Link to this heading">¶</a></h2>
+<section id="optional-dependecines-of-the-snowtools-package">
+<h3>Optional dependecines of the snowtools package<a class="headerlink" href="#optional-dependecines-of-the-snowtools-package" title="Link to this heading">¶</a></h3>
+<p>By default, we recommend external users use the <code class="docutils literal notranslate"><span class="pre">plot</span></code> optional dependencies and developers have all optional dependencies by using the <code class="docutils literal notranslate"><span class="pre">all</span></code> optional dependency. However a finer granularity is available if needed :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sql</span></code> : extraction from MF databases</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot</span></code> : tools for plotting, including plotting tools of simulation outputs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scores</span></code> : CRPS score computation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vortex</span></code> : Tools to work with vortex</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> gather previous dependencies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doc</span></code> : Dependencies for documentation generation (in addition to <code class="docutils literal notranslate"><span class="pre">all</span></code> dependency), only available at Meteo-France for the moment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allmf</span></code> gather previous dependencies and tools to get access to Meteo-France HPC simualtion outputs(<code class="docutils literal notranslate"><span class="pre">vortex-gco</span></code>) and doc, only available at Meteo-France.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpc</span></code>: only used on Meteo-France HPC, to run simulations on these machines, do not try to install elsewhere.</p></li>
+</ul>
+</section>
+<section id="additional-dependencies-that-have-to-be-installed-manually">
+<h3>Additional dependencies that have to be installed manually<a class="headerlink" href="#additional-dependencies-that-have-to-be-installed-manually" title="Link to this heading">¶</a></h3>
+<p><strong>GDAL</strong> is a dependency for some geopsatial processings. You first need to install gdal binaries (e.g. on Ubuntu, run <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">libgdal</span> <span class="pre">libgdal-dev</span></code>, already installed on Meteo-France machines). Then, you need to install the python binding manually to be consistently with your installed <code class="docutils literal notranslate"><span class="pre">libgdal-dev</span></code> version by running: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--no-cache</span> <span class="pre">gdal[numpy]==&quot;$(gdal-config</span> <span class="pre">--version).*&quot;</span></code> (please make sure <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wheel</span></code> and <code class="docutils literal notranslate"><span class="pre">setuptools&gt;=67</span></code> are installed beforehand).</p>
 </section>
 <section id="spatial-interpolator-for-safran">
 <h3>Spatial interpolator for SAFRAN<a class="headerlink" href="#spatial-interpolator-for-safran" title="Link to this heading">¶</a></h3>
@@ -158,16 +212,21 @@ module<span class="w"> </span>load<span class="w"> </span>intelmpi
 <section id="crps-scores">
 <h3>CRPS scores<a class="headerlink" href="#crps-scores" title="Link to this heading">¶</a></h3>
 <p>CRPS score is now as an independent package available at <a class="reference external" href="https://github.com/UMR-CNRM/snowtools-crps">https://github.com/UMR-CNRM/snowtools-crps</a></p>
-<p>To install it along with snowtools, just install the optional dependency <code class="docutils literal notranslate"><span class="pre">snowtools[scores]</span></code> (by running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all,scores]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all]</span></code>).
+<p>To install it along with snowtools, just install the optional dependency <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">snowtools[scores]</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all]</span></code>.
 Note that you may need to upgrade pip to version above 23.0 to install scores dependency due to a bug in previous pip versions.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="footnote1" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
 <p>To generate a new ssh key, go to your <code class="docutils literal notranslate"><span class="pre">~/.ssh</span></code> folder (create if it does not exist) and run <code class="docutils literal notranslate"><span class="pre">ssh-keygen</span> <span class="pre">-t</span> <span class="pre">rsa</span> <span class="pre">-b</span> <span class="pre">4096</span> <span class="pre">-f</span> <span class="pre">github</span></code>. You will be asked for an optional password to protect your key. Once created, go to your <a class="reference external" href="https://github.com/settings/keys">github account, section SSH keys</a>, click on “add a SSH key” and copy the content of the file <code class="docutils literal notranslate"><span class="pre">~/.ssh/github.pub</span></code> in the “key” field.
 You may had to add to your <code class="docutils literal notranslate"><span class="pre">.ssh/config</span></code> the following lines:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Host</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span>
     <span class="n">IdentityFile</span> <span class="o">~/.</span><span class="n">ssh</span><span class="o">/</span><span class="n">github</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use the ssh-agent by running :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span><span class="w"> </span><span class="sb">`</span>ssh-agent<span class="w"> </span>-s<span class="sb">`</span>
+ssh-add<span class="w"> </span>~/.ssh/github
 </pre></div>
 </div>
 </aside>
@@ -187,19 +246,21 @@ You may had to add to your <code class="docutils literal notranslate"><span clas
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Install Snowtools</a><ul>
-<li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
-<li><a class="reference internal" href="#install-dependencies-with-pip">Install dependencies with pip</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#snowtools-install-for-users">Snowtools install for users</a></li>
 <li><a class="reference internal" href="#snowtools-install-for-developers">Snowtools install for developers</a><ul>
-<li><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
-<li><a class="reference internal" href="#clone-the-git-repository">Clone the git repository</a></li>
-<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#get-the-code">Get the code</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#optional-installations">Optional installations</a><ul>
-<li><a class="reference internal" href="#vortex-package">Vortex package</a></li>
+<li><a class="reference internal" href="#snowtools-install-for-meteo-france-cen-staff">Snowtools install for Meteo-France/CEN staff</a><ul>
+<li><a class="reference internal" href="#id2">Get the code</a></li>
+<li><a class="reference internal" href="#prerequisites-on-meteo-france-computers">Prerequisites on Meteo-France computers</a></li>
+<li><a class="reference internal" href="#id4">Installation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-optional-dependencies-and-configuration">Additional optional dependencies and configuration</a><ul>
+<li><a class="reference internal" href="#optional-dependecines-of-the-snowtools-package">Optional dependecines of the snowtools package</a></li>
+<li><a class="reference internal" href="#additional-dependencies-that-have-to-be-installed-manually">Additional dependencies that have to be installed manually</a></li>
 <li><a class="reference internal" href="#spatial-interpolator-for-safran">Spatial interpolator for SAFRAN</a></li>
 <li><a class="reference internal" href="#crps-scores">CRPS scores</a></li>
 </ul>
@@ -216,8 +277,8 @@ You may had to add to your <code class="docutils literal notranslate"><span clas
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="orga.html"
-                          title="next chapter">Code organization</a></p>
+    <p class="topless"><a href="uninstall-snowtools2.html"
+                          title="next chapter">Uninstall an old Snowtools 2 installed as a developer</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -253,7 +314,7 @@ You may had to add to your <code class="docutils literal notranslate"><span clas
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="orga.html" title="Code organization"
+          <a href="uninstall-snowtools2.html" title="Uninstall an old Snowtools 2 installed as a developer"
              >next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Snowtools’s documentation"

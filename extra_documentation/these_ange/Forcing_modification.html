@@ -8,6 +8,7 @@
     <title>Blowing snow simulation preparation &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -156,23 +157,23 @@ If the two grid are different, the two wind fields (Wind and Wind_DIR) need to b
 <span id="louis"></span><h3>3.1 Louis’ wind resampling<a class="headerlink" href="#louis-wind-resampling" title="Link to this heading">¶</a></h3>
 <p>This regridding workflow is based on the folowing functions defined by Louis in is <a class="reference external" href="https://github.com/louisletoumelin/bias_correction">github repo</a> &lt;3:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># source : https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L37</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">wind2comp</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;radian&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wind2comp</span><span class="p">(</span><span class="n">uv</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">"radian"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts wind speed and direction from polar coordinates to rectangular components (u, v).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        uv (float): Wind speed magnitude.</span>
 <span class="sd">        dir (float): Wind direction in degrees or radians (depending on unit_direction).</span>
-<span class="sd">        unit_direction (str, optional): Unit of wind direction. Defaults to &quot;radian&quot;.</span>
+<span class="sd">        unit_direction (str, optional): Unit of wind direction. Defaults to "radian".</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple: A tuple containing two elements:</span>
 <span class="sd">            - u (float): Easting component of the wind (positive for eastward wind).</span>
 <span class="sd">            - v (float): Northing component of the wind (positive for northward wind).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Convert wind direction to radians if necessary</span>
-    <span class="k">if</span> <span class="n">unit_direction</span> <span class="o">==</span> <span class="s2">&quot;degree&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">unit_direction</span> <span class="o">==</span> <span class="s2">"degree"</span><span class="p">:</span>
         <span class="nb">dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
     <span class="c1"># Calculate easting (u) and northing (v) components using trigonometric functions</span>
     <span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="o">*</span> <span class="n">uv</span>
@@ -183,41 +184,41 @@ If the two grid are different, the two wind fields (Wind and Wind_DIR) need to b
 
 
 <span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L48</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">comp2dir</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">comp2dir</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">"degree"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates wind direction from rectangular components (u, v).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        u (float): Easting component of the wind.</span>
 <span class="sd">        v (float): Northing component of the wind.</span>
 <span class="sd">        unit_output (str, optional): Desired unit for the output wind direction.</span>
-<span class="sd">            Defaults to &quot;degree&quot;.</span>
+<span class="sd">            Defaults to "degree".</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        float: Wind direction in the specified unit (degrees or radians).</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        NotImplementedError: If the desired unit_output is not &quot;degree&quot;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        NotImplementedError: If the desired unit_output is not "degree".</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Check if desired output unit is degree</span>
-    <span class="k">if</span> <span class="n">unit_output</span> <span class="o">==</span> <span class="s2">&quot;degree&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">unit_output</span> <span class="o">==</span> <span class="s2">"degree"</span><span class="p">:</span>
         <span class="c1"># Calculate direction in radians using arctangent function</span>
         <span class="n">direction_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="c1"># Convert direction to degrees and ensure it&#39;s between 0 and 360</span>
+        <span class="c1"># Convert direction to degrees and ensure it's between 0 and 360</span>
         <span class="n">direction_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">direction_rad</span><span class="p">),</span> <span class="mi">360</span><span class="p">)</span>
         <span class="c1"># Return wind direction in degrees</span>
         <span class="k">return</span> <span class="n">direction_deg</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Raise an error if the unit is not supported</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Wind direction calculation is only implemented for &#39;degree&#39; output unit.&quot;</span>
+            <span class="s2">"Wind direction calculation is only implemented for 'degree' output unit."</span>
         <span class="p">)</span>
 
 
 <span class="c1"># source: https://github.com/louisletoumelin/bias_correction/blob/12e806af084d086d30e429b21deb8ab7f243a381/bias_correction/train/wind_utils.py#L4</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">comp2speed</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates wind speed from rectangular components (u, v) or (u, v, w).</span>
 
 <span class="sd">    Args:</span>
@@ -228,7 +229,7 @@ If the two grid are different, the two wind fields (Wind and Wind_DIR) need to b
 
 <span class="sd">    Returns:</span>
 <span class="sd">        float: Wind speed magnitude.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Check if vertical wind component is provided</span>
     <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -264,27 +265,27 @@ Please note that the path need to be changed. The regridding uses <em>rioxarray<
 In this example, files are saved at each steps, the amount of intermediate files can be reduced for same results.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>
-<span class="c1"># Load Louis&#39; wind data from Netcdf storage (sdir)</span>
-<span class="n">spd</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_wind.nc/&#39;</span><span class="p">)</span>
-<span class="c1"># Assuming &#39;spd&#39; contains wind data with a variable named &#39;Wind&#39; and &#39;Wind_DIR&#39;</span>
+<span class="c1"># Load Louis' wind data from Netcdf storage (sdir)</span>
+<span class="n">spd</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_wind.nc/'</span><span class="p">)</span>
+<span class="c1"># Assuming 'spd' contains wind data with a variable named 'Wind' and 'Wind_DIR'</span>
 
 <span class="c1"># Convert wind speed and direction to rectangular components (u, v)</span>
 <span class="c1"># using wind2comp function, specifying wind direction is in degrees</span>
-<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind2comp</span><span class="p">(</span><span class="n">spd</span><span class="o">.</span><span class="n">Wind</span><span class="p">,</span> <span class="n">sdp</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind2comp</span><span class="p">(</span><span class="n">spd</span><span class="o">.</span><span class="n">Wind</span><span class="p">,</span> <span class="n">sdp</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="p">,</span> <span class="n">unit_direction</span><span class="o">=</span><span class="s2">"degree"</span><span class="p">)</span>
 
 <span class="c1"># Save the calculated easting (u) and northing (v) components to netcdf storage</span>
-<span class="n">u</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_u.nc&#39;</span><span class="p">)</span>
-<span class="n">v</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_v.nc&#39;</span><span class="p">)</span>
+<span class="n">u</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'devine_u.nc'</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'devine_v.nc'</span><span class="p">)</span>
 
 <span class="c1"># Import rioxarray library for geospatial data handling</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">rioxarray</span>
 
 <span class="c1"># Reload the u and v components from netcdf storage</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_u.nc/&#39;</span><span class="p">)</span>
-<span class="n">v</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_v.nc/&#39;</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_u.nc/'</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_v.nc/'</span><span class="p">)</span>
 
-<span class="c1"># Load reference wind speed data from netcdf storage (assuming it has a &#39;Wind&#39; variable)</span>
-<span class="n">ref</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_speed_250m.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">Wind</span>
+<span class="c1"># Load reference wind speed data from netcdf storage (assuming it has a 'Wind' variable)</span>
+<span class="n">ref</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_speed_250m.nc/'</span><span class="p">)</span><span class="o">.</span><span class="n">Wind</span>
 
 <span class="c1"># Set the Coordinate Reference System (CRS) information for the reference data (likely EPSG:2154)</span>
 <span class="n">ref</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
@@ -293,37 +294,37 @@ In this example, files are saved at each steps, the amount of intermediate files
 <span class="n">u</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
 <span class="n">v</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span>
 
-<span class="c1"># Reproject u and v components to match the reference data&#39;s CRS (2154)</span>
-<span class="c1"># using average interpolation (resampling=&quot;average&quot;) not bilinear</span>
-<span class="n">u_250</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
+<span class="c1"># Reproject u and v components to match the reference data's CRS (2154)</span>
+<span class="c1"># using average interpolation (resampling="average") not bilinear</span>
+<span class="n">u_250</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">"average"</span><span class="p">)</span>
 
 <span class="c1"># Delete the original u data after creating the reprojected version</span>
 <span class="k">del</span> <span class="n">u</span>
 
 <span class="c1"># Save the reprojected easting component (u_250) to netcdf storage</span>
-<span class="n">u_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_u_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">u_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'devine_u_250_rioxarray.nc/'</span><span class="p">)</span>
 
 <span class="c1"># Similar process for the northing component (v)</span>
-<span class="n">v_250</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">)</span>
+<span class="n">v_250</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">)</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">reproject_match</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">rio</span><span class="o">.</span><span class="n">write_crs</span><span class="p">(</span><span class="mi">2154</span><span class="p">),</span> <span class="n">resampling</span><span class="o">=</span><span class="s2">"average"</span><span class="p">)</span>
 <span class="k">del</span> <span class="n">v</span>
-<span class="n">v_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_v_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">v_250</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'devine_v_250_rioxarray.nc/'</span><span class="p">)</span>
 
 <span class="c1"># Reload the reprojected u and v components</span>
-<span class="n">v_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_v_250_rioxarray.nc/&#39;</span><span class="p">)</span>
-<span class="n">u_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;devine_u_250_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">v_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_v_250_rioxarray.nc/'</span><span class="p">)</span>
+<span class="n">u_250</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'devine_u_250_rioxarray.nc/'</span><span class="p">)</span>
 
 <span class="c1"># Calculate wind direction from reprojected components using comp2dir function</span>
 <span class="c1"># specifying degrees as the output unit</span>
-<span class="n">dir_250_rioxarray</span> <span class="o">=</span> <span class="n">comp2dir</span><span class="p">(</span><span class="n">u_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">v_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+<span class="n">dir_250_rioxarray</span> <span class="o">=</span> <span class="n">comp2dir</span><span class="p">(</span><span class="n">u_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">v_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">unit_output</span><span class="o">=</span><span class="s2">"degree"</span><span class="p">)</span>
 
 <span class="c1"># Save the calculated wind direction to nectdf storage</span>
-<span class="n">dir_250_rioxarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">&#39;devine_direction_250m_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">dir_250_rioxarray</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s1">'devine_direction_250m_rioxarray.nc/'</span><span class="p">)</span>
 
 <span class="c1"># Calculate wind speed from reprojected components using comp2speed function</span>
 <span class="n">speed_250_rioxarray</span> <span class="o">=</span> <span class="n">comp2speed</span><span class="p">(</span><span class="n">u_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">v_250</span><span class="o">.</span><span class="n">__xarray_dataarray_variable__</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <span class="c1"># Save the calculated wind speed to nectdf storage</span>
-<span class="n">speed_250_rioxarray</span><span class="o">.</span><span class="n">to_necdf</span><span class="p">(</span><span class="s1">&#39;devine_speed_250m_rioxarray.nc/&#39;</span><span class="p">)</span>
+<span class="n">speed_250_rioxarray</span><span class="o">.</span><span class="n">to_necdf</span><span class="p">(</span><span class="s1">'devine_speed_250m_rioxarray.nc/'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -350,19 +351,19 @@ Please note that the path need to be changed.</p>
 </pre></div>
 </div>
 <p>Downloading wind and SAFRAN Forcing Data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load wind speed data from netcdf storage with a variable renamed to &#39;Wind&#39;</span>
-<span class="n">windlouis_speed</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/devine_speed_250m_rioxarray.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;__xarray_dataarray_variable__&#39;</span><span class="p">:</span><span class="s1">&#39;Wind&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load wind speed data from netcdf storage with a variable renamed to 'Wind'</span>
+<span class="n">windlouis_speed</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'/devine_speed_250m_rioxarray.nc/'</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">'__xarray_dataarray_variable__'</span><span class="p">:</span><span class="s1">'Wind'</span><span class="p">})</span>
 
-<span class="c1"># Load wind direction data from netcdf storage with a variable renamed to &#39;Wind_DIR&#39;</span>
-<span class="n">windlouis_direction</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;/devine_direction_250m_rioxarray.nc/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;__xarray_dataarray_variable__&#39;</span><span class="p">:</span><span class="s1">&#39;Wind_DIR&#39;</span><span class="p">})</span>
+<span class="c1"># Load wind direction data from netcdf storage with a variable renamed to 'Wind_DIR'</span>
+<span class="n">windlouis_direction</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'/devine_direction_250m_rioxarray.nc/'</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">'__xarray_dataarray_variable__'</span><span class="p">:</span><span class="s1">'Wind_DIR'</span><span class="p">})</span>
 
 <span class="c1"># Download SAFRAN forcing data for a specific time range (2017-08-01 to 2018-08-01)</span>
-<span class="n">louismixtapesafran17</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">&quot;/scratch/mtool/haddjeria/hendrix/gr250ls/rawsafran/meteo/FORCING_2017080106_2018080106.nc&quot;</span><span class="p">)</span>
+<span class="n">louismixtapesafran17</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">"/scratch/mtool/haddjeria/hendrix/gr250ls/rawsafran/meteo/FORCING_2017080106_2018080106.nc"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Time Series Generation (aim is to check for missing time steps):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an array of timestamps from the starting time of SAFRAN data with hourly intervals until the end time + 1 hour</span>
-<span class="n">a</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">))</span>
+<span class="n">a</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">))</span>
 
 <span class="c1"># Print the length of the generated time series (should match the expected number of time steps)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
@@ -388,40 +389,40 @@ Please note that the path need to be changed.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check the wind direction data (Wind_DIR)</span>
 <span class="n">wind_dir</span><span class="o">.</span><span class="n">Wind_DIR</span>  <span class="c1"># likely for verification purposes</span>
 
-<span class="c1"># Add wind direction data as a variable named &#39;Wind_DIR&#39; to the SAFRAN dataset</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;Wind_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_dir</span><span class="o">.</span><span class="n">Wind_DIR</span>
+<span class="c1"># Add wind direction data as a variable named 'Wind_DIR' to the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">'Wind_DIR'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_dir</span><span class="o">.</span><span class="n">Wind_DIR</span>
 
-<span class="c1"># Add wind speed data as a variable named &#39;Wind&#39; to the SAFRAN dataset</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;Wind&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_speed</span><span class="o">.</span><span class="n">Wind</span>
+<span class="c1"># Add wind speed data as a variable named 'Wind' to the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">'Wind'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wind_speed</span><span class="o">.</span><span class="n">Wind</span>
 
 <span class="c1"># Set reference height (UREF) in the SAFRAN dataset to a constant value of 10 meters (assuming Arome model reference height)</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;UREF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">UREF</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">'UREF'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">UREF</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span>
 
-<span class="c1"># Add attributes to the &#39;Wind&#39; variable in the SAFRAN dataset</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign</span>
+<span class="c1"># Add attributes to the 'Wind' variable in the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">"Wind"</span><span class="p">]</span><span class="o">=</span><span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign</span>
 </pre></div>
 </div>
 <p>Adding Attributes to Variables:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add attributes to the &#39;Wind&#39; variable in the SAFRAN dataset</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
-  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Wind Speed&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
-   <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;m/s&#39;</span><span class="p">,</span>               <span class="c1"># Units of the data (meters per second)</span>
-   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">,</span> <span class="c1"># Standard name for wind speed data in climate and forecasting models</span>
-   <span class="s1">&#39;origin&#39;</span> <span class="p">:</span> <span class="s1">&#39;Arome Wind downscaled with DEVINE2 by Louis&#39;</span>  <span class="c1"># Source of the data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add attributes to the 'Wind' variable in the SAFRAN dataset</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">"Wind"</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'Wind Speed'</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">'units'</span><span class="p">:</span> <span class="s1">'m/s'</span><span class="p">,</span>               <span class="c1"># Units of the data (meters per second)</span>
+   <span class="s1">'standard_name'</span><span class="p">:</span> <span class="s1">'wind_speed'</span><span class="p">,</span> <span class="c1"># Standard name for wind speed data in climate and forecasting models</span>
+   <span class="s1">'origin'</span> <span class="p">:</span> <span class="s1">'Arome Wind downscaled with DEVINE2 by Louis'</span>  <span class="c1"># Source of the data</span>
 <span class="p">})</span>
 
-<span class="c1"># Similarly, add attributes to the &#39;Wind_DIR&#39; variable</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">&quot;Wind_DIR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
-  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Wind Direction&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
-   <span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span>                 <span class="c1"># Units of the data (degrees)</span>
-   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;wind_from_direction&#39;</span><span class="p">,</span>  <span class="c1"># Standard name for wind direction data</span>
-   <span class="s1">&#39;origin&#39;</span> <span class="p">:</span> <span class="s1">&#39;Arome Wind downscaled with DEVINE2 by Louis&#39;</span>  <span class="c1"># Source of the data</span>
+<span class="c1"># Similarly, add attributes to the 'Wind_DIR' variable</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s2">"Wind_DIR"</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">Wind_DIR</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'Wind Direction'</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">'units'</span><span class="p">:</span> <span class="s1">'deg'</span><span class="p">,</span>                 <span class="c1"># Units of the data (degrees)</span>
+   <span class="s1">'standard_name'</span><span class="p">:</span> <span class="s1">'wind_from_direction'</span><span class="p">,</span>  <span class="c1"># Standard name for wind direction data</span>
+   <span class="s1">'origin'</span> <span class="p">:</span> <span class="s1">'Arome Wind downscaled with DEVINE2 by Louis'</span>  <span class="c1"># Source of the data</span>
 <span class="p">})</span>
 
-<span class="c1"># Add attributes to the &#39;time&#39; variable</span>
-<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
-  <span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
-   <span class="s1">&#39;standard_name&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span>  <span class="c1"># Standard name for time data in climate and forecasting models</span>
+<span class="c1"># Add attributes to the 'time' variable</span>
+<span class="n">louismixtapesafran17</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span>
+  <span class="p">{</span><span class="s1">'long_name'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span>  <span class="c1"># Descriptive name of the variable</span>
+   <span class="s1">'standard_name'</span><span class="p">:</span> <span class="s1">'time'</span>  <span class="c1"># Standard name for time data in climate and forecasting models</span>
 <span class="p">})</span>
 
 <span class="c1"># Print the modified SAFRAN dataset for inspection (likely commented out for brevity)</span>
@@ -442,24 +443,24 @@ If the file is large, it can be compressed to reduce transfert time (at cost of 
 <span class="c1"># Apply the compression settings (comp dictionary) to all data variables (data_vars)</span>
 <span class="n">encoding</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="p">:</span> <span class="n">comp</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">data_vars</span><span class="p">}</span>
 
-<span class="c1"># Update the encoding dictionary specifically for the &#39;time&#39; variable</span>
-<span class="c1"># Set the data type to &#39;int32&#39; (hardcoded in Fortran SURFEX)</span>
-<span class="n">encoding</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s2">&quot;int32&quot;</span><span class="p">}})</span>
+<span class="c1"># Update the encoding dictionary specifically for the 'time' variable</span>
+<span class="c1"># Set the data type to 'int32' (hardcoded in Fortran SURFEX)</span>
+<span class="n">encoding</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'time'</span><span class="p">:{</span><span class="s2">"dtype"</span><span class="p">:</span> <span class="s2">"int32"</span><span class="p">}})</span>
 
 <span class="c1"># Print the resulting encoding dictionary (likely for verification purposes)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
 
 <span class="c1"># Define the path to save the NetCDF file</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/scratch/mtool/haddjeria/tc/forcing/250m/Safran/&#39;</span>
-<span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;FORCING_2017080106_2018080106.nc&#39;</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">'/scratch/mtool/haddjeria/tc/forcing/250m/Safran/'</span>
+<span class="n">file</span> <span class="o">=</span> <span class="s1">'FORCING_2017080106_2018080106.nc'</span>
 
 <span class="c1"># Combine path and filename to create the full temporary filename</span>
 <span class="n">tempfile</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file</span>
 
-<span class="c1"># Save the modified SAFRAN dataset as a NetCDF file (format=&#39;NETCDF4_CLASSIC&#39;)</span>
-<span class="c1"># Specify unlimited dimension for &#39;time&#39; to allow for future growth</span>
+<span class="c1"># Save the modified SAFRAN dataset as a NetCDF file (format='NETCDF4_CLASSIC')</span>
+<span class="c1"># Specify unlimited dimension for 'time' to allow for future growth</span>
 <span class="c1"># Use the defined encoding dictionary for compression and data type settings</span>
-<span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">tempfile</span><span class="p">,</span> <span class="n">unlimited_dims</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;NETCDF4_CLASSIC&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+<span class="n">louismixtapesafran17</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">tempfile</span><span class="p">,</span> <span class="n">unlimited_dims</span><span class="o">=</span><span class="p">{</span><span class="s1">'time'</span><span class="p">:</span><span class="kc">True</span><span class="p">},</span> <span class="nb">format</span><span class="o">=</span><span class="s1">'NETCDF4_CLASSIC'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Cleaning:</p>

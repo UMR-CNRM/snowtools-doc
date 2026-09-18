@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.tasks.surfex.soda &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.surfex.soda</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.tasks.surfex.soda</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">soda.py</span>
+<span class="sd">-------</span>
+
+<span class="sd">Tasks designed to launch the SODA executable.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.tasks.surfex.soda</span>
+<span class="sd">   :top-classes: vortex_cen.tasks.research_task_base._CenResearchTask</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 2</span>
+
+<span class="sd">.. autoclass:: SodaCommonsMixin</span>
+<span class="sd">   :members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Soda</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :class-doc-from: class</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: FetchBackgroundOrCrash</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :class-doc-from: class</span>
+<span class="sd">   :show-inheritance:</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tasks.research_task_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenResearchTask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.tasks.surfex.commons</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfexCommonsMixin</span>
+
+
+<div class="viewcode-block" id="SodaCommonsMixin">
+<a class="viewcode-back" href="../../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.surfex.soda.SodaCommonsMixin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SodaCommonsMixin</span><span class="p">(</span><span class="n">SurfexCommonsMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Mixin methods for SODA binary IOs.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_snow_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Input Observation'</span><span class="p">)</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+            <span class="n">kind</span>            <span class="o">=</span> <span class="s1">'SnowObservations'</span><span class="p">,</span>
+            <span class="n">geometry</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="n">model</span>           <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="n">nativefmt</span>       <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+            <span class="n">vapp</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'observation_vapp'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vapp</span><span class="p">),</span>
+            <span class="n">vconf</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'observation_vconf'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vconf</span><span class="p">),</span>
+            <span class="n">date</span>            <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'assimdate'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
+            <span class="n">block</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'observation_block'</span><span class="p">,</span> <span class="s1">''</span><span class="p">),</span>
+            <span class="n">scope</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'scope'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">namespace</span>       <span class="o">=</span> <span class="s1">'vortex.multi.fr'</span><span class="p">,</span>
+            <span class="n">namebuild</span>       <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+            <span class="n">experiment</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'observation_xpid'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">),</span>
+            <span class="n">username</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'observation_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">local</span>           <span class="o">=</span> <span class="s1">'OBSERVATIONS_[datevalidity:ymdHh].nc'</span><span class="p">,</span>
+            <span class="n">fatal</span>           <span class="o">=</span> <span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Observation ='</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_soda_exe_from_uenv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fatal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">mpi</span><span class="p">:</span>
+            <span class="n">default_gvar</span> <span class="o">=</span> <span class="s1">'master_soda_mpi'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_gvar</span> <span class="o">=</span> <span class="s1">'master_soda_nompi'</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Input SODA executable'</span><span class="p">)</span>
+        <span class="n">soda</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">executable</span><span class="p">(</span>
+            <span class="n">role</span>           <span class="o">=</span> <span class="s1">'Binary'</span><span class="p">,</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="s1">'soda'</span><span class="p">,</span>
+            <span class="n">local</span>          <span class="o">=</span> <span class="s1">'SODA'</span><span class="p">,</span>
+            <span class="n">model</span>          <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="n">genv</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'surfex_uenv'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
+            <span class="n">gvar</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'soda_gvar'</span><span class="p">,</span> <span class="n">default_gvar</span><span class="p">),</span>
+            <span class="n">fatal</span>          <span class="o">=</span> <span class="n">fatal</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'SODA ='</span><span class="p">,</span> <span class="n">soda</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Input SODA background PREPs'</span><span class="p">)</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
+            <span class="n">role</span>           <span class="o">=</span> <span class="s1">'SnowpackInit'</span><span class="p">,</span>
+            <span class="n">member</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_members</span><span class="p">(),</span>
+            <span class="n">vapp</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_vapp'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vapp</span><span class="p">),</span>
+            <span class="n">vconf</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_vconf'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vconf</span><span class="p">),</span>
+            <span class="n">local</span>          <span class="o">=</span> <span class="s1">'mb[member</span><span class="si">%04d</span><span class="s1">]/PREP_[datevalidity:ymdh].nc'</span><span class="p">,</span>
+            <span class="n">experiment</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_xpid'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">),</span>
+            <span class="n">username</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_user'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">geometry</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="n">datevalidity</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'assimdate'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
+            <span class="n">nativefmt</span>      <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="s1">'PREP'</span><span class="p">,</span>
+            <span class="n">model</span>          <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="n">namespace</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_namespace'</span><span class="p">,</span> <span class="s1">'vortex.multi.fr'</span><span class="p">),</span>
+            <span class="n">namebuild</span>      <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+            <span class="n">block</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"prep_block"</span><span class="p">,</span> <span class="s1">'offline'</span><span class="p">),</span>
+            <span class="n">vortex1</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'prep_vortex1'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">fatal</span>          <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Background PREP ='</span><span class="p">,</span> <span class="n">prep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Soda">
+<a class="viewcode-back" href="../../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.surfex.soda.Soda">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Soda</span><span class="p">(</span><span class="n">SodaCommonsMixin</span><span class="p">,</span> <span class="n">_CenResearchTask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    **Task: Soda**</span>
+
+<span class="sd">    SODA Particle Filter assimilation task.</span>
+<span class="sd">    Reference : Cluzet et al. (2021): https://gmd.copernicus.org/articles/14/1595/2021/</span>
+
+<span class="sd">    **Input:**</span>
+
+<span class="sd">    - SODA namelist (OPTIONS.nam)</span>
+<span class="sd">    - Ensemble of snowpack initial conditions ("PREP.nc") refered to as "background"</span>
+<span class="sd">    - ecoclimapI_covers_param.bin and ecoclimapII_eu_covers_param.bin (binaries for vegetation generation)</span>
+<span class="sd">    - drdt_bst_fit_60.nc (Crocus metamorphism parameters)</span>
+<span class="sd">    - PGD.nc (Ground physiography)</span>
+
+<span class="sd">    **Outputs:**</span>
+
+<span class="sd">    - Modified ensemble of snowpack initial conditions ("PREP.nc") referred to as "analysis"</span>
+
+<span class="sd">    **Mandatory configuration variables**</span>
+
+<span class="sd">    * ``date`` or ``assimdate`` Analysis date</span>
+<span class="sd">      type: str, Date</span>
+<span class="sd">    * ``geometry`` *geometry* of the PREP files</span>
+<span class="sd">      type: str, footprints.stdtypes.FPList</span>
+<span class="sd">    * ``xpid`` Experiment identifier</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``uenv`` User Environment in which the following resources are to be retrieved:</span>
+<span class="sd">      Format : uenv:{uenv_name}@{user}</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``observation_block`` By convention, the sensor used for the observation (ex: MODIS, PLEIADES, VIIRS)</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``members`` Ensemble members</span>
+<span class="sd">      type: footprints.stdtypes.FPList</span>
+
+<span class="sd">    **Optional configuration variables**</span>
+
+<span class="sd">    * ``scope`` Scope of the observation</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``observation_xpid`` Experiment identifier of the observation file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``observation_user`` User who produced / owns the observation file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``observation_vapp`` *vapp* of the observation file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``observation_vconf`` *vconf* of the observation file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``prep_vapp`` *vapp* of the PREP files</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``prep_vconf`` *vconf* of the PREP files</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``prep_xpid`` Exepriment Identifier of the PREP files</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``prep_user`` User who produced the PREP files</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``prep_vortex1`` Whether or not the PREP files have been produced with Vortex-v1</span>
+<span class="sd">      type: bool</span>
+<span class="sd">    * ``pgd_vapp`` *vapp* of the PGD file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``pgd_vconf`` *vconf* of the PGD file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``pgd_xpid`` Exepriment Identifier of the PGD file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``pgd_user`` User who produced the PGD file</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``pgd_vortex1`` Whether or not the PGD files have been produced with Vortex-v1</span>
+<span class="sd">      type: bool</span>
+
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"xpid"</span><span class="p">,</span>
+            <span class="s2">"geometry"</span><span class="p">,</span>
+            <span class="s2">"surfex_uenv|uenv"</span><span class="p">,</span>
+            <span class="s2">"members"</span><span class="p">,</span>
+            <span class="s2">"assimdate|date"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"namelist_source"</span><span class="p">,</span>
+            <span class="s2">"observation_vapp+help=*vapp* of the snow observation to assimilate;type=str;default=*vapp*"</span><span class="p">,</span>
+            <span class="s2">"observation_vconf+help=*vconf* of the snow observation to assimilate;type=str;default=*vconf*"</span><span class="p">,</span>
+            <span class="s2">"observation_xpid+help=Experiment identifier of the snow observation to assimilate;type=str;default=*xpid*"</span><span class="p">,</span>
+            <span class="s2">"observation_user+help=Name of the user who owns the snow observation file to assimilate;"</span> <span class="o">+</span>
+            <span class="s2">"type=str;default=$USER"</span><span class="p">,</span>
+            <span class="s2">"observation_block+help=Sensor used for the snow observation to assimilate "</span> <span class="o">+</span>
+            <span class="s2">"(ex MODIS, PLEIADES, VIIRS,...);type=str"</span><span class="p">,</span>
+            <span class="s2">"scope+help=Type of the snow observation to assimilate;type=str"</span><span class="p">,</span>
+            <span class="s2">"soda_gvar"</span><span class="p">,</span>
+            <span class="s2">"prep"</span><span class="p">,</span>
+            <span class="s2">"prep_namespace+help=Where to look for the PREP files ('vortex.cache.fr' if part of the 'assim' task);"</span> <span class="o">+</span>
+            <span class="s2">"type=str;choices=vortex.cache.fr (local cache), vortex.archive.fr (Hendrix), "</span> <span class="o">+</span>
+            <span class="s2">"vortex.multi.fr (Hendrix and local cache)"</span><span class="p">,</span>
+            <span class="s2">"pgd"</span><span class="p">,</span>
+            <span class="s2">"diff_xpid"</span><span class="p">,</span>
+            <span class="s2">"diff_user"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">overwrite</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"datebegin"</span><span class="p">,</span>
+            <span class="s2">"dateend"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="p">,</span> <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nmembers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_list_members</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_remote_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_ecoclimap</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_drdt_bst_fit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_snow_observation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_namelist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_soda_exe_from_uenv</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_local_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO : Make a "FetchBackgroundOrCrash" class to put the driver in other situations (ex : unit tests)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_background</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_pgd_file_from_cache</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Algo SODA'</span><span class="p">)</span>
+        <span class="n">algo</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">task</span><span class="p">(</span>
+            <span class="n">engine</span>         <span class="o">=</span> <span class="s1">'parallel'</span><span class="p">,</span>
+            <span class="n">binary</span>         <span class="o">=</span> <span class="s1">'SODA'</span><span class="p">,</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="s2">"s2m_soda"</span><span class="p">,</span>
+            <span class="n">dateassim</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'assimdate'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
+            <span class="n">nmembers</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmembers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'Algo ='</span><span class="p">,</span> <span class="n">algo</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">algo</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Launch without MPI parallelisation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launch_executable</span><span class="p">(</span><span class="n">algo</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Output PREP (analysis)'</span><span class="p">)</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">output</span><span class="p">(</span>
+            <span class="n">local</span>          <span class="o">=</span> <span class="s1">'mb[member</span><span class="si">%04d</span><span class="s1">]/PREP_[datevalidity:ymdh].nc'</span><span class="p">,</span>
+            <span class="n">role</span>           <span class="o">=</span> <span class="s1">'SnowpackInit'</span><span class="p">,</span>
+            <span class="n">experiment</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">,</span>
+            <span class="n">geometry</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="n">datevalidity</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'assimdate'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
+            <span class="n">member</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_list_members</span><span class="p">(),</span>
+            <span class="n">nativefmt</span>      <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="s1">'PREP'</span><span class="p">,</span>
+            <span class="n">model</span>          <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="n">namespace</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace_out</span><span class="p">,</span>
+            <span class="n">namebuild</span>      <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+            <span class="n">block</span>          <span class="o">=</span> <span class="s1">'soda'</span><span class="p">,</span>
+            <span class="n">fatal</span>          <span class="o">=</span> <span class="kc">True</span>
+        <span class="p">),</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'SODA analysis ='</span><span class="p">,</span> <span class="n">prep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Output SODA diagnostics'</span><span class="p">)</span>
+        <span class="n">diags</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">output</span><span class="p">(</span>
+            <span class="n">kind</span>           <span class="o">=</span> <span class="p">[</span><span class="s1">'PART'</span><span class="p">,</span> <span class="s1">'BG_CORR'</span><span class="p">,</span> <span class="s1">'IMASK'</span><span class="p">,</span> <span class="s1">'ALPHA'</span><span class="p">,</span> <span class="s1">'SNOWLINE'</span><span class="p">],</span>
+            <span class="n">model</span>          <span class="o">=</span> <span class="s1">'soda'</span><span class="p">,</span>
+            <span class="n">block</span>          <span class="o">=</span> <span class="s1">'soda'</span><span class="p">,</span>
+            <span class="n">namebuild</span>      <span class="o">=</span> <span class="s1">'flat@cen'</span><span class="p">,</span>
+            <span class="n">geometry</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+            <span class="n">namespace</span>      <span class="o">=</span> <span class="s1">'vortex.multi.fr'</span><span class="p">,</span>
+            <span class="n">dateassim</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'assimdate'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'date'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)),</span>
+            <span class="n">experiment</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">,</span>
+            <span class="n">local</span>          <span class="o">=</span> <span class="s1">'[kind]'</span><span class="p">,</span>
+            <span class="n">fatal</span>          <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># TODO : cela pourrait dépendre du "kind" pour plus de felxibilité</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s1">'SODA diags ='</span><span class="p">,</span> <span class="n">diags</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># The "random" selection of particles in SODA makes reproducibility tests pointless</span>
+        <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="FetchBackgroundOrCrash">
+<a class="viewcode-back" href="../../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.surfex.soda.FetchBackgroundOrCrash">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FetchBackgroundOrCrash</span><span class="p">(</span><span class="n">SodaCommonsMixin</span><span class="p">,</span> <span class="n">_CenResearchTask</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Fetch an ensemble of PREP files from the archive as background for a SODA execution and put it in</span>
+<span class="sd">    the cache of the current experiment.</span>
+
+<span class="sd">    **Mandatory configuration variables:**</span>
+
+<span class="sd">    * ``geometry`` *geometry* of the forcing file(s)</span>
+<span class="sd">      type: str, footprints.stdtypes.FPList</span>
+<span class="sd">    * ``xpid`` Experiment identifier</span>
+<span class="sd">      type: str</span>
+<span class="sd">    * ``date`` or ``assimdate`` Analysis date</span>
+<span class="sd">      type: str or Date</span>
+
+<span class="sd">    **Optional configuraiton variables**</span>
+
+<span class="sd">    * ``prep_xpid`` or ``xpid`` Experiment id the prep file should be searched for or put in cache.</span>
+<span class="sd">    * ``prep_user`` name of the user who produced the PREP file. Default: None.</span>
+<span class="sd">    * ``prep_vapp`` or ``vapp`` Application name to search the PREP.nc file.</span>
+<span class="sd">    * ``prep_vconf`` or ``vconf`` Configuration name to search the PREP.nc file.</span>
+<span class="sd">    * ``prep_vortex1`` type: bool. *True* if the requested PREP.nc file was produced with vortex 1 and thus uses</span>
+<span class="sd">      vortex 1 naming conventions. Default is *False*.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">MANDATORY_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"xpid"</span><span class="p">,</span>
+            <span class="s2">"geometry"</span><span class="p">,</span>
+            <span class="s2">"date|assimdate"</span><span class="p">,</span>
+            <span class="s2">"prep"</span><span class="p">,</span>
+            <span class="s2">"member|members|nmembers+help=Ensemble members"</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">'prep_xpid'</span><span class="p">,</span>
+            <span class="s1">'prep_user'</span><span class="p">,</span>
+            <span class="s1">'prep_vapp'</span><span class="p">,</span>
+            <span class="s1">'prep_vconf'</span><span class="p">,</span>
+            <span class="s1">'prep_namespace'</span><span class="p">,</span>
+            <span class="s1">'prep_block'</span><span class="p">,</span>
+            <span class="s1">'prep_vortex1'</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="n">MANDATORY_CONFIGURATION_VARIABLES</span><span class="p">,</span> <span class="n">OPTIONAL_CONFIGURATION_VARIABLES</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_remote_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_background</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_local_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">launch_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.surfex.soda</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

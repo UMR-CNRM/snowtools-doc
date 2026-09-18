@@ -8,6 +8,7 @@
     <title>Extract and post-processing observations &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -65,22 +66,22 @@ with SQL syntax before using as inputs are not always correctly sanitized.</p>
 and 38567002 (Chamrousse) for the season 2020-2021 and save it to a file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">question1</span> <span class="o">=</span> <span class="n">question</span><span class="p">(</span>
         <span class="c1"># Variables to extract: here date, num_poste on 8 digits, poste name, snow depth</span>
-        <span class="n">listvar</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;to_char(dat,&#39;YYYY-MM-DD-HH24-MI&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;to_char(h.num_poste, &#39;fm00000000&#39;)&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;poste_nivo.nom_usuel&quot;</span><span class="p">,</span> <span class="s2">&quot;neigetot&quot;</span><span class="p">],</span>
+        <span class="n">listvar</span><span class="o">=</span><span class="p">[</span><span class="s2">"to_char(dat,'YYYY-MM-DD-HH24-MI')"</span><span class="p">,</span> <span class="s2">"to_char(h.num_poste, 'fm00000000')"</span><span class="p">,</span>
+                 <span class="s2">"poste_nivo.nom_usuel"</span><span class="p">,</span> <span class="s2">"neigetot"</span><span class="p">],</span>
         <span class="c1"># The table to read (see BDClim documentation)</span>
-        <span class="n">table</span><span class="o">=</span><span class="s1">&#39;H&#39;</span><span class="p">,</span>
+        <span class="n">table</span><span class="o">=</span><span class="s1">'H'</span><span class="p">,</span>
         <span class="c1"># Join table num_poste to get the poste name</span>
-        <span class="n">listjoin</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POSTE_NIVO ON H.NUM_POSTE = POSTE_NIVO.NUM_POSTE&#39;</span><span class="p">],</span>
+        <span class="n">listjoin</span><span class="o">=</span><span class="p">[</span><span class="s1">'POSTE_NIVO ON H.NUM_POSTE = POSTE_NIVO.NUM_POSTE'</span><span class="p">],</span>
         <span class="c1"># Set a time period of interest (datetime or str objects)</span>
-        <span class="n">period</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2020-08-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2021-08-01&#39;</span><span class="p">],</span>
+        <span class="n">period</span><span class="o">=</span><span class="p">[</span><span class="s1">'2020-08-01'</span><span class="p">,</span> <span class="s1">'2021-08-01'</span><span class="p">],</span>
         <span class="c1"># Set the order</span>
-        <span class="n">listorder</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;dat&#39;</span><span class="p">,</span> <span class="s1">&#39;h.num_poste&#39;</span><span class="p">],</span>
+        <span class="n">listorder</span><span class="o">=</span><span class="p">[</span><span class="s1">'dat'</span><span class="p">,</span> <span class="s1">'h.num_poste'</span><span class="p">],</span>
         <span class="c1"># Filtering</span>
-        <span class="c1"># parenthesis compulsory to group with &quot;OR&quot;</span>
-        <span class="n">listconditions</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;(H.NUM_POSTE=38005402 OR H.NUM_POSTE=38567002)&#39;</span><span class="p">],</span>
+        <span class="c1"># parenthesis compulsory to group with "OR"</span>
+        <span class="n">listconditions</span><span class="o">=</span><span class="p">[</span><span class="s1">'(H.NUM_POSTE=38005402 OR H.NUM_POSTE=38567002)'</span><span class="p">],</span>
         <span class="p">)</span>
 <span class="c1"># Save into a csv file</span>
-<span class="n">question1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">outputfile</span><span class="o">=</span><span class="s1">&#39;output.csv&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;dat&#39;</span><span class="p">,</span> <span class="s1">&#39;num_poste&#39;</span><span class="p">,</span> <span class="s1">&#39;poste&#39;</span><span class="p">,</span> <span class="s1">&#39;neigetot&#39;</span><span class="p">])</span>
+<span class="n">question1</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">outputfile</span><span class="o">=</span><span class="s1">'output.csv'</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="s1">'dat'</span><span class="p">,</span> <span class="s1">'num_poste'</span><span class="p">,</span> <span class="s1">'poste'</span><span class="p">,</span> <span class="s1">'neigetot'</span><span class="p">])</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -189,7 +190,7 @@ Example: <code class="docutils literal notranslate"><span class="pre">text</span
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: extract_obs.py [-h] [-o OUTPUT] date_min date_max
 
 Read HTN (snow height) observations from BDCLim for all available stations:
-both Nivoses and &quot;nivo-meteo&quot; network.
+both Nivoses and "nivo-meteo" network.
 
 positional arguments:
   date_min              Start date

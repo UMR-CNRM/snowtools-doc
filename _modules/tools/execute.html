@@ -7,6 +7,7 @@
     <title>tools.execute &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,10 +41,10 @@
   <h1>Source code for tools.execute</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">'''</span>
 <span class="sd">Created on 9 oct. 2012</span>
 <span class="sd">@author: lafaysse</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">'''</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
@@ -54,21 +55,21 @@
 <div class="viewcode-block" id="SystemException">
 <a class="viewcode-back" href="../../code/tools.html#tools.execute.SystemException">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SystemException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception for a system command&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Exception for a system command"""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="n">command</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;The following command fails with error code &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span></div>
+        <span class="k">return</span> <span class="s2">"The following command fails with error code "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span> <span class="o">+</span> <span class="s2">":</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span></div>
 
 
 
 <div class="viewcode-block" id="callSystemOrDie">
 <a class="viewcode-back" href="../../code/tools.html#tools.execute.callSystemOrDie">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">callSystemOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to execute a system command and kill the current program if it fails.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Method to execute a system command and kill the current program if it fails."""</span>
 
     <span class="n">status</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">commande</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
@@ -81,7 +82,7 @@
 <div class="viewcode-block" id="printandcallSystemOrDie">
 <a class="viewcode-back" href="../../code/tools.html#tools.execute.printandcallSystemOrDie">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">printandcallSystemOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to print and execute a system command and kill the current program if it fails.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Method to print and execute a system command and kill the current program if it fails."""</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">commande</span><span class="p">)</span>
     <span class="n">callSystemOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span></div>
@@ -90,29 +91,29 @@
 
 <div class="viewcode-block" id="callSurfexOrDie">
 <a class="viewcode-back" href="../../code/tools.html#tools.execute.callSurfexOrDie">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">callSurfexOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">moderun</span><span class="o">=</span><span class="s2">&quot;NORMAL&quot;</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Method to execute a SURFEX binary and kill the current program if it fails.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">callSurfexOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">moderun</span><span class="o">=</span><span class="s2">"NORMAL"</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Method to execute a SURFEX binary and kill the current program if it fails.</span>
 <span class="sd">    Include the setting of MPI and OpenMP tasks, and the extension of stack memory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">set_stack_unlimited</span><span class="p">()</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;PGD&quot;</span> <span class="ow">in</span> <span class="n">commande</span> <span class="ow">or</span> <span class="s2">&quot;PREP&quot;</span> <span class="ow">in</span> <span class="n">commande</span><span class="p">)</span> <span class="ow">and</span> <span class="n">moderun</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MPI&quot;</span><span class="p">,</span> <span class="s2">&quot;MPIRUN&quot;</span><span class="p">]:</span>
-        <span class="n">moderun</span> <span class="o">=</span> <span class="s2">&quot;MPISINGLE&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"OMP_NUM_THREADS"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">"PGD"</span> <span class="ow">in</span> <span class="n">commande</span> <span class="ow">or</span> <span class="s2">"PREP"</span> <span class="ow">in</span> <span class="n">commande</span><span class="p">)</span> <span class="ow">and</span> <span class="n">moderun</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"MPI"</span><span class="p">,</span> <span class="s2">"MPIRUN"</span><span class="p">]:</span>
+        <span class="n">moderun</span> <span class="o">=</span> <span class="s2">"MPISINGLE"</span>
 
-    <span class="k">if</span> <span class="n">moderun</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MPI&quot;</span><span class="p">,</span> <span class="s2">&quot;MPIRUN&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">moderun</span> <span class="o">==</span> <span class="s2">&quot;MPIRUN&quot;</span><span class="p">:</span>
-            <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">&quot;mpirun -np &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">moderun</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"MPI"</span><span class="p">,</span> <span class="s2">"MPIRUN"</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">moderun</span> <span class="o">==</span> <span class="s2">"MPIRUN"</span><span class="p">:</span>
+            <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">"mpirun -np "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;SLURM_NODES&quot;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">&quot;srun --nodes=&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;SLURM_NNODES&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; --ntasks=&quot;</span>
-                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"SLURM_NODES"</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">"srun --nodes="</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SLURM_NNODES"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" --ntasks="</span>
+                                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">&quot;srun --ntasks=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
+                <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">"srun --ntasks="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">moderun</span> <span class="o">==</span> <span class="s2">&quot;MPISINGLE&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">moderun</span> <span class="o">==</span> <span class="s2">"MPISINGLE"</span><span class="p">:</span>
         <span class="n">nproc</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">&quot;mpirun -np &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
+        <span class="n">callSystemOrDie</span><span class="p">(</span><span class="s2">"mpirun -np "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">callSystemOrDie</span><span class="p">(</span><span class="n">commande</span><span class="p">,</span> <span class="n">errorcode</span><span class="o">=</span><span class="n">errorcode</span><span class="p">)</span></div>
 
@@ -124,7 +125,7 @@
     <span class="c1"># Take care : some systems do not allow to force resource.RLIMIT_STACK at resource.RLIM_INFINITY,</span>
     <span class="c1"># so it is safer to get the system hard limit first.</span>
     <span class="c1"># Moreover, this can not be done on MacOS</span>
-    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s1">&#39;darwin&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s1">'darwin'</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">resource</span>
         <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_STACK</span><span class="p">)</span>  <span class="c1"># @UnusedVariable</span>
         <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_STACK</span><span class="p">,</span> <span class="p">(</span><span class="n">hard</span><span class="p">,</span> <span class="n">hard</span><span class="p">))</span>

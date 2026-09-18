@@ -8,6 +8,7 @@
     <title>Xarray with snowtools &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -47,9 +48,152 @@
           <div class="body" role="main">
             
   <section id="xarray-with-snowtools">
-<h1>Xarray with snowtools<a class="headerlink" href="#xarray-with-snowtools" title="Link to this heading">¶</a></h1>
+<span id="xarray"></span><h1>Xarray with snowtools<a class="headerlink" href="#xarray-with-snowtools" title="Link to this heading">¶</a></h1>
 <p>In order to deal with NetCDF files in general, xarray is a well known tool.
 The interaction with snowtools is made this way (to allows compatibility with old SURFEX simulation for example)</p>
+<p id="module-utils.xarray_snowtools">Import all tools related to the use of xarray inside snowtools and
+around SURFEX simulations.</p>
+<p>Provide wrapper for manipulating data archived with Vortex in a research context:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.xarray_snowtools.open_vortex_data">
+<span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools.</span></span><span class="sig-name descname"><span class="pre">open_vortex_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configsection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="reference internal" href="../_modules/utils/xarray_snowtools.html#open_vortex_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools.open_vortex_data" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for manipulating data archived with Vortex in a research context.
+The aim of this wrapper is to perform file manipulation in the background, focusing instead on data manipulation.
+It directly returns an <cite>xarray.Dataset</cite> object containing the target data.</p>
+<p>The vortex/footprint description of the target data primarily comes from a configuration file, provided through the
+<cite>configfile</cite> keyword argument.
+Footprint-like keyword arguments can also be provided to complete or modify/overwrite the description provided by
+the configuration file.</p>
+<p><strong>NB:</strong> always check that the provided description match your requirements before any actual extraction.
+To do so, it is possible to disable the actual file transfer by providing a <cite>checkonly=True</cite> keyword argument.
+This will only print the list of files that would be extracted without <cite>checkonly=True</cite>.</p>
+<p>The wrapper will download the target data and open it for the duration of the user’s session.
+All files will be removed from the working directory when the session closes.
+However, they are stored in the cache to ensure optimal future reutilisation.</p>
+<p><strong>Usage examples:</strong></p>
+<ul class="simple">
+<li><p>With a standard configuration file targeting the S2M reanalysis and keyword arguments to focus
+on a single year and geometry :</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_vortex_data</span>
+
+<span class="k">with</span> <span class="n">open_vortex_data</span><span class="p">(</span><span class="n">configfile</span><span class="o">=</span><span class="s1">'S2MReanalysis.ini'</span><span class="p">,</span>  <span class="n">configsection</span><span class="o">=</span><span class="s1">'SafranFlatReanalysis'</span><span class="p">,</span>
+                <span class="n">datebegin</span><span class="o">=</span><span class="s1">'2022080106'</span><span class="p">,</span> <span class="n">dateend</span><span class="o">=</span><span class="s1">'2023080106'</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s1">'cor2_flat'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># A FORCING file has been downloaded in the working directory and opened with xarray:</span>
+    <span class="c1"># `ds` now contains the target Dataset</span>
+    <span class="c1"># Do any data manipulation here</span>
+    <span class="c1"># ...</span>
+
+<span class="c1"># At this point all files have been removed from the working directory</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>With a custom configuration file, provide the absolute or relative path to the target file.
+If this target file contains only the “DEFAULT” section or a single named section, simply do :</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_vortex_data</span>
+
+<span class="k">with</span> <span class="n">open_vortex_data</span><span class="p">(</span><span class="n">configfile</span><span class="o">=</span><span class="s1">'path/to/user/file.ini'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># Your own code or call to external functions here</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>With an ensemble simulation:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_vortex_data</span>
+
+<span class="k">with</span> <span class="n">open_vortex_data</span><span class="p">(</span><span class="n">configfile</span><span class="o">=</span><span class="s1">'conf.ini'</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">'member'</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">'nested'</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># your own code or call to external functions here</span>
+</pre></div>
+</div>
+<p><strong>Arguments:</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configfile</strong> (<em>str</em>) – Absolute path to the configuration file or filename of an existing configuration file under
+vortex_cen/conf containing a (partial) footprint description of the target resource(s).</p></li>
+<li><p><strong>configsection</strong> (<em>str</em>) – Name of the target section in the configuration file. If the configuration file has only
+one section, <cite>configsection</cite> is automatically set to the existing section name.
+If the configuration file has no section at all besides ‘DEFAULT’, a dummy section is
+created to read the variables provided in ‘DEFAULT’.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Usefull keyword arguments</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chunks</strong> (<em>int</em><em>, </em><em>dict</em><em>, </em><em>'auto'</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – xarray open_mfdataset <em>chunks</em> keyword argument</p></li>
+<li><p><strong>concat_dim</strong> (<em>str</em><em>, </em><em>DataArray</em><em>, </em><em>Index</em><em> or </em><em>a Sequence</em><em> of </em><em>these</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – xarray open_mfdataset <em>concat_dim</em> keyword argument</p></li>
+<li><p><strong>combine</strong> (<em>{&quot;by_coords&quot;</em><em>, </em><em>&quot;nested&quot;}</em><em>, </em><em>optional</em>) – xarray open_mfdataset <em>combine</em> keyword argument</p></li>
+</ul>
+</dd>
+</dl>
+<p>Standard keyword arguments for the description of CEN resources include :</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kind</strong> (<em>str</em>) – The <cite>kind</cite> of resource to extract (ex: FORCING, PRO, PREP,…)</p></li>
+<li><p><strong>vapp</strong> (<em>str</em>) – The target resource’s application</p></li>
+<li><p><strong>vconf</strong> (<em>str</em>) – The target resource’s configuration</p></li>
+<li><p><strong>experiment</strong> (<em>str</em>) – The target resource’s experiment identifier.</p></li>
+<li><p><strong>username</strong> (<em>str</em>) – The name of the producer of the target resource(s).</p></li>
+<li><p><strong>geometry</strong> (<em>str</em>) – The target resource’s geometry</p></li>
+<li><p><strong>block</strong> (<em>str</em>) – The target resource’s block (generally the name of the producing unit task)</p></li>
+<li><p><strong>member</strong> (<em>str</em><em> of </em><em>FPList</em>) – The target resource’s member (int) or list of members (format ‘first-last-step’)</p></li>
+<li><p><strong>datebegin</strong> (<em>str</em><em> or </em><em>Date</em>) – The begin date of the resources to extract in case they cover a period</p></li>
+<li><p><strong>dateend</strong> (<em>str</em><em> or </em><em>Date</em>) – The end date of the resources to extract in case they cover a period</p></li>
+<li><p><strong>duration</strong> (<em>str</em>) – The length of the period covered by individual files (‘yearly’, ‘monthly’ ar ‘full’)</p></li>
+<li><p><strong>datevalidity</strong> (<em>str</em><em> or </em><em>Date</em>) – The validity date of the resourcesto extract in case they do not cover a period</p></li>
+</ul>
+</dd>
+</dl>
+<p>The following additional keyword arguments can also be provided :</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>checkonly</strong> (<em>bool</em>) – Disable actual data fetch in a dev or test context</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Overwrite the default vortex verbosity</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.xarray_snowtools.preprocess">
+<span class="sig-prename descclassname"><span class="pre">utils.xarray_snowtools.</span></span><span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transpose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/snowtools/utils/xarray_snowtools_preprocess.html#preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools.preprocess" title="Link to this definition">¶</a></dt>
+<dd><p>This is the main method to call when opening a SURFEX IO NetCDF file.</p>
+<p>It deals with the following actions :</p>
+<ol class="arabic simple">
+<li><p>Update variable and dimension names to ensure that standard names can be used in the following processes</p></li>
+<li><p>Ensure that ‘missing_value’ and “_FillValue” attributes do not differ to avoid crashing when trying to write data</p></li>
+<li><p>Decode time dimension properly if necessary (i.e ensure that the associated coordinates are datetime objects)</p></li>
+</ol>
+<p>Direct usage example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocess</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT.nc'</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xarray Dataset</em><em> or </em><em>Dataarray</em>) – xarray object to preprocess</p></li>
+<li><p><strong>mapping</strong> (<em>dict</em>) – User-defined dictionnary to map variable or dimension names (it will be used as a complement to
+the default mapping dictionnaries).</p></li>
+<li><p><strong>decode_time</strong> (<em>bool</em>) – Manually decode the time variable when xarray fails to do it properly (SURFEX outputs)</p></li>
+<li><p><strong>transpose</strong> (<em>bool</em>) – Put time dimension as first dimension in case of data processing through numpy arrays</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="opening-a-netcdf-file-with-xarray">
 <span id="module-utils.xarray_snowtools_backend"></span><h2>Opening a netCDF file with xarray<a class="headerlink" href="#opening-a-netcdf-file-with-xarray" title="Link to this heading">¶</a></h2>
 <p>The xarray_snowtools_backend module contains all elements defining the xarray entry points for SURFEX Input / Outputs
@@ -89,23 +233,23 @@ This is done by calling the xarray native “transpose” method.</p></li>
 </div></blockquote>
 <p>To use these entry points, the native xarray methods <cite>open_dataset</cite>, <cite>open_dataarray</cite> and <cite>open_mfdataset</cite> should
 simply be called with the keyword argument “engine=’snowtools’” except if you have an older xarray version (see below).</p>
-<section id="meteo-france-usage-until-next-xarray-update-from-version-0-16-0">
-<h3>Meteo-France usage (until next xarray update from version 0.16.0)<a class="headerlink" href="#meteo-france-usage-until-next-xarray-update-from-version-0-16-0" title="Link to this heading">¶</a></h3>
+<section id="usage-with-xarray-0-18">
+<h3>Usage with xarray &lt; 0.18<a class="headerlink" href="#usage-with-xarray-0-18" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT.nc'</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="usage-with-xarray-0-18">
-<h3>Usage with xarray &gt; 0.18<a class="headerlink" href="#usage-with-xarray-0-18" title="Link to this heading">¶</a></h3>
+<section id="id1">
+<h3>Usage with xarray &gt;= 0.18<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">list_of_files</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">list_of_files</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -136,7 +280,7 @@ data before returning the xarray dataset or dataarray object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>External documentation :</p>
@@ -158,7 +302,7 @@ WARNING : the direct use of <em>open_mfdataset</em> is recomended whenever you a
 than one file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename_or_obj</strong> (<em>str</em><em>, </em><em>Path</em><em>, </em><em>file_like</em><em>, </em><em>DataStore</em><em> or </em><em>nested sequence</em><em> of </em><em>paths</em>) – Pathi or list of paths of the file(s) to read</p>
+<dd class="field-odd"><p><strong>filename_or_obj</strong> (<em>str</em><em>, </em><em>Path</em><em>, </em><em>file_like</em><em>, </em><em>DataStore</em><em> or </em><em>nested sequence</em><em> of </em><em>paths</em>) – Path or list of paths of the file(s) to read</p>
 </dd>
 <dt class="field-even">Mapping<span class="colon">:</span></dt>
 <dd class="field-even"><p>User-defined dictionnary to map variable or dimension names. It can be used as a complement to
@@ -184,7 +328,7 @@ centralise required adaptations).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic simple">
@@ -197,7 +341,7 @@ elevation, slope and aspect</p></li>
 <ol class="arabic simple" start="2">
 <li><p>Project gridded data from Lambert-93 to lat/lon :</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">crs_in</span><span class="o">=</span><span class="s2">&quot;EPSG:2154&quot;</span><span class="p">,</span> <span class="n">crs_out</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">crs_in</span><span class="o">=</span><span class="s2">"EPSG:2154"</span><span class="p">,</span> <span class="n">crs_out</span><span class="o">=</span><span class="s2">"EPSG:4326"</span><span class="p">)</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
@@ -218,9 +362,9 @@ elevation, slope and aspect</p></li>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_2010080106_2011080106.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'PRO_2010080106_2011080106.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">dszs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2400</span><span class="p">)</span>
-<span class="n">meanmonthgroup</span> <span class="o">=</span> <span class="n">dszs</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;time.month&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># mean the variables on a monthly base</span>
+<span class="n">meanmonthgroup</span> <span class="o">=</span> <span class="n">dszs</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"time.month"</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># mean the variables on a monthly base</span>
 <span class="n">meanmonthgroup</span><span class="o">.</span><span class="n">TG1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="c1"># choose one variable to plot</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -230,9 +374,9 @@ elevation, slope and aspect</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_2010080106_2011080106.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'PRO_2010080106_2011080106.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">dszs</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2400</span><span class="p">)</span>
-<span class="n">dszs</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;12h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># time resampling to 12h timestep</span>
+<span class="n">dszs</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">'12h'</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1"># time resampling to 12h timestep</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="7">
@@ -242,7 +386,7 @@ elevation, slope and aspect</p></li>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds_hourly</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;FORCING_test_2d.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds_hourly</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING_test_2d.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">ds_daily</span> <span class="o">=</span> <span class="n">ds_hourly</span><span class="o">.</span><span class="n">Rainf</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">daily_accumulation</span><span class="p">(</span><span class="n">start_hour</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -296,8 +440,8 @@ This method implies a dependency to rioxarray.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span> <span class="s2">&quot;EPSG:2154&quot;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="s2">"EPSG:4326"</span><span class="p">,</span> <span class="s2">"EPSG:2154"</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -320,8 +464,8 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;liste_stations.txt&#39;</span><span class="p">)</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT_2D.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'liste_stations.txt'</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT_2D.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">distributed</span><span class="o">.</span><span class="n">sel_stations</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">lons</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">lats</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">station_numbers</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">num_poste</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -356,7 +500,7 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;FORCING.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'FORCING.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">meteo</span><span class="o">.</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -371,7 +515,7 @@ the ‘method’ arguments, equivalent to the one in the xarray native ‘sel’
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;INPUT.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'INPUT.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">semidistributed</span><span class="o">.</span><span class="n">sel_points</span><span class="p">(</span><span class="n">massif_num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ZS</span><span class="o">=</span><span class="p">[</span><span class="mi">900</span><span class="p">,</span> <span class="mi">1800</span><span class="p">,</span> <span class="mi">2700</span><span class="p">,</span> <span class="mi">3600</span><span class="p">],</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -387,13 +531,13 @@ native xarray “where” method directly.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>massif_num</strong> – Massif number(s) of points to select</p></li>
-<li><p><strong>massif_num</strong> – list, range or int</p></li>
+<li><p><strong>massif_num</strong> – list, range, int or float</p></li>
 <li><p><strong>ZS</strong> – Elevation(s) of points to select</p></li>
-<li><p><strong>ZS</strong> – list, range or int</p></li>
+<li><p><strong>ZS</strong> – list, range, int or float</p></li>
 <li><p><strong>slope</strong> – Slope(s) of points to select</p></li>
-<li><p><strong>slope</strong> – list, range or int</p></li>
+<li><p><strong>slope</strong> – list, range, int or float</p></li>
 <li><p><strong>aspect</strong> – Aspects(s) of points to select</p></li>
-<li><p><strong>aspect</strong> – list, range or int</p></li>
+<li><p><strong>aspect</strong> – list, range, int or float</p></li>
 </ul>
 </dd>
 </dl>
@@ -414,7 +558,7 @@ Initial variable / dimension names come from the ‘original_name’ attribute c
 <p>Usage example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;old_PRO_20180807032000_002400.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'old_PRO_20180807032000_002400.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">original</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">backtrack_preprocess</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -447,11 +591,11 @@ so that the new index ‘YYYY-MM-DD O6’ contains the sum of all indices betwee
 ‘YYYY-MM-{DD-1} 07’ and ‘YYYY-MM-DD 06’ (corresponding to precipitation accumulations between
 ‘YYYY-MM-{DD-1} 06’ and ‘YYYY-MM-DD 06’)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tmp</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">daily_accumulation</span><span class="p">()</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;2021-12-05 06&#39;</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">'2021-12-05 06'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>is equivalent to :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="s1">&#39;2021-12-04 07&#39;</span><span class="p">,</span> <span class="s1">&#39;2021-12-05 06&#39;</span><span class="p">)})</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="s1">'time'</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="s1">'2021-12-04 07'</span><span class="p">,</span> <span class="s1">'2021-12-05 06'</span><span class="p">)})</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="s1">'time'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -477,15 +621,15 @@ documentation for more information.</p>
 <p>Usage example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="n">ds</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO_WJF_2010-2016.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'PRO_WJF_2010-2016.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
 <span class="n">stats</span><span class="o">=</span><span class="n">ds</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">snow_cover_stats</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>snow_depth_variable</strong> – Name of the variable containing the snow depth (default value for SURFEX outpus)</p></li>
-<li><p><strong>threshold</strong> – Snow depth threshold to consider a given point / day as “snow covered”</p></li>
+<li><p><strong>snow_depth_variable</strong> (<em>str</em>) – Name of the variable containing the snow depth (default value for SURFEX outpus)</p></li>
+<li><p><strong>snow_depth_threshold</strong> (<em>float</em>) – Snow depth threshold to consider a given point / day as “snow covered”</p></li>
 </ul>
 </dd>
 </dl>
@@ -514,8 +658,8 @@ documentation for more information.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;PRO.nc&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;snowtools&#39;</span><span class="p">)</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">surfex</span><span class="o">.</span><span class="n">decode_time_variable</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">'PRO.nc'</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">surfex</span><span class="o">.</span><span class="n">decode_time_variable</span><span class="p">(</span><span class="s1">'time'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -540,6 +684,13 @@ documentation for more information.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.xarray_snowtools_accessor.SurfexAccessor.massif_natural_risk">
+<span class="sig-name descname"><span class="pre">massif_natural_risk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/xarray_snowtools_accessor.html#SurfexAccessor.massif_natural_risk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.xarray_snowtools_accessor.SurfexAccessor.massif_natural_risk" title="Link to this definition">¶</a></dt>
+<dd><p>Add massif-scale natural risk index in S2M simulations.
+This method can only be applyied to PRO files with 40° slopes and elevations between 1500m and 3000m.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -556,7 +707,7 @@ documentation for more information.</p>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 <span class="n">htn</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">DSN_T_ISBA</span>
 <span class="n">subdata</span> <span class="o">=</span> <span class="n">htn</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="n">lat</span><span class="p">)</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">subdata</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">subdata</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">'time'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>instead of :</p>
@@ -566,7 +717,7 @@ documentation for more information.</p>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_snowtools</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 <span class="n">htn</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">DSN_T_ISBA</span>
-<span class="n">maxhtn</span> <span class="o">=</span> <span class="n">hnt</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+<span class="n">maxhtn</span> <span class="o">=</span> <span class="n">hnt</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="s1">'time'</span><span class="p">)</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">maxhtn</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="n">lon</span><span class="p">,</span> <span class="n">yy</span><span class="o">=</span><span class="n">lat</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -587,9 +738,11 @@ documentation for more information.</p>
     <h3><a href="../index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">Xarray with snowtools</a><ul>
+<li><a class="reference internal" href="#utils.xarray_snowtools.open_vortex_data"><code class="docutils literal notranslate"><span class="pre">open_vortex_data()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools.preprocess"><code class="docutils literal notranslate"><span class="pre">preprocess()</span></code></a></li>
 <li><a class="reference internal" href="#opening-a-netcdf-file-with-xarray">Opening a netCDF file with xarray</a><ul>
-<li><a class="reference internal" href="#meteo-france-usage-until-next-xarray-update-from-version-0-16-0">Meteo-France usage (until next xarray update from version 0.16.0)</a></li>
-<li><a class="reference internal" href="#usage-with-xarray-0-18">Usage with xarray &gt; 0.18</a></li>
+<li><a class="reference internal" href="#usage-with-xarray-0-18">Usage with xarray &lt; 0.18</a></li>
+<li><a class="reference internal" href="#id1">Usage with xarray &gt;= 0.18</a></li>
 <li><a class="reference internal" href="#use-with-statements">Use with statements!</a></li>
 </ul>
 </li>
@@ -624,6 +777,7 @@ documentation for more information.</p>
 <li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor</span></code></a><ul>
 <li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor.decode_time_variable"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor.decode_time_variable()</span></code></a></li>
 <li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor.drop_tile_dimension"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor.drop_tile_dimension()</span></code></a></li>
+<li><a class="reference internal" href="#utils.xarray_snowtools_accessor.SurfexAccessor.massif_natural_risk"><code class="docutils literal notranslate"><span class="pre">SurfexAccessor.massif_natural_risk()</span></code></a></li>
 </ul>
 </li>
 </ul>

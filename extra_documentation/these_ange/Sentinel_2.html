@@ -8,6 +8,7 @@
     <title>Theia Snow observations &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -59,11 +60,11 @@
 <p>Unzip archives and create folder achitecture:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">..</span>
 <span class="n">mkdir</span> <span class="n">unzip</span>
-<span class="n">unzip</span> <span class="s1">&#39;zip/*.zip&#39;</span> <span class="o">-</span><span class="n">d</span> <span class="n">unzip</span>
+<span class="n">unzip</span> <span class="s1">'zip/*.zip'</span> <span class="o">-</span><span class="n">d</span> <span class="n">unzip</span>
 <span class="n">mkdir</span> <span class="n">SCD</span> <span class="n">SOD</span> <span class="n">SMD</span>
-<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">&#39;*SOD_R2.tif&#39;</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span> <span class="n">SOD</span><span class="o">/</span> \<span class="p">;</span>
-<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">&#39;*SMD_R2.tif&#39;</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span> <span class="n">SMD</span><span class="o">/</span> \<span class="p">;</span>
-<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">&#39;*SCD_R2.tif&#39;</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span> <span class="n">SCD</span><span class="o">/</span> \<span class="p">;</span>
+<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">'*SOD_R2.tif'</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">"</span> <span class="n">SOD</span><span class="o">/</span> \<span class="p">;</span>
+<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">'*SMD_R2.tif'</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">"</span> <span class="n">SMD</span><span class="o">/</span> \<span class="p">;</span>
+<span class="n">find</span> <span class="n">unzip</span><span class="o">/</span> <span class="o">-</span><span class="n">name</span> <span class="s1">'*SCD_R2.tif'</span> <span class="o">-</span><span class="n">exec</span> <span class="n">cp</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">"</span> <span class="n">SCD</span><span class="o">/</span> \<span class="p">;</span>
 </pre></div>
 </div>
 <p>We merge the tiles using <a class="reference external" href="https://gdal.org/programs/gdalwarp.html">gdalwarp</a> bash function from GDAL:</p>

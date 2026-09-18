@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.data.consts &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.consts</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.data.consts</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">consts.py</span>
+<span class="sd">---------</span>
+
+<span class="sd">Specific CEN "genv" resources.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.data.consts</span>
+<span class="sd">   :top-classes: vortex.nwp.data.consts.GenvModelGeoResource, vortex.nwp.data.consts.GenvModelResource</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 4</span>
+
+<span class="sd">.. autoclass:: SAFRANList</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Params</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: climTG</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: GridTarget</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Prosnow_SetUp_Global</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Prosnow_SetUp_Resort</span>
+<span class="sd">   :show-inheritance:</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.nwp.data.consts</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenvModelGeoResource</span><span class="p">,</span> <span class="n">GenvModelResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.nwp.syntax.stdattrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">gdomain</span>
+
+<span class="c1">#: No automatic export</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SAFRANList">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.SAFRANList">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SAFRANList</span><span class="p">(</span><span class="n">GenvModelGeoResource</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">gdomain</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Config file used by the SAFRAN model.'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'listem'</span><span class="p">,</span> <span class="s1">'lystem'</span><span class="p">,</span> <span class="s1">'listeo'</span><span class="p">,</span> <span class="s1">'lysteo'</span><span class="p">,</span> <span class="s1">'listeml'</span><span class="p">,</span> <span class="s1">'lysteml'</span><span class="p">,</span>
+                              <span class="s1">'carpost'</span><span class="p">,</span> <span class="s1">'rsclim'</span><span class="p">,</span> <span class="s1">'icrccm'</span><span class="p">,</span> <span class="s1">'NORELot'</span><span class="p">,</span> <span class="s1">'NORELmt'</span><span class="p">,</span> <span class="s1">'blacklist'</span><span class="p">,</span>
+                              <span class="s1">'metadata'</span><span class="p">,</span> <span class="s1">'NORELo'</span><span class="p">,</span> <span class="s1">'NORELm'</span><span class="p">,</span> <span class="s1">'shapefile'</span><span class="p">],</span>
+                <span class="p">),</span>
+                <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'ascii'</span><span class="p">,</span> <span class="s1">'shp'</span><span class="p">],</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'ascii'</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]_[gdomain]'</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'safran_namelist'</span></div>
+
+
+
+<div class="viewcode-block" id="Params">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.Params">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Params</span><span class="p">(</span><span class="n">GenvModelGeoResource</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'ssa_params'</span><span class="p">,</span> <span class="s1">'surfz'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'netcdf'</span><span class="p">,</span> <span class="s1">'nc'</span><span class="p">,</span> <span class="s1">'ascii'</span><span class="p">],</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+                <span class="n">remap</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nc</span><span class="o">=</span><span class="s1">'netcdf'</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]'</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span></div>
+
+
+
+<div class="viewcode-block" id="climTG">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.climTG">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">climTG</span><span class="p">(</span><span class="n">GenvModelGeoResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Ground temperature climatological resource.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"climTG"</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'netcdf'</span><span class="p">,</span> <span class="s1">'nc'</span><span class="p">],</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+                <span class="n">remap</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nc</span><span class="o">=</span><span class="s1">'netcdf'</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]'</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">_extension_remap</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">netcdf</span><span class="o">=</span><span class="s1">'nc'</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'init_TG'</span></div>
+
+
+<span class="c1">#    def namebuilding_info(self):</span>
+<span class="c1">#</span>
+<span class="c1">#        nbi = super().namebuilding_info()</span>
+<span class="c1">#        nbi.update(</span>
+<span class="c1">#            # will work only with the @cen namebuilder:</span>
+<span class="c1">#            cen_rawbasename=(self.realkind + "." + self._extension_remap.get(self.nativefmt, self.nativefmt)),</span>
+<span class="c1">#            # With the standard provider, the usual keys will be used.</span>
+<span class="c1">#        )</span>
+<span class="c1">#        return nbi</span>
+
+
+<div class="viewcode-block" id="GridTarget">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.GridTarget">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GridTarget</span><span class="p">(</span><span class="n">GenvModelGeoResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Resource describing a grid for interpolation of data based on massifs geometry</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">gdomain</span><span class="p">,</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"interpolgrid"</span><span class="p">,</span> <span class="s1">'relief'</span><span class="p">,</span> <span class="s1">'surfhydro'</span><span class="p">],</span>
+                <span class="p">),</span>
+                <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'netcdf'</span><span class="p">,</span> <span class="s1">'nc'</span><span class="p">,</span> <span class="s1">'grib'</span><span class="p">],</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'netcdf'</span><span class="p">,</span>
+                    <span class="n">remap</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nc</span><span class="o">=</span><span class="s1">'netcdf'</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]_[gdomain]'</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span> <span class="o">=</span> <span class="s1">'surfex'</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Prosnow_SetUp_Global">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.Prosnow_SetUp_Global">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Prosnow_SetUp_Global</span><span class="p">(</span><span class="n">GenvModelResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Prosnow general setup file.</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'prep_fillup_5'</span><span class="p">,</span> <span class="s1">'prep_fillup_50'</span><span class="p">,</span> <span class="s1">'list_updated_variables'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'ascii'</span><span class="p">,</span> <span class="s1">'netcdf'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]'</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span></div>
+
+
+
+<div class="viewcode-block" id="Prosnow_SetUp_Resort">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.consts.Prosnow_SetUp_Resort">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Prosnow_SetUp_Resort</span><span class="p">(</span><span class="n">GenvModelResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Prosnow ski-resort setup file.</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'sru'</span><span class="p">,</span> <span class="s1">'sru_flat'</span><span class="p">,</span> <span class="s1">'pgd_spinup'</span><span class="p">,</span> <span class="s1">'prep_spinup'</span><span class="p">,</span> <span class="s1">'water'</span><span class="p">,</span> <span class="s1">'snow_nogro'</span><span class="p">,</span> <span class="s1">'snow_nosm'</span><span class="p">,</span>
+                          <span class="s1">'snow_noobs'</span><span class="p">,</span> <span class="s1">'obs_empty'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">nativefmt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'ascii'</span><span class="p">,</span> <span class="s1">'netcdf'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">resort</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>    <span class="o">=</span> <span class="s2">"The ski resort name."</span><span class="p">,</span>
+                <span class="n">values</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">'saisies'</span><span class="p">,</span> <span class="s1">'plagne'</span><span class="p">,</span> <span class="s1">'soldeu'</span><span class="p">,</span> <span class="s1">'peyra'</span><span class="p">,</span> <span class="s1">'saetde'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">gvar</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'[kind]_[resort]'</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EmosCoeffs</span><span class="p">(</span><span class="n">GenvModelResource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Class of a .csv file of emos coefficients. A Genvkey can be given.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span><span class="o">=</span><span class="s2">"Set of EMOS  coefficients"</span><span class="p">,</span>
+        <span class="n">attr</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s2">"emos_pars"</span><span class="p">,</span> <span class="s2">"emos_pars_clim"</span><span class="p">]),</span>
+            <span class="n">nativefmt</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">'ascii'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.data.consts</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

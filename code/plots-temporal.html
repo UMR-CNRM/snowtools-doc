@@ -8,6 +8,7 @@
     <title>Temporal plots &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -150,14 +151,14 @@ Similar to temporalplotObsSim but UGLIER</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.temporal.chrono</span><span class="w"> </span><span class="kn">import</span> <span class="n">temporalplotObsSim</span>
 <span class="c1"># read data</span>
-<span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
-    <span class="n">sd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">)</span>
-    <span class="n">sd2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">'/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'DSN_T_ISBA'</span><span class="p">)</span>
+    <span class="n">sd2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">temporalplotObsSim</span><span class="p">()</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span><span class="n">time</span><span class="p">,</span><span class="n">sd</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;prout&#39;</span><span class="p">)</span> <span class="c1"># comparaison of sd with sd during the same time</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span><span class="n">time</span><span class="p">,</span><span class="n">sd</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">'prout'</span><span class="p">)</span> <span class="c1"># comparaison of sd with sd during the same time</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># pour gérer les dates correctement</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;EX-temporalplotObsSim.png&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'EX-temporalplotObsSim.png'</span><span class="p">)</span>
 </pre></div>
 </div>
 <figure class="align-center">
@@ -197,14 +198,14 @@ Similar to temporalplotObsSim but UGLIER</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.temporal.chrono</span><span class="w"> </span><span class="kn">import</span> <span class="n">temporalplotSim</span>
 
 <span class="c1"># read data</span>
-<span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
-    <span class="n">sd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">)</span>
-    <span class="n">sd2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">prosimu</span><span class="p">(</span><span class="s1">'/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_LaPlagne_2000-2001.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'DSN_T_ISBA'</span><span class="p">)</span>
+    <span class="n">sd2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">temporalplotSim</span><span class="p">()</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;prout&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sd</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">'prout'</span><span class="p">)</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="c1"># pour gérer les dates correctement</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;EX-temporalplotSim.png&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">'EX-temporalplotSim.png'</span><span class="p">)</span>
 </pre></div>
 </div>
 <figure class="align-center">

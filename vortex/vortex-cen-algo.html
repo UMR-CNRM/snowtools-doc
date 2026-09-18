@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Algo Components / computational tasks &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Vortex-cen scripts" href="vortex-cen-scripts.html" />
+    <link rel="prev" title="Vortex-cen HPC unit tasks" href="vortex-cen-tasks.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-scripts.html" title="Vortex-cen scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-tasks.html" title="Vortex-cen HPC unit tasks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="vortex-cen-index.html" accesskey="U">The vortex-cen plugin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Algo Components / computational tasks</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-vortex_cen.algo">
+<span id="algo-components-computational-tasks"></span><h1>Algo Components / computational tasks<a class="headerlink" href="#module-vortex_cen.algo" title="Link to this heading">¶</a></h1>
+<p>Specific CEN AlgoComponents.</p>
+<section id="components-py">
+<span id="module-vortex_cen.algo.components"></span><h2>components.py<a class="headerlink" href="#components-py" title="Link to this heading">¶</a></h2>
+<p>Abstract algo components classes for multiprocessing simulations with an external parallelisation (i.e not MPI).
+The parallelization is typically over the simulation members or independent sub-periods.
+All processes share the same executable (if any) but at least partially different IO environments or
+script arguments.</p>
+<p>These algo components rely on the <cite>taylorism</cite> package. The main process (the <cite>Boss</cite>) acts as a task scheduler to
+to allocate tasks to a set of independent processes (the <cite>Workers</cite>) working simultaneously.</p>
+<p>Two abstract “Boss” classes are defined here are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#vortex_cen.algo.components._CenParaBlindRun" title="vortex_cen.algo.components._CenParaBlindRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenParaBlindRun</span></code></a>: to launch an executable multiple times in parallel</p></li>
+<li><p><a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a>: to launch a piece of Python code in parallel on several processes</p></li>
+</ul>
+</div></blockquote>
+<p>A third abstract “Boss” class is available in the main vortex-nwp package:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ParaExpresso</span></code>: to launch a script multiple times in parallel</p></li>
+</ul>
+</div></blockquote>
+<p>These abstract classes provide high-level tools such as the identification of the list of workers through
+the list of sub-directories (via the “role” of the main input resource varying from one simulation to another).</p>
+<p>Each “Boss” is associated to a “Worker”, providing the instructions for each individual task / process.
+Each “Worker” works in its specific sub-directory, which must be filled with the appropriate IOs (when fetching the
+inputs at the “Task” level).
+Some IOs can be shared by several or all workers. These IOs must be stored in the main working directory, and a link
+to these files can be created in the Worker’s working directory by the Worker itself.</p>
+<p>Two abstract “Worker” classes are defined here are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#vortex_cen.algo.components._CenWorkerBlindRun" title="vortex_cen.algo.components._CenWorkerBlindRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenWorkerBlindRun</span></code></a>: launch an executable without MPI parallelization</p></li>
+<li><p><a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a>: launch a piece of Python code</p></li>
+</ul>
+</div></blockquote>
+<p>A third abstract “Worker” class is available in the main vortex-nwp package:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">VortexWorkerBlindRun</span></code>: to launch a script multiple times in parallel</p></li>
+</ul>
+</div></blockquote>
+<p>Here is the full inheritance diagram of the available meta classes :</p>
+<div class="graphviz"><img src="../_images/inheritance-ec61fc9fc34f4db69ea361dd923c4354e4e1ecc2.png" alt="Inheritance diagram of vortex_cen.algo.components" usemap="#inheritance1d5e0d0472" class="inheritance graphviz" /></div>
+<map id="inheritance1d5e0d0472" name="inheritance1d5e0d0472">
+<area shape="rect" id="node9" href="#vortex_cen.algo.components._CenParaBlindRun" target="_top" title="This abstract algo component defines common methods for simulations based on an executable without" alt="" coords="640,4,756,25"/>
+<area shape="rect" id="node10" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="470,45,568,66"/>
+<area shape="rect" id="node11" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="444,127,593,148"/>
+<area shape="rect" id="node12" href="#vortex_cen.algo.components._CenWorkerBlindRun" target="_top" title="This abstract worker is designed to drive the launch of any script or executable" alt="" coords="633,127,764,148"/>
+<area shape="rect" id="node8" href="#vortex_cen.algo.components._CenMixIn" target="_top" title="_CenMixIn" alt="" coords="306,148,381,169"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.components._CenParaBlindRun">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.components.</span></span><span class="sig-name descname"><span class="pre">_CenParaBlindRun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/components.html#_CenParaBlindRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.components._CenParaBlindRun" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ParaBlindRun</span></code></p>
+<p>This abstract algo component defines common methods for simulations based on an executable without
+MPI parallelization.
+The parallelization is typically over the simulation members or independent sub-periods, and all processes
+share the same executable but different IO environments.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.components._CenTaylorRun">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.components.</span></span><span class="sig-name descname"><span class="pre">_CenTaylorRun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/components.html#_CenTaylorRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.components._CenTaylorRun" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorRun</span></code></p>
+<p>TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch
+a piece of python code.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.components._CenMixIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.components.</span></span><span class="sig-name descname"><span class="pre">_CenMixIn</span></span><a class="reference internal" href="../_modules/vortex_cen/algo/components.html#_CenMixIn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.components._CenMixIn" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.components._CenWorkerBlindRun">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.components.</span></span><span class="sig-name descname"><span class="pre">_CenWorkerBlindRun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/components.html#_CenWorkerBlindRun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.components._CenWorkerBlindRun" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenMixIn" title="vortex_cen.algo.components._CenMixIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenMixIn</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">VortexWorkerBlindRun</span></code></p>
+<p>This abstract worker is designed to drive the launch of any script or executable
+without MPI parallelization (deterministic or ensemble-like simulations) in
+association with an Algo Component inheriting from an <a class="reference internal" href="#vortex_cen.algo.components._CenParaBlindRun" title="vortex_cen.algo.components._CenParaBlindRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenParaBlindRun</span></code></a>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">ParaExpresso</span></code> Algo Component.</p>
+<p>A single worker is thus a deterministic execution of a given binary or script with a
+specific IO environment and/or a specific set of argument.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.components._CenTaylorVortexWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.components.</span></span><span class="sig-name descname"><span class="pre">_CenTaylorVortexWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/components.html#_CenTaylorVortexWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenMixIn" title="vortex_cen.algo.components._CenMixIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenMixIn</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorVortexWorker</span></code></p>
+<p>This abstract worker is designed to drive the launch a python program.
+The parallelisation is typically over the simulation members or
+independent sub-periods.</p>
+<p>A single worker is thus a deterministic execution of a list of python commands in a
+specific environment that can be run in parallel with other workers.</p>
+</dd></dl>
+
+</section>
+<section id="forcing-py">
+<span id="module-vortex_cen.algo.forcing"></span><h2>forcing.py<a class="headerlink" href="#forcing-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for the generation or the modification of FORCING files.</p>
+<div class="graphviz"><img src="../_images/inheritance-41f3574acf8f90c75bfc63ba90769d37fb78d5dd.png" alt="Inheritance diagram of vortex_cen.algo.forcing" usemap="#inheritancea10b98bcfb" class="inheritance graphviz" /></div>
+<map id="inheritancea10b98bcfb" name="inheritancea10b98bcfb">
+<area shape="rect" id="node1" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="36,129,239,155"/>
+<area shape="rect" id="node3" href="#vortex_cen.algo.forcing.ConcatForcings" target="_top" title="Concatenation of a set of FORCING files into a single forcing." alt="" coords="339,104,510,129"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.forcing.ExtractMassifs" target="_top" title="Algo component to extract a list of points from a set of S2M FORCING files in the &quot;massif&quot; geometry." alt="" coords="341,153,508,179"/>
+<area shape="rect" id="node2" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="5,31,269,56"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.forcing.ConcatForcingsWorker" target="_top" title="Concatenation of a set of FORCING files into a single forcing." alt="" coords="317,5,532,31"/>
+<area shape="rect" id="node6" href="#vortex_cen.algo.forcing.ExtractMassifsWorker" target="_top" title="Worker to extract a list of points from a given S2M FORCING file in the &quot;massif&quot; geometry." alt="" coords="319,55,531,80"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.forcing.ExtractMassifs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.forcing.</span></span><span class="sig-name descname"><span class="pre">ExtractMassifs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/forcing.html#ExtractMassifs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.forcing.ExtractMassifs" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Algo component to extract a list of points from a set of S2M FORCING files in the “massif” geometry.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.forcing.ExtractMassifsWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.forcing.</span></span><span class="sig-name descname"><span class="pre">ExtractMassifsWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/forcing.html#ExtractMassifsWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.forcing.ExtractMassifsWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Worker to extract a list of points from a given S2M FORCING file in the “massif” geometry.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.forcing.ConcatForcings">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.forcing.</span></span><span class="sig-name descname"><span class="pre">ConcatForcings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/forcing.html#ConcatForcings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.forcing.ConcatForcings" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Concatenation of a set of FORCING files into a single forcing.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.forcing.ConcatForcingsWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.forcing.</span></span><span class="sig-name descname"><span class="pre">ConcatForcingsWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/forcing.html#ConcatForcingsWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.forcing.ConcatForcingsWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Concatenation of a set of FORCING files into a single forcing.</p>
+</dd></dl>
+
+</section>
+<section id="ensemble-py">
+<span id="module-vortex_cen.algo.ensemble"></span><h2>ensemble.py<a class="headerlink" href="#ensemble-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for ensemble Surfex simulations.</p>
+<div class="graphviz"><img src="../_images/inheritance-6581438707757b4ebcfacf61afd52ff6c7d5a0fa.png" alt="Inheritance diagram of vortex_cen.algo.ensemble" usemap="#inheritance02d9dfb54f" class="inheritance graphviz" /></div>
+<map id="inheritance02d9dfb54f" name="inheritance02d9dfb54f">
+<area shape="rect" id="node4" href="#vortex_cen.algo.ensemble.PrepareForcingComponent" target="_top" title="AlgoComponent that prepares several forcing files in parallel (changes of geometry)." alt="" coords="190,217,344,237"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="28,217,122,237"/>
+<area shape="rect" id="node6" href="#vortex_cen.algo.ensemble.PrepareForcingWorker" target="_top" title="This algo component is designed to prepare a SURFEX Forcing file (change of geometry)." alt="" coords="202,179,331,199"/>
+<area shape="rect" id="node14" href="#vortex_cen.algo.ensemble.ShadowsForcingWorker" target="_top" title="It only applies shadows to a forcing file without any change of geometry" alt="" coords="406,179,542,199"/>
+<area shape="rect" id="node7" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="4,179,146,199"/>
+<area shape="rect" id="node8" href="#vortex_cen.algo.ensemble.S2MComponent" target="_top" title="This Algo Component is designed to manage any Surfex execution without MPI" alt="" coords="217,101,316,121"/>
+<area shape="rect" id="node12" href="#vortex_cen.algo.ensemble.S2MReanalysis" target="_top" title="AlgoComponent that runs several SAFRAN reanalyses in parallel." alt="" coords="426,62,522,82"/>
+<area shape="rect" id="node13" href="#vortex_cen.algo.ensemble.S2MReforecast" target="_top" title="AlgoComponent that runs several SAFRAN reforecasts in parallel." alt="" coords="427,101,521,121"/>
+<area shape="rect" id="node15" href="#vortex_cen.algo.ensemble.SurfexComponent" target="_top" title="AlgoComponent that runs several SURFEX executions in parallel." alt="" coords="419,140,528,160"/>
+<area shape="rect" id="node9" href="#vortex_cen.algo.components._CenParaBlindRun" target="_top" title="This abstract algo component defines common methods for simulations based on an executable without" alt="" coords="20,101,130,121"/>
+<area shape="rect" id="node16" href="#vortex_cen.algo.ensemble.SurfexComponentMultiDates" target="_top" title="AlgoComponent that runs several SURFEX in parallel (including several dates for reforecasts)." alt="" coords="598,140,764,160"/>
+<area shape="rect" id="node19" href="#vortex_cen.algo.ensemble.SurfexWorker" target="_top" title="This algo component is designed to run a SURFEX experiment without" alt="" coords="431,23,517,43"/>
+<area shape="rect" id="node18" href="#vortex_cen.algo.components._CenMixIn" target="_top" title="_CenMixIn" alt="" coords="39,43,111,63"/>
+<area shape="rect" id="node20" href="#vortex_cen.algo.components._CenWorkerBlindRun" target="_top" title="This abstract worker is designed to drive the launch of any script or executable" alt="" coords="205,4,329,24"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.S2MComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">S2MComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#S2MComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.S2MComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenParaBlindRun" title="vortex_cen.algo.components._CenParaBlindRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenParaBlindRun</span></code></a></p>
+<p>This Algo Component is designed to manage any Surfex execution without MPI
+parallelization (deterministic or ensemble-like simulations).</p>
+<p>Ensemble-like simulations include real ensemble simulations (many executions
+of the same simulation with different initial conditions or configurations)
+and multi-year simulations (associating each year to one member) that can run
+in parallel.</p>
+<p>The different members of an ensemble simulation are identified by an input
+resource that differ between the members (defined by the method
+<strong>role_ref_namebuilder</strong> that can be overloaded). For each identified
+member, a worker object (whose class inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">_CenWorkerBlindRun</span></code>)
+is generated and the different workers run in parallel.</p>
+<p>The <a class="reference internal" href="#vortex_cen.algo.ensemble.S2MComponent" title="vortex_cen.algo.ensemble.S2MComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">S2MComponent</span></code></a> class (that relies on the <code class="xref py py-mod docutils literal notranslate"><span class="pre">taylorism</span></code>
+package):</p>
+<ul class="simple">
+<li><p>allocates the different executions of the same binary to workers</p></li>
+<li><p>analyses their feedbacks to look for execution errors
+(thanks to the inherited <code class="xref py py-meth docutils literal notranslate"><span class="pre">_default_post_execute()</span></code>
+method): should the <cite>rc</cite> entry of the dictionary returned by the
+worker’s <code class="xref py py-meth docutils literal notranslate"><span class="pre">_CenWorkerBlindRun.vortex_task()</span></code> method be an Exception, it is
+captured and stored.</p></li>
+</ul>
+<p>When the execution of all members finishes, the captured exceptions (see
+above) are wrapped in a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedAlgoComponentError</span></code> exception that
+is ultimately raised.</p>
+<p>Consequently, we can rely on that to:</p>
+<ul class="simple">
+<li><p>filter/ignore some errors,</p></li>
+<li><p>send notifications…</p></li>
+</ul>
+<p>For CEN R&amp;D needs, this can be easily implemented in the Task classes
+provided they inherit from the  <code class="xref py py-class docutils literal notranslate"><span class="pre">vortex_cen.layout.nodes.CENTaskMixIn</span></code>
+mixin. For example:</p>
+<ul class="simple">
+<li><p>To filter execution errors, just define
+<code class="docutils literal notranslate"><span class="pre">filter_execution_error</span></code> in your Task class:
+<code class="docutils literal notranslate"><span class="pre">filter_execution_error</span> <span class="pre">=</span> <span class="pre">CENTaskMixIn.s2moper_filter_execution_error</span></code></p></li>
+<li><p>To send notification emails about fatal and non-fatal errors:
+<code class="docutils literal notranslate"><span class="pre">report_execution_warning</span> <span class="pre">=</span> <span class="pre">CENTaskMixIn.s2moper_report_execution_warning</span></code>
+and
+<code class="docutils literal notranslate"><span class="pre">report_execution_errors</span> <span class="pre">=</span> <span class="pre">CENTaskMixIn.s2moper_report_execution_errors</span></code></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.SurfexComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">SurfexComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#SurfexComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.SurfexComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.S2MComponent" title="vortex_cen.algo.ensemble.S2MComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">S2MComponent</span></code></a></p>
+<p>AlgoComponent that runs several SURFEX executions in parallel.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.SurfexComponentMultiDates">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">SurfexComponentMultiDates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#SurfexComponentMultiDates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.SurfexComponentMultiDates" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.SurfexComponent" title="vortex_cen.algo.ensemble.SurfexComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexComponent</span></code></a></p>
+<p>AlgoComponent that runs several SURFEX in parallel (including several dates for reforecasts).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.SurfexWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">SurfexWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#SurfexWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.SurfexWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenWorkerBlindRun" title="vortex_cen.algo.components._CenWorkerBlindRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenWorkerBlindRun</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexMixIn</span></code></p>
+<p>This algo component is designed to run a SURFEX experiment without
+MPI parallelization.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.PrepareForcingComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">PrepareForcingComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#PrepareForcingComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.PrepareForcingComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>AlgoComponent that prepares several forcing files in parallel (changes of geometry).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.PrepareForcingWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">PrepareForcingWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#PrepareForcingWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.PrepareForcingWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>This algo component is designed to prepare a SURFEX Forcing file (change of geometry).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.S2MReanalysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">S2MReanalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#S2MReanalysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.S2MReanalysis" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.S2MComponent" title="vortex_cen.algo.ensemble.S2MComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">S2MComponent</span></code></a></p>
+<p>AlgoComponent that runs several SAFRAN reanalyses in parallel.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.S2MReforecast">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">S2MReforecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#S2MReforecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.S2MReforecast" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.S2MComponent" title="vortex_cen.algo.ensemble.S2MComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">S2MComponent</span></code></a></p>
+<p>AlgoComponent that runs several SAFRAN reforecasts in parallel.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.ensemble.ShadowsForcingWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.ensemble.</span></span><span class="sig-name descname"><span class="pre">ShadowsForcingWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/ensemble.html#ShadowsForcingWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.ensemble.ShadowsForcingWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.PrepareForcingWorker" title="vortex_cen.algo.ensemble.PrepareForcingWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrepareForcingWorker</span></code></a></p>
+<p>It only applies shadows to a forcing file without any change of geometry
+(worker for 1 member).</p>
+</dd></dl>
+
+</section>
+<section id="deterministic-py">
+<span id="module-vortex_cen.algo.deterministic"></span><h2>deterministic.py<a class="headerlink" href="#deterministic-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for deterministic Surfex simulations.</p>
+<div class="graphviz"><img src="../_images/inheritance-8856ade13a1ba4d9232c5b9d9ce748d6c4b506dc.png" alt="Inheritance diagram of vortex_cen.algo.deterministic" usemap="#inheritance621041311f" class="inheritance graphviz" /></div>
+<map id="inheritance621041311f" name="inheritance621041311f">
+<area shape="rect" id="node8" href="#vortex_cen.algo.deterministic.Generate_Clim_TG" target="_top" title="Algocomponent that generates a file of initial temperature to initialize the soil" alt="" coords="206,85,369,97"/>
+<area shape="rect" id="node13" href="#vortex_cen.algo.deterministic.Surfex_PreProcess" target="_top" title="Algo component to apply the required preprocessing before a SURFEX run (e.g. namelists adjustements)" alt="" coords="206,108,369,120"/>
+<area shape="rect" id="node9" href="#vortex_cen.algo.deterministic.Interpol_Forcing" target="_top" title="This algo component is designed to interpolate SAFRAN forcings on regular grid" alt="" coords="595,3,750,15"/>
+<area shape="rect" id="node10" href="#vortex_cen.algo.deterministic.Pgd_Parallel_from_Forcing" target="_top" title="This algo component is designed to run PGD with MPI parallelization and using" alt="" coords="579,26,765,38"/>
+<area shape="rect" id="node12" href="#vortex_cen.algo.deterministic.Surfex_Parallel" target="_top" title="This algo component is designed to run SURFEX experiments over large domains" alt="" coords="596,73,748,85"/>
+<area shape="rect" id="node14" href="#vortex_cen.algo.deterministic.Surfex_Xios_Parallel" target="_top" title="This algo component is designed to run SURFEX experiments over large domains" alt="" coords="588,50,756,62"/>
+<area shape="rect" id="node7" href="#vortex_cen.algo.components._CenMixIn" target="_top" title="vortex_cen.algo.components._CenMixIn" alt="" coords="220,61,355,73"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Surfex_PreProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Surfex_PreProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Surfex_PreProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Surfex_PreProcess" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AlgoComponent</span></code></p>
+<p>Algo component to apply the required preprocessing before a SURFEX run (e.g. namelists adjustements)
+WARNING : this algo should now be used only in the operationnal S2M chain</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Generate_Clim_TG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Generate_Clim_TG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Generate_Clim_TG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Generate_Clim_TG" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AlgoComponent</span></code></p>
+<p>Algocomponent that generates a file of initial temperature to initialize the soil
+from surfex meteorological forcing files</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Pgd_Parallel_from_Forcing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Pgd_Parallel_from_Forcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Pgd_Parallel_from_Forcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Pgd_Parallel_from_Forcing" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexMixIn</span></code></p>
+<p>This algo component is designed to run PGD with MPI parallelization and using
+a FORCING.nc as input for topography.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Surfex_Parallel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Surfex_Parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Surfex_Parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Surfex_Parallel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DrHookDecoMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexMixIn</span></code></p>
+<p>This algo component is designed to run SURFEX experiments over large domains
+with MPI parallelization.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Surfex_Xios_Parallel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Surfex_Xios_Parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Surfex_Xios_Parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Surfex_Xios_Parallel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ParallelIoServerMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexMixIn</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DrHookDecoMixin</span></code></p>
+<p>This algo component is designed to run SURFEX experiments over large domains
+with MPI parallelization and IO server XIOS</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.deterministic.Interpol_Forcing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.deterministic.</span></span><span class="sig-name descname"><span class="pre">Interpol_Forcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/deterministic.html#Interpol_Forcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.deterministic.Interpol_Forcing" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code></p>
+<p>This algo component is designed to interpolate SAFRAN forcings on regular grid
+with MPI parallelization.</p>
+</dd></dl>
+
+</section>
+<section id="assim-py">
+<span id="module-vortex_cen.algo.assim"></span><h2>assim.py<a class="headerlink" href="#assim-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for the exectution of SODA-related tasks within a snow data assimilation workflow.</p>
+<div class="graphviz"><img src="../_images/inheritance-15f7cb72ce54dd8d86698527b79869993c98c564.png" alt="Inheritance diagram of vortex_cen.algo.assim" usemap="#inheritancefda9b6947c" class="inheritance graphviz" /></div>
+<map id="inheritancefda9b6947c" name="inheritancefda9b6947c">
+<area shape="rect" id="node10" href="#vortex_cen.algo.assim.SodaPreProcess" target="_top" title="Prepare SODA namelist according to configuration file" alt="" coords="266,264,391,289"/>
+<area shape="rect" id="node2" href="#vortex_cen.algo.assim.CrocOPostProcess" target="_top" title="Not documented yet." alt="" coords="259,153,398,179"/>
+<area shape="rect" id="node3" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="36,191,155,216"/>
+<area shape="rect" id="node7" href="#vortex_cen.algo.assim.PerturbForcingComponent" target="_top" title="Algo compent that creates an ensemble of forcing files by stochastic perturbations" alt="" coords="233,203,424,228"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.assim.CrocOPostProcessWorker" target="_top" title="Worker associated to the `SodaPostProcess` algo component." alt="" coords="237,55,421,80"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="5,80,185,105"/>
+<area shape="rect" id="node8" href="#vortex_cen.algo.assim.PerturbForcingWorker" target="_top" title="Worker that applies stochastic perturbations to a FORCING file." alt="" coords="248,104,409,129"/>
+<area shape="rect" id="node9" href="#vortex_cen.algo.assim.Soda" target="_top" title="worker for a SODA run (designed for Particle filtering for snow)" alt="" coords="293,5,365,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.Soda">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">Soda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#Soda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.Soda" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code></p>
+<p>worker for a SODA run (designed for Particle filtering for snow)
+&#64;author: B. Cluzet 2018-05-24</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.SodaPreProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">SodaPreProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#SodaPreProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.SodaPreProcess" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AlgoComponent</span></code></p>
+<p>Prepare SODA namelist according to configuration file
+WARNING : this algo should not be used anymore (the preprocessing of the namelist is now
+done in the Soda algo). It is here only for retro-compatibility.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.PerturbForcingComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">PerturbForcingComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#PerturbForcingComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.PerturbForcingComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Algo compent that creates an ensemble of forcing files by stochastic perturbations
+of a time series of deterministic input forcing files. Each worker deals with one single FORCING file
+as input (parallelisation over the different sub-periods) and one single FORCING file as output
+(parallelisation over the ensemble members).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.PerturbForcingWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">PerturbForcingWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#PerturbForcingWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.PerturbForcingWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Worker that applies stochastic perturbations to a FORCING file.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.CrocOPostProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">CrocOPostProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#CrocOPostProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.CrocOPostProcess" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.assim.CrocOPostProcessWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.assim.</span></span><span class="sig-name descname"><span class="pre">CrocOPostProcessWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/assim.html#CrocOPostProcessWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.assim.CrocOPostProcessWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Worker associated to the <cite>SodaPostProcess</cite> algo component.
+Each worker concatenate the different PRO files covering the subperiods between assimilation dates
+generated by the crocO task into a single PRO file covering the period <em>datebegin</em> –&gt; <em>dateend</em></p>
+</dd></dl>
+
+</section>
+<section id="scores-py">
+<span id="module-vortex_cen.algo.scores"></span><h2>scores.py<a class="headerlink" href="#scores-py" title="Link to this heading">¶</a></h2>
+<p>Algo components for ESCROC scores.</p>
+<div class="graphviz"><img src="../_images/inheritance-87810afb64131f856ca6b7d972c406a2db5cbcbb.png" alt="Inheritance diagram of vortex_cen.algo.scores" usemap="#inheritance41f34dc5ef" class="inheritance graphviz" /></div>
+<map id="inheritance41f34dc5ef" name="inheritance41f34dc5ef">
+<area shape="rect" id="node3" href="#vortex_cen.algo.scores.Escroc_Optim_Ensemble" target="_top" title="AlgoComponent that compute ESCROC scores for the full ensemble." alt="" coords="370,104,706,129"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.scores.Escroc_Score_Ensemble" target="_top" title="AlgoComponent that compute ESCROC scores for the full ensemble." alt="" coords="372,153,704,179"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.scores.Escroc_Score_Member" target="_top" title="AlgoComponent worker designed to run one member of SURFEX&#45;Crocus experiment" alt="" coords="377,5,699,31"/>
+<area shape="rect" id="node6" href="#vortex_cen.algo.scores.Escroc_Score_Subensemble" target="_top" title="AlgoComponent worker designed to compute ensemble scores for a given subensemble." alt="" coords="360,55,716,80"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.scores.Escroc_Score_Member">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.scores.</span></span><span class="sig-name descname"><span class="pre">Escroc_Score_Member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/scores.html#Escroc_Score_Member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.scores.Escroc_Score_Member" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorVortexWorker</span></code></p>
+<p>AlgoComponent worker designed to run one member of SURFEX-Crocus experiment
+without MPI parallelization.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.scores.Escroc_Score_Ensemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.scores.</span></span><span class="sig-name descname"><span class="pre">Escroc_Score_Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/scores.html#Escroc_Score_Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.scores.Escroc_Score_Ensemble" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorRun</span></code></p>
+<p>AlgoComponent that compute ESCROC scores for the full ensemble.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.scores.Escroc_Score_Subensemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.scores.</span></span><span class="sig-name descname"><span class="pre">Escroc_Score_Subensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/scores.html#Escroc_Score_Subensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.scores.Escroc_Score_Subensemble" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorVortexWorker</span></code></p>
+<p>AlgoComponent worker designed to compute ensemble scores for a given subensemble.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.scores.Escroc_Optim_Ensemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.scores.</span></span><span class="sig-name descname"><span class="pre">Escroc_Optim_Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/scores.html#Escroc_Optim_Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.scores.Escroc_Optim_Ensemble" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorRun</span></code></p>
+<p>AlgoComponent that compute ESCROC scores for the full ensemble.</p>
+</dd></dl>
+
+</section>
+<section id="postprocessing-py">
+<span id="module-vortex_cen.algo.postprocessing"></span><h2>postprocessing.py<a class="headerlink" href="#postprocessing-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for S2M post processing.</p>
+<div class="graphviz"><img src="../_images/inheritance-a6caeb05922d0bb33c3b2d35ae1a888a524bf23d.png" alt="Inheritance diagram of vortex_cen.algo.postprocessing" usemap="#inheritance9fa644d3e3" class="inheritance graphviz" /></div>
+<map id="inheritance9fa644d3e3" name="inheritance9fa644d3e3">
+<area shape="rect" id="node10" href="#vortex_cen.algo.postprocessing.S2m_ensemble_postprocessing" target="_top" title="S2M ensemble forecast postprocessing." alt="" coords="376,277,763,300"/>
+<area shape="rect" id="node8" href="#vortex_cen.algo.postprocessing.HydroComponent" target="_top" title="Algo that computes hydrological aggregated diagnostics after a surfex run for an ensemble" alt="" coords="416,234,723,256"/>
+<area shape="rect" id="node9" href="#vortex_cen.algo.postprocessing.HydroWorker" target="_top" title="Algo that computes hydrological aggregated diagnostics after a surfex run for 1 member" alt="" coords="430,190,710,212"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="32,125,307,147"/>
+<area shape="rect" id="node6" href="#vortex_cen.algo.postprocessing.ExtractDates" target="_top" title="Not documented yet." alt="" coords="430,92,710,114"/>
+<area shape="rect" id="node11" href="#vortex_cen.algo.postprocessing.SnowCoverDuration" target="_top" title="Not documented yet." alt="" coords="410,136,730,158"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="5,27,334,50"/>
+<area shape="rect" id="node7" href="#vortex_cen.algo.postprocessing.ExtractDatesWorker" target="_top" title="vortex_cen.algo.postprocessing.ExtractDatesWorker" alt="" coords="410,5,730,27"/>
+<area shape="rect" id="node12" href="#vortex_cen.algo.postprocessing.SnowCoverDurationWorker" target="_top" title="Worker associated to the `SnowCoverDuration` algo component and calling various" alt="" coords="390,48,750,71"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.S2m_ensemble_postprocessing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">S2m_ensemble_postprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#S2m_ensemble_postprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.S2m_ensemble_postprocessing" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AlgoComponent</span></code></p>
+<p>S2M ensemble forecast postprocessing.</p>
+<p>Current use : Get ensemble deciles of “fresh snow” (12-hourly and daily accumulation for the Bulletin 4 saisons)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.HydroWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">HydroWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#HydroWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.HydroWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorVortexWorker</span></code></p>
+<p>Algo that computes hydrological aggregated diagnostics after a surfex run for 1 member</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.HydroComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">HydroComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#HydroComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.HydroComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TaylorRun</span></code></p>
+<p>Algo that computes hydrological aggregated diagnostics after a surfex run for an ensemble</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.ExtractDates">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">ExtractDates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#ExtractDates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.ExtractDates" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.ExtractDatesWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">ExtractDatesWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#ExtractDatesWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.ExtractDatesWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.SnowCoverDuration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">SnowCoverDuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#SnowCoverDuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.SnowCoverDuration" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.postprocessing.SnowCoverDurationWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.postprocessing.</span></span><span class="sig-name descname"><span class="pre">SnowCoverDurationWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/postprocessing.html#SnowCoverDurationWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.postprocessing.SnowCoverDurationWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Worker associated to the <cite>SnowCoverDuration</cite> algo component and calling various
+snowtools methods to compute snow cover duration diagnostics of SURFEX-Crocus simulations :
+* SMOD (Snow Melt Out Date)
+* SCD (Snow Cover Duration)
+* SOD (Snow onset date)
+* SD (Total number of days with snow)</p>
+</dd></dl>
+
+</section>
+<section id="obs-py">
+<span id="module-vortex_cen.algo.obs"></span><h2>obs.py<a class="headerlink" href="#obs-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for the manipulation of any observation data.</p>
+<div class="graphviz"><img src="../_images/inheritance-5d60c30a0693dd3d2a1da307e770ca3a59bdfc93.png" alt="Inheritance diagram of vortex_cen.algo.obs" usemap="#inheritance83e22270dc" class="inheritance graphviz" /></div>
+<map id="inheritance83e22270dc" name="inheritance83e22270dc">
+<area shape="rect" id="node1" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="35,53,334,77"/>
+<area shape="rect" id="node3" href="#vortex_cen.algo.obs.ReconstructObservations" target="_top" title="Generate an ensemble of `ReconstructObservationsWorker`" alt="" coords="432,53,741,77"/>
+<area shape="rect" id="node2" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="5,5,364,30"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.obs.ReconstructObservationsWorker" target="_top" title="Update SAFRAN&#45;ready observation files (R*, S* and T* files) with reconstructed hourly temperature observations." alt="" coords="410,5,763,30"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.obs.ReconstructObservations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.obs.</span></span><span class="sig-name descname"><span class="pre">ReconstructObservations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/obs.html#ReconstructObservations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.obs.ReconstructObservations" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun" title="vortex_cen.algo.components._CenTaylorRun"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></p>
+<p>Generate an ensemble of <cite>ReconstructObservationsWorker</cite></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.obs.ReconstructObservationsWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.obs.</span></span><span class="sig-name descname"><span class="pre">ReconstructObservationsWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/obs.html#ReconstructObservationsWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.obs.ReconstructObservationsWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker" title="vortex_cen.algo.components._CenTaylorVortexWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></p>
+<p>Update SAFRAN-ready observation files (R*, S* and T* files) with reconstructed hourly temperature observations.</p>
+</dd></dl>
+
+</section>
+<section id="prep-py">
+<span id="module-vortex_cen.algo.prep"></span><h2>prep.py<a class="headerlink" href="#prep-py" title="Link to this heading">¶</a></h2>
+<p>Algo component to launch the SURFEX PREP executable.</p>
+<div class="graphviz"><img src="../_images/inheritance-4abaff0ff008811478b5c3fc0a676ce392385146.png" alt="Inheritance diagram of vortex_cen.algo.prep" usemap="#inheritancec55bddb657" class="inheritance graphviz" /></div>
+<map id="inheritancec55bddb657" name="inheritancec55bddb657">
+<area shape="rect" id="node4" href="#vortex_cen.algo.prep.Prep" target="_top" title="Not documented yet." alt="" coords="596,27,763,49"/>
+<area shape="rect" id="node2" href="#vortex_cen.algo.components._CenMixIn" target="_top" title="vortex_cen.algo.components._CenMixIn" alt="" coords="5,48,251,70"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prep.Prep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prep.</span></span><span class="sig-name descname"><span class="pre">Prep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prep.html#Prep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prep.Prep" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfexMixIn</span></code></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+</section>
+<section id="safran-py">
+<span id="module-vortex_cen.algo.safran"></span><h2>safran.py<a class="headerlink" href="#safran-py" title="Link to this heading">¶</a></h2>
+<p>SAFRAN related algo Components.</p>
+<div class="graphviz"><img src="../_images/inheritance-0b8de0d0786908cc86a829a5c560c517c49a6aee.png" alt="Inheritance diagram of vortex_cen.algo.safran" usemap="#inheritance693aca4e5d" class="inheritance graphviz" /></div>
+<map id="inheritance693aca4e5d" name="inheritance693aca4e5d">
+<area shape="rect" id="node4" href="#vortex_cen.algo.components._CenWorkerBlindRun" target="_top" title="This abstract worker is designed to drive the launch of any script or executable" alt="" coords="17,167,174,192"/>
+<area shape="rect" id="node15" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="36,80,155,105"/>
+<area shape="rect" id="node17" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="5,31,185,56"/>
+</map></section>
+<section id="prosnow-py">
+<span id="module-vortex_cen.algo.prosnow"></span><h2>prosnow.py<a class="headerlink" href="#prosnow-py" title="Link to this heading">¶</a></h2>
+<p>Algo Components for the PROSNOW project</p>
+<div class="graphviz"><img src="../_images/inheritance-484f27530ba5f8cb3fa722ee12159daaf0fedd87.png" alt="Inheritance diagram of vortex_cen.algo.prosnow" usemap="#inheritance8956ffb965" class="inheritance graphviz" /></div>
+<map id="inheritance8956ffb965" name="inheritance8956ffb965">
+<area shape="rect" id="node13" href="#vortex_cen.algo.deterministic.Surfex_Parallel" target="_top" title="This algo component is designed to run SURFEX experiments over large domains" alt="" coords="316,87,384,102"/>
+<area shape="rect" id="node3" href="#vortex_cen.algo.prosnow.ExtractForcingWorker" target="_top" title="It adapts forcing files to a ski resort geometry (worker for 1 member)." alt="" coords="305,31,396,46"/>
+<area shape="rect" id="node5" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast" target="_top" title="It adapts forcing files to a ski resort geometry (worker for 1 member)" alt="" coords="449,31,607,46"/>
+<area shape="rect" id="node4" href="#vortex_cen.algo.ensemble.PrepareForcingWorker" target="_top" title="This algo component is designed to prepare a SURFEX Forcing file (change of geometry)." alt="" coords="150,31,243,46"/>
+<area shape="rect" id="node6" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerLTForecast" target="_top" title="It adapts forcing files to a ski resort geometry (worker for 1 member)" alt="" coords="634,31,765,46"/>
+<area shape="rect" id="node8" href="#vortex_cen.algo.ensemble.PrepareForcingComponent" target="_top" title="AlgoComponent that prepares several forcing files in parallel (changes of geometry)." alt="" coords="141,3,252,17"/>
+<area shape="rect" id="node10" href="#vortex_cen.algo.prosnow.PrepareForcingComponentForecast" target="_top" title="It adapts forcing files to a ski resort geometry (several members in parallel)." alt="" coords="279,3,421,17"/>
+<area shape="rect" id="node9" href="#vortex_cen.algo.components._CenTaylorRun" target="_top" title="TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch" alt="" coords="25,3,92,17"/>
+<area shape="rect" id="node11" href="#vortex_cen.algo.components._CenTaylorVortexWorker" target="_top" title="This abstract worker is designed to drive the launch a python program." alt="" coords="7,31,110,46"/>
+<area shape="rect" id="node12" href="#vortex_cen.algo.prosnow.Prosnow_Parallel" target="_top" title="It adds snow management specificities by ski resorts to standard SURFEX&#45;Crocus algo components." alt="" coords="490,87,565,102"/>
+<area shape="rect" id="node15" href="#vortex_cen.algo.components._CenMixIn" target="_top" title="_CenMixIn" alt="" coords="33,115,84,130"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prosnow.PrepareForcingComponentForecast">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prosnow.</span></span><span class="sig-name descname"><span class="pre">PrepareForcingComponentForecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">kargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prosnow.html#PrepareForcingComponentForecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prosnow.PrepareForcingComponentForecast" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.PrepareForcingComponent" title="vortex_cen.algo.ensemble.PrepareForcingComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrepareForcingComponent</span></code></a></p>
+<p>It adapts forcing files to a ski resort geometry (several members in parallel).</p>
+<p>This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prosnow.ExtractForcingWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prosnow.</span></span><span class="sig-name descname"><span class="pre">ExtractForcingWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prosnow.html#ExtractForcingWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prosnow.ExtractForcingWorker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.ensemble.PrepareForcingWorker" title="vortex_cen.algo.ensemble.PrepareForcingWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrepareForcingWorker</span></code></a></p>
+<p>It adapts forcing files to a ski resort geometry (worker for 1 member).</p>
+<p>This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prosnow.</span></span><span class="sig-name descname"><span class="pre">ExtractForcingWorkerEnsembleForecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prosnow.html#ExtractForcingWorkerEnsembleForecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.prosnow.ExtractForcingWorker" title="vortex_cen.algo.prosnow.ExtractForcingWorker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExtractForcingWorker</span></code></a></p>
+<p>It adapts forcing files to a ski resort geometry (worker for 1 member)
+with specific adaptations for short term forecast</p>
+<p>This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prosnow.ExtractForcingWorkerLTForecast">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prosnow.</span></span><span class="sig-name descname"><span class="pre">ExtractForcingWorkerLTForecast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prosnow.html#ExtractForcingWorkerLTForecast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerLTForecast" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast" title="vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExtractForcingWorkerEnsembleForecast</span></code></a></p>
+<p>It adapts forcing files to a ski resort geometry (worker for 1 member)
+with specific adaptations for seasonal forecasts</p>
+<p>This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.algo.prosnow.Prosnow_Parallel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.algo.prosnow.</span></span><span class="sig-name descname"><span class="pre">Prosnow_Parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/algo/prosnow.html#Prosnow_Parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.algo.prosnow.Prosnow_Parallel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.algo.deterministic.Surfex_Parallel" title="vortex_cen.algo.deterministic.Surfex_Parallel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfex_Parallel</span></code></a></p>
+<p>It adds snow management specificities by ski resorts to standard SURFEX-Crocus algo components.</p>
+<p>This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Algo Components / computational tasks</a><ul>
+<li><a class="reference internal" href="#components-py">components.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.components._CenParaBlindRun"><code class="docutils literal notranslate"><span class="pre">_CenParaBlindRun</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.components._CenTaylorRun"><code class="docutils literal notranslate"><span class="pre">_CenTaylorRun</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.components._CenMixIn"><code class="docutils literal notranslate"><span class="pre">_CenMixIn</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.components._CenWorkerBlindRun"><code class="docutils literal notranslate"><span class="pre">_CenWorkerBlindRun</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.components._CenTaylorVortexWorker"><code class="docutils literal notranslate"><span class="pre">_CenTaylorVortexWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#forcing-py">forcing.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.forcing.ExtractMassifs"><code class="docutils literal notranslate"><span class="pre">ExtractMassifs</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.forcing.ExtractMassifsWorker"><code class="docutils literal notranslate"><span class="pre">ExtractMassifsWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.forcing.ConcatForcings"><code class="docutils literal notranslate"><span class="pre">ConcatForcings</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.forcing.ConcatForcingsWorker"><code class="docutils literal notranslate"><span class="pre">ConcatForcingsWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ensemble-py">ensemble.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.S2MComponent"><code class="docutils literal notranslate"><span class="pre">S2MComponent</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.SurfexComponent"><code class="docutils literal notranslate"><span class="pre">SurfexComponent</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.SurfexComponentMultiDates"><code class="docutils literal notranslate"><span class="pre">SurfexComponentMultiDates</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.SurfexWorker"><code class="docutils literal notranslate"><span class="pre">SurfexWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.PrepareForcingComponent"><code class="docutils literal notranslate"><span class="pre">PrepareForcingComponent</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.PrepareForcingWorker"><code class="docutils literal notranslate"><span class="pre">PrepareForcingWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.S2MReanalysis"><code class="docutils literal notranslate"><span class="pre">S2MReanalysis</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.S2MReforecast"><code class="docutils literal notranslate"><span class="pre">S2MReforecast</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.ensemble.ShadowsForcingWorker"><code class="docutils literal notranslate"><span class="pre">ShadowsForcingWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deterministic-py">deterministic.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Surfex_PreProcess"><code class="docutils literal notranslate"><span class="pre">Surfex_PreProcess</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Generate_Clim_TG"><code class="docutils literal notranslate"><span class="pre">Generate_Clim_TG</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Pgd_Parallel_from_Forcing"><code class="docutils literal notranslate"><span class="pre">Pgd_Parallel_from_Forcing</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Surfex_Parallel"><code class="docutils literal notranslate"><span class="pre">Surfex_Parallel</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Surfex_Xios_Parallel"><code class="docutils literal notranslate"><span class="pre">Surfex_Xios_Parallel</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.deterministic.Interpol_Forcing"><code class="docutils literal notranslate"><span class="pre">Interpol_Forcing</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#assim-py">assim.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.Soda"><code class="docutils literal notranslate"><span class="pre">Soda</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.SodaPreProcess"><code class="docutils literal notranslate"><span class="pre">SodaPreProcess</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.PerturbForcingComponent"><code class="docutils literal notranslate"><span class="pre">PerturbForcingComponent</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.PerturbForcingWorker"><code class="docutils literal notranslate"><span class="pre">PerturbForcingWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.CrocOPostProcess"><code class="docutils literal notranslate"><span class="pre">CrocOPostProcess</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.assim.CrocOPostProcessWorker"><code class="docutils literal notranslate"><span class="pre">CrocOPostProcessWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scores-py">scores.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.scores.Escroc_Score_Member"><code class="docutils literal notranslate"><span class="pre">Escroc_Score_Member</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.scores.Escroc_Score_Ensemble"><code class="docutils literal notranslate"><span class="pre">Escroc_Score_Ensemble</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.scores.Escroc_Score_Subensemble"><code class="docutils literal notranslate"><span class="pre">Escroc_Score_Subensemble</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.scores.Escroc_Optim_Ensemble"><code class="docutils literal notranslate"><span class="pre">Escroc_Optim_Ensemble</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#postprocessing-py">postprocessing.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.S2m_ensemble_postprocessing"><code class="docutils literal notranslate"><span class="pre">S2m_ensemble_postprocessing</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.HydroWorker"><code class="docutils literal notranslate"><span class="pre">HydroWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.HydroComponent"><code class="docutils literal notranslate"><span class="pre">HydroComponent</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.ExtractDates"><code class="docutils literal notranslate"><span class="pre">ExtractDates</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.ExtractDatesWorker"><code class="docutils literal notranslate"><span class="pre">ExtractDatesWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.SnowCoverDuration"><code class="docutils literal notranslate"><span class="pre">SnowCoverDuration</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.postprocessing.SnowCoverDurationWorker"><code class="docutils literal notranslate"><span class="pre">SnowCoverDurationWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#obs-py">obs.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.obs.ReconstructObservations"><code class="docutils literal notranslate"><span class="pre">ReconstructObservations</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.obs.ReconstructObservationsWorker"><code class="docutils literal notranslate"><span class="pre">ReconstructObservationsWorker</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prep-py">prep.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.prep.Prep"><code class="docutils literal notranslate"><span class="pre">Prep</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#safran-py">safran.py</a></li>
+<li><a class="reference internal" href="#prosnow-py">prosnow.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.algo.prosnow.PrepareForcingComponentForecast"><code class="docutils literal notranslate"><span class="pre">PrepareForcingComponentForecast</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.prosnow.ExtractForcingWorker"><code class="docutils literal notranslate"><span class="pre">ExtractForcingWorker</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast"><code class="docutils literal notranslate"><span class="pre">ExtractForcingWorkerEnsembleForecast</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.prosnow.ExtractForcingWorkerLTForecast"><code class="docutils literal notranslate"><span class="pre">ExtractForcingWorkerLTForecast</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.algo.prosnow.Prosnow_Parallel"><code class="docutils literal notranslate"><span class="pre">Prosnow_Parallel</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="vortex-cen-tasks.html"
+                          title="previous chapter">Vortex-cen HPC unit tasks</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="vortex-cen-scripts.html"
+                          title="next chapter">Vortex-cen scripts</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vortex/vortex-cen-algo.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-scripts.html" title="Vortex-cen scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-tasks.html" title="Vortex-cen HPC unit tasks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="vortex-cen-index.html" >The vortex-cen plugin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Algo Components / computational tasks</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@
     <title>tools.change_prep &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,11 +41,11 @@
   <h1>Source code for tools.change_prep</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">'''</span>
 <span class="sd">Created on 23 Aug. 2017</span>
 
 <span class="sd">@author: lafaysse</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">'''</span>
 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -60,52 +61,52 @@
 <div class="viewcode-block" id="prep_tomodify">
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">prep_tomodify</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class represents a PREP.nc file for SURFEX initial conditions</span>
+<span class="w">    </span><span class="sd">"""This class represents a PREP.nc file for SURFEX initial conditions</span>
 <span class="sd">    which has to be modified before SURFEX execution</span>
 
 <span class="sd">    :param prepfile: Address of prep file to modify</span>
 <span class="sd">    :type prepfile: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prepfile</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method opens a PREP.nc file ready to be modified&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Init method opens a PREP.nc file ready to be modified"""</span>
 
         <span class="c1"># Names of the prognostic variables in the PREP netcdf file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nsnowlayer&#39;</span><span class="p">:</span> <span class="s1">&#39;SN_VEG_N&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="s1">&#39;DTCUR-YEAR&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;month&#39;</span><span class="p">:</span> <span class="s1">&#39;DTCUR-MONTH&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="s1">&#39;DTCUR-DAY&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;DTCUR-TIME&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;swe&#39;</span><span class="p">:</span> <span class="s1">&#39;WSN_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;rho&#39;</span><span class="p">:</span> <span class="s1">&#39;RSN_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;pheat&#39;</span><span class="p">:</span> <span class="s1">&#39;HSN_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;dopt&#39;</span><span class="p">:</span> <span class="s1">&#39;SG1_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;spher&#39;</span><span class="p">:</span> <span class="s1">&#39;SG2_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;hist&#39;</span><span class="p">:</span> <span class="s1">&#39;SHI_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="s1">&#39;SAG_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;albedo&#39;</span><span class="p">:</span> <span class="s1">&#39;ASN_VEG&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;tg&#39;</span><span class="p">:</span> <span class="s1">&#39;TG&#39;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'nsnowlayer'</span><span class="p">:</span> <span class="s1">'SN_VEG_N'</span><span class="p">,</span>
+                          <span class="s1">'year'</span><span class="p">:</span> <span class="s1">'DTCUR-YEAR'</span><span class="p">,</span>
+                          <span class="s1">'month'</span><span class="p">:</span> <span class="s1">'DTCUR-MONTH'</span><span class="p">,</span>
+                          <span class="s1">'day'</span><span class="p">:</span> <span class="s1">'DTCUR-DAY'</span><span class="p">,</span>
+                          <span class="s1">'time'</span><span class="p">:</span> <span class="s1">'DTCUR-TIME'</span><span class="p">,</span>
+                          <span class="s1">'swe'</span><span class="p">:</span> <span class="s1">'WSN_VEG'</span><span class="p">,</span>
+                          <span class="s1">'rho'</span><span class="p">:</span> <span class="s1">'RSN_VEG'</span><span class="p">,</span>
+                          <span class="s1">'pheat'</span><span class="p">:</span> <span class="s1">'HSN_VEG'</span><span class="p">,</span>
+                          <span class="s1">'dopt'</span><span class="p">:</span> <span class="s1">'SG1_VEG'</span><span class="p">,</span>
+                          <span class="s1">'spher'</span><span class="p">:</span> <span class="s1">'SG2_VEG'</span><span class="p">,</span>
+                          <span class="s1">'hist'</span><span class="p">:</span> <span class="s1">'SHI_VEG'</span><span class="p">,</span>
+                          <span class="s1">'age'</span><span class="p">:</span> <span class="s1">'SAG_VEG'</span><span class="p">,</span>
+                          <span class="s1">'albedo'</span><span class="p">:</span> <span class="s1">'ASN_VEG'</span><span class="p">,</span>
+                          <span class="s1">'tg'</span><span class="p">:</span> <span class="s1">'TG'</span><span class="p">,</span>
                           <span class="p">}</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">prepfile</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">prepfile</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span> <span class="o">=</span> <span class="n">prosimu_base</span><span class="p">(</span><span class="n">prepfile</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nsnowlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;nsnowlayer&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span> <span class="o">=</span> <span class="n">prosimu_base</span><span class="p">(</span><span class="n">prepfile</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsnowlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'nsnowlayer'</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="prep_tomodify.apply_swe_threshold">
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.apply_swe_threshold">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_swe_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swe_threshold</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to apply a threshold on snow water equivalent in a PREP.nc file</span>
+<span class="w">        </span><span class="sd">"""Method to apply a threshold on snow water equivalent in a PREP.nc file</span>
 
 <span class="sd">        :param swe_threshold: Maximum allowed Snow Water Equivalent (kg/m2)</span>
 <span class="sd">        :type swe_threshold: int or float</span>
 <span class="sd">        :param closefile: Close PREP file after modification. Defaults to False</span>
 <span class="sd">        :type closefile: bool, optional</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsnowlayer</span><span class="p">):</span>
             <span class="n">swe_layer</span><span class="p">,</span> <span class="n">swe_layer_nc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;swe&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'swe'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">keepfillvalue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">removetile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">swe_fromsurface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">swe_layer</span><span class="p">)</span>
             <span class="n">swe_layer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">swe_fromsurface</span> <span class="o">&gt;</span> <span class="n">swe_threshold</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">swe_layer</span><span class="p">)</span>
@@ -119,17 +120,17 @@
 <div class="viewcode-block" id="prep_tomodify.change_date">
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.change_date">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">change_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdate</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method to change the date of a PREP file because a spinup is used to initialize the simulation</span>
+<span class="w">        </span><span class="sd">"""Method to change the date of a PREP file because a spinup is used to initialize the simulation</span>
 
 <span class="sd">        :param newdate: New initial date of simulation</span>
 <span class="sd">        :type newdate: class:`datetime.datetime`</span>
 <span class="sd">        :param closefile: Close PREP file after modification. Defaults to False</span>
 <span class="sd">        :type closefile: bool, optional</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">year</span><span class="p">,</span> <span class="n">yearnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">month</span><span class="p">,</span> <span class="n">monthnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">day</span><span class="p">,</span> <span class="n">daync</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">seconds</span><span class="p">,</span> <span class="n">secondsnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">yearnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'year'</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">month</span><span class="p">,</span> <span class="n">monthnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'month'</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">day</span><span class="p">,</span> <span class="n">daync</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'day'</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">seconds</span><span class="p">,</span> <span class="n">secondsnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'time'</span><span class="p">],</span> <span class="n">needmodif</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">del</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">seconds</span>
 
@@ -145,17 +146,17 @@
 <div class="viewcode-block" id="prep_tomodify.fix_version">
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.fix_version">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fix_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iversion</span><span class="p">,</span> <span class="n">ibug</span><span class="p">,</span> <span class="n">closefile</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify surfex version in PREP files that were built with an incorrect numbering</span>
+<span class="w">        </span><span class="sd">"""Modify surfex version in PREP files that were built with an incorrect numbering</span>
 <span class="sd">        :param iversion: fixed version number</span>
 <span class="sd">        :type iversion: int</span>
 <span class="sd">        :param ibug: fixed subversion number</span>
 <span class="sd">        :type ibug: int</span>
 <span class="sd">        :param closefile: close file after modification (default False)</span>
 <span class="sd">        :type closefile: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;VERSION&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iversion</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;BUG&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ibug</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'VERSION'</span><span class="p">]</span> <span class="o">=</span> <span class="n">iversion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">'BUG'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ibug</span>
 
         <span class="k">if</span> <span class="n">closefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -164,7 +165,7 @@
 <div class="viewcode-block" id="prep_tomodify.close">
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the PREP file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Close the PREP file"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -172,13 +173,13 @@
 <a class="viewcode-back" href="../../code/tools.html#tools.change_prep.prep_tomodify.insert_snow_depth">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">insert_snow_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_name_SRU</span><span class="p">,</span> <span class="n">my_name_SNOWSAT</span><span class="p">,</span> <span class="n">my_name_OBS</span><span class="p">,</span>
                           <span class="n">my_name_extprep50</span><span class="p">,</span> <span class="n">my_name_extprep5</span><span class="p">,</span> <span class="n">my_name_var</span><span class="p">,</span> <span class="n">my_name_PREP</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39; This function was implemented by C. Carmagnola in March 2019 (PROSNOW project).</span>
-<span class="sd">        It modifies a PREP file by inserting measured snow depth values.&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">''' This function was implemented by C. Carmagnola in March 2019 (PROSNOW project).</span>
+<span class="sd">        It modifies a PREP file by inserting measured snow depth values.'''</span>
 
-        <span class="n">swe</span> <span class="o">=</span> <span class="s1">&#39;WSN_VEG&#39;</span>
-        <span class="n">rho</span> <span class="o">=</span> <span class="s1">&#39;RSN_VEG&#39;</span>
-        <span class="n">tg</span> <span class="o">=</span> <span class="s1">&#39;TG1&#39;</span>
-        <span class="n">snd</span> <span class="o">=</span> <span class="s1">&#39;DSN_T_ISBA&#39;</span>
+        <span class="n">swe</span> <span class="o">=</span> <span class="s1">'WSN_VEG'</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="s1">'RSN_VEG'</span>
+        <span class="n">tg</span> <span class="o">=</span> <span class="s1">'TG1'</span>
+        <span class="n">snd</span> <span class="o">=</span> <span class="s1">'DSN_T_ISBA'</span>
 
         <span class="c1"># 1) Read files</span>
 
@@ -215,14 +216,14 @@
 
         <span class="c1"># 2) Fill OBS.nc</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name_SNOWSAT</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">readfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">name_SNOWSAT</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">readfile</span><span class="p">:</span>
 
             <span class="n">spamreader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">readfile</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">spamreader</span><span class="p">:</span>
 
                 <span class="n">r</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_OBS</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">Fnc</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_OBS</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span> <span class="k">as</span> <span class="n">Fnc</span><span class="p">:</span>
                     <span class="n">dsn</span> <span class="o">=</span> <span class="n">Fnc</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">snd</span><span class="p">]</span>
 
                     <span class="n">ind</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
@@ -234,13 +235,13 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name_OBS</span><span class="p">):</span>
 
             <span class="c1"># OBS.nc</span>
-            <span class="n">OBS_nc</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_OBS</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">OBS_nc</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_OBS</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
             <span class="n">dsno</span> <span class="o">=</span> <span class="n">OBS_nc</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">snd</span><span class="p">][:]</span>
 
             <span class="c1"># PREP</span>
-            <span class="n">PREP</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_PREP</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
-            <span class="n">nlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;nsnowlayer&#39;</span><span class="p">])[:]</span>
-            <span class="n">tg1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;tg&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">))[:]]</span>
+            <span class="n">PREP</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">name_PREP</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
+            <span class="n">nlayer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'nsnowlayer'</span><span class="p">])[:]</span>
+            <span class="n">tg1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'tg'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">))[:]]</span>
 
             <span class="n">old_swe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nlayer</span><span class="p">))</span>  <span class="c1"># [1,point,layer]</span>
             <span class="n">new_swe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nlayer</span><span class="p">))</span>  <span class="c1"># [1,point,layer]</span>
@@ -248,9 +249,9 @@
             <span class="n">dsn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tg1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>         <span class="c1"># [1,point]</span>
 
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlayer</span><span class="p">):</span>
-                <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;swe&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))[:]</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'swe'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))[:]</span>
                 <span class="n">old_swe</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
-                <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))[:]</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_prep</span><span class="p">[</span><span class="s1">'rho'</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))[:]</span>
                 <span class="n">old_rho</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[:]</span>
 
             <span class="c1"># Loop on points</span>
@@ -279,11 +280,11 @@
 
                         <span class="c1"># Observation &gt;= 10 cm</span>
                         <span class="k">if</span> <span class="p">(</span><span class="n">dsno</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">.10</span><span class="p">):</span>
-                            <span class="n">PREP_ext</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">extprep50</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                            <span class="n">PREP_ext</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">extprep50</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
 
                         <span class="c1"># Observation &lt; 10 cm</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">PREP_ext</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">extprep5</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+                            <span class="n">PREP_ext</span> <span class="o">=</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">extprep5</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
 
                         <span class="n">utg1</span> <span class="o">=</span> <span class="n">PREP_ext</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">tg</span><span class="p">][:]</span>
 
@@ -310,7 +311,7 @@
                             <span class="k">if</span> <span class="n">swe</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
                                 <span class="n">var</span> <span class="o">=</span> <span class="n">PREP</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
                                 <span class="n">x</span> <span class="o">=</span> <span class="n">PREP_ext</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-                                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;--&quot;</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"--"</span><span class="p">:</span>
                                     <span class="n">x</span> <span class="o">=</span> <span class="mf">1.</span>
                                 <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
 

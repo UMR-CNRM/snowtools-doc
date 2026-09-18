@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>snowtools.utils.xarray_snowtools_preprocess &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">snowtools.utils.xarray_snowtools_preprocess</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for snowtools.utils.xarray_snowtools_preprocess</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span>
+
+<span class="c1"># The following dictionnaries are used to control default variable and dimension names mapping</span>
+<span class="c1"># TODO : Réfléchir à un mapping plus cohérent nettoyer les dicts actuels (cf ticket #295)</span>
+<span class="n">dimension_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">:</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'location'</span><span class="p">:</span> <span class="s1">'Number_of_points'</span><span class="p">,</span> <span class="s1">'Number_of_patches'</span><span class="p">:</span> <span class="s1">'tile'</span><span class="p">,</span>
+        <span class="s1">'valid_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">}</span>
+<span class="n">variables_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Rainf_ds'</span><span class="p">:</span> <span class="s1">'Rainf'</span><span class="p">,</span> <span class="s1">'Snowf_ds'</span><span class="p">:</span> <span class="s1">'Snowf'</span><span class="p">,</span> <span class="s1">'band_data'</span><span class="p">:</span> <span class="s1">'ZS'</span><span class="p">,</span> <span class="s1">'prec'</span><span class="p">:</span> <span class="s1">'Precipitation'</span><span class="p">,</span>
+        <span class="s1">'rr'</span><span class="p">:</span> <span class="s1">'Precipitation'</span><span class="p">,</span> <span class="s1">'massif_number'</span><span class="p">:</span> <span class="s1">'massif_num'</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="preprocess">
+<a class="viewcode-back" href="../../../code/utils-xarray.html#utils.xarray_snowtools.preprocess">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">decode_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transpose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_dims</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+
+<span class="sd">    This is the main method to call when opening a SURFEX IO NetCDF file.</span>
+
+<span class="sd">    It deals with the following actions :</span>
+
+<span class="sd">    1. Update variable and dimension names to ensure that standard names can be used in the following processes</span>
+
+<span class="sd">    2. Ensure that 'missing_value' and "_FillValue" attributes do not differ to avoid crashing when trying to write data</span>
+
+<span class="sd">    3. Decode time dimension properly if necessary (i.e ensure that the associated coordinates are datetime objects)</span>
+
+<span class="sd">    Direct usage example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import xarray as xr</span>
+
+<span class="sd">        from snowtools.utils.xarray_snowtools import preprocess</span>
+
+<span class="sd">        ds = xr.open_dataset('INPUT.nc', decode_times=False)</span>
+<span class="sd">        ds = preprocess(ds)</span>
+
+
+<span class="sd">    :param ds: xarray object to preprocess</span>
+<span class="sd">    :type ds: xarray Dataset or Dataarray</span>
+<span class="sd">    :param mapping: User-defined dictionnary to map variable or dimension names (it will be used as a complement to</span>
+<span class="sd">                    the default mapping dictionnaries).</span>
+<span class="sd">    :type mapping: dict</span>
+<span class="sd">    :param decode_time: Manually decode the time variable when xarray fails to do it properly (SURFEX outputs)</span>
+<span class="sd">    :type decode_time: bool</span>
+<span class="sd">    :param transpose: Put time dimension as first dimension in case of data processing through numpy arrays</span>
+<span class="sd">    :type transpose: bool</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># Update variable and dimension names to ensure that standard names can be used from now on</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">update_names</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+
+    <span class="c1"># Ensure that 'missing_value' and "_FillValue" attributes do not differ to avoid crashing when trying to write data</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">check_encoding</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Decode time dimension properly (if necessary)</span>
+    <span class="k">if</span> <span class="n">decode_time</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">decode_time_dimension</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Ensure that the time dimension is in the first one for numpy-based tools backward compatibility</span>
+    <span class="k">if</span> <span class="n">transpose</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sort_dims</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">sort_dimensions</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">update_names</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Map variable and dimension names to snowtools-standard ones.</span>
+
+<span class="sd">    :param ds: xarray object to preprocess</span>
+<span class="sd">    :type ds: xarray Dataset or Dataarray</span>
+<span class="sd">    :param mapping: User-defined dictionnary to map variable or dimension names (it will be used as a complement to</span>
+<span class="sd">                    the default mapping dictionnaries).</span>
+<span class="sd">    :type mapping: dict</span>
+<span class="sd">    """</span>
+    <span class="c1"># Do not directly modify *variables_map* in case several calls to "preprocess" are made from</span>
+    <span class="c1"># the same session</span>
+    <span class="n">default_map</span> <span class="o">=</span> <span class="n">variables_map</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">default_map</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dimension_map</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dataarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+        <span class="n">list_entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">list_entries</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">)</span>
+
+    <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">default_map</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">list_entries</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">default_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="c1"># The optionnal user-defined mapping dictionnary overwrites the default renaming</span>
+    <span class="n">user_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">list_entries</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+    <span class="n">update_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">user_mapping</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">update_dict</span><span class="p">)</span>
+
+    <span class="c1"># Set orginal names as attribute for backtracking</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">backtrack</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">update_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">assign_attrs</span><span class="p">(</span><span class="n">original_name</span><span class="o">=</span><span class="n">backtrack</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">check_encoding</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Ensure that "missing_value" and "_FillValue" attributes do not differ to avoid crashing when trying to write data.</span>
+
+<span class="sd">    See snowtools ticket #282 or xarray ticket #7722 (https://github.com/pydata/xarray/issues/7722) for more</span>
+<span class="sd">    information.</span>
+
+<span class="sd">    :param ds: xarray object to preprocess</span>
+<span class="sd">    :type ds: xarray Dataset or Dataarray</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dataarray</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'missing_value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'_FillValue'</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dataarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'missing_value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'_FillValue'</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ds</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">decode_time_dimension</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Manually decode time variable when xarray fails to do it properly (SURFEX outputs)</span>
+
+<span class="sd">    :param ds: xarray object to preprocess</span>
+<span class="sd">    :type ds: xarray Dataset or Dataarray</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s1">'time'</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">coords</span><span class="p">):</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s2">"time"</span><span class="p">:</span> <span class="n">ds</span><span class="o">.</span><span class="n">time</span><span class="p">})</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">decode_cf</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span>
+    <span class="k">return</span> <span class="n">ds</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_dimensions</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Sort dimension values.</span>
+
+<span class="sd">    :param ds: xarray object to preprocess</span>
+<span class="sd">    :type ds: xarray Dataset or Dataarray</span>
+
+<span class="sd">    """</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sortby</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ds</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">snowtools.utils.xarray_snowtools_preprocess</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.assim &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.assim</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.assim</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
+<span class="sd">assim.py</span>
+<span class="sd">--------</span>
+
+<span class="sd">Algo Components for the exectution of SODA-related tasks within a snow data assimilation workflow.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.assim</span>
+<span class="sd">   :top-classes: vortex_cen.algo.components._CenParaBlindRun, vortex_cen.algo.components._CenTaylorRun,</span>
+<span class="sd">                 vortex_cen.algo.components._CenTaylorVortexWorker, vortex_cen.algo.components._CenWorkerBlindRun,</span>
+<span class="sd">                 vortex.algo.components.AlgoComponent, vortex.algo.components.Parallel, vortex.algo.components.TaylorRun</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 1</span>
+
+<span class="sd">.. autoclass:: Soda</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SodaPreProcess</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: PerturbForcingComponent</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: PerturbForcingWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: CrocOPostProcess</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: CrocOPostProcessWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">AlgoComponent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.syntax.stdattrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenTaylorRun</span><span class="p">,</span> <span class="n">_CenTaylorVortexWorker</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.update_namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_namelist_object_nmembers</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.perturb_forcing</span><span class="w"> </span><span class="kn">import</span> <span class="n">forcinput_perturb</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scripts.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">croco_postprocess</span> <span class="k">as</span> <span class="n">cpp</span>
+
+
+<div class="viewcode-block" id="Soda">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.Soda">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Soda</span><span class="p">(</span><span class="n">Parallel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    worker for a SODA run (designed for Particle filtering for snow)</span>
+<span class="sd">    @author: B. Cluzet 2018-05-24</span>
+<span class="sd">    """</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs domain-parallelized soda'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m_soda'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">binary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'SODA'</span><span class="p">],</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">dateassim</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">nmembers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"The number of members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mb_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="p">(</span><span class="s1">'SnowpackInit'</span><span class="p">,</span> <span class="p">)),</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">mb_sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mb_sections</span>
+        <span class="c1"># symbolic links for each prep from each member dir to the soda dir</span>
+        <span class="k">for</span> <span class="n">jj</span><span class="p">,</span> <span class="n">mb_s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mb_sections</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">mb_s</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">localpath</span><span class="p">(),</span>
+                                <span class="s1">'PREP_'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateassim</span><span class="o">.</span><span class="n">ymdHh</span> <span class="o">+</span> <span class="s1">'_PF_ENS'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'.nc'</span><span class="p">)</span>
+        <span class="c1"># symbolic link from a virtual PREP.nc to the first member (for SODA date-reading reasons)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">mb_sections</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">localpath</span><span class="p">(),</span> <span class="s1">'PREP.nc'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modify_namelist</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">postfix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">postfix</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># rename ((and mix)) surfout files for next offline assim</span>
+        <span class="c1"># rename background preps</span>
+        <span class="c1"># delete soda symbolic links</span>
+        <span class="n">mb_sections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mb_sections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'PREP.nc'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">jj</span><span class="p">,</span> <span class="n">mb_s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mb_sections</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">dir_it</span> <span class="o">=</span> <span class="n">mb_s</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'PREP_'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateassim</span><span class="o">.</span><span class="n">ymdHh</span> <span class="o">+</span> <span class="s1">'_PF_ENS'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'.nc'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_it</span><span class="p">,</span> <span class="s1">'PREP.nc'</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_it</span><span class="p">,</span> <span class="s1">'PREP.nc'</span><span class="p">))</span>
+            <span class="n">my_base</span><span class="p">,</span> <span class="n">my_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">mb_s</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">localpath</span><span class="p">())</span>
+            <span class="c1"># Save background:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">my_base</span> <span class="o">+</span> <span class="n">my_ext</span><span class="p">,</span> <span class="n">my_base</span> <span class="o">+</span> <span class="s1">'_bg'</span> <span class="o">+</span> <span class="n">my_ext</span><span class="p">)</span>
+            <span class="c1"># Save analysis:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s2">"SURFOUT"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">jj</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".nc"</span><span class="p">,</span> <span class="n">my_base</span> <span class="o">+</span> <span class="s1">'.nc'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dir_it</span> <span class="o">==</span> <span class="s1">'mb</span><span class="si">{:04d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mb_s</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+                <span class="c1"># useful only for old task/offline case</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">my_base</span> <span class="o">+</span> <span class="s1">'.nc'</span><span class="p">,</span> <span class="n">dir_it</span> <span class="o">+</span> <span class="s1">'/PREP.nc'</span><span class="p">)</span>
+
+        <span class="c1"># rename particle file</span>
+        <span class="k">for</span> <span class="n">fprefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'PART'</span><span class="p">,</span> <span class="s1">'BG_CORR'</span><span class="p">,</span> <span class="s1">'IMASK'</span><span class="p">,</span> <span class="s1">'ALPHA'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fprefix</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">fprefix</span><span class="p">,</span> <span class="n">fprefix</span> <span class="o">+</span> <span class="s1">'_'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateassim</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s1">'.txt'</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Find any namelists candidates in actual context inputs."""</span>
+        <span class="n">namcandidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'namelist'</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">subtitle</span><span class="p">(</span><span class="s1">'Namelist candidates'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nam</span> <span class="ow">in</span> <span class="n">namcandidates</span><span class="p">:</span>
+            <span class="n">nam</span><span class="o">.</span><span class="n">quickview</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">namcandidates</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">modify_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Modification of the namelist</span>
+        <span class="k">for</span> <span class="n">namelist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_namelists</span><span class="p">():</span>
+            <span class="c1"># Update the contents of the namelist (number of members)</span>
+            <span class="c1"># Location taken in the FORCING file.</span>
+            <span class="n">newcontent</span> <span class="o">=</span> <span class="n">update_namelist_object_nmembers</span><span class="p">(</span>
+                <span class="n">namelist</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span>
+                <span class="n">nmembers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmembers</span>
+            <span class="p">)</span>
+            <span class="n">newnam</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">container</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">namelist</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+            <span class="n">newcontent</span><span class="o">.</span><span class="n">rewrite</span><span class="p">(</span><span class="n">newnam</span><span class="p">)</span>
+            <span class="n">newnam</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="SodaPreProcess">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.SodaPreProcess">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SodaPreProcess</span><span class="p">(</span><span class="n">AlgoComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Prepare SODA namelist according to configuration file</span>
+<span class="sd">    WARNING : this algo should not be used anymore (the preprocessing of the namelist is now</span>
+<span class="sd">    done in the Soda algo). It is here only for retro-compatibility.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'soda_preprocess'</span><span class="p">]),</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span>     <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>   <span class="o">=</span> <span class="s1">'algo'</span>
+            <span class="p">),</span>
+            <span class="n">nmembers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"The number of members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Find any namelists candidates in actual context inputs."""</span>
+        <span class="n">namcandidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">'namelist'</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">subtitle</span><span class="p">(</span><span class="s1">'Namelist candidates'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nam</span> <span class="ow">in</span> <span class="n">namcandidates</span><span class="p">:</span>
+            <span class="n">nam</span><span class="o">.</span><span class="n">quickview</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">namcandidates</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+
+        <span class="c1"># Modification of the namelist</span>
+        <span class="k">for</span> <span class="n">namelist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_namelists</span><span class="p">():</span>
+            <span class="c1"># Update the contents of the namelist (number of members)</span>
+            <span class="c1"># Location taken in the FORCING file.</span>
+            <span class="n">newcontent</span> <span class="o">=</span> <span class="n">update_namelist_object_nmembers</span><span class="p">(</span>
+                <span class="n">namelist</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span>
+                <span class="n">nmembers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nmembers</span>
+            <span class="p">)</span>
+            <span class="n">newnam</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">container</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">'OPTIONS_OUT.nam'</span><span class="p">)</span>
+            <span class="n">newcontent</span><span class="o">.</span><span class="n">rewrite</span><span class="p">(</span><span class="n">newnam</span><span class="p">)</span>
+            <span class="n">newnam</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="PerturbForcingWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.PerturbForcingWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PerturbForcingWorker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Worker that applies stochastic perturbations to a FORCING file.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Apply stochastic perturbations to a forcing file'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'perturbforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="s2">"../FORCING.nc"</span><span class="p">,</span> <span class="s2">"FORCING_IN.nc"</span><span class="p">)</span>
+        <span class="n">forcinput_perturb</span><span class="p">(</span><span class="s2">"FORCING_IN.nc"</span><span class="p">,</span> <span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+
+
+<div class="viewcode-block" id="PerturbForcingComponent">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.PerturbForcingComponent">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PerturbForcingComponent</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Algo compent that creates an ensemble of forcing files by stochastic perturbations</span>
+<span class="sd">    of a time series of deterministic input forcing files. Each worker deals with one single FORCING file</span>
+<span class="sd">    as input (parallelisation over the different sub-periods) and one single FORCING file as output</span>
+<span class="sd">    (parallelisation over the ensemble members).</span>
+<span class="sd">    """</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that build an ensemble of perturbed forcings from deterministic forcing files'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'perturbforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The list of members for output"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        In this algo component, the members/workers are a combination of the input FORCING file</span>
+<span class="sd">        and output ensemble members.</span>
+
+<span class="sd">        Input tree:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        workdir</span>
+<span class="sd">        |-- datebegin_subperiod1]/FORCING.nc</span>
+<span class="sd">        |-- subperiod1_subperiod2]/FORCING.nc</span>
+<span class="sd">        ...</span>
+<span class="sd">        |-- subperiodK_dateend]/FORCING.nc</span>
+
+<span class="sd">        Output tree</span>
+<span class="sd">        -----------</span>
+<span class="sd">        workdir</span>
+<span class="sd">        |--[datebegin_subperiod1]</span>
+<span class="sd">            |-- FORCING.nc          (unperturbed input FORCING)</span>
+<span class="sd">            |-- mb0001/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            |-- mb0002/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            ...</span>
+<span class="sd">            |-- mb000N/FORCING.nc   perturbed FORCING)</span>
+<span class="sd">        |--[subperiod1_subperiod2]</span>
+<span class="sd">            |-- FORCING.nc          (unperturbed input FORCING)</span>
+<span class="sd">            |-- mb0001/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            |-- mb0002/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            ...</span>
+<span class="sd">            |-- mb000N/FORCING.nc   perturbed FORCING)</span>
+<span class="sd">        ...</span>
+<span class="sd">        |--[subperiodK_dateend]</span>
+<span class="sd">            |-- FORCING.nc          (unperturbed input FORCING)</span>
+<span class="sd">            |-- mb0001/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            |-- mb0002/FORCING.nc   (perturbed FORCING)</span>
+<span class="sd">            ...</span>
+<span class="sd">            |-- mb000N/FORCING.nc   perturbed FORCING)</span>
+<span class="sd">        """</span>
+
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">subdir</span><span class="si">}</span><span class="s1">/mb</span><span class="si">{</span><span class="n">member</span><span class="si">:</span><span class="s1">04d</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span> <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">subdirs</span></div>
+
+
+
+<div class="viewcode-block" id="CrocOPostProcess">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.CrocOPostProcess">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CrocOPostProcess</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent for SODA post_processing (merge PRO files)'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'croco_postprocess'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">role_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Role of RH inputs to use for members definition"</span><span class="p">,</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'SnowpackSimulation'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CrocOPostProcessWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.assim.CrocOPostProcessWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CrocOPostProcessWorker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Worker associated to the `SodaPostProcess` algo component.</span>
+<span class="sd">    Each worker concatenate the different PRO files covering the subperiods between assimilation dates</span>
+<span class="sd">    generated by the crocO task into a single PRO file covering the period *datebegin* --&gt; *dateend*</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent for snow cover duration diagnotics computation from SURFEX-Crocus simulations'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'croco_postprocess'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method called by the main **vortex_task** method of the **_CenMixIn** class</span>
+<span class="sd">        """</span>
+        <span class="c1"># Launch "core" algo</span>
+        <span class="n">cpp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.assim</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@
     <title>plots.maps.mapplotter &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -40,7 +41,7 @@
   <h1>Source code for plots.maps.mapplotter</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 17 June 2025</span>
 
 <span class="sd">:Authors:</span>
@@ -48,7 +49,7 @@
 
 <span class="sd">    largely copied from epygram epy_cartoplot.py</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
@@ -67,7 +68,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.plots.maps.quicklookmap</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_and_preprocess</span><span class="p">,</span> <span class="n">wind_map</span><span class="p">,</span> <span class="n">difference_map</span><span class="p">,</span> <span class="n">scalar_map</span>
 
 <span class="n">CFEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cf</span><span class="p">)</span> <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">f</span><span class="p">])]</span>
-<span class="sd">&quot;&quot;&quot;Cartopy features&quot;&quot;&quot;</span>
+<span class="sd">"""Cartopy features"""</span>
 
 <div class="viewcode-block" id="main_cli">
 <a class="viewcode-back" href="../../../code/plots-mapplotter.html#plots.maps.mapplotter.main_cli">[docs]</a>
@@ -85,21 +86,21 @@
          <span class="c1"># figure</span>
          <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="c1"># graphical settings</span>
-         <span class="n">plot_method</span><span class="o">=</span><span class="s1">&#39;pcolormesh&#39;</span><span class="p">,</span>
+         <span class="n">plot_method</span><span class="o">=</span><span class="s1">'pcolormesh'</span><span class="p">,</span>
          <span class="n">minmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">mask_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">colorsnumber</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-         <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">,</span>
+         <span class="n">colormap</span><span class="o">=</span><span class="s1">'plasma'</span><span class="p">,</span>
          <span class="n">center_cmap_on_0</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
          <span class="n">scatter_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="c1"># cartography</span>
-         <span class="n">parallels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-         <span class="n">meridians</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+         <span class="n">parallels</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">,</span>
+         <span class="n">meridians</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">,</span>
          <span class="n">french_depts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
          <span class="n">cartopy_features</span><span class="o">=</span><span class="p">[],</span>
          <span class="c1"># wind/vectors</span>
          <span class="n">vectors_subsampling</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-         <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">&#39;quiver&#39;</span><span class="p">,</span>
+         <span class="n">vector_plot_method</span><span class="o">=</span><span class="s1">'quiver'</span><span class="p">,</span>
          <span class="n">wind_components_are_projected_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">quiverkey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">map_factor_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -107,7 +108,7 @@
          <span class="n">savefig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
          <span class="n">outputfilename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
          <span class="n">figures_dpi</span><span class="o">=</span><span class="n">epygram</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">default_figures_dpi</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plot fields.</span>
 
 <span class="sd">    :param filename: name of the file to be processed.</span>
@@ -121,8 +122,8 @@
 <span class="sd">    Pre-processing:</span>
 
 <span class="sd">    :param operation: makes the requested operation</span>
-<span class="sd">        (e.g. {&#39;operation&#39;:&#39;-&#39;,&#39;operand&#39;:273.15} or</span>
-<span class="sd">        {&#39;operation&#39;:&#39;exp&#39;}) on the field before plot.</span>
+<span class="sd">        (e.g. {'operation':'-','operand':273.15} or</span>
+<span class="sd">        {'operation':'exp'}) on the field before plot.</span>
 <span class="sd">    :param global_shift_center: for global lon/lat grids, shift the center by the</span>
 <span class="sd">        requested angle (in degrees). Enables a [0,360] grid</span>
 <span class="sd">        to be shifted to a [-180,180] grid, for instance (with -180 argument).</span>
@@ -135,21 +136,21 @@
 <span class="sd">    Graphical settings:</span>
 
 <span class="sd">    :param plot_method: matplotlib plotting method to be used, among</span>
-<span class="sd">        (&#39;pcolormesh&#39;, &#39;contourf&#39;, &#39;contour&#39;, &#39;scatter&#39;).</span>
+<span class="sd">        ('pcolormesh', 'contourf', 'contour', 'scatter').</span>
 <span class="sd">    :param minmax: tuple giving (or not) min and max fields values to be plotted.</span>
 <span class="sd">    :param colorsnumber: number of color discretization/isolines for fields plots.</span>
 <span class="sd">    :param colormap: name of the colormap for fields plots.</span>
 <span class="sd">    :param center_cmap_on_0: to center the colormap on 0.</span>
 <span class="sd">    :param mask_threshold: dict with min and/or max value(s) to mask outside.</span>
-<span class="sd">    :param scatter_kw: kwargs to be passed to matplotlib&#39;s ax.scatter().</span>
-<span class="sd">        Only for plot_method = &#39;scatter&#39;.</span>
+<span class="sd">    :param scatter_kw: kwargs to be passed to matplotlib's ax.scatter().</span>
+<span class="sd">        Only for plot_method = 'scatter'.</span>
 
 <span class="sd">    Cartography:</span>
 
 <span class="sd">    :param meridians and parallels: enable to fine-tune the choice of lines to</span>
 <span class="sd">        plot, with either:</span>
-<span class="sd">        - &#39;auto&#39;: automatic scaling to the map extents</span>
-<span class="sd">        - &#39;default&#39;: range(0,360,10) and range(-90,90,10)</span>
+<span class="sd">        - 'auto': automatic scaling to the map extents</span>
+<span class="sd">        - 'default': range(0,360,10) and range(-90,90,10)</span>
 <span class="sd">        - a list of values</span>
 <span class="sd">        - a grid step, e.g. 5 to plot each 5 degree.</span>
 <span class="sd">        - None: no one is plot</span>
@@ -159,9 +160,9 @@
 <span class="sd">    Vector plots:</span>
 
 <span class="sd">    :param vectors_subsampling: subsampling ratio of vectors plots.</span>
-<span class="sd">    :param vector_plot_method: among (&#39;quiver&#39;, &#39;barbs&#39;, &#39;streamplot&#39;) for vector plots.</span>
+<span class="sd">    :param vector_plot_method: among ('quiver', 'barbs', 'streamplot') for vector plots.</span>
 <span class="sd">    :param wind_components_are_projected_on: inform the plot on which axes the</span>
-<span class="sd">        vector components are projected on (&#39;grid&#39; or &#39;lonlat&#39;).</span>
+<span class="sd">        vector components are projected on ('grid' or 'lonlat').</span>
 <span class="sd">        If None (default), look for information in the field, or raise error.</span>
 <span class="sd">    :param quiverkey: options to be passed to plotfield to activate a quiver key</span>
 <span class="sd">        (cf. pyplot.quiverkey).</span>
@@ -174,18 +175,18 @@
 <span class="sd">    :param outputfilename: specify an output filename for the plot,</span>
 <span class="sd">        including format as extension.</span>
 <span class="sd">    :param figures_dpi: quality of saved figures.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># 0/ checks, determine mode, initializations</span>
     <span class="c1"># checks</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">Ufid</span><span class="p">,</span> <span class="n">Vfid</span><span class="p">)]),</span> <span class="s2">&quot;Mandatory arguments: *fid* OR *Ufid/Vfid*.&quot;</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">Ufid</span><span class="p">,</span> <span class="n">Vfid</span><span class="p">)]),</span> <span class="s2">"Mandatory arguments: *fid* OR *Ufid/Vfid*."</span>
     <span class="k">if</span> <span class="n">fid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">Ufid</span> <span class="ow">is</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Exclusive arguments: *fid* OR *Ufid/Vfid*.&quot;</span>
+        <span class="k">assert</span> <span class="n">Ufid</span> <span class="ow">is</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Exclusive arguments: *fid* OR *Ufid/Vfid*."</span>
     <span class="k">if</span> <span class="n">Ufid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Arguments Ufid/Vfid got by pair.&quot;</span>
+        <span class="k">assert</span> <span class="n">Vfid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Arguments Ufid/Vfid got by pair."</span>
     <span class="c1"># mode</span>
     <span class="n">windmode</span> <span class="o">=</span> <span class="n">fid</span> <span class="ow">is</span> <span class="kc">None</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">diffmode</span> <span class="ow">and</span> <span class="n">windmode</span><span class="p">),</span> <span class="s2">&quot;Exclusive options: diff to reference file and wind plot.&quot;</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">diffmode</span> <span class="ow">and</span> <span class="n">windmode</span><span class="p">),</span> <span class="s2">"Exclusive options: diff to reference file and wind plot."</span>
     <span class="c1"># plot options</span>
     <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="c1"># graphical settings</span>
@@ -209,11 +210,11 @@
         <span class="n">zoom</span><span class="o">=</span><span class="n">zoom</span><span class="p">)</span>
 
     <span class="c1"># 1/ resource(s)</span>
-    <span class="n">resource</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">&#39;DDHLFA&#39;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s1">&#39;use ddhlfa_plot.py tool for DDHLFA files.&#39;</span><span class="p">)</span>
+    <span class="n">resource</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">'DDHLFA'</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s1">'use ddhlfa_plot.py tool for DDHLFA files.'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">diffmode</span><span class="p">:</span>
-        <span class="n">reference</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">refname</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">formats</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="n">refname</span><span class="p">,</span> <span class="n">openmode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">windmode</span><span class="p">:</span>
         <span class="c1"># 2.1/ wind</span>
@@ -223,10 +224,10 @@
                                 <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
         <span class="n">field</span> <span class="o">=</span> <span class="n">epygram</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">make_vector_field</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
         <span class="n">takeover</span> <span class="o">=</span> <span class="n">wind_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">map_factor_correction</span><span class="p">,</span> <span class="n">vectors_subsampling</span><span class="p">,</span> <span class="n">wind_components_are_projected_on</span><span class="p">,</span>
                             <span class="n">vector_plot_method</span><span class="p">,</span> <span class="n">quiverkey</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
-        <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">'fig'</span><span class="p">]</span>
 
 
     <span class="k">else</span><span class="p">:</span>
@@ -240,24 +241,24 @@
                                             <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
-                <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">resource</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">resource</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span> <span class="o">+</span> <span class="s1">' - '</span> <span class="o">+</span>
                                        <span class="n">reference</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span>
                                        <span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
             <span class="n">takeover</span> <span class="o">=</span> <span class="n">difference_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">'fig'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># 2.2.2/ plot single scalar fields</span>
             <span class="n">field</span> <span class="o">=</span> <span class="n">read_and_preprocess</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span>
                                         <span class="o">**</span><span class="n">preprocess_options</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">fid</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">validity</span><span class="o">.</span><span class="n">get</span><span class="p">())])</span>
             <span class="n">takeover</span> <span class="o">=</span> <span class="n">scalar_map</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="p">)</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">&#39;fig&#39;</span><span class="p">]</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">takeover</span><span class="p">[</span><span class="s1">'fig'</span><span class="p">]</span>
 
     <span class="c1"># 3/ output</span>
     <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
-        <span class="n">epylog</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;save plot...&quot;</span><span class="p">)</span>
-        <span class="n">save_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">figures_dpi</span><span class="p">)</span>
+        <span class="n">epylog</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"save plot..."</span><span class="p">)</span>
+        <span class="n">save_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">'tight'</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">figures_dpi</span><span class="p">)</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outputfilename</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
@@ -269,7 +270,7 @@
     <span class="c1"># 1. Parse arguments</span>
     <span class="c1">####################</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">        Tool to plot maps of meteorological or snow cover related 2D</span>
 <span class="s2">        fields. Provide either a graphical user interface (GUI) or</span>
 <span class="s2">        do plots based on command line arguments.</span>
@@ -281,61 +282,61 @@
 <span class="s2">        To do directly a plot without graphical interaction, you can</span>
 <span class="s2">        use all arguments below. Make sure to use --directplot or</span>
 <span class="s2">        --outputfilename flag.</span>
-<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+<span class="s2">        """</span><span class="p">),</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">,</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="s1">&#39;(Use EPyGrAM v&#39;</span> <span class="o">+</span> <span class="n">epygram</span><span class="o">.</span><span class="n">__version__</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s1">'(Use EPyGrAM v'</span> <span class="o">+</span> <span class="n">epygram</span><span class="o">.</span><span class="n">__version__</span> <span class="o">+</span> <span class="s1">')'</span><span class="p">)</span>
 
     <span class="n">add_arg_to_parser</span><span class="p">(</span>
         <span class="n">parser</span><span class="p">,</span>
-        <span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span>
-         <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s1">&#39;name of the file to be processed.&#39;</span><span class="p">)])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;field&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;windfieldU&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">&#39;windfieldV&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;--date&#39;</span><span class="p">,</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">,</span>
-                                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Selected date in a bronx.Date compatible string format&quot;</span><span class="p">,</span> <span class="p">)])</span>
+        <span class="p">[</span><span class="s1">'filename'</span><span class="p">,</span>
+         <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">'?'</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s1">'name of the file to be processed.'</span><span class="p">)])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">'field'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">'windfieldU'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">fields_args</span><span class="p">[</span><span class="s1">'windfieldV'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="p">[</span><span class="s1">'--date'</span><span class="p">,</span>
+                               <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">'date'</span><span class="p">,</span>
+                                    <span class="n">help</span><span class="o">=</span><span class="s2">"Selected date in a bronx.Date compatible string format"</span><span class="p">,</span> <span class="p">)])</span>
 
     <span class="n">diffmodes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">diffmodes</span><span class="p">,</span> <span class="n">files_args</span><span class="p">[</span><span class="s1">&#39;file_to_refer_in_diff&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">diffmodes</span><span class="p">,</span> <span class="n">files_args</span><span class="p">[</span><span class="s1">'file_to_refer_in_diff'</span><span class="p">])</span>
 
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;operation_on_field&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;mask_threshold&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;wind_components_are_projected_on&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">&#39;map_factor_correction&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">'operation_on_field'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">'mask_threshold'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">'wind_components_are_projected_on'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">misc_args</span><span class="p">[</span><span class="s1">'map_factor_correction'</span><span class="p">])</span>
 
     <span class="c1"># graphics</span>
     <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="p">[</span>
-        <span class="s2">&quot;--directplot&quot;</span><span class="p">,</span>
+        <span class="s2">"--directplot"</span><span class="p">,</span>
         <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do a non-interactive plot taking into account all options rather than using the GUI.&quot;</span><span class="p">)])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;plot_method&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;minmax&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;levels_number&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;colormap&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;YlGnBu&#39;</span><span class="p">)</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;center_cmap_on_0&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;cartopy_features&#39;</span><span class="p">],</span>
-                      <span class="n">help</span><span class="o">=</span><span class="s2">&quot;cartopy features (cartopy.feature.*), separated by comma &quot;</span> <span class="o">+</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"Do a non-interactive plot taking into account all options rather than using the GUI."</span><span class="p">)])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'plot_method'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'minmax'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'levels_number'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'colormap'</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">'YlGnBu'</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'center_cmap_on_0'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'title'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'cartopy_features'</span><span class="p">],</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s2">"cartopy features (cartopy.feature.*), separated by comma "</span> <span class="o">+</span>
                       <span class="nb">str</span><span class="p">(</span><span class="n">CFEATURES</span><span class="p">))</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;french_departments&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;parallels&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;meridians&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;vectors_subsampling&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;scatter_kw&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;lonlat_zoom&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;vector_plot_method&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;quiverkey&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;figures_dpi&#39;</span><span class="p">])</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;global_shift_center&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'french_departments'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'parallels'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'meridians'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'vectors_subsampling'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'scatter_kw'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'lonlat_zoom'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'vector_plot_method'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'quiverkey'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'figures_dpi'</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'global_shift_center'</span><span class="p">])</span>
     <span class="c1"># diff</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;diffcolormap&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">)</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">&#39;diff_center_cmap_on_0&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'diffcolormap'</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s1">'RdBu_r'</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">graphical_args</span><span class="p">[</span><span class="s1">'diff_center_cmap_on_0'</span><span class="p">])</span>
     <span class="c1"># output</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">output_args</span><span class="p">[</span><span class="s1">&#39;outputfilename&#39;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">runtime_args</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">])</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">output_args</span><span class="p">[</span><span class="s1">'outputfilename'</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">add_arg_to_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">runtime_args</span><span class="p">[</span><span class="s1">'verbose'</span><span class="p">])</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
@@ -343,9 +344,9 @@
     <span class="c1">####################</span>
     <span class="n">epygram</span><span class="o">.</span><span class="n">init_env</span><span class="p">()</span>
     <span class="c1"># 2.0 logs</span>
-    <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;WARNING&#39;</span><span class="p">)</span>
+    <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">'WARNING'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-        <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
+        <span class="n">epylog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">'INFO'</span><span class="p">)</span>
 
     <span class="c1"># 2.0.1 GUI</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">directplot</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -359,7 +360,7 @@
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">variable</span> <span class="o">=</span> <span class="n">fileobj</span><span class="o">.</span><span class="n">variable_desc</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">field</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">variable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable</span><span class="p">[</span><span class="s1">&#39;full_name&#39;</span><span class="p">]</span>
+                <span class="n">arguments</span><span class="p">[</span><span class="s1">'variable'</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable</span><span class="p">[</span><span class="s1">'full_name'</span><span class="p">]</span>
         <span class="n">main_gui</span><span class="p">(</span><span class="n">fileobj</span><span class="o">=</span><span class="n">fileobj</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="n">arguments</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
@@ -375,7 +376,7 @@
         <span class="n">center_cmap_on_0</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">center_cmap_on_0</span>
         <span class="n">colormap</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">colormap</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">minmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">minmax</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">minmax</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">minmax</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">minmax</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">minmax</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">zoom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -383,26 +384,26 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">zoom</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">operation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_operation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-        <span class="n">operation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;operation&#39;</span><span class="p">:</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
+        <span class="n">_operation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">operation</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
+        <span class="n">operation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'operation'</span><span class="p">:</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_operation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">operation</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+            <span class="n">operation</span><span class="p">[</span><span class="s1">'operand'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_operation</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">operation</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span> <span class="o">==</span> <span class="s1">'None'</span><span class="p">:</span>
         <span class="n">parallels</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">elif</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="p">:</span>
-        <span class="n">parallels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="s1">','</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="p">:</span>
+        <span class="n">parallels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">parallels</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">parallels</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="n">parallels</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">parallels</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span> <span class="o">==</span> <span class="s1">'None'</span><span class="p">:</span>
         <span class="n">meridians</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">elif</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="p">:</span>
-            <span class="n">meridians</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="s1">','</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="p">:</span>
+            <span class="n">meridians</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">meridians</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">meridians</span><span class="p">)</span>
@@ -412,7 +413,7 @@
         <span class="n">mask_threshold</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">mask_threshold</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mask_threshold</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
         <span class="n">quiverkey</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">quiverkey</span> <span class="o">=</span> <span class="n">str2dict</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">quiverkey</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
@@ -421,7 +422,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">scatter_kw</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cartopy_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">cartopy_features</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cartopy_features</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">cartopy_features</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">cartopy_features</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">cartopy_features</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span><span class="p">:</span>
@@ -432,14 +433,14 @@
     <span class="c1"># 2.2 field to be processed</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">Ucomponentofwind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">Vcomponentofwind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">Ucomponentofwind</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">Vcomponentofwind</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">&quot;wind mode: both U &amp; V components of wind must be supplied&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">"wind mode: both U &amp; V components of wind must be supplied"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">diffmode</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;diffmode (-d/D) AND wind mode (--wU/wV) options together.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"diffmode (-d/D) AND wind mode (--wU/wV) options together."</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">&quot;Need to specify a field (-f) or two wind fields (--wU/--wV).&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">epygramError</span><span class="p">(</span><span class="s2">"Need to specify a field (-f) or two wind fields (--wU/--wV)."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need to specify a date (--date).&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Need to specify a date (--date)."</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
 
@@ -483,7 +484,7 @@
          <span class="n">outputfilename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">outputfilename</span><span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

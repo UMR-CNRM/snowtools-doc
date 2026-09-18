@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Vortex-cen Resources &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Vortex-cen Providers" href="vortex-cen-providers.html" />
+    <link rel="prev" title="The vortex-cen plugin" href="vortex-cen-index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-providers.html" title="Vortex-cen Providers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-index.html" title="The vortex-cen plugin"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="vortex-cen-index.html" accesskey="U">The vortex-cen plugin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Vortex-cen Resources</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-vortex_cen.data">
+<span id="vortex-cen-resources"></span><h1>Vortex-cen Resources<a class="headerlink" href="#module-vortex_cen.data" title="Link to this heading">¶</a></h1>
+<p>Specific CEN data resources.</p>
+<section id="flow-py">
+<span id="module-vortex_cen.data.flow"></span><h2>flow.py<a class="headerlink" href="#flow-py" title="Link to this heading">¶</a></h2>
+<p>Abstract base classes for all SURFEX/Crocus IO flow resources.</p>
+<div class="graphviz"><img src="../_images/inheritance-cc37874e7b06718d88b28330a8a694d63e599caf.png" alt="Inheritance diagram of vortex_cen.data.flow" usemap="#inheritance51adec4513" class="inheritance graphviz" /></div>
+<map id="inheritance51adec4513" name="inheritance51adec4513">
+<area shape="rect" id="node4" href="#vortex_cen.data.flow.SurfaceIO" target="_top" title="Abstract base classe for all surface IO flow resources used in snowpack simulations." alt="" coords="484,5,569,31"/>
+<area shape="rect" id="node5" href="#vortex_cen.data.flow.SurfaceIOVortex1" target="_top" title="This class is here for retro&#45;compatibilty with resources produced before the migration to vortex2" alt="" coords="617,5,752,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.flow.</span></span><span class="sig-name descname"><span class="pre">SurfaceIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/flow.html#SurfaceIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Abstract base classe for all surface IO flow resources used in snowpack simulations.
+<cite>SurfaceIO</cite> resources are NetCDF files covering a time period defined by the <cite>datebegin</cite> and <cite>dateend</cite> footprints.
+Note that the <cite>date</cite> and <cite>cutoff</cite> footprints comonly used in NWP applications are optional and used only in
+an operational context.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.clscontents">
+<span class="sig-name descname"><span class="pre">clscontents</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.clscontents" title="Link to this definition">¶</a></dt>
+<dd><p>The class instantiated to read the container’s content</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.cutoff" title="Link to this definition">¶</a></dt>
+<dd><p>The cutoff type of the generating process.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.date" title="Link to this definition">¶</a></dt>
+<dd><p>The generating process run date.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.datebegin">
+<span class="sig-name descname"><span class="pre">datebegin</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.datebegin" title="Link to this definition">¶</a></dt>
+<dd><p>First date of the forcing file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.dateend">
+<span class="sig-name descname"><span class="pre">dateend</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.dateend" title="Link to this definition">¶</a></dt>
+<dd><p>Last date of the forcing file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.generic_pathinfo">
+<span class="sig-name descname"><span class="pre">generic_pathinfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.generic_pathinfo" title="Link to this definition">¶</a></dt>
+<dd><p>Returns anonymous dict with suitable informations from vortex point of view.
+Doomed to be overwritten.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.geometry">
+<span class="sig-name descname"><span class="pre">geometry</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.geometry" title="Link to this definition">¶</a></dt>
+<dd><p>The resource’s massif geometry.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.model" title="Link to this definition">¶</a></dt>
+<dd><p>The model name (from a source code perspective).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.namebuilding_info">
+<span class="sig-name descname"><span class="pre">namebuilding_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.namebuilding_info" title="Link to this definition">¶</a></dt>
+<dd><p>Returns anonymous dict with suitable informations from vortex point of view.
+In real world, probably doomed to return an empty dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.nativefmt">
+<span class="sig-name descname"><span class="pre">nativefmt</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.nativefmt" title="Link to this definition">¶</a></dt>
+<dd><p>The resource’s storage format.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIO.realkind">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">realkind</span></span><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIO.realkind" title="Link to this definition">¶</a></dt>
+<dd><p>Actual footprint kind, by default the clskind.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.flow.SurfaceIOVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.flow.</span></span><span class="sig-name descname"><span class="pre">SurfaceIOVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/flow.html#SurfaceIOVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.flow.SurfaceIOVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>This class is here for retro-compatibilty with resources produced before the migration to vortex2</p>
+</dd></dl>
+
+</section>
+<section id="surfex-py">
+<span id="module-vortex_cen.data.surfex"></span><h2>surfex.py<a class="headerlink" href="#surfex-py" title="Link to this heading">¶</a></h2>
+<p>SURFEX/Crocus output resources.</p>
+<div class="graphviz"><img src="../_images/inheritance-b704749816aad1a49c4b79f639267510db062508.png" alt="Inheritance diagram of Prep" usemap="#inheritance5fb2308eda" class="inheritance graphviz" /></div>
+<map id="inheritance5fb2308eda" name="inheritance5fb2308eda">
+<area shape="rect" id="node2" href="#vortex_cen.data.surfex.Prep" target="_top" title="Class for the SURFEX&#45;Crocus initialisation of the snowpack state." alt="" coords="369,5,575,31"/>
+</map><div class="graphviz"><img src="../_images/inheritance-4edfef142cb0c094940509332a5ee9e67c21bc4c.png" alt="Inheritance diagram of Pro" usemap="#inheritance7e74c4bbc4" class="inheritance graphviz" /></div>
+<map id="inheritance7e74c4bbc4" name="inheritance7e74c4bbc4">
+<area shape="rect" id="node1" href="#vortex_cen.data.flow.SurfaceIO" target="_top" title="Abstract base classe for all surface IO flow resources used in snowpack simulations." alt="" coords="5,5,120,31"/>
+<area shape="rect" id="node2" href="#vortex_cen.data.surfex.Pro" target="_top" title="Class for the SURFEX/Crocus output files." alt="" coords="168,5,256,31"/>
+</map><div class="graphviz"><img src="../_images/inheritance-ac66fd8a4fd09f01f5599da8031b08ca21755c53.png" alt="Inheritance diagram of PrepVortex1" usemap="#inheritance5ffc1e1c84" class="inheritance graphviz" /></div>
+<map id="inheritance5ffc1e1c84" name="inheritance5ffc1e1c84">
+<area shape="rect" id="node2" href="#vortex_cen.data.surfex.PrepVortex1" target="_top" title="Class for the SURFEX&#45;Crocus initialisation of the snowpack state." alt="" coords="369,5,624,31"/>
+</map><div class="graphviz"><img src="../_images/inheritance-f22da0f3ebcbe98c3dbf34e5157f63be203a4034.png" alt="Inheritance diagram of ProVortex1" usemap="#inheritance9651335771" class="inheritance graphviz" /></div>
+<map id="inheritance9651335771" name="inheritance9651335771">
+<area shape="rect" id="node1" href="#vortex_cen.data.flow.SurfaceIOVortex1" target="_top" title="This class is here for retro&#45;compatibilty with resources produced before the migration to vortex2" alt="" coords="5,5,171,31"/>
+<area shape="rect" id="node2" href="#vortex_cen.data.surfex.ProVortex1" target="_top" title="Class for the SURFEX/Crocus output files." alt="" coords="219,5,357,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.surfex.Pro">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.surfex.</span></span><span class="sig-name descname"><span class="pre">Pro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/surfex.html#Pro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.surfex.Pro" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>Class for the SURFEX/Crocus output files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.surfex.Prep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.surfex.</span></span><span class="sig-name descname"><span class="pre">Prep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/surfex.html#Prep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.surfex.Prep" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">InitialCondition</span></code></p>
+<p>Class for the SURFEX-Crocus initialisation of the snowpack state.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.surfex.ProVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.surfex.</span></span><span class="sig-name descname"><span class="pre">ProVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/surfex.html#ProVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.surfex.ProVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIOVortex1" title="vortex_cen.data.flow.SurfaceIOVortex1"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIOVortex1</span></code></a></p>
+<p>Class for the SURFEX/Crocus output files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.surfex.PrepVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.surfex.</span></span><span class="sig-name descname"><span class="pre">PrepVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/surfex.html#PrepVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.surfex.PrepVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">InitialCondition</span></code></p>
+<p>Class for the SURFEX-Crocus initialisation of the snowpack state.</p>
+</dd></dl>
+
+</section>
+<section id="consts-py">
+<span id="module-vortex_cen.data.consts"></span><h2>consts.py<a class="headerlink" href="#consts-py" title="Link to this heading">¶</a></h2>
+<p>Specific CEN “genv” resources.</p>
+<div class="graphviz"><img src="../_images/inheritance-d81d1d9308833ea356e2dc25c25de3c8608733c9.png" alt="Inheritance diagram of vortex_cen.data.consts" usemap="#inheritance68a2462897" class="inheritance graphviz" /></div>
+<map id="inheritance68a2462897" name="inheritance68a2462897">
+<area shape="rect" id="node4" href="#vortex_cen.data.consts.GridTarget" target="_top" title="Resource describing a grid for interpolation of data based on massifs geometry" alt="" coords="387,153,631,179"/>
+<area shape="rect" id="node5" href="#vortex_cen.data.consts.Params" target="_top" title="Not documented yet." alt="" coords="396,203,621,228"/>
+<area shape="rect" id="node8" href="#vortex_cen.data.consts.SAFRANList" target="_top" title="Not documented yet." alt="" coords="381,252,636,277"/>
+<area shape="rect" id="node9" href="#vortex_cen.data.consts.climTG" target="_top" title="Ground temperature climatological resource." alt="" coords="397,301,620,327"/>
+<area shape="rect" id="node6" href="#vortex_cen.data.consts.Prosnow_SetUp_Global" target="_top" title="Prosnow general setup file." alt="" coords="345,55,672,80"/>
+<area shape="rect" id="node7" href="#vortex_cen.data.consts.Prosnow_SetUp_Resort" target="_top" title="Prosnow ski&#45;resort setup file." alt="" coords="345,104,672,129"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.SAFRANList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">SAFRANList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#SAFRANList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.SAFRANList" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelGeoResource</span></code></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.Params">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">Params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#Params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.Params" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelGeoResource</span></code></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.climTG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">climTG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#climTG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.climTG" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelGeoResource</span></code></p>
+<p>Ground temperature climatological resource.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.GridTarget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">GridTarget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#GridTarget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.GridTarget" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelGeoResource</span></code></p>
+<p>Resource describing a grid for interpolation of data based on massifs geometry</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.Prosnow_SetUp_Global">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">Prosnow_SetUp_Global</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#Prosnow_SetUp_Global"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.Prosnow_SetUp_Global" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelResource</span></code></p>
+<p>Prosnow general setup file.</p>
+<p>This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.consts.Prosnow_SetUp_Resort">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.consts.</span></span><span class="sig-name descname"><span class="pre">Prosnow_SetUp_Resort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/consts.html#Prosnow_SetUp_Resort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.consts.Prosnow_SetUp_Resort" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GenvModelResource</span></code></p>
+<p>Prosnow ski-resort setup file.</p>
+<p>This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</p>
+</dd></dl>
+
+</section>
+<section id="meteo-py">
+<span id="module-vortex_cen.data.meteo"></span><h2>meteo.py<a class="headerlink" href="#meteo-py" title="Link to this heading">¶</a></h2>
+<p>Resources related to SURFEX/Crocus meteorological FORCINGs</p>
+<div class="graphviz"><img src="../_images/inheritance-6e25fb66f9478447bbfd1769a892067477aca1e2.png" alt="Inheritance diagram of vortex_cen.data.meteo" usemap="#inheritance742bd3ab62" class="inheritance graphviz" /></div>
+<map id="inheritance742bd3ab62" name="inheritance742bd3ab62">
+<area shape="rect" id="node1" href="#vortex_cen.data.flow.SurfaceIO" target="_top" title="Abstract base classe for all surface IO flow resources used in snowpack simulations." alt="" coords="31,55,145,80"/>
+<area shape="rect" id="node3" href="#vortex_cen.data.meteo.SurfaceForcing" target="_top" title="Class for all kind of meteorological forcing files." alt="" coords="244,55,408,80"/>
+<area shape="rect" id="node2" href="#vortex_cen.data.flow.SurfaceIOVortex1" target="_top" title="This class is here for retro&#45;compatibilty with resources produced before the migration to vortex2" alt="" coords="5,5,171,31"/>
+<area shape="rect" id="node4" href="#vortex_cen.data.meteo.SurfaceForcingVortex1" target="_top" title="This class is here for retro&#45;compatibilty with resources produced before the migration to vortex2" alt="" coords="219,5,433,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.meteo.SurfaceForcing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.meteo.</span></span><span class="sig-name descname"><span class="pre">SurfaceForcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/meteo.html#SurfaceForcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.meteo.SurfaceForcing" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>Class for all kind of meteorological forcing files.
+Files containing only some meteorological forcing variables can be identsince forcing
+different kind, which may be usefull for the developpement of EDELWEISS while forcing
+variables come from different sources (SAFRAN, PE-AROME, ANTILOPE,…)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.meteo.SurfaceForcingVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.meteo.</span></span><span class="sig-name descname"><span class="pre">SurfaceForcingVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/meteo.html#SurfaceForcingVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.meteo.SurfaceForcingVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIOVortex1" title="vortex_cen.data.flow.SurfaceIOVortex1"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIOVortex1</span></code></a></p>
+<p>This class is here for retro-compatibilty with resources produced before the migration to vortex2</p>
+</dd></dl>
+
+</section>
+<section id="obs-py">
+<span id="module-vortex_cen.data.obs"></span><h2>obs.py<a class="headerlink" href="#obs-py" title="Link to this heading">¶</a></h2>
+<p>Snow observation resources</p>
+<div class="graphviz"><img src="../_images/inheritance-c6b4687a0e49cb918221f3cee9131ac4f03400c1.png" alt="Inheritance diagram of vortex_cen.data.obs" usemap="#inheritance6cb9fd7859" class="inheritance graphviz" /></div>
+<map id="inheritance6cb9fd7859" name="inheritance6cb9fd7859">
+<area shape="rect" id="node2" href="#vortex_cen.data.flow.SurfaceIO" target="_top" title="Abstract base classe for all surface IO flow resources used in snowpack simulations." alt="" coords="265,5,463,27"/>
+<area shape="rect" id="node3" href="#vortex_cen.data.obs.SnowObs" target="_top" title="Abstract class for snow observations in netcdf format (unknown time management)" alt="" coords="268,48,460,70"/>
+<area shape="rect" id="node6" href="#vortex_cen.data.obs.SurfaceObservations" target="_top" title="Class for all kind of meteorological observation files." alt="" coords="505,5,763,27"/>
+<area shape="rect" id="node4" href="#vortex_cen.data.obs.SnowObsOneDate" target="_top" title="Snow observations covering at a given date in netcdf format" alt="" coords="513,48,755,70"/>
+<area shape="rect" id="node5" href="#vortex_cen.data.obs.SnowObsPeriod" target="_top" title="Snow observations covering a time period in netcdf format" alt="" coords="520,92,748,114"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.obs.SnowObs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.obs.</span></span><span class="sig-name descname"><span class="pre">SnowObs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/obs.html#SnowObs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.obs.SnowObs" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Abstract class for snow observations in netcdf format (unknown time management)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.obs.SnowObsPeriod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.obs.</span></span><span class="sig-name descname"><span class="pre">SnowObsPeriod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/obs.html#SnowObsPeriod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.obs.SnowObsPeriod" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.obs.SnowObs" title="vortex_cen.data.obs.SnowObs"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowObs</span></code></a></p>
+<p>Snow observations covering a time period in netcdf format</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.obs.SnowObsOneDate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.obs.</span></span><span class="sig-name descname"><span class="pre">SnowObsOneDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/obs.html#SnowObsOneDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.obs.SnowObsOneDate" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.obs.SnowObs" title="vortex_cen.data.obs.SnowObs"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnowObs</span></code></a></p>
+<p>Snow observations covering at a given date in netcdf format</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.obs.SurfaceObservations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.obs.</span></span><span class="sig-name descname"><span class="pre">SurfaceObservations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/obs.html#SurfaceObservations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.obs.SurfaceObservations" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>Class for all kind of meteorological observation files.</p>
+</dd></dl>
+
+</section>
+<section id="assim-py">
+<span id="module-vortex_cen.data.assim"></span><h2>assim.py<a class="headerlink" href="#assim-py" title="Link to this heading">¶</a></h2>
+<p>SODA output resources</p>
+<div class="graphviz"><img src="../_images/inheritance-386e869a1a0c612dcf54e2686118b2da47e6458b.png" alt="Inheritance diagram of vortex_cen.data.assim" usemap="#inheritance46c39dba2e" class="inheritance graphviz" /></div>
+<map id="inheritance46c39dba2e" name="inheritance46c39dba2e">
+<area shape="rect" id="node2" href="#vortex_cen.data.assim.PfSample" target="_top" title="Class for SODA particle filter outputs (text files at each assim step)" alt="" coords="301,5,537,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.assim.PfSample">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.assim.</span></span><span class="sig-name descname"><span class="pre">PfSample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/assim.html#PfSample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.assim.PfSample" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Class for SODA particle filter outputs (text files at each assim step)</p>
+</dd></dl>
+
+</section>
+<section id="safran-py">
+<span id="module-vortex_cen.data.safran"></span><h2>safran.py<a class="headerlink" href="#safran-py" title="Link to this heading">¶</a></h2>
+<p>SAFRAN-specific flow resources.</p>
+<div class="graphviz"><img src="../_images/inheritance-ce18e858adbd1f9b8f1b075d2a17d5c08a3bdaee.png" alt="Inheritance diagram of vortex_cen.data.safran" usemap="#inheritance87499dfc46" class="inheritance graphviz" /></div>
+<map id="inheritance87499dfc46" name="inheritance87499dfc46">
+<area shape="rect" id="node3" href="#vortex_cen.data.packedfiles.CenPackedFiles" target="_top" title="Abstract class for CEN archives to reduce the number of small files." alt="" coords="276,76,501,95"/>
+<area shape="rect" id="node4" href="#vortex_cen.data.safran.SafranGuess" target="_top" title="Class for the guess file (P ou E file) that is used by SAFRAN." alt="" coords="294,112,483,131"/>
+<area shape="rect" id="node8" href="#vortex_cen.data.safran.SafranPackedFilesVortex1" target="_top" title="Class for SAFRAN archives." alt="" coords="263,149,514,167"/>
+<area shape="rect" id="node6" href="#vortex_cen.data.safran.SafranObsRaw" target="_top" title="Not documented yet." alt="" coords="289,40,488,59"/>
+<area shape="rect" id="node7" href="#vortex_cen.data.safran.SafranPackedFiles" target="_top" title="Class for SAFRAN archives." alt="" coords="549,76,764,95"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.safran.SafranGuess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.safran.</span></span><span class="sig-name descname"><span class="pre">SafranGuess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/safran.html#SafranGuess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.safran.SafranGuess" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Class for the guess file (P ou E file) that is used by SAFRAN.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.safran.SafranObsRaw">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.safran.</span></span><span class="sig-name descname"><span class="pre">SafranObsRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/safran.html#SafranObsRaw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.safran.SafranObsRaw" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObsRaw</span></code></p>
+<p>Not documented yet.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.safran.SafranPackedFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.safran.</span></span><span class="sig-name descname"><span class="pre">SafranPackedFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/safran.html#SafranPackedFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.safran.SafranPackedFiles" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.packedfiles.CenPackedFiles" title="vortex_cen.data.packedfiles.CenPackedFiles"><code class="xref py py-class docutils literal notranslate"><span class="pre">CenPackedFiles</span></code></a></p>
+<p>Class for SAFRAN archives.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.safran.SafranPackedFilesVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.safran.</span></span><span class="sig-name descname"><span class="pre">SafranPackedFilesVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/safran.html#SafranPackedFilesVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.safran.SafranPackedFilesVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Class for SAFRAN archives.</p>
+</dd></dl>
+
+</section>
+<section id="packedfiles-py">
+<span id="module-vortex_cen.data.packedfiles"></span><h2>packedfiles.py<a class="headerlink" href="#packedfiles-py" title="Link to this heading">¶</a></h2>
+<p>Packed resources (tar files) including several small files.</p>
+<div class="graphviz"><img src="../_images/inheritance-786d43aa2b0230f9dd144071c390f9d7e9037c28.png" alt="Inheritance diagram of vortex_cen.data.packedfiles" usemap="#inheritance3b255c64bf" class="inheritance graphviz" /></div>
+<map id="inheritance3b255c64bf" name="inheritance3b255c64bf">
+<area shape="rect" id="node2" href="#vortex_cen.data.packedfiles.CenPackedFiles" target="_top" title="Abstract class for CEN archives to reduce the number of small files." alt="" coords="234,4,474,24"/>
+<area shape="rect" id="node3" href="#vortex_cen.data.packedfiles.SurfexPackedFiles" target="_top" title="Class for Surfex packed files." alt="" coords="511,4,764,24"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.packedfiles.CenPackedFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.packedfiles.</span></span><span class="sig-name descname"><span class="pre">CenPackedFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/packedfiles.html#CenPackedFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.packedfiles.CenPackedFiles" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">GeoFlowResource</span></code></p>
+<p>Abstract class for CEN archives to reduce the number of small files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.packedfiles.SurfexPackedFiles">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.packedfiles.</span></span><span class="sig-name descname"><span class="pre">SurfexPackedFiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/packedfiles.html#SurfexPackedFiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.packedfiles.SurfexPackedFiles" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.packedfiles.CenPackedFiles" title="vortex_cen.data.packedfiles.CenPackedFiles"><code class="xref py py-class docutils literal notranslate"><span class="pre">CenPackedFiles</span></code></a></p>
+<p>Class for Surfex packed files.</p>
+</dd></dl>
+
+</section>
+<section id="postprocess-py">
+<span id="module-vortex_cen.data.postprocess"></span><h2>postprocess.py<a class="headerlink" href="#postprocess-py" title="Link to this heading">¶</a></h2>
+<p>SURFEX/Crocus post-processing resources.</p>
+<div class="graphviz"><img src="../_images/inheritance-b1e0fe1c57efed315bde0f3b332c4574504f99ec.png" alt="Inheritance diagram of vortex_cen.data.postprocess" usemap="#inheritance40bb109c4f" class="inheritance graphviz" /></div>
+<map id="inheritance40bb109c4f" name="inheritance40bb109c4f">
+<area shape="rect" id="node1" href="#vortex_cen.data.flow.SurfaceIO" target="_top" title="Abstract base classe for all surface IO flow resources used in snowpack simulations." alt="" coords="31,129,145,155"/>
+<area shape="rect" id="node3" href="#vortex_cen.data.postprocess.Postproc" target="_top" title="Class for post&#45;processed SURFEX/Crocus output files." alt="" coords="255,104,415,129"/>
+<area shape="rect" id="node5" href="#vortex_cen.data.postprocess.ScoresSnow" target="_top" title="Class for scores of snow simulations." alt="" coords="243,153,426,179"/>
+<area shape="rect" id="node2" href="#vortex_cen.data.flow.SurfaceIOVortex1" target="_top" title="This class is here for retro&#45;compatibilty with resources produced before the migration to vortex2" alt="" coords="5,31,171,56"/>
+<area shape="rect" id="node4" href="#vortex_cen.data.postprocess.PostprocVortex1" target="_top" title="Class for post&#45;processed SURFEX/Crocus output files." alt="" coords="229,5,440,31"/>
+<area shape="rect" id="node6" href="#vortex_cen.data.postprocess.ScoresSnowVortex1" target="_top" title="Class for scores of snow simulations." alt="" coords="219,55,451,80"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.postprocess.Postproc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.postprocess.</span></span><span class="sig-name descname"><span class="pre">Postproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/postprocess.html#Postproc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.postprocess.Postproc" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>Class for post-processed SURFEX/Crocus output files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.postprocess.ScoresSnow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.postprocess.</span></span><span class="sig-name descname"><span class="pre">ScoresSnow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/postprocess.html#ScoresSnow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.postprocess.ScoresSnow" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO" title="vortex_cen.data.flow.SurfaceIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a></p>
+<p>Class for scores of snow simulations.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.postprocess.PostprocVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.postprocess.</span></span><span class="sig-name descname"><span class="pre">PostprocVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/postprocess.html#PostprocVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.postprocess.PostprocVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIOVortex1" title="vortex_cen.data.flow.SurfaceIOVortex1"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIOVortex1</span></code></a></p>
+<p>Class for post-processed SURFEX/Crocus output files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.postprocess.ScoresSnowVortex1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.postprocess.</span></span><span class="sig-name descname"><span class="pre">ScoresSnowVortex1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/postprocess.html#ScoresSnowVortex1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.postprocess.ScoresSnowVortex1" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vortex_cen.data.flow.SurfaceIOVortex1" title="vortex_cen.data.flow.SurfaceIOVortex1"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceIOVortex1</span></code></a></p>
+<p>Class for scores of snow simulations.</p>
+</dd></dl>
+
+</section>
+<section id="executables-py">
+<span id="module-vortex_cen.data.executables"></span><h2>executables.py<a class="headerlink" href="#executables-py" title="Link to this heading">¶</a></h2>
+<p>Specific CEN executables.</p>
+<div class="graphviz"><img src="../_images/inheritance-6f0847499181bab77ba4466eaef09b4a32986675.png" alt="Inheritance diagram of vortex_cen.data.executables" usemap="#inheritance47c8477a13" class="inheritance graphviz" /></div>
+<map id="inheritance47c8477a13" name="inheritance47c8477a13">
+<area shape="rect" id="node4" href="#vortex_cen.data.executables.SafranGribFiltering" target="_top" title="Base class for the creation of P files used by SAFRAN." alt="" coords="325,55,660,80"/>
+<area shape="rect" id="node3" href="#vortex_cen.data.executables.Safran" target="_top" title="Base class for the Safran model executables." alt="" coords="365,5,620,31"/>
+</map><dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.executables.Safran">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.executables.</span></span><span class="sig-name descname"><span class="pre">Safran</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/executables.html#Safran"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.executables.Safran" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceModel</span></code></p>
+<p>Base class for the Safran model executables.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="vortex_cen.data.executables.SafranGribFiltering">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">vortex_cen.data.executables.</span></span><span class="sig-name descname"><span class="pre">SafranGribFiltering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/vortex_cen/data/executables.html#SafranGribFiltering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#vortex_cen.data.executables.SafranGribFiltering" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Script</span></code></p>
+<p>Base class for the creation of P files used by SAFRAN.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Vortex-cen Resources</a><ul>
+<li><a class="reference internal" href="#flow-py">flow.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO"><code class="docutils literal notranslate"><span class="pre">SurfaceIO</span></code></a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.clscontents"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.clscontents</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.cutoff"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.cutoff</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.date"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.date</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.datebegin"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.datebegin</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.dateend"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.dateend</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.generic_pathinfo"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.generic_pathinfo()</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.geometry"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.geometry</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.model"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.model</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.namebuilding_info"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.namebuilding_info()</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.nativefmt"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.nativefmt</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIO.realkind"><code class="docutils literal notranslate"><span class="pre">SurfaceIO.realkind</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vortex_cen.data.flow.SurfaceIOVortex1"><code class="docutils literal notranslate"><span class="pre">SurfaceIOVortex1</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#surfex-py">surfex.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.surfex.Pro"><code class="docutils literal notranslate"><span class="pre">Pro</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.surfex.Prep"><code class="docutils literal notranslate"><span class="pre">Prep</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.surfex.ProVortex1"><code class="docutils literal notranslate"><span class="pre">ProVortex1</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.surfex.PrepVortex1"><code class="docutils literal notranslate"><span class="pre">PrepVortex1</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#consts-py">consts.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.consts.SAFRANList"><code class="docutils literal notranslate"><span class="pre">SAFRANList</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.consts.Params"><code class="docutils literal notranslate"><span class="pre">Params</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.consts.climTG"><code class="docutils literal notranslate"><span class="pre">climTG</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.consts.GridTarget"><code class="docutils literal notranslate"><span class="pre">GridTarget</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.consts.Prosnow_SetUp_Global"><code class="docutils literal notranslate"><span class="pre">Prosnow_SetUp_Global</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.consts.Prosnow_SetUp_Resort"><code class="docutils literal notranslate"><span class="pre">Prosnow_SetUp_Resort</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#meteo-py">meteo.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.meteo.SurfaceForcing"><code class="docutils literal notranslate"><span class="pre">SurfaceForcing</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.meteo.SurfaceForcingVortex1"><code class="docutils literal notranslate"><span class="pre">SurfaceForcingVortex1</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#obs-py">obs.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.obs.SnowObs"><code class="docutils literal notranslate"><span class="pre">SnowObs</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.obs.SnowObsPeriod"><code class="docutils literal notranslate"><span class="pre">SnowObsPeriod</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.obs.SnowObsOneDate"><code class="docutils literal notranslate"><span class="pre">SnowObsOneDate</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.obs.SurfaceObservations"><code class="docutils literal notranslate"><span class="pre">SurfaceObservations</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#assim-py">assim.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.assim.PfSample"><code class="docutils literal notranslate"><span class="pre">PfSample</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#safran-py">safran.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.safran.SafranGuess"><code class="docutils literal notranslate"><span class="pre">SafranGuess</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.safran.SafranObsRaw"><code class="docutils literal notranslate"><span class="pre">SafranObsRaw</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.safran.SafranPackedFiles"><code class="docutils literal notranslate"><span class="pre">SafranPackedFiles</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.safran.SafranPackedFilesVortex1"><code class="docutils literal notranslate"><span class="pre">SafranPackedFilesVortex1</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#packedfiles-py">packedfiles.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.packedfiles.CenPackedFiles"><code class="docutils literal notranslate"><span class="pre">CenPackedFiles</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.packedfiles.SurfexPackedFiles"><code class="docutils literal notranslate"><span class="pre">SurfexPackedFiles</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#postprocess-py">postprocess.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.postprocess.Postproc"><code class="docutils literal notranslate"><span class="pre">Postproc</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.postprocess.ScoresSnow"><code class="docutils literal notranslate"><span class="pre">ScoresSnow</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.postprocess.PostprocVortex1"><code class="docutils literal notranslate"><span class="pre">PostprocVortex1</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.postprocess.ScoresSnowVortex1"><code class="docutils literal notranslate"><span class="pre">ScoresSnowVortex1</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#executables-py">executables.py</a><ul>
+<li><a class="reference internal" href="#vortex_cen.data.executables.Safran"><code class="docutils literal notranslate"><span class="pre">Safran</span></code></a></li>
+<li><a class="reference internal" href="#vortex_cen.data.executables.SafranGribFiltering"><code class="docutils literal notranslate"><span class="pre">SafranGribFiltering</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="vortex-cen-index.html"
+                          title="previous chapter">The vortex-cen plugin</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="vortex-cen-providers.html"
+                          title="next chapter">Vortex-cen Providers</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vortex/vortex-cen-resources.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-providers.html" title="Vortex-cen Providers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vortex-cen-index.html" title="The vortex-cen plugin"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="vortex-cen-index.html" >The vortex-cen plugin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Vortex-cen Resources</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

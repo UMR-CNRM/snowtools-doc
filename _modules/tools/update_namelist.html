@@ -7,6 +7,7 @@
     <title>tools.update_namelist &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -58,17 +59,17 @@
 
 <div class="viewcode-block" id="update_surfex_namelist_file">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_file">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_file</span><span class="p">(</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">namelistfile</span><span class="o">=</span><span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">,</span>
-                                <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">dateend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_file</span><span class="p">(</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">namelistfile</span><span class="o">=</span><span class="s2">"OPTIONS.nam"</span><span class="p">,</span>
+                                <span class="n">forcing</span><span class="o">=</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="n">dateend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                 <span class="n">physicaloptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">snowparameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">nmembers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                 <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cselect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function updates a namelist file through the bronx module. Called by standalone S2M but not by vortex</span>
+<span class="w">    </span><span class="sd">"""This function updates a namelist file through the bronx module. Called by standalone S2M but not by vortex</span>
 
 <span class="sd">    :param datebegin: Initial date of simulation</span>
 <span class="sd">    :type datebegin: class:`bronx.stdtypes.date.Date`</span>
-<span class="sd">    :param namelistfile: Address of namelist to modified. Defaults to &quot;OPTIONS.nam&quot;</span>
+<span class="sd">    :param namelistfile: Address of namelist to modified. Defaults to "OPTIONS.nam"</span>
 <span class="sd">    :type namelistfile: str, optional</span>
-<span class="sd">    :param forcing: Address of associated forcing file. Defaults to &quot;FORCING.nc&quot;</span>
+<span class="sd">    :param forcing: Address of associated forcing file. Defaults to "FORCING.nc"</span>
 <span class="sd">    :type forcing: str, optional</span>
 <span class="sd">    :param dateend: Last date of simulation (only necessary if different from the end of the FORCING file)</span>
 <span class="sd">    :type dateend: class:`bronx.stdtypes.date.Date`, optional</span>
@@ -82,21 +83,21 @@
 <span class="sd">    :type nmembers: int, optional</span>
 <span class="sd">    :param no_caution: do not open the forcing to reduce computation time</span>
 <span class="sd">    :type no_caution: boolean, optional</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;/OPTIONS.nam&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">FileNameException</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"/OPTIONS.nam"</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">NamelistParser</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">nmembers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># this doesn&#39;t work on beaufix.</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">,</span> <span class="s2">&quot;OPTIONS_base.nam&quot;</span><span class="p">)</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;OPTIONS_base.nam&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nmembers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># this doesn't work on beaufix.</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">,</span> <span class="s2">"OPTIONS_base.nam"</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"OPTIONS_base.nam"</span><span class="p">)</span>
         <span class="n">update_surfex_namelist_object</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">datebegin</span><span class="o">=</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="n">forcing</span><span class="p">,</span> <span class="n">dateend</span><span class="o">=</span><span class="n">dateend</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="n">updateloc</span><span class="p">,</span>
                                       <span class="n">physicaloptions</span><span class="o">=</span><span class="n">physicaloptions</span><span class="p">,</span> <span class="n">snowparameters</span><span class="o">=</span><span class="n">snowparameters</span><span class="p">,</span>
                                       <span class="n">no_caution</span><span class="o">=</span><span class="n">no_caution</span><span class="p">,</span> <span class="n">cselect</span><span class="o">=</span><span class="n">cselect</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">)</span>
         <span class="n">update_namelist_object_nmembers</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">)</span>
-    <span class="n">namSURFEX</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">namSURFEX</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelistfile</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>
     <span class="c1"># Try to write the namelist by alphabetical order (by block and inside each block)</span>
     <span class="c1"># Except can occurs when things like (:,1) are in namelist</span>
     <span class="c1"># in that case, alphabetical order just for block and not inside each block</span>
@@ -110,16 +111,16 @@
 
 <div class="viewcode-block" id="update_surfex_namelist_object">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_surfex_namelist_object">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_object</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_surfex_namelist_object</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">"FORCING.nc"</span><span class="p">,</span>
                                   <span class="n">dateend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updateloc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">physicaloptions</span><span class="o">=</span><span class="p">{},</span> <span class="n">snowparameters</span><span class="o">=</span><span class="p">{},</span>
                                   <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cselect</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function updates a class:`bronx.datagrip.namelist.NamelistSet` object. Called directly by vortex algos.</span>
+<span class="w">    </span><span class="sd">"""This function updates a class:`bronx.datagrip.namelist.NamelistSet` object. Called directly by vortex algos.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified.</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param datebegin: Initial date of simulation</span>
 <span class="sd">    :type datebegin: class:`bronx.stdtypes.date.Date`</span>
-<span class="sd">    :param forcing: Address of associated forcing file. Defaults to &quot;FORCING.nc&quot;</span>
+<span class="sd">    :param forcing: Address of associated forcing file. Defaults to "FORCING.nc"</span>
 <span class="sd">    :type forcing: str, optional</span>
 <span class="sd">    :param dateend: Last date of simulation (only necessary if different from the end of the FORCING file)</span>
 <span class="sd">    :type dateend: class:`bronx.stdtypes.date.Date`, optional</span>
@@ -137,7 +138,7 @@
 <span class="sd">    :type no_caution: boolean, optional</span>
 <span class="sd">    :param cselect: set a list of diagnostic variables</span>
 <span class="sd">    :type cselect: list</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">NamelistObject</span> <span class="o">=</span> <span class="n">update_mandatory_settings</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">)</span>
     <span class="n">NamelistObject</span> <span class="o">=</span> <span class="n">update_dates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">updateloc</span><span class="p">:</span>
@@ -157,13 +158,13 @@
 <div class="viewcode-block" id="check_or_create_block">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.check_or_create_block">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">blockname</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new namelist block only if it does not already exist.</span>
+<span class="w">    </span><span class="sd">"""Create a new namelist block only if it does not already exist.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param blockname: name of new block</span>
 <span class="sd">    :type blockname: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">blockname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NamelistObject</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">NamelistObject</span><span class="o">.</span><span class="n">newblock</span><span class="p">(</span><span class="n">blockname</span><span class="p">)</span></div>
 
@@ -172,23 +173,23 @@
 <div class="viewcode-block" id="update_mandatory_settings">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_mandatory_settings">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_mandatory_settings</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Force some options whose values are mandatory to be compatible with snowtools_git</span>
+<span class="w">    </span><span class="sd">"""Force some options whose values are mandatory to be compatible with snowtools_git</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">)</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CSURF_FILETYPE</span> <span class="o">=</span> <span class="s2">&quot;NC &quot;</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CFORCING_FILETYPE</span> <span class="o">=</span> <span class="s2">&quot;NETCDF&quot;</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">=</span> <span class="s2">&quot;NETCDF&quot;</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LRESTART</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="sd">    """</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_IO_OFFLINE"</span><span class="p">)</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CSURF_FILETYPE</span> <span class="o">=</span> <span class="s2">"NC "</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CFORCING_FILETYPE</span> <span class="o">=</span> <span class="s2">"NETCDF"</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">=</span> <span class="s2">"NETCDF"</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LRESTART</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;The following options are necessary to output homogeneous fluxes among the Crocus community&#39;&#39;&#39;</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;(fluxes averaged over the output time step)&#39;&#39;&#39;</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGET</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LRESET_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_WRITE_DIAG_SURFn&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LRESETCUMUL</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">'''The following options are necessary to output homogeneous fluxes among the Crocus community'''</span>
+<span class="w">    </span><span class="sd">'''(fluxes averaged over the output time step)'''</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_DIAG_SURFn"</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGET</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_DIAG_SURFn"</span><span class="p">]</span><span class="o">.</span><span class="n">LSURF_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_DIAG_SURFn"</span><span class="p">]</span><span class="o">.</span><span class="n">LRESET_BUDGETC</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_WRITE_DIAG_SURFn"</span><span class="p">]</span><span class="o">.</span><span class="n">LRESETCUMUL</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
@@ -197,18 +198,18 @@
 <div class="viewcode-block" id="update_dates">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_dates">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_dates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the beginning of the simulation.</span>
+<span class="w">    </span><span class="sd">"""Modify SURFEX namelist for defining the beginning of the simulation.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param datebegin: Initial date of simulation</span>
 <span class="sd">    :type datebegin: class:`bronx.stdtypes.date.Date`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_PREP_SURF_ATM&quot;</span><span class="p">)</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PREP_SURF_ATM&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">NYEAR</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">year</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PREP_SURF_ATM&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">NMONTH</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">month</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PREP_SURF_ATM&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">NDAY</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">day</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PREP_SURF_ATM&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XTIME</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mf">3600.</span>
+<span class="sd">    """</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_PREP_SURF_ATM"</span><span class="p">)</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PREP_SURF_ATM"</span><span class="p">]</span><span class="o">.</span><span class="n">NYEAR</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">year</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PREP_SURF_ATM"</span><span class="p">]</span><span class="o">.</span><span class="n">NMONTH</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">month</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PREP_SURF_ATM"</span><span class="p">]</span><span class="o">.</span><span class="n">NDAY</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">day</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PREP_SURF_ATM"</span><span class="p">]</span><span class="o">.</span><span class="n">XTIME</span> <span class="o">=</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mf">3600.</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
@@ -217,44 +218,44 @@
 <div class="viewcode-block" id="update_loc">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_loc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_loc</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">forcing</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist for defining the coordinates of the simulation points.</span>
+<span class="w">    </span><span class="sd">"""Modify SURFEX namelist for defining the coordinates of the simulation points.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param forcing: Address of associated forcing file.</span>
 <span class="sd">    :type forcing: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PGD_GRID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CGRID</span> <span class="o">==</span> <span class="s2">&quot;LONLATVAL&quot;</span><span class="p">:</span>
-        <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PGD_GRID"</span><span class="p">]</span><span class="o">.</span><span class="n">CGRID</span> <span class="o">==</span> <span class="s2">"LONLATVAL"</span><span class="p">:</span>
+        <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_LONLATVAL"</span><span class="p">)</span>
         <span class="c1"># Read coordinates in FORCING file</span>
         <span class="n">forc</span> <span class="o">=</span> <span class="n">prosimu_base</span><span class="p">(</span><span class="n">forcing</span><span class="p">)</span>
-        <span class="n">latitudes1d</span> <span class="o">=</span> <span class="n">forc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;LAT&quot;</span><span class="p">)</span>
-        <span class="n">longitudes1d</span> <span class="o">=</span> <span class="n">forc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;LON&quot;</span><span class="p">)</span>
+        <span class="n">latitudes1d</span> <span class="o">=</span> <span class="n">forc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"LAT"</span><span class="p">)</span>
+        <span class="n">longitudes1d</span> <span class="o">=</span> <span class="n">forc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">"LON"</span><span class="p">)</span>
         <span class="n">forc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latitudes1d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">VarDimensionException</span><span class="p">(</span><span class="s2">&quot;LAT&quot;</span><span class="p">,</span> <span class="n">latitudes1d</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">VarDimensionException</span><span class="p">(</span><span class="s2">"LAT"</span><span class="p">,</span> <span class="n">latitudes1d</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">longitudes1d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">VarDimensionException</span><span class="p">(</span><span class="s2">&quot;LON&quot;</span><span class="p">,</span> <span class="n">longitudes1d</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">VarDimensionException</span><span class="p">(</span><span class="s2">"LON"</span><span class="p">,</span> <span class="n">longitudes1d</span><span class="p">)</span>
 
         <span class="c1"># Constant dlat/dlon</span>
         <span class="n">dlat1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">latitudes1d</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span>
         <span class="n">dlon1d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">longitudes1d</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span>
 
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XY</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">latitudes1d</span><span class="p">)</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">longitudes1d</span><span class="p">)</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XDY</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlat1d</span><span class="p">)</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XDX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlon1d</span><span class="p">)</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_LONLATVAL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">NPOINTS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">longitudes1d</span><span class="p">)</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_LONLATVAL"</span><span class="p">]</span><span class="o">.</span><span class="n">XY</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">latitudes1d</span><span class="p">)</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_LONLATVAL"</span><span class="p">]</span><span class="o">.</span><span class="n">XX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">longitudes1d</span><span class="p">)</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_LONLATVAL"</span><span class="p">]</span><span class="o">.</span><span class="n">XDY</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlat1d</span><span class="p">)</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_LONLATVAL"</span><span class="p">]</span><span class="o">.</span><span class="n">XDX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlon1d</span><span class="p">)</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_LONLATVAL"</span><span class="p">]</span><span class="o">.</span><span class="n">NPOINTS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">longitudes1d</span><span class="p">)</span>
 
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_COORD</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_COORD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="c1"># another special patch/bugfix for distributed simulations (then CGRID==IGN)</span>
-    <span class="k">if</span> <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_PGD_GRID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">CGRID</span> <span class="o">==</span> <span class="s2">&quot;IGN&quot;</span><span class="p">:</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_TOPO</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_PGD_GRID"</span><span class="p">]</span><span class="o">.</span><span class="n">CGRID</span> <span class="o">==</span> <span class="s2">"IGN"</span><span class="p">:</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_TOPO</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_TOPO</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LWRITE_TOPO</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
@@ -262,8 +263,8 @@
 
 <div class="viewcode-block" id="update_forcingdates">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_forcingdates">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_forcingdates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">&quot;FORCING.nc&quot;</span><span class="p">,</span> <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify SURFEX namelist limiting the dates to read in a FORCING file longer than the simulation.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_forcingdates</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">,</span> <span class="n">forcing</span><span class="o">=</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="n">no_caution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Modify SURFEX namelist limiting the dates to read in a FORCING file longer than the simulation.</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
@@ -271,11 +272,11 @@
 <span class="sd">    :type datebegin: class:`bronx.stdtypes.date.Date`</span>
 <span class="sd">    :param dateend: Last date of simulation</span>
 <span class="sd">    :type dateend: class:`bronx.stdtypes.date.Date`</span>
-<span class="sd">    :param forcing: Address of associated forcing file. Defaults to &quot;FORCING.nc&quot;</span>
+<span class="sd">    :param forcing: Address of associated forcing file. Defaults to "FORCING.nc"</span>
 <span class="sd">    :type forcing: str, optional</span>
 <span class="sd">    :param no_caution: do not check the forcing dates to reduce computation time (dangerous option, not recommended)</span>
 <span class="sd">    :type no_caution: boolean, optional</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">no_caution</span><span class="p">:</span>
         <span class="c1"># Assume forcing dates are equal or larger than s2m option</span>
         <span class="c1"># Very dangerous option, not compatible with yearly simulations</span>
@@ -290,8 +291,8 @@
         <span class="n">dateforcbegin</span> <span class="o">=</span> <span class="n">timeforc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">dateforcend</span> <span class="o">=</span> <span class="n">timeforc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DATES OF THE FORCING FILE:&quot;</span><span class="p">,</span> <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PRESCRIBED SIMULATION DATES:&quot;</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"DATES OF THE FORCING FILE:"</span><span class="p">,</span> <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"PRESCRIBED SIMULATION DATES:"</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">)</span>
 
         <span class="n">checkdateafter</span><span class="p">(</span><span class="n">datebegin</span><span class="p">,</span> <span class="n">dateforcbegin</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dateend</span><span class="p">:</span>
@@ -300,9 +301,9 @@
             <span class="n">dateend</span> <span class="o">=</span> <span class="n">dateforcend</span>
 
     <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;</span> <span class="n">dateforcbegin</span> <span class="ow">or</span> <span class="n">dateend</span> <span class="o">&lt;</span> <span class="n">dateforcend</span> <span class="ow">or</span> <span class="n">no_caution</span><span class="p">:</span>
-        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">LDELAYEDSTART_NC</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LDELAYEDSTART_NC</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_IO_OFFLINE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">NDATESTOP</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateend</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">]</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">NDATESTOP</span> <span class="o">=</span> <span class="p">[</span><span class="n">dateend</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">dateend</span><span class="o">.</span><span class="n">hour</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
@@ -311,22 +312,22 @@
 <div class="viewcode-block" id="update_physicaloptions">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_physicaloptions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_physicaloptions</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify physical options for ESCROC simulations</span>
+<span class="w">    </span><span class="sd">"""Modify physical options for ESCROC simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param kwargs: ESCROC physical options. Defaults to {}.</span>
 <span class="sd">    :type kwargs: dict, optional</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_ISBA_SNOWn&quot;</span><span class="p">)</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_ISBAn&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_ISBA_SNOWn"</span><span class="p">)</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_ISBAn"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CSNOWDRIFT&quot;</span><span class="p">,</span> <span class="s2">&quot;LSNOWDRIFT_SUBLIM&quot;</span><span class="p">,</span> <span class="s2">&quot;LSNOW_ABS_ZENITH&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWMETAMO&quot;</span><span class="p">,</span>
-                           <span class="s2">&quot;CSNOWRAD&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWFALL&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWCOND&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWHOLD&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWCOMP&quot;</span><span class="p">,</span> <span class="s2">&quot;CSNOWZREF&quot;</span><span class="p">,</span> <span class="s2">&quot;LSNOWSYTRON&quot;</span><span class="p">]:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_ISBA_SNOWn&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CSNOWRES&quot;</span><span class="p">]:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_ISBAn&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"CSNOWDRIFT"</span><span class="p">,</span> <span class="s2">"LSNOWDRIFT_SUBLIM"</span><span class="p">,</span> <span class="s2">"LSNOW_ABS_ZENITH"</span><span class="p">,</span> <span class="s2">"CSNOWMETAMO"</span><span class="p">,</span>
+                           <span class="s2">"CSNOWRAD"</span><span class="p">,</span> <span class="s2">"CSNOWFALL"</span><span class="p">,</span> <span class="s2">"CSNOWCOND"</span><span class="p">,</span> <span class="s2">"CSNOWHOLD"</span><span class="p">,</span> <span class="s2">"CSNOWCOMP"</span><span class="p">,</span> <span class="s2">"CSNOWZREF"</span><span class="p">,</span> <span class="s2">"LSNOWSYTRON"</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_ISBA_SNOWn"</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"CSNOWRES"</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_ISBAn"</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
@@ -334,50 +335,50 @@
 <div class="viewcode-block" id="update_snowparameters">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_snowparameters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_snowparameters</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify physical parameters for ESCROC simulations</span>
+<span class="w">    </span><span class="sd">"""Modify physical parameters for ESCROC simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param kwargs: ESCROC physical parameters. Defaults to {}.</span>
 <span class="sd">    :type kwargs: dict, optional</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_SURF_CSTS&quot;</span><span class="p">)</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_SURF_SNOW_CSTS&quot;</span><span class="p">)</span>
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_ISBAn&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_SURF_CSTS"</span><span class="p">)</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_SURF_SNOW_CSTS"</span><span class="p">)</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_ISBAn"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;XZ0SN&quot;</span><span class="p">,</span> <span class="s2">&quot;XZ0HSN&quot;</span><span class="p">,</span> <span class="s2">&quot;XTAU_LW&quot;</span><span class="p">]:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_SURF_CSTS&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;XALBICE1&quot;</span><span class="p">,</span> <span class="s2">&quot;XALBICE2&quot;</span><span class="p">,</span> <span class="s2">&quot;XALBICE3&quot;</span><span class="p">,</span> <span class="s2">&quot;XRHOTHRESHOLD_ICE&quot;</span><span class="p">,</span> <span class="s2">&quot;XZ0ICEZ0SNOW&quot;</span><span class="p">,</span>
-                             <span class="s2">&quot;XVAGING_GLACIER&quot;</span><span class="p">,</span> <span class="s2">&quot;XVAGING_NOGLACIER&quot;</span><span class="p">,</span> <span class="s2">&quot;XVVISC3&quot;</span><span class="p">,</span> <span class="s2">&quot;X_RI_MAX&quot;</span><span class="p">,</span>
-                             <span class="s2">&quot;XIMPUR_WET&quot;</span><span class="p">,</span> <span class="s2">&quot;XIMPUR_DRY&quot;</span><span class="p">]:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_SURF_SNOW_CSTS&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;XCVHEATF&quot;</span><span class="p">]:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_ISBAn&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"XZ0SN"</span><span class="p">,</span> <span class="s2">"XZ0HSN"</span><span class="p">,</span> <span class="s2">"XTAU_LW"</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_SURF_CSTS"</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"XALBICE1"</span><span class="p">,</span> <span class="s2">"XALBICE2"</span><span class="p">,</span> <span class="s2">"XALBICE3"</span><span class="p">,</span> <span class="s2">"XRHOTHRESHOLD_ICE"</span><span class="p">,</span> <span class="s2">"XZ0ICEZ0SNOW"</span><span class="p">,</span>
+                             <span class="s2">"XVAGING_GLACIER"</span><span class="p">,</span> <span class="s2">"XVAGING_NOGLACIER"</span><span class="p">,</span> <span class="s2">"XVVISC3"</span><span class="p">,</span> <span class="s2">"X_RI_MAX"</span><span class="p">,</span>
+                             <span class="s2">"XIMPUR_WET"</span><span class="p">,</span> <span class="s2">"XIMPUR_DRY"</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_SURF_SNOW_CSTS"</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"XCVHEATF"</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_ISBAn"</span><span class="p">],</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IGNORE FIELD &quot;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; : not in namelist.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"IGNORE FIELD "</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">" : not in namelist."</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_cselect</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">cselect</span><span class="p">):</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s1">&#39;NAM_WRITE_DIAG_SURFN&#39;</span><span class="p">],</span> <span class="s1">&#39;CSELECT&#39;</span><span class="p">,</span> <span class="n">cselect</span><span class="p">)</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s1">'NAM_WRITE_DIAG_SURFN'</span><span class="p">],</span> <span class="s1">'CSELECT'</span><span class="p">,</span> <span class="n">cselect</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="update_namelist_object_nmembers">
 <a class="viewcode-back" href="../../code/tools.html#tools.update_namelist.update_namelist_object_nmembers">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_namelist_object_nmembers</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modify number of members for SODA simulations</span>
+<span class="w">    </span><span class="sd">"""Modify number of members for SODA simulations</span>
 
 <span class="sd">    :param NamelistObject: Namelist to modified</span>
 <span class="sd">    :type NamelistObject: class:`bronx.datagrip.namelist.NamelistSet`</span>
 <span class="sd">    :param nmembers: number of members for SODA simulations.</span>
 <span class="sd">    :type nmembers: int</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">nmembers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;NAM_ENS&quot;</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_ENS&quot;</span><span class="p">],</span> <span class="s1">&#39;NENS&#39;</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NENS set to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nmembers</span><span class="p">))</span>
+        <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_ENS"</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_ENS"</span><span class="p">],</span> <span class="s1">'NENS'</span><span class="p">,</span> <span class="n">nmembers</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"NENS set to </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nmembers</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">NamelistObject</span></div>
 
@@ -385,8 +386,8 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_namelist_var</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="n">data_file</span><span class="p">):</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Modify snowmaking parameters.</span>
-<span class="sd">    The function reads &quot;water consumption data for snowmaking&quot; from an external file (data_file)</span>
+<span class="w">    </span><span class="sd">""" Modify snowmaking parameters.</span>
+<span class="sd">    The function reads "water consumption data for snowmaking" from an external file (data_file)</span>
 <span class="sd">    and updates a namelist (namelist_file) accordingly.</span>
 <span class="sd">    This function was implemented by C. Carmagnola in December 2018 (PROSNOW project).</span>
 <span class="sd">    Comment Matthieu : the copy at the end is awful and dangerous for use in vortex, can we remove ?</span>
@@ -396,7 +397,7 @@
 <span class="sd">    :type namelist_file: str</span>
 <span class="sd">    :param data_file: file containing water consumption data</span>
 <span class="sd">    :type data_file: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># 1) Read data from an external file</span>
 
@@ -413,9 +414,9 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_tbc</span><span class="p">)):</span>
         <span class="n">var_tbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">var_tbc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-<span class="c1">#     print &quot;Water consumption for snowmaking (kg/m2) - In external file:&quot;</span>
+<span class="c1">#     print "Water consumption for snowmaking (kg/m2) - In external file:"</span>
 <span class="c1">#     print var_tbc</span>
-<span class="c1">#     print &quot;--------------&quot;</span>
+<span class="c1">#     print "--------------"</span>
 
     <span class="c1"># 2) Put data from an external file into the namelist</span>
 
@@ -425,17 +426,17 @@
     <span class="n">n</span> <span class="o">=</span> <span class="n">NamelistParser</span><span class="p">()</span>
     <span class="n">NamelistObject</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">)</span>
 
-    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">&quot;XPROD_SCHEME&quot;</span><span class="p">)</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">&quot;NAM_SURF_SNOW_CSTS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">XPROD_SCHEME</span> <span class="o">=</span> <span class="n">var_tbc</span>
+    <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"XPROD_SCHEME"</span><span class="p">)</span>
+    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_SURF_SNOW_CSTS"</span><span class="p">]</span><span class="o">.</span><span class="n">XPROD_SCHEME</span> <span class="o">=</span> <span class="n">var_tbc</span>
 
-<span class="c1">#     print &quot;Water consumption for snowmaking (kg/m2) - In namelist:&quot;</span>
-<span class="c1">#     print NamelistObject[&quot;NAM_SURF_SNOW_CSTS&quot;].XPROD_SCHEME</span>
+<span class="c1">#     print "Water consumption for snowmaking (kg/m2) - In namelist:"</span>
+<span class="c1">#     print NamelistObject["NAM_SURF_SNOW_CSTS"].XPROD_SCHEME</span>
 
-    <span class="n">namSURFEX</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">namSURFEX</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>
     <span class="n">namSURFEX</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">NamelistObject</span><span class="o">.</span><span class="n">dumps</span><span class="p">())</span>
     <span class="n">namSURFEX</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="s2">&quot;OPTIONS.nam&quot;</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">namelist_file</span><span class="p">,</span> <span class="s2">"OPTIONS.nam"</span><span class="p">)</span>
 </pre></div>
 
             <div class="clearer"></div>

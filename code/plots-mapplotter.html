@@ -8,6 +8,7 @@
     <title>The mapplotter script &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -93,11 +94,11 @@ options:
   -f FIELD, -F FIELD, --field FIELD
                         *fid* = *field identifier* of of the field(s) to be
                         processed. Syntax depends on format: GRIB: handgrip,
-                        e.g. &#39;shortName:t,level:850&#39;. FA: name, e.g.
-                        &#39;S050TEMPERATURE&#39;; regular expressions may be used,
-                        such as &#39;S00[2-6]WIND.[U-V].PHYS&#39;, &#39;SURFALBEDO*&#39; or
-                        &#39;SURF?.OF.OZONE&#39;. To obtain the list of fields in
-                        file, use the &#39;epy_what&#39; tool.
+                        e.g. 'shortName:t,level:850'. FA: name, e.g.
+                        'S050TEMPERATURE'; regular expressions may be used,
+                        such as 'S00[2-6]WIND.[U-V].PHYS', 'SURFALBEDO*' or
+                        'SURF?.OF.OZONE'. To obtain the list of fields in
+                        file, use the 'epy_what' tool.
   --wU UCOMPONENTOFWIND, --Ucomponentofwind UCOMPONENTOFWIND
                         to process wind as a vector. U component of wind.
                         (same syntax as -f). Not implemented in difference
@@ -112,14 +113,14 @@ options:
                         which comparison is done.
   -x OPERATION, --operation OPERATION
                         do the requested operation on field right after
-                        reading it. Syntax: &#39;-,273.15&#39; (e.g. for K =&gt; C) or
-                        &#39;exp&#39; to take the exponential of the field. The
-                        operand must be among (+,-,*,/) or &#39;normalize&#39; or any
-                        numpy function. For &#39;-&#39; operand, use short-name option
+                        reading it. Syntax: '-,273.15' (e.g. for K =&gt; C) or
+                        'exp' to take the exponential of the field. The
+                        operand must be among (+,-,*,/) or 'normalize' or any
+                        numpy function. For '-' operand, use short-name option
                         -x without spacetab between option and argument.
   --mt MASK_THRESHOLD, --mask_threshold MASK_THRESHOLD
-                        set a threshold to mask values. E.g. &#39;min=0.0&#39; will
-                        mask negative values. &#39;min=0.0,max=1e8&#39; will mask
+                        set a threshold to mask values. E.g. 'min=0.0' will
+                        mask negative values. 'min=0.0,max=1e8' will mask
                         values outside these boundaries.
   --wpo {lonlat,grid}, --wind_projected_on {lonlat,grid}
                         specify on which coordinates the wind components are
@@ -129,13 +130,13 @@ options:
   --directplot          Do a non-interactive plot taking into account all
                         options rather than using the GUI.
   --pm {pcolormesh,contourf,contour,scatter}, --plot_method {pcolormesh,contourf,contour,scatter}
-                        plot method, among (&#39;pcolormesh&#39;, &#39;contourf&#39;,
-                        &#39;contour&#39;, &#39;scatter&#39;). Default is &#39;pcolormesh&#39; for
-                        rectangular grids, else &#39;contourf&#39;. There is a known
+                        plot method, among ('pcolormesh', 'contourf',
+                        'contour', 'scatter'). Default is 'pcolormesh' for
+                        rectangular grids, else 'contourf'. There is a known
                         bug (yet unsolved) with Arpege &amp; contourlines.
   -m MINMAX, --minmax MINMAX
-                        min and max values for the plot. Syntax: &#39;min, max&#39;.
-                        &#39;0.0, max&#39; also works. Default is the field min/max
+                        min and max values for the plot. Syntax: 'min, max'.
+                        '0.0, max' also works. Default is the field min/max
                         values. In diff mode, this is valuable for resource
                         and reference only, (min, max) for difference plot
                         should be defined with --diffminmax option. For
@@ -146,27 +147,27 @@ options:
                         50.
   -c COLORMAP, --colormap COLORMAP
                         name of the **matplotlib** colormap to use. Default is
-                        &#39;jet&#39; (Cf. http://matplotlib.org/examples/color/colorm
+                        'jet' (Cf. http://matplotlib.org/examples/color/colorm
                         aps_reference.html for standard matplotlib colormaps,
                         or epygram.config.epygram_colormaps.keys() in a python
-                        interpreter for epygram&#39;s own colormaps). Custom
+                        interpreter for epygram's own colormaps). Custom
                         colormaps can be defined (lookup matplotlib online or
                         manually) and added in userconfig, in usercolormaps =
-                        {&#39;my_cmap&#39;:&#39;path_to_my_cmap&#39;}.
+                        {'my_cmap':'path_to_my_cmap'}.
   -t, --center_cmap_on_0
                         to center the colormap on the value 0. Can be useful
                         for wind plots for instance.
   --title TITLE         title to be written over field plot.
   --cpyf CARTOPY_FEATURES, --cartopy_features CARTOPY_FEATURES
                         cartopy features (cartopy.feature.*), separated by
-                        comma [&#39;BORDERS&#39;, &#39;COASTLINE&#39;, &#39;COLORS&#39;, &#39;LAKES&#39;,
-                        &#39;LAND&#39;, &#39;OCEAN&#39;, &#39;RIVERS&#39;, &#39;STATES&#39;]
+                        comma ['BORDERS', 'COASTLINE', 'COLORS', 'LAKES',
+                        'LAND', 'OCEAN', 'RIVERS', 'STATES']
   --depts               draw french departments on map (instead of countries
                         boundaries).
   --parallels PARALLELS
-                        tune the choice of lines to plot, among: &#39;auto&#39;:
+                        tune the choice of lines to plot, among: 'auto':
                         automatic scaling to the map extents (default) |
-                        &#39;default&#39;: range(0,360,10) and range(-90,90,10) | a
+                        'default': range(0,360,10) and range(-90,90,10) | a
                         list of values | a grid step, e.g. 5 to plot each 5
                         degree | None: no one is plot
   --meridians MERIDIANS
@@ -176,18 +177,18 @@ options:
                         computewind option). Defaults to 20.
   --skw SCATTER_KW, --scatter_kw SCATTER_KW
                         arguments to be passed to pyplot.scatter(), in case
-                        *plot_method* == &#39;scatter&#39;.
+                        *plot_method* == 'scatter'.
   --zoom ZOOM           optional zoom on the specified region of the plot.
-                        Forces to &#39;cyl&#39; projection. Syntax: &#39;lonmin=-5,
-                        lonmax=1.2, latmin=40.8, latmax=51&#39;. Overwrites
-                        &#39;projection&#39; option.
+                        Forces to 'cyl' projection. Syntax: 'lonmin=-5,
+                        lonmax=1.2, latmin=40.8, latmax=51'. Overwrites
+                        'projection' option.
   --vpm VECTOR_PLOT_METHOD, --vector_plot_method VECTOR_PLOT_METHOD
-                        symbol to be used for vectors, among (&#39;quiver&#39;,
-                        &#39;barbs&#39;, &#39;streamplot&#39;).
+                        symbol to be used for vectors, among ('quiver',
+                        'barbs', 'streamplot').
   --qk QUIVERKEY, --quiverkey QUIVERKEY
                         arguments to be passed to pyplot.quiverkey(), in case
-                        *vector_symbol* == &#39;arrows&#39;. E.g.
-                        X=1.05,Y=1.05,U=10.,label=&#39;10m/s&#39;.
+                        *vector_symbol* == 'arrows'. E.g.
+                        X=1.05,Y=1.05,U=10.,label='10m/s'.
   --fd FIGURES_DPI, --figures_dpi FIGURES_DPI
                         quality of saved figures.
   --global_shift_center GLOBAL_SHIFT_CENTER, --gsc GLOBAL_SHIFT_CENTER
@@ -197,14 +198,14 @@ options:
                         -180 argument).
   -C DIFFCOLORMAP, --diffcolormap DIFFCOLORMAP
                         name of the **matplotlib** colormap to use for diff.
-                        Default is &#39;RdBu_r&#39; (Cf. http://matplotlib.org/example
+                        Default is 'RdBu_r' (Cf. http://matplotlib.org/example
                         s/color/colormaps_reference.html for standard
                         matplotlib colormaps, or
                         epygram.config.epygram_colormaps.keys() in a python
-                        interpreter for epygram&#39;s own colormaps). Custom
+                        interpreter for epygram's own colormaps). Custom
                         colormaps can be defined (http://colormap.org or
                         manually) and added in userconfig, in usercolormaps =
-                        {&#39;my_cmap&#39;:&#39;path_to_my_cmap&#39;}.
+                        {'my_cmap':'path_to_my_cmap'}.
   -T, --diffcenter_cmap_on_0
                         NOT to center the colormap of diff plots on the value
                         0. May be useful for fluxes decumulation.
@@ -214,7 +215,7 @@ options:
   -v, --verbose         run verbosely. Else, only messages of level Error will
                         be displayed.
 
-(Use EPyGrAM v2.0.4)
+(Use EPyGrAM v2.0.7)
 </pre></div>
 </div>
 <p>Example:</p>

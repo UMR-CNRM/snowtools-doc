@@ -8,6 +8,7 @@
     <title>The prosimu simulation reader &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -76,10 +77,10 @@ snow density variables (<code class="docutils literal notranslate"><span class="
 11, 2700m, northern aspect on 40 degree slope:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/path/to/my/PRO_XXX.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
         <span class="n">point</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2700</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">massif_num</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-        <span class="n">density</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;RSN_VEG&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+        <span class="n">density</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'RSN_VEG'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">time</span></code> and <code class="docutils literal notranslate"><span class="pre">density</span></code> now contains the data in the form of numpy arrays
@@ -89,10 +90,10 @@ the <code class="docutils literal notranslate"><span class="pre">density</span><
 <p>A short example to get multiple points at once:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/path/to/my/PRO_XXX.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">ZS</span><span class="o">=</span><span class="mi">2700</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">massif_num</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
-        <span class="n">density</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;RSN_VEG&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">density</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'RSN_VEG'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">time</span></code> and <code class="docutils literal notranslate"><span class="pre">density</span></code> now contains the data in the form of numpy arrays
@@ -102,9 +103,9 @@ first dimension being time, second dimension being layers and the last one is po
 <code class="docutils literal notranslate"><span class="pre">WSN_T_ISBA</span></code>) across time for all points:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.prosimu</span><span class="w"> </span><span class="kn">import</span> <span class="n">prosimu_auto</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/path/to/my/PRO_XXX.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/path/to/my/PRO_XXX.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">time</span><span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
-        <span class="n">swe_total</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;WSN_T_ISBA&#39;</span><span class="p">)</span>
+        <span class="n">swe_total</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'WSN_T_ISBA'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -452,13 +453,13 @@ par un indicateur de valeur manquante  pas implémenté)</p>
 </dd>
 </dl>
 <p>Exemples:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">snowemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Number_of_points</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">))</span>
-<span class="n">snowtemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snow_layer</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">snowemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Number_of_points</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">))</span>
+<span class="n">snowtemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Number_of_points</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snow_layer</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>peut-être utilisé en combinaison avec les méthodes get_point et get_time
 pour récupérer un point / un instant donné :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">snowtemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">)),</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">snowtemp</span> <span class="o">=</span> <span class="n">prosimu</span><span class="o">.</span><span class="n">read_var</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">)),</span>
             <span class="n">Number_of_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">massif_num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">slope</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">ZS</span><span class="o">=</span><span class="mi">4500</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>

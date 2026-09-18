@@ -7,6 +7,7 @@
     <title>tools.SnowCoverDuration &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -47,8 +48,8 @@
 
 <div class="viewcode-block" id="xr_ffill">
 <a class="viewcode-back" href="../../code/tools.html#tools.SnowCoverDuration.xr_ffill">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">xr_ffill</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">fillna</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xr_ffill</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">,</span> <span class="n">fillna</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Solution inspired from :</span>
 <span class="sd">    https://stackoverflow.com/questions/41190852/most-efficient-way-to-forward-fill-nan-values-in-numpy-array</span>
 
@@ -58,7 +59,7 @@
 <span class="sd">    :type dim: class:`str`</span>
 <span class="sd">    :param fillna: If True, fill remaining NaN values with 0</span>
 <span class="sd">    :type fillna: class:`bool`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dimension</span> <span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">dims</span><span class="p">])</span> <span class="o">==</span> <span class="n">dim</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">arr</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">data</span>
     <span class="n">idx_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">axis</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
@@ -80,10 +81,10 @@
 <div class="viewcode-block" id="lcscd">
 <a class="viewcode-back" href="../../code/tools.html#tools.SnowCoverDuration.lcscd">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lcscd</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    :param data: Snow depths time serie</span>
 <span class="sd">    :type data: class:`xarray.Dataset` ou `xarray.DataArray`</span>
-<span class="sd">    :param threshold: Snow depth threshold to consider a point as &quot;snow covered&quot;</span>
+<span class="sd">    :param threshold: Snow depth threshold to consider a point as "snow covered"</span>
 <span class="sd">    :type threshold: class:`int`</span>
 
 <span class="sd">    Output :</span>
@@ -97,18 +98,18 @@
 
 <span class="sd">    Method :</span>
 <span class="sd">    </span>
-<span class="sd">    1. Classify each date/day as &quot;snow covered&quot; or &quot;snow free&quot; using the prescribed threshold</span>
+<span class="sd">    1. Classify each date/day as "snow covered" or "snow free" using the prescribed threshold</span>
 
 <span class="sd">    2. Associate to each time/day of *data* the starting date of the corresponding season (the previous 1 septembre)</span>
 <span class="sd">    </span>
 <span class="sd">    - Get indices of all dates corresponding to september 1st</span>
-<span class="sd">    - &quot;forward fill&quot; (see warning below) these values to associate each date to its season&#39;s starting date</span>
+<span class="sd">    - "forward fill" (see warning below) these values to associate each date to its season's starting date</span>
 <span class="sd">    - Remove dates before 1st of september: force all 1 september as snow free dates to match Sentinel2 convention</span>
 
-<span class="sd">    3. Use the xarray &quot;groupby&quot; method to compute the diagnostics for each season</span>
+<span class="sd">    3. Use the xarray "groupby" method to compute the diagnostics for each season</span>
 <span class="sd">    </span>
 <span class="sd">    - Create a time serie containing the number of snow covered dates since the begining of the seaon with</span>
-<span class="sd">      the xarray&#39;s &quot;cumsum&quot; method (see warning below)</span>
+<span class="sd">      the xarray's "cumsum" method (see warning below)</span>
 <span class="sd">    - Create a time serie containing the number of snow free days since the begining of the season after</span>
 <span class="sd">      each snow cover period</span>
 <span class="sd">    - -&gt; the difference between these 2 time series is a time serie containing the number of days since the</span>
@@ -124,9 +125,9 @@
 <span class="sd">    WARNING :</span>
 <span class="sd">    </span>
 <span class="sd">    The standard solution to compute the longest continuous snow cover duration relies on the use of the</span>
-<span class="sd">    xarray &quot;ffill&quot; method that uses the &quot;bottleneck&quot; module which is not available on MF&#39;s HPC.</span>
+<span class="sd">    xarray "ffill" method that uses the "bottleneck" module which is not available on MF's HPC.</span>
 <span class="sd">    </span>
-<span class="sd">    --&gt; a custom &quot;xr_ffill&quot; method based on numpy only is used in this case</span>
+<span class="sd">    --&gt; a custom "xr_ffill" method based on numpy only is used in this case</span>
 <span class="sd">    </span>
 <span class="sd">    TODO : compare the performances of both methods</span>
 
@@ -134,35 +135,35 @@
 <span class="sd">    </span>
 <span class="sd">    The use of xarray.DataArray object instead of numpy arrays is motivated by several reasons :</span>
 <span class="sd">    </span>
-<span class="sd">    - The &quot;resample&quot; method used to resample hourly HTN values to daily ones has not equivalent in prosimu / numpy</span>
-<span class="sd">    - The multi-season situation is managed using the &quot;groupby&quot; method that does not exist in numpy</span>
-<span class="sd">    - The &quot;cumsum&quot; method exists in numpy (with the same core than the xarray&#39;s one), but with xarray</span>
+<span class="sd">    - The "resample" method used to resample hourly HTN values to daily ones has not equivalent in prosimu / numpy</span>
+<span class="sd">    - The multi-season situation is managed using the "groupby" method that does not exist in numpy</span>
+<span class="sd">    - The "cumsum" method exists in numpy (with the same core than the xarray's one), but with xarray</span>
 <span class="sd">      the dimension order management is explicit (parsing a dimension name instead of an index number that can vary</span>
 <span class="sd">      between numpy arrays)</span>
-<span class="sd">    - The &quot;ffill&quot; method has no equivalent in numpy</span>
+<span class="sd">    - The "ffill" method has no equivalent in numpy</span>
 <span class="sd">    - The final goal is to write a netcdf file, which is straightforward with a DataArray but requires</span>
 <span class="sd">      (a bit of) formatting with numpy</span>
 <span class="sd">      </span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Resample dataset into mean daily snow depth values</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;1D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">'1D'</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
     <span class="c1"># Select snow covered pixels</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># Add &quot;startseason&quot; information</span>
+    <span class="c1"># Add "startseason" information</span>
     <span class="n">startseason</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">9</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Try to use xarray&#39;s native &quot;ffill&quot; method based on bottleneck (not available on MF&#39;s HPC)</span>
-        <span class="c1"># Return a &quot;startseason&quot; variable containing the preceding 1 septembre of each date</span>
-        <span class="n">startseason</span> <span class="o">=</span> <span class="n">startseason</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="c1"># Try to use xarray's native "ffill" method based on bottleneck (not available on MF's HPC)</span>
+        <span class="c1"># Return a "startseason" variable containing the preceding 1 septembre of each date</span>
+        <span class="n">startseason</span> <span class="o">=</span> <span class="n">startseason</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-        <span class="c1"># If &quot;bottleneck&quot; not available, use a custom ffill function</span>
+        <span class="c1"># If "bottleneck" not available, use a custom ffill function</span>
         <span class="n">startseason</span> <span class="o">=</span> <span class="n">xr_ffill</span><span class="p">(</span><span class="n">startseason</span><span class="p">)</span>
-    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;startseason&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">startseason</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">'startseason'</span><span class="p">]</span> <span class="o">=</span> <span class="n">startseason</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">startseason</span><span class="p">)]</span>  <span class="c1"># Remove dates before the first 1 september in data</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="n">startseason</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>  <span class="c1"># Force 1 september as snow free day</span>
     <span class="c1"># Group data by seasons (from 1 septembre of each year)</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;startseason&#39;</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'startseason'</span><span class="p">)</span>
 
     <span class="c1"># The goal of the following is to compute an array containing the number of concurent snow covered days :</span>
     <span class="c1"># * 0 for snow free days</span>
@@ -176,54 +177,54 @@
     <span class="c1"># * mod = 6 (max(cumul) on position 4 --&gt; first snow free day on position 5 = 6th day since the begining)</span>
     <span class="c1"># * sod = 3 (3th day since the begining of the season)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Try to use xarray&#39;s native &quot;ffill&quot; method based on bottleneck (not available on MF&#39;s HPC)</span>
+        <span class="c1"># Try to use xarray's native "ffill" method based on bottleneck (not available on MF's HPC)</span>
         <span class="c1"># 1. Smart solution to use on local computer or sxcen</span>
-        <span class="c1"># WARNING : ffill does not work on Meteo-France&#39;s HPC dur to a dependency to the &quot;bottleneck&quot; module,</span>
+        <span class="c1"># WARNING : ffill does not work on Meteo-France's HPC dur to a dependency to the "bottleneck" module,</span>
         <span class="c1"># which is not currently installed on belneos/taranis</span>
-        <span class="c1"># data.cumsum(dim=&#39;time&#39;) --&gt; array([1, 1, 2, 3, 4, 4, 5, 6]) --&gt; Snow days since the begining of the season</span>
-        <span class="c1"># data.cumsum(dim=&#39;time&#39;).where(data.values == 0) --&gt; array([1, 4]) --&gt; Snow free days</span>
-        <span class="c1"># data.cumsum(dim=&#39;time&#39;).where(data.values == 0).ffill(dim=&#39;time&#39;) --&gt; array([nan, 1, 1, 1, 1, 4, 4, 4])</span>
+        <span class="c1"># data.cumsum(dim='time') --&gt; array([1, 1, 2, 3, 4, 4, 5, 6]) --&gt; Snow days since the begining of the season</span>
+        <span class="c1"># data.cumsum(dim='time').where(data.values == 0) --&gt; array([1, 4]) --&gt; Snow free days</span>
+        <span class="c1"># data.cumsum(dim='time').where(data.values == 0).ffill(dim='time') --&gt; array([nan, 1, 1, 1, 1, 4, 4, 4])</span>
         <span class="c1"># --&gt; Number of snow days occurences before each snow free day</span>
-        <span class="c1"># data.cumsum(dim=&#39;time&#39;).where(data.values == 0).ffill(dim=&#39;time&#39;).fillna(0) --&gt; [0, 1, 1, 1, 1, 4, 4, 4]</span>
+        <span class="c1"># data.cumsum(dim='time').where(data.values == 0).ffill(dim='time').fillna(0) --&gt; [0, 1, 1, 1, 1, 4, 4, 4]</span>
         <span class="c1"># fillna(0) deal with snow days starting before 1 september</span>
         <span class="c1"># cumul --&gt; array([1, 0, 1, 2, 3, 0, 1, 2])</span>
         <span class="c1"># WARNING : applying cumsum method on a *DataArrayGroupBy* method requires version 2024.3.0 of xarray</span>
-        <span class="n">cumul</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">cumul</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span> <span class="o">-</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">ModuleNotFoundError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
-        <span class="c1"># If &quot;bottleneck&quot; not available, use a custom ffill function</span>
+        <span class="c1"># If "bottleneck" not available, use a custom ffill function</span>
         <span class="n">cumul</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Construct an array similar to data</span>
-        <span class="c1"># cumsum method not available on xarray&#39;s version 0.16.0 (MF HPC&#39;s valid install on 27/05/2024)</span>
-        <span class="c1"># --&gt; replace by an &quot;apply&quot; function untill the next version update</span>
+        <span class="c1"># cumsum method not available on xarray's version 0.16.0 (MF HPC's valid install on 27/05/2024)</span>
+        <span class="c1"># --&gt; replace by an "apply" function untill the next version update</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">cs</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="c1"># cs = gp.apply(lambda x: x.cumsum(dim=&#39;time&#39;)) -&gt; return a PendingDeprecationWarning</span>
+            <span class="c1"># cs = gp.apply(lambda x: x.cumsum(dim='time')) -&gt; return a PendingDeprecationWarning</span>
             <span class="c1"># replace with gp.map as below</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">cumsumtime</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span>
             <span class="n">cs</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cumsumtime</span><span class="p">)</span>
         <span class="c1"># cs --&gt; array([1, 1, 2, 3, 4, 4, 5, 6]) (numpy syntax : data.cumsum())</span>
-        <span class="c1"># Apply custom &quot;xr_ffill&quot; function that does not depend on bottleneck</span>
+        <span class="c1"># Apply custom "xr_ffill" function that does not depend on bottleneck</span>
         <span class="n">npfill</span> <span class="o">=</span> <span class="n">xr_ffill</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fillna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">cumul</span> <span class="o">=</span> <span class="n">cs</span> <span class="o">-</span> <span class="n">npfill</span>
 
     <span class="c1"># Compute longest snow cover duration for each group/season as the maximum value along the time dimension</span>
-    <span class="n">scd</span> <span class="o">=</span> <span class="n">cumul</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;startseason&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;scd_concurent&#39;</span><span class="p">)</span>
+    <span class="n">scd</span> <span class="o">=</span> <span class="n">cumul</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'startseason'</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">'scd_concurent'</span><span class="p">)</span>
 
     <span class="c1"># Compute the snow melt out date for each group/season as the index of the maximum value along the time dimension</span>
-    <span class="c1"># mod = (cumul.groupby(&#39;startseason&#39;).apply(lambda c: c.argmax(dim=&quot;time&quot;)) + 1).rename(&#39;mod&#39;)</span>
+    <span class="c1"># mod = (cumul.groupby('startseason').apply(lambda c: c.argmax(dim="time")) + 1).rename('mod')</span>
     <span class="c1"># -&gt; return a PendingDeprecationWarning</span>
     <span class="c1"># replace with groupby.map as below</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmaxtime</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
-    <span class="n">mod</span> <span class="o">=</span> <span class="p">(</span><span class="n">cumul</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;startseason&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">argmaxtime</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;mod&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="p">(</span><span class="n">cumul</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'startseason'</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">argmaxtime</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">'mod'</span><span class="p">)</span>
 
     <span class="c1"># Return Nan when snow cover duration is 0 (no day with snow depth above threshold)</span>
     <span class="n">mod</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scd</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span>
-    <span class="c1"># scd = (cumul.max(dim = &#39;time&#39;)).rename(&#39;scd_concurent&#39;)</span>
-    <span class="c1"># mod = (cumul.argmax(dim = &#39;time&#39;) + 1).rename(&#39;mod&#39;)</span>
-    <span class="n">sod</span> <span class="o">=</span> <span class="p">(</span><span class="n">mod</span> <span class="o">-</span> <span class="n">scd</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;sod&#39;</span><span class="p">)</span>
-    <span class="n">sd</span>  <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;startseason&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;sd&#39;</span><span class="p">)</span>
+    <span class="c1"># scd = (cumul.max(dim = 'time')).rename('scd_concurent')</span>
+    <span class="c1"># mod = (cumul.argmax(dim = 'time') + 1).rename('mod')</span>
+    <span class="n">sod</span> <span class="o">=</span> <span class="p">(</span><span class="n">mod</span> <span class="o">-</span> <span class="n">scd</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">'sod'</span><span class="p">)</span>
+    <span class="n">sd</span>  <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'startseason'</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">'time'</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">'sd'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">merge</span><span class="p">([</span><span class="n">scd</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">sod</span><span class="p">,</span> <span class="n">sd</span><span class="p">])</span></div>
 
 </pre></div>

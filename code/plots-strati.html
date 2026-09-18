@@ -8,6 +8,7 @@
     <title>Plotting modelled snow stratigraphy &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -90,11 +91,11 @@ If grain type and RAM resistance are given, these infos are added in the plot.</
 <span class="n">point</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">time</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWDZ&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWTEMP&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">ram</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWRAM&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
-    <span class="n">grain</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWTYPE&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWDZ'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWTEMP'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">ram</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWRAM'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">grain</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWTYPE'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)[</span><span class="n">time</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()[</span><span class="n">time</span><span class="p">]</span>
 
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
@@ -158,12 +159,12 @@ total SWE, albedo, etc.).</p>
 
 <span class="n">point</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;DSN_T_ISBA&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'DSN_T_ISBA'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
 
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-<span class="n">saison1d</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Snow depth&#39;</span><span class="p">)</span>
+<span class="n">saison1d</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Snow depth'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -211,13 +212,13 @@ Note that additional options may be necessary for some files (e.g. specification
 
 <span class="n">point</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">&#39;/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWDZ&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;SNOWTYPE&#39;</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">prosimu_auto</span><span class="p">(</span><span class="s1">'/rd/cenfic3/cenmod/home/viallonl/testbase/PRO/PRO_gdesRousses_2019-2020.nc'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWDZ'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">,</span> <span class="n">fill2zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'SNOWTYPE'</span><span class="p">,</span> <span class="n">selectpoint</span><span class="o">=</span><span class="n">point</span><span class="p">)</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">readtime</span><span class="p">()</span>
 
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-<span class="n">saisonProfil</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;grains&#39;</span><span class="p">)</span>
+<span class="n">saisonProfil</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">'grains'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>

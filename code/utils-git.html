@@ -8,6 +8,7 @@
     <title>Getting git informations &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -135,11 +136,11 @@ is available <a class="reference internal" href="#utils.git.COMMAND_OUTPUT" titl
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.git</span><span class="w"> </span><span class="kn">import</span> <span class="n">git_infos</span>
 
-<span class="n">gi</span> <span class="o">=</span> <span class="n">git_infos</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EXESURFEX&#39;</span><span class="p">))</span>
+<span class="n">gi</span> <span class="o">=</span> <span class="n">git_infos</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'EXESURFEX'</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>you can then access information :</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gi</span><span class="p">[</span><span class="s1">&#39;commit&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gi</span><span class="p">[</span><span class="s1">'commit'</span><span class="p">]</span>
 <span class="go">98730c7c7f486dc85462b0427ff2ff9275bd5537</span>
 </pre></div>
 </div>
@@ -164,21 +165,21 @@ is available <a class="reference internal" href="#utils.git.COMMAND_OUTPUT" titl
 </div>
 <p>or get a dictionnary for further use:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gi</span><span class="o">.</span><span class="n">dict</span>
-<span class="go">{&#39;path&#39;: &#39;/home/viallonl/bin/snowtools&#39;,</span>
-<span class="go"> &#39;commit&#39;: &#39;98730c7c7f486dc85462b0427ff2ff9275bd5537&#39;,</span>
-<span class="go"> &#39;short_commit&#39;: &#39;98730c7&#39;,</span>
-<span class="go"> &#39;author&#39;: &#39;Matthieu Lafaysse&#39;,</span>
-<span class="go"> &#39;author_email&#39;: &#39;matthieu.lafaysse@meteo.fr&#39;,</span>
-<span class="go"> &#39;date&#39;: &#39;2021-07-08 16:53:15 +0200&#39;,</span>
-<span class="go"> &#39;committer&#39;: &#39;Matthieu Lafaysse&#39;,</span>
-<span class="go"> &#39;committer_email&#39;: &#39;matthieu.lafaysse@meteo.fr&#39;,</span>
-<span class="go"> &#39;committer_date&#39;: &#39;2021-07-08 16:53:15 +0200&#39;,</span>
-<span class="go"> &#39;branch_raw&#39;: &#39;HEAD -&gt; master, origin/master, origin/HEAD&#39;,</span>
-<span class="go"> &#39;message&#39;: &#39;bdpe for post-processing&#39;,</span>
-<span class="go"> &#39;message_full&#39;: &#39;bdpe for post-processing&#39;,</span>
-<span class="go"> &#39;branch&#39;: &#39;master&#39;,</span>
-<span class="go"> &#39;last_tag&#39;: &#39;s2m_reanalysis_2020.2&#39;,</span>
-<span class="go"> &#39;clean&#39;: False}</span>
+<span class="go">{'path': '/home/viallonl/bin/snowtools',</span>
+<span class="go"> 'commit': '98730c7c7f486dc85462b0427ff2ff9275bd5537',</span>
+<span class="go"> 'short_commit': '98730c7',</span>
+<span class="go"> 'author': 'Matthieu Lafaysse',</span>
+<span class="go"> 'author_email': 'matthieu.lafaysse@meteo.fr',</span>
+<span class="go"> 'date': '2021-07-08 16:53:15 +0200',</span>
+<span class="go"> 'committer': 'Matthieu Lafaysse',</span>
+<span class="go"> 'committer_email': 'matthieu.lafaysse@meteo.fr',</span>
+<span class="go"> 'committer_date': '2021-07-08 16:53:15 +0200',</span>
+<span class="go"> 'branch_raw': 'HEAD -&gt; master, origin/master, origin/HEAD',</span>
+<span class="go"> 'message': 'bdpe for post-processing',</span>
+<span class="go"> 'message_full': 'bdpe for post-processing',</span>
+<span class="go"> 'branch': 'master',</span>
+<span class="go"> 'last_tag': 's2m_reanalysis_2020.2',</span>
+<span class="go"> 'clean': False}</span>
 </pre></div>
 </div>
 <p>Some very often used strings are also computed by pre-coded functions with

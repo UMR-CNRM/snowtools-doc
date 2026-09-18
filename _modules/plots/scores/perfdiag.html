@@ -7,6 +7,7 @@
     <title>plots.scores.perfdiag &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,13 +40,13 @@
             
   <h1>Source code for plots.scores.perfdiag</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 24 April 2024</span>
 
 <span class="sd">@author: radanovics</span>
 
 <span class="sd">based on code from Ange Haddjeri thesis.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -56,7 +57,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">truncate_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">minval</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">new_cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
-        <span class="s1">&#39;trunc(</span><span class="si">{n}</span><span class="s1">,</span><span class="si">{a:.2f}</span><span class="s1">,</span><span class="si">{b:.2f}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">minval</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">maxval</span><span class="p">),</span>
+        <span class="s1">'trunc(</span><span class="si">{n}</span><span class="s1">,</span><span class="si">{a:.2f}</span><span class="s1">,</span><span class="si">{b:.2f}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">minval</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">maxval</span><span class="p">),</span>
         <span class="n">cmap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">new_cmap</span>
 
@@ -64,7 +65,7 @@
 <div class="viewcode-block" id="PerfDiag">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PerfDiag</span><span class="p">(</span><span class="n">Mplfigure</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Performance diagram</span>
 <span class="sd">    Plot 1-FAR on x-axis, POD on y-axis and iso-lines for frequency bias and CSI</span>
 
@@ -85,30 +86,30 @@
 <span class="sd">    .. figure:: /images/perfdiag.png</span>
 <span class="sd">       :align: center</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">default_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;Paired&#39;</span><span class="p">)</span>  <span class="c1">#: default colors for the different experiments</span>
+<span class="sd">    """</span>
+    <span class="n">default_colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'Paired'</span><span class="p">)</span>  <span class="c1">#: default colors for the different experiments</span>
 
 <div class="viewcode-block" id="PerfDiag.__init__">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">csi_cmap</span><span class="o">=</span><span class="s1">&#39;Purples&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Performance diagram&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">csi_cmap</span><span class="o">=</span><span class="s1">'Purples'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Performance diagram"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param figsize: figure size</span>
 <span class="sd">        :param csi_cmap: colormap for CSI shading. Will be truncated</span>
 <span class="sd">        :param title: Figure title</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Success Ratio (1-FAR)&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s2">&quot;Probability of Detection (POD)&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s2">"Success Ratio (1-FAR)"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s2">"Probability of Detection (POD)"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dpi</span> <span class="o">=</span> <span class="mi">300</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">csi_cmap</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap</span> <span class="o">=</span> <span class="n">truncate_colormap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cmap</span><span class="p">,</span> <span class="mf">00.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap2</span> <span class="o">=</span> <span class="n">truncate_colormap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_cmap</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">csi_label</span> <span class="o">=</span> <span class="s2">&quot;Critical Success Index (CSI)&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">legend_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">csi_label</span> <span class="o">=</span> <span class="s2">"Critical Success Index (CSI)"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">legend_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diagram_background</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_labels</span><span class="p">()</span></div>
 
@@ -140,9 +141,9 @@
 <div class="viewcode-block" id="PerfDiag.diagram_background">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.diagram_background">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">diagram_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        create diagram background with CSI iso-lines and shading and frequency bias iso-lines</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">grid_ticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
         <span class="n">sr_g</span><span class="p">,</span> <span class="n">pod_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">grid_ticks</span><span class="p">,</span> <span class="n">grid_ticks</span><span class="p">)</span>
         <span class="n">bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">grid_ticks</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_ticks</span><span class="p">)))</span>
@@ -153,20 +154,20 @@
         <span class="n">csi</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sr_g</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">pod_g</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
 
         <span class="n">csi_contourf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">sr_g</span><span class="p">,</span> <span class="n">pod_g</span><span class="p">,</span> <span class="n">csi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>
-                                    <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap2</span><span class="p">)</span>
+                                    <span class="n">extend</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap2</span><span class="p">)</span>
         <span class="n">csi_contour</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">sr_g</span><span class="p">,</span> <span class="n">pod_g</span><span class="p">,</span> <span class="n">csi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>
-                                  <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap</span><span class="p">)</span>
+                                  <span class="n">extend</span><span class="o">=</span><span class="s2">"max"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">csi_cmap</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">csi_contourf</span><span class="p">)</span> <span class="c1">#, ax=self.plot)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csi_label</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
         <span class="n">b_contour</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">sr_g</span><span class="p">,</span> <span class="n">pod_g</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
-                                <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;dashed&quot;</span><span class="p">)</span></div>
+                                <span class="n">colors</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">"dashed"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PerfDiag.add_datapoint">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.add_datapoint">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_datapoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#6ACC64&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_datapoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'#6ACC64'</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">linestyle</span><span class="o">=</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param pod: Probability of detection</span>
 <span class="sd">        :param far: False Alarm Ratio</span>
@@ -176,14 +177,14 @@
 <span class="sd">        :param linestyle: matplotlib linestyle</span>
 <span class="sd">        :param markersize: marker size</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">far</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PerfDiag.plot_scores">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.plot_scores">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="n">list_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_markers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">list_markersizes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param pod: list or 1d array of Probability of detection values</span>
 <span class="sd">        :param far: list or 1d array of False Alarm Ratio</span>
@@ -193,10 +194,10 @@
 <span class="sd">        :type list_colors: list</span>
 <span class="sd">        :param list_markers: Markers for the different points. List of length 1</span>
 <span class="sd">         (all points will be plotted with the same marker) or same length as pod and far. If None, all points will</span>
-<span class="sd">         be plotted with the &#39;*&#39; marker</span>
+<span class="sd">         be plotted with the '*' marker</span>
 <span class="sd">        :type list_markers: list</span>
 <span class="sd">        :param list_labels: List of the same length as pod and far with labels to put on the legend.</span>
-<span class="sd">         If None, the labels will be &quot;experiment 1&quot;, &quot;experiment 2 etc.</span>
+<span class="sd">         If None, the labels will be "experiment 1", "experiment 2 etc.</span>
 <span class="sd">        :type list_labels: list</span>
 <span class="sd">        :param list_markersizes: Marker sizes for the different points. List of length 1</span>
 <span class="sd">         (all points will be plotted with the same marker size) or same length as pod and far. If None, all points will</span>
@@ -204,12 +205,12 @@
 <span class="sd">        :type list_markersizes: list</span>
 <span class="sd">        :return:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">far</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;POD and FAR lists have to be same length&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"POD and FAR lists have to be same length"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">list_colors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_colors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">list_colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">))</span>
@@ -225,7 +226,7 @@
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_markers</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span>
                 <span class="n">markers</span> <span class="o">=</span> <span class="n">list_markers</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">))</span>
+            <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="s1">'*'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">list_labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">list_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">))</span>
@@ -233,7 +234,7 @@
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_labels</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">list_labels</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;experiment </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'experiment </span><span class="si">{0}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">list_markersizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_markersizes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">markersizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">list_markersizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pod</span><span class="p">))</span>
@@ -251,67 +252,67 @@
 <div class="viewcode-block" id="PerfDiag.add_labels">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.add_labels">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add axis labels and tick markers. Annotate the background lines with &quot;Frequency Bias&quot; and &quot;CSI score&quot;.</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        add axis labels and tick markers. Annotate the background lines with "Frequency Bias" and "CSI score".</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlabel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ylabel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticks</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.78</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span> <span class="s2">&quot;Frequency Bias&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">23</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="s2">&quot;CSI score&quot;</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#6B51A3&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.78</span><span class="p">,</span> <span class="mf">0.37</span><span class="p">,</span> <span class="s2">"Frequency Bias"</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">23</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="s2">"CSI score"</span><span class="p">,</span> <span class="n">fontdict</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">'#6B51A3'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PerfDiag.add_legend">
 <a class="viewcode-back" href="../../../code/plots-scores.html#plots.scores.perfdiag.PerfDiag.add_legend">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        add a legend.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">legend_params</span><span class="p">)</span></div>
 </div>
 
 <span class="c1">#</span>
 <span class="c1"># import matplotlib.patches as mpatches</span>
 <span class="c1">#</span>
-<span class="c1"># green_patch = mpatches.Patch(color=&#39;#6ACC64&#39;, label=&#39;Safran precipitation&#39;)</span>
-<span class="c1"># orange_patch = mpatches.Patch(color=&#39;#EE854A&#39;, label=&#39;Safran HR precipitation&#39;)</span>
-<span class="c1"># red_patch = mpatches.Patch(color=&#39;#D65F5F&#39;, label=&#39;Antilope precipitation&#39;)</span>
-<span class="c1"># blue_patch = mpatches.Patch(color=&#39;#4878D0&#39;, label=&#39;Arome precipitation&#39;)</span>
-<span class="c1"># # csii=Line2D([0], [0], color=&#39;mediumpurple&#39;, lw=3, label=&#39;CSI score&#39;)</span>
-<span class="c1"># legend1 = plt.legend(handles=[green_patch, orange_patch, red_patch, blue_patch], loc=&#39;lower right&#39;)</span>
+<span class="c1"># green_patch = mpatches.Patch(color='#6ACC64', label='Safran precipitation')</span>
+<span class="c1"># orange_patch = mpatches.Patch(color='#EE854A', label='Safran HR precipitation')</span>
+<span class="c1"># red_patch = mpatches.Patch(color='#D65F5F', label='Antilope precipitation')</span>
+<span class="c1"># blue_patch = mpatches.Patch(color='#4878D0', label='Arome precipitation')</span>
+<span class="c1"># # csii=Line2D([0], [0], color='mediumpurple', lw=3, label='CSI score')</span>
+<span class="c1"># legend1 = plt.legend(handles=[green_patch, orange_patch, red_patch, blue_patch], loc='lower right')</span>
 <span class="c1">#</span>
 <span class="c1"># from matplotlib.lines import Line2D</span>
 <span class="c1">#</span>
-<span class="c1"># legend_elements = [Line2D([0], [0], marker=&#39;*&#39;, color=&#39;w&#39;,</span>
-<span class="c1">#                           label=&#39;Simulation with snow transport\nNeighborhood radius of 0\n(equivalent to pixel-pixel)&#39;,</span>
-<span class="c1">#                           markerfacecolor=&#39;dimgray&#39;, markersize=10),</span>
-<span class="c1">#                    Line2D([0], [0], marker=&#39;p&#39;, color=&#39;w&#39;,</span>
-<span class="c1">#                           label=&#39;Simulation without snow transport\nNeighborhood radius of 0\n(equivalent to pixel-pixel)&#39;,</span>
-<span class="c1">#                           markerfacecolor=&#39;dimgray&#39;, markersize=10),</span>
-<span class="c1">#                    Line2D([0], [0], marker=&#39;P&#39;, color=&#39;w&#39;,</span>
-<span class="c1">#                           label=&#39;Simulation with snow transport\nNeighborhood radius of 1&#39;, markerfacecolor=&#39;dimgray&#39;,</span>
+<span class="c1"># legend_elements = [Line2D([0], [0], marker='*', color='w',</span>
+<span class="c1">#                           label='Simulation with snow transport\nNeighborhood radius of 0\n(equivalent to pixel-pixel)',</span>
+<span class="c1">#                           markerfacecolor='dimgray', markersize=10),</span>
+<span class="c1">#                    Line2D([0], [0], marker='p', color='w',</span>
+<span class="c1">#                           label='Simulation without snow transport\nNeighborhood radius of 0\n(equivalent to pixel-pixel)',</span>
+<span class="c1">#                           markerfacecolor='dimgray', markersize=10),</span>
+<span class="c1">#                    Line2D([0], [0], marker='P', color='w',</span>
+<span class="c1">#                           label='Simulation with snow transport\nNeighborhood radius of 1', markerfacecolor='dimgray',</span>
 <span class="c1">#                           markersize=10),</span>
-<span class="c1">#                    Line2D([0], [0], marker=&#39;s&#39;, color=&#39;w&#39;,</span>
-<span class="c1">#                           label=&#39;Simulation without snow transport\nNeighborhood radius of 1&#39;,</span>
-<span class="c1">#                           markerfacecolor=&#39;dimgray&#39;, markersize=10),</span>
+<span class="c1">#                    Line2D([0], [0], marker='s', color='w',</span>
+<span class="c1">#                           label='Simulation without snow transport\nNeighborhood radius of 1',</span>
+<span class="c1">#                           markerfacecolor='dimgray', markersize=10),</span>
 <span class="c1">#                    ]</span>
-<span class="c1"># legend2 = plt.legend(handles=legend_elements, loc=&#39;upper left&#39;)</span>
+<span class="c1"># legend2 = plt.legend(handles=legend_elements, loc='upper left')</span>
 <span class="c1"># plt.gca().add_artist(legend1)</span>
 <span class="c1"># plt.gca().add_artist(legend2)</span>
 <span class="c1"># plt.clabel(csi_contour, inline=True, fontsize=9)</span>
-<span class="c1"># plt.clabel(b_contour, fmt=&quot;%1.1f&quot;, )  # manual=[(0.2, 0.9), (0.4, 0.9), (0.6, 0.9), (0.7, 0.7)])</span>
-<span class="c1"># plt.savefig(&quot;CHAP4/perfdiagram.pdf&quot;, bbox_inches=&quot;tight&quot;)</span>
+<span class="c1"># plt.clabel(b_contour, fmt="%1.1f", )  # manual=[(0.2, 0.9), (0.4, 0.9), (0.6, 0.9), (0.7, 0.7)])</span>
+<span class="c1"># plt.savefig("CHAP4/perfdiagram.pdf", bbox_inches="tight")</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FuzzyScoreDiagram</span><span class="p">(</span><span class="n">Mplfigure</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;winter&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Fuzzy Score Diagram&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'winter'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Fuzzy Score Diagram"</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Thresholds&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s2">&quot;Neighborhood size&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s2">"Thresholds"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ylabel</span> <span class="o">=</span> <span class="s2">"Neighborhood size"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
 

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.prosnow &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.prosnow</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.prosnow</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">prosnow.py</span>
+<span class="sd">----------</span>
+
+<span class="sd">Algo Components for the PROSNOW project</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.prosnow</span>
+<span class="sd">   :top-classes: vortex_cen.algo.components._CenParaBlindRun, vortex_cen.algo.components._CenTaylorRun,</span>
+<span class="sd">                 vortex_cen.algo.components._CenTaylorVortexWorker, vortex_cen.algo.components._CenWorkerBlindRun</span>
+<span class="sd">                 vortex.algo.components.AlgoComponent, vortex.algo.components.Parallel, vortex.algo.components.TaylorRun</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 1</span>
+
+<span class="sd">.. autoclass:: PrepareForcingComponentForecast</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ExtractForcingWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ExtractForcingWorkerEnsembleForecast</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ExtractForcingWorkerLTForecast</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: Prosnow_Parallel</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrepareForcingComponent</span><span class="p">,</span> <span class="n">PrepareForcingWorker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.deterministic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Surfex_Parallel</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_forcing</span><span class="w"> </span><span class="kn">import</span> <span class="n">forcinput_extract</span><span class="p">,</span> <span class="n">forcinput_changedates</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_prep</span><span class="w"> </span><span class="kn">import</span> <span class="n">prep_tomodify</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.update_namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_namelist_var</span>
+
+
+<div class="viewcode-block" id="PrepareForcingComponentForecast">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.prosnow.PrepareForcingComponentForecast">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrepareForcingComponentForecast</span><span class="p">(</span><span class="n">PrepareForcingComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It adapts forcing files to a ski resort geometry (several members in parallel).</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extractforcing_STforecast'</span><span class="p">,</span> <span class="s1">'extractforcing_LTforecast'</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">PrepareForcingComponent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'datebegin'</span><span class="p">,</span> <span class="s1">'dateend'</span><span class="p">]:</span>
+                <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_ref_namebuilder</span><span class="p">())</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+                <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">subdirs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_ref_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'Forcing'</span></div>
+
+
+
+<div class="viewcode-block" id="ExtractForcingWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.prosnow.ExtractForcingWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractForcingWorker</span><span class="p">(</span><span class="n">PrepareForcingWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It adapts forcing files to a ski resort geometry (worker for 1 member).</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Prepare forcing for PROSNOW simulations - deterministic case'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extractforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forcing_innertask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">dir_file_1</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_prepare_forcing_task</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forcing_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+        <span class="n">datebegin_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y%m</span><span class="si">%d</span><span class="s1">%H'</span><span class="p">)</span>
+        <span class="n">dateend_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y%m</span><span class="si">%d</span><span class="s1">%H'</span><span class="p">)</span>
+
+        <span class="n">dir_file_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forcingdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'/FORCING_'</span> <span class="o">+</span> <span class="n">datebegin_str</span> <span class="o">+</span> <span class="s1">'_'</span> <span class="o">+</span> <span class="n">dateend_str</span> <span class="o">+</span> <span class="s1">'.nc'</span>
+        <span class="n">dir_file_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forcingdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'/FORCING_out_'</span> <span class="o">+</span> <span class="n">datebegin_str</span> <span class="o">+</span> <span class="s1">'_'</span> <span class="o">+</span> <span class="n">dateend_str</span> <span class="o">+</span> <span class="s1">'.nc'</span>
+        <span class="n">dir_file_3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forcingdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'/FORCING_in_'</span> <span class="o">+</span> <span class="n">datebegin_str</span> <span class="o">+</span> <span class="s1">'_'</span> <span class="o">+</span> <span class="n">dateend_str</span> <span class="o">+</span> <span class="s1">'.nc'</span>
+        <span class="n">dir_file_4</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">+</span> <span class="s1">'/SRU.txt'</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_forcing_innertask</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">dir_file_1</span><span class="p">,</span> <span class="n">rdict</span><span class="p">)</span>
+
+        <span class="c1"># Extraction of SRU geometry</span>
+        <span class="n">forcinput_extract</span><span class="p">(</span><span class="n">dir_file_1</span><span class="p">,</span> <span class="n">dir_file_2</span><span class="p">,</span> <span class="n">dir_file_4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dir_file_1</span><span class="p">,</span> <span class="n">dir_file_3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dir_file_2</span><span class="p">,</span> <span class="n">dir_file_1</span><span class="p">)</span>
+
+        <span class="c1"># ------------------- #</span>
+
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+
+
+<div class="viewcode-block" id="ExtractForcingWorkerEnsembleForecast">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.prosnow.ExtractForcingWorkerEnsembleForecast">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractForcingWorkerEnsembleForecast</span><span class="p">(</span><span class="n">ExtractForcingWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It adapts forcing files to a ski resort geometry (worker for 1 member)</span>
+<span class="sd">    with specific adaptations for short term forecast</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Prepare forcing for PROSNOW simulations - ensemble forecast'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extractforcing_STforecast'</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forcingdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">thisdir</span></div>
+
+
+
+<div class="viewcode-block" id="ExtractForcingWorkerLTForecast">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.prosnow.ExtractForcingWorkerLTForecast">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractForcingWorkerLTForecast</span><span class="p">(</span><span class="n">ExtractForcingWorkerEnsembleForecast</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It adapts forcing files to a ski resort geometry (worker for 1 member)</span>
+<span class="sd">    with specific adaptations for seasonal forecasts</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in May 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Prepare forcing for PROSNOW simulations - LT forecast'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'extractforcing_LTforecast'</span><span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forcing_innertask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">dir_file_1</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+        <span class="c1"># Change dates of the climatology to the current season</span>
+        <span class="n">forcinput_changedates</span><span class="p">(</span><span class="n">dir_file_1</span><span class="p">,</span> <span class="n">dir_file_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">nivologyseason_begin</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+
+
+<div class="viewcode-block" id="Prosnow_Parallel">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.prosnow.Prosnow_Parallel">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Prosnow_Parallel</span><span class="p">(</span><span class="n">Surfex_Parallel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It adds snow management specificities by ski resorts to standard SURFEX-Crocus algo components.</span>
+
+<span class="sd">    This class was implemented by C. Carmagnola in April 2019 (PROSNOW project).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent designed to run SURFEX experiments over large domains with MPI parallelization.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">insert_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'prosnow_insert_data'</span><span class="p">,</span> <span class="p">],</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prosnow_modify_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_nam</span> <span class="o">=</span> <span class="n">update_namelist_var</span><span class="p">(</span><span class="s2">"OPTIONS_unmodified.nam"</span><span class="p">,</span> <span class="s2">"water.txt"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_nam</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prosnow_modify_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dateend_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y%m</span><span class="si">%d</span><span class="s1">%H'</span><span class="p">)</span>
+        <span class="n">my_name_OBS</span> <span class="o">=</span> <span class="s1">'OBS_'</span> <span class="o">+</span> <span class="n">dateend_str</span> <span class="o">+</span> <span class="s1">'.nc'</span>
+        <span class="n">my_name_PREP</span> <span class="o">=</span> <span class="s1">'PREP_'</span> <span class="o">+</span> <span class="n">dateend_str</span> <span class="o">+</span> <span class="s1">'.nc'</span>
+
+        <span class="n">old_prep</span> <span class="o">=</span> <span class="n">prep_tomodify</span><span class="p">(</span><span class="n">my_name_PREP</span><span class="p">)</span>
+        <span class="n">new_prep</span> <span class="o">=</span> <span class="n">old_prep</span><span class="o">.</span><span class="n">insert_snow_depth</span><span class="p">(</span><span class="s1">'SRU.txt'</span><span class="p">,</span> <span class="s1">'snow.txt'</span><span class="p">,</span> <span class="n">my_name_OBS</span><span class="p">,</span> <span class="s1">'prep_fillup_50.nc'</span><span class="p">,</span>
+                                              <span class="s1">'prep_fillup_5.nc'</span><span class="p">,</span> <span class="s1">'variables'</span><span class="p">,</span> <span class="n">my_name_PREP</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_prep</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+
+        <span class="c1"># Insert water consumption in namelist (before running surfex)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prosnow_modify_namelist</span><span class="p">()</span>
+
+        <span class="c1"># Call execute of Surfex_Parallel</span>
+        <span class="c1"># Note that modify_namelist and modify_prep methods of the mother class</span>
+        <span class="c1"># still have to be called in the following instruction</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="c1"># Insert snow height in prep (after running surfex)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prosnow_modify_prep</span><span class="p">()</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.prosnow</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

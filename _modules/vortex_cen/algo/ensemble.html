@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.ensemble &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.ensemble</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.ensemble</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">ensemble.py</span>
+<span class="sd">-----------</span>
+
+<span class="sd">Algo Components for ensemble Surfex simulations.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.ensemble</span>
+<span class="sd">   :top-classes: vortex_cen.algo.components._CenParaBlindRun, vortex_cen.algo.components._CenTaylorRun,</span>
+<span class="sd">                 vortex_cen.algo.components._CenTaylorVortexWorker, vortex_cen.algo.components._CenWorkerBlindRun,</span>
+<span class="sd">                 vortex.algo.components.ParaExpresso, vortex.tools.parallelism.TaylorVortexWorker</span>
+<span class="sd">                 vortex.algo.components.AlgoComponent, vortex.algo.components.Parallel, vortex.algo.components.TaylorRun</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 1</span>
+
+<span class="sd">.. autoclass:: S2MComponent</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SurfexComponent</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SurfexComponentMultiDates</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SurfexWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: PrepareForcingComponent</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: PrepareForcingWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: S2MReanalysis</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: S2MReforecast</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ShadowsForcingWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span><span class="p">,</span> <span class="n">tomorrow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelayedAlgoComponentError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenParaBlindRun</span><span class="p">,</span> <span class="n">_CenWorkerBlindRun</span><span class="p">,</span> <span class="n">_CenTaylorRun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenTaylorVortexWorker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.syntax.stdattrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.tools.systems</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionError</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_prep</span><span class="w"> </span><span class="kn">import</span> <span class="n">prep_tomodify</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_file_period</span><span class="p">,</span> <span class="n">save_file_date</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.update_namelist</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_surfex_namelist_object</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.change_forcing</span><span class="w"> </span><span class="kn">import</span> <span class="n">forcinput_select</span><span class="p">,</span> <span class="n">forcinput_applymask</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.ESCROCsubensembles</span><span class="w"> </span><span class="kn">import</span> <span class="n">ESCROC_subensembles</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeListException</span><span class="p">,</span> <span class="n">MultipleValueException</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.deterministic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfexMixIn</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MExecutionError</span><span class="p">(</span><span class="n">ExecutionError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Execution Error in S2M algo component that should be catched and delayed"""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">deterministic</span><span class="p">,</span> <span class="n">subdir</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="n">deterministic</span>  <span class="c1"># Key used for delayed exception management</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="o">=</span> <span class="n">subdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span> <span class="o">=</span> <span class="n">datebegin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span> <span class="o">=</span> <span class="n">dateend</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">+</span> <span class="s1">' execution failed.'</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"Error while running "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">+</span> <span class="s2">" for member "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="o">+</span> <span class="s2">" for period "</span> <span class="o">+</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">ymdh</span> <span class="o">+</span> <span class="s2">" - "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">ymdh</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">red</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__reduce__</span><span class="p">())</span>
+        <span class="n">red</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">])</span>  <span class="c1"># Les arguments qui seront passes a __init__</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">red</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MMissingDeterministicError</span><span class="p">(</span><span class="n">DelayedAlgoComponentError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Exception raised when no resource is found for a mandatory role although</span>
+<span class="sd">    fatal is False in toolbox inputs.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">role</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"Unable to find the mandatory resource of role : "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">red</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__reduce__</span><span class="p">())</span>
+        <span class="n">red</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">deterministic</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">red</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SurfexWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.SurfexWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfexWorker</span><span class="p">(</span><span class="n">_CenWorkerBlindRun</span><span class="p">,</span> <span class="n">SurfexMixIn</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This algo component is designed to run a SURFEX experiment without</span>
+<span class="sd">    MPI parallelization.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent designed to run a SURFEX experiment without MPI parallelization.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateinit</span>  <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'deterministic'</span><span class="p">,</span> <span class="s1">'escroc'</span><span class="p">,</span> <span class="s1">'ensmeteo'</span><span class="p">,</span> <span class="s1">'ensmeteonodet'</span><span class="p">,</span> <span class="s1">'ensmeteo+sytron'</span><span class="p">,</span> <span class="s1">'ensmeteo+escroc'</span><span class="p">,</span>
+                          <span class="s1">'croco'</span><span class="p">],</span>
+                <span class="c1"># Les cas "escroc" et "croco" s</span>
+                <span class="c1"># * escroc = 1 FORCING (no subdirs) / N physiques Crocus</span>
+                <span class="c1"># * croco = N FORCINGs (--&gt; N subdirs) / N physiques Crocus</span>
+            <span class="p">),</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Threshold to apply to SWE"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">999</span>
+            <span class="p">),</span>
+            <span class="n">physical_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Dictionnary of ESCROC physical options"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="p">),</span>
+            <span class="n">snow_parameters</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Dictionnary of ESCROC snow physical parameters"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="p">),</span>
+            <span class="n">subdir</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">'work in this particular subdirectory'</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">geometry_in</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Area information in case of an execution on a massif geometry"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">geometry_out</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"The resource's massif geometry."</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">daily</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If True, split simulations in daily runs"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dailynamelist</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If daily is True, possibility to provide a list of namelists to change each day"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">modify_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        The PREP file needs to be modified if the init date differs from the starting</span>
+<span class="sd">        date or if a threshold needs to be applied on snow water equivalent.</span>
+<span class="sd">        """</span>
+        <span class="n">modif_swe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">datebegin_this_run</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">and</span> <span class="n">datebegin_this_run</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">modif_date</span> <span class="o">=</span> <span class="n">datebegin_this_run</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateinit</span>
+        <span class="n">modif</span> <span class="o">=</span> <span class="n">modif_swe</span> <span class="ow">or</span> <span class="n">modif_date</span>
+
+        <span class="k">if</span> <span class="n">modif</span><span class="p">:</span>
+            <span class="n">prep</span> <span class="o">=</span> <span class="n">prep_tomodify</span><span class="p">(</span><span class="s2">"PREP.nc"</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">modif_swe</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"APPLY THRESHOLD ON SWE."</span><span class="p">)</span>
+                <span class="n">prep</span><span class="o">.</span><span class="n">apply_swe_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">modif_date</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"CHANGE DATE OF THE PREP FILE."</span><span class="p">)</span>
+                <span class="n">prep</span><span class="o">.</span><span class="n">change_date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">)</span>
+
+            <span class="n">prep</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"DO NOT CHANGE THE PREP FILE."</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># TODO : tout cela pourrait être géré plus proprement à partir des inputs du contexte</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dailynamelist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">list_files_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dailynamelist</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">list_files_copy</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"OPTIONS.nam"</span><span class="p">]</span>
+        <span class="n">list_files_link</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PGD.nc"</span><span class="p">,</span> <span class="s2">"METADATA.xml"</span><span class="p">,</span> <span class="s2">"ecoclimapI_covers_param.bin"</span><span class="p">,</span>
+                           <span class="s2">"ecoclimapII_eu_covers_param.bin"</span><span class="p">,</span> <span class="s2">"drdt_bst_fit_60.nc"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'escroc'</span><span class="p">,</span> <span class="s1">'croco'</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateinit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">list_files_copy_ifnotprovided</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PREP.nc"</span><span class="p">]</span>
+            <span class="n">list_files_link_ifnotprovided</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">list_files_copy_ifnotprovided</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">list_files_link_ifnotprovided</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PREP.nc"</span><span class="p">]</span>
+        <span class="c1"># here Bertrand also created links towards the forcings but in a non-standard way --&gt; to be checked</span>
+
+        <span class="k">for</span> <span class="n">required_copy</span> <span class="ow">in</span> <span class="n">list_files_copy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">required_copy</span><span class="p">),</span> <span class="n">required_copy</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">required_link</span> <span class="ow">in</span> <span class="n">list_files_link</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">required_link</span><span class="p">),</span> <span class="n">required_link</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">required_link</span> <span class="ow">in</span> <span class="n">list_files_link_ifnotprovided</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">required_link</span><span class="p">),</span> <span class="n">required_link</span><span class="p">)</span>
+            <span class="c1"># For reforecast:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">thisdir</span><span class="p">),</span> <span class="n">required_link</span><span class="p">),</span>
+                                    <span class="n">required_link</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">required_copy</span> <span class="ow">in</span> <span class="n">list_files_copy_ifnotprovided</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">required_copy</span><span class="p">),</span> <span class="n">required_copy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">thisdir</span><span class="p">),</span> <span class="n">required_copy</span><span class="p">),</span>
+                                    <span class="n">required_link</span><span class="p">)</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfex_task</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_surfex_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+        <span class="c1"># ESCROC cases: each member will need to have its own namelist</span>
+        <span class="c1"># meteo ensemble cases: the forcing modification must be applied to all members and the namelist</span>
+        <span class="c1"># generation requires that the forcing generation has already be done. Therefore, preprocessing</span>
+        <span class="c1"># is done in the offline algo in all these cases</span>
+        <span class="c1"># Determinstic cases : the namelist is prepared in the preprocess algo component in order to allow</span>
+        <span class="c1"># to build PGD and PREP</span>
+        <span class="c1"># MV : Cela justifierai de faire des algos distincts...</span>
+        <span class="n">namelist_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'deterministic'</span>  <span class="c1"># Cas oper uniquement</span>
+        <span class="n">need_other_run</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">need_other_forcing</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">need_save_forcing</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">updateloc</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">datebegin_this_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span>
+
+        <span class="n">sytron</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"ensmeteo+sytron"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="o">==</span> <span class="s2">"mb036"</span>  <span class="c1"># MV : A sortir de l'algo (S2M-specific)</span>
+
+        <span class="n">changenamelistdaily</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daily</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dailynamelist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># MV : Faire un aglo spécifique</span>
+
+        <span class="k">while</span> <span class="n">need_other_run</span><span class="p">:</span>
+
+            <span class="c1"># Modification of the PREP file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modify_prep</span><span class="p">(</span><span class="n">datebegin_this_run</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">need_other_forcing</span><span class="p">:</span>
+
+                <span class="c1"># MV : L'unique différence entre "escroc" et "croco" est la valeur de "forcingdir"</span>
+                <span class="c1"># TODO : externalise les lignes suivantes de la boucle "need_other_run"</span>
+                <span class="c1"># TODO : gérer le  cas "SYTRON" plus proprement (algo / footprint spécifique pour remplaçer)</span>
+                <span class="c1"># la valeur en dur"/mb035"</span>
+                <span class="c1"># TODO : Utiliser les "effective_inputs" pour définir "forcingdir"</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"escroc"</span><span class="p">:</span>  <span class="c1"># MV : Faire un algo spécifqique</span>
+                    <span class="c1"># ESCROC only: the forcing files are in the father directory (same forcing for all members)</span>
+                    <span class="n">forcingdir</span> <span class="o">=</span> <span class="n">rundir</span>
+                <span class="k">elif</span> <span class="n">sytron</span><span class="p">:</span>  <span class="c1"># MV : S2M-spécifique, faire un algo distinct</span>
+                    <span class="c1"># ensmeteo+sytron: the forcing files are supposed to be in the subdirectories</span>
+                    <span class="c1"># of each member except for the sytron member</span>
+                    <span class="n">forcingdir</span> <span class="o">=</span> <span class="n">rundir</span> <span class="o">+</span> <span class="s2">"/mb035"</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># MV : Faire des algos distincts pour chaque cas</span>
+                    <span class="c1"># ensmeteo or ensmeteo+escroc or croco: the forcing files are supposed to be in the subdirectories</span>
+                    <span class="c1"># of each member</span>
+                    <span class="c1"># determinstic case: the forcing file(s) is/are in the only directory</span>
+                    <span class="n">forcingdir</span> <span class="o">=</span> <span class="n">thisdir</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># MV : A remplacer par la tâche d'aggrégation de forçages</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"FORCING AGGREGATION"</span><span class="p">)</span>
+                    <span class="n">forcinglist</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="c1"># MV: La boucle qui suit semble très S2M-spécifique et devrait être externalisée</span>
+                    <span class="c1"># --&gt; utiliser la tâche d'aggrégation</span>
+                    <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">,</span> <span class="n">forcingname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_forcing</span><span class="p">(</span><span class="n">datebegin_this_run</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">forcingdir</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">),</span> <span class="s1">'FORCING.nc'</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">MultipleValueException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="n">rdict</span><span class="p">[</span><span class="s1">'rc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+                            <span class="k">return</span> <span class="n">rdict</span>  <span class="c1"># Note than in the other case return rdict is at the end</span>
+                        <span class="n">forcingname</span> <span class="o">=</span> <span class="s2">"FORCING_"</span> <span class="o">+</span> <span class="n">massif</span> <span class="o">+</span> <span class="s2">".nc"</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">)</span>
+                        <span class="n">forcinglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">forcingname</span><span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">forcinput_applymask</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">,</span> <span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">TimeListException</span><span class="p">:</span>
+                        <span class="n">deterministic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="o">==</span> <span class="s2">"mb035"</span>
+                        <span class="n">rdict</span><span class="p">[</span><span class="s1">'rc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">S2MExecutionError</span><span class="p">(</span><span class="s2">"merge of forcings"</span><span class="p">,</span> <span class="n">deterministic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span><span class="p">,</span>
+                                                        <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">rdict</span>  <span class="c1"># Note than in the other case return rdict is at the end</span>
+
+                    <span class="n">need_save_forcing</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Get the first file covering part of the whole simulation period</span>
+                    <span class="c1"># MV : Et pour une période de simulation correspondant à une sous-période</span>
+                    <span class="c1"># d'un forçage ?</span>
+                    <span class="c1"># La stratégie d'essayer de deviner les FORCINGs présent à partir de périodes pré-définies</span>
+                    <span class="c1"># ne semble pas optimale: à ce stade on connait précisément les FORCINGs présents.</span>
+                    <span class="c1"># On peut donc:</span>
+                    <span class="c1"># 1. Récupérer la liste des datebegin/dateend des FORCINGs présents</span>
+                    <span class="c1"># 2. Construire la liste des itérations nécéssaires pour couvrir la période de simulation</span>
+                    <span class="c1"># 3. Boucler sur cette liste</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"LOOK FOR FORCING"</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">,</span> <span class="n">forcingname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_forcing</span><span class="p">(</span><span class="n">datebegin_this_run</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">forcingdir</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">),</span> <span class="s1">'FORCING.nc'</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">MultipleValueException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">rdict</span><span class="p">[</span><span class="s1">'rc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+                        <span class="k">return</span> <span class="n">rdict</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"FORCING FOUND"</span><span class="p">)</span>
+
+                    <span class="c1"># MV : S2M-spécifique, à externaliser</span>
+                    <span class="c1"># --&gt; utiliser la tâche "AddSlopes"</span>
+                    <span class="k">if</span> <span class="s2">"flat"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">"allslopes"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_out</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">"FORCING EXTENSION"</span><span class="p">)</span>
+                        <span class="n">liste_massifs</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">dicArea</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                        <span class="n">liste_aspect</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">get_list_aspect</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">[</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"20"</span><span class="p">,</span> <span class="s2">"40"</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">mv_if_exists</span><span class="p">(</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="s2">"FORCING_OLD.nc"</span><span class="p">)</span>
+                        <span class="n">forcinput_select</span><span class="p">(</span><span class="s1">'FORCING_OLD.nc'</span><span class="p">,</span> <span class="s1">'FORCING.nc'</span><span class="p">,</span> <span class="n">liste_massifs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span>
+                                         <span class="p">[</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"20"</span><span class="p">,</span> <span class="s2">"40"</span><span class="p">],</span> <span class="n">liste_aspect</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+                        <span class="n">need_save_forcing</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">daily</span><span class="p">:</span>  <span class="c1"># MV : reforecast-spécifique, faire un algo dédié</span>
+                <span class="n">dateend_this_run</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">tomorrow</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">datebegin_this_run</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">))</span>
+                <span class="n">need_other_forcing</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dateend_this_run</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">namelist_ready</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sytron</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">copy_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">"OPTIONS_sytron.nam"</span><span class="p">),</span> <span class="s2">"OPTIONS.nam"</span><span class="p">)</span>
+
+                <span class="n">available_namelists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_namelists</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_namelists</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"WARNING SEVERAL NAMELISTS AVAILABLE !!!"</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">namelist</span> <span class="ow">in</span> <span class="n">available_namelists</span><span class="p">:</span>
+                    <span class="c1"># Update the contents of the namelist (date and location)</span>
+                    <span class="c1"># Location taken in the FORCING file.</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">"MODIFY THE NAMELIST:"</span> <span class="o">+</span> <span class="n">namelist</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+                    <span class="n">newcontent</span> <span class="o">=</span> <span class="n">update_surfex_namelist_object</span><span class="p">(</span>
+                        <span class="n">namelist</span><span class="o">.</span><span class="n">contents</span><span class="p">,</span>
+                        <span class="n">datebegin_this_run</span><span class="p">,</span>
+                        <span class="n">dateend</span><span class="o">=</span><span class="n">dateend_this_run</span><span class="p">,</span>
+                        <span class="n">updateloc</span><span class="o">=</span><span class="n">updateloc</span><span class="p">,</span>
+                        <span class="n">physicaloptions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">physical_options</span><span class="p">,</span>
+                        <span class="n">snowparameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">snow_parameters</span><span class="p">)</span>
+                    <span class="n">newnam</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">container</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">namelist</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+                    <span class="n">newcontent</span><span class="o">.</span><span class="n">rewrite</span><span class="p">(</span><span class="n">newnam</span><span class="p">)</span>
+                    <span class="n">newnam</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">daily</span><span class="p">:</span>
+                    <span class="n">updateloc</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">changenamelistdaily</span><span class="p">:</span>
+                <span class="c1"># Change the namelist</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dailynamelist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s2">"OPTIONS.nam"</span><span class="p">)</span>
+
+            <span class="c1"># Run surfex offline</span>
+            <span class="n">list_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">thisdir</span><span class="p">,</span> <span class="s1">'offline.out'</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">local_spawn</span><span class="p">(</span><span class="n">list_name</span><span class="p">)</span>
+                <span class="c1"># Uncomment these lines to test the behaviour in case of failure of 1 member</span>
+                <span class="c1"># if self.subdir == "mb006": # To test warnings</span>
+                <span class="c1"># if self.subdir == "mb035": # To test errors</span>
+                <span class="c1">#     deterministic = self.subdir == "mb035"</span>
+                <span class="c1">#     # print("DEBUGINFO")</span>
+                <span class="c1">#     # print(dir(self))</span>
+                <span class="c1">#     rdict['rc'] = S2MExecutionError(self.progname, deterministic,</span>
+                <span class="c1">#                                     self.subdir, datebegin_this_run, dateend_this_run)</span>
+                <span class="c1">#     return rdict</span>
+
+            <span class="k">except</span> <span class="n">ExecutionError</span><span class="p">:</span>
+                <span class="n">deterministic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="o">==</span> <span class="s2">"mb035"</span>
+                <span class="n">rdict</span><span class="p">[</span><span class="s1">'rc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">S2MExecutionError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progname</span><span class="p">,</span> <span class="n">deterministic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span><span class="p">,</span>
+                                                <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">rdict</span>  <span class="c1"># Note than in the other case return rdict is at the end</span>
+
+            <span class="c1"># Copy the SURFOUT file for next iteration</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="s2">"SURFOUT.nc"</span><span class="p">,</span> <span class="s2">"PREP.nc"</span><span class="p">)</span>
+
+            <span class="c1"># Post-process</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offline_postprocess</span><span class="p">(</span><span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">)</span>
+
+            <span class="c1"># Rename outputs with the dates</span>
+            <span class="n">save_file_date</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"SURFOUT"</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PREP"</span><span class="p">)</span>
+
+            <span class="c1"># Prepare next iteration if needed</span>
+            <span class="n">datebegin_this_run</span> <span class="o">=</span> <span class="n">dateend_this_run</span>
+            <span class="n">need_other_run</span> <span class="o">=</span> <span class="n">dateend_this_run</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">dateend_this_run</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"INFO SAVE FORCING"</span><span class="p">,</span> <span class="n">need_save_forcing</span><span class="p">,</span> <span class="n">need_other_run</span><span class="p">,</span> <span class="n">need_other_forcing</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">need_save_forcing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">need_other_run</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">need_other_forcing</span><span class="p">):</span>
+                <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"FORCING"</span><span class="p">,</span> <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">)</span>
+            <span class="c1"># Remove the symbolic link for next iteration (not needed since now we rename the forcing just before</span>
+<span class="c1">#             self.system.remove("FORCING.nc")</span>
+
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+
+
+<div class="viewcode-block" id="PrepareForcingWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.PrepareForcingWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrepareForcingWorker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This algo component is designed to prepare a SURFEX Forcing file (change of geometry)."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent designed to run a SURFEX experiment without MPI parallelization.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'prepareforcing'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">subdir</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">'work in this particular subdirectory'</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">geometry_in</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Area information in case of an execution on a massif geometry"</span><span class="p">,</span>
+                <span class="c1"># WARNING : geometry_in contient la liste des TAGs des géométries, et pas de objets</span>
+                <span class="c1"># "geometry"</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">geometry_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="c1"># WARNING : geometry_ est le TAG de l'objet geometry</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The resource's massif geometry."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_forcing_task</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postfix</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forcingdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">rundir</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forcing_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+
+        <span class="c1"># TODO (MV) : séparer en 2 algo</span>
+        <span class="c1"># 1. Concatenate_forcings</span>
+        <span class="c1"># 2. AddSlopes</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"FORCING AGGREGATION"</span><span class="p">)</span>
+            <span class="n">forcinglist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">:</span>
+                <span class="n">forcingname</span> <span class="o">=</span> <span class="s2">"FORCING_"</span> <span class="o">+</span> <span class="n">massif</span> <span class="o">+</span> <span class="s2">".nc"</span>
+                <span class="n">forcinglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">forcingname</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"FORCING EXTENSION"</span><span class="p">)</span>
+            <span class="n">forcinput_applymask</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">,</span> <span class="s2">"FORCING_OUT.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"FORCING EXTENSION"</span><span class="p">)</span>
+            <span class="n">geoin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"flat"</span> <span class="ow">in</span> <span class="n">geoin</span> <span class="ow">and</span> <span class="s2">"allslopes"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_out</span><span class="p">:</span>
+                <span class="n">list_slopes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"0"</span><span class="p">,</span> <span class="s2">"20"</span><span class="p">,</span> <span class="s2">"40"</span><span class="p">]</span>
+                <span class="n">liste_massifs</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">dicArea</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">liste_aspect</span> <span class="o">=</span> <span class="n">infomassifs</span><span class="p">()</span><span class="o">.</span><span class="n">get_list_aspect</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">list_slopes</span><span class="p">)</span>
+                <span class="n">forcinput_select</span><span class="p">(</span><span class="sa">f</span><span class="s1">'FORCING_</span><span class="si">{</span><span class="n">geoin</span><span class="si">}</span><span class="s1">.nc'</span><span class="p">,</span> <span class="s1">'FORCING_OUT.nc'</span><span class="p">,</span> <span class="n">liste_massifs</span><span class="p">,</span>
+                                 <span class="mi">0</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">list_slopes</span><span class="p">,</span> <span class="n">liste_aspect</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">postfix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">subtitle</span><span class="p">(</span><span class="s1">'</span><span class="si">{:s}</span><span class="s1"> : directory listing (post-run)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">dir</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="S2MComponent">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.S2MComponent">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MComponent</span><span class="p">(</span><span class="n">_CenParaBlindRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This Algo Component is designed to manage any Surfex execution without MPI</span>
+<span class="sd">    parallelization (deterministic or ensemble-like simulations).</span>
+
+<span class="sd">    Ensemble-like simulations include real ensemble simulations (many executions</span>
+<span class="sd">    of the same simulation with different initial conditions or configurations)</span>
+<span class="sd">    and multi-year simulations (associating each year to one member) that can run</span>
+<span class="sd">    in parallel.</span>
+
+<span class="sd">    The different members of an ensemble simulation are identified by an input</span>
+<span class="sd">    resource that differ between the members (defined by the method</span>
+<span class="sd">    **role_ref_namebuilder** that can be overloaded). For each identified</span>
+<span class="sd">    member, a worker object (whose class inherits from :class:`_CenWorkerBlindRun`)</span>
+<span class="sd">    is generated and the different workers run in parallel.</span>
+
+<span class="sd">    The :class:`S2MComponent` class (that relies on the :mod:`taylorism`</span>
+<span class="sd">    package):</span>
+
+<span class="sd">    * allocates the different executions of the same binary to workers</span>
+<span class="sd">    * analyses their feedbacks to look for execution errors</span>
+<span class="sd">      (thanks to the inherited :meth:`~ParaBlindRun._default_post_execute`</span>
+<span class="sd">      method): should the `rc` entry of the dictionary returned by the</span>
+<span class="sd">      worker's :meth:`_CenWorkerBlindRun.vortex_task` method be an Exception, it is</span>
+<span class="sd">      captured and stored.</span>
+
+<span class="sd">    When the execution of all members finishes, the captured exceptions (see</span>
+<span class="sd">    above) are wrapped in a</span>
+<span class="sd">    :class:`~vortex.algo.components.DelayedAlgoComponentError` exception that</span>
+<span class="sd">    is ultimately raised.</span>
+
+<span class="sd">    Consequently, we can rely on that to:</span>
+
+<span class="sd">    * filter/ignore some errors,</span>
+<span class="sd">    * send notifications...</span>
+
+<span class="sd">    For CEN R&amp;D needs, this can be easily implemented in the Task classes</span>
+<span class="sd">    provided they inherit from the  :class:`vortex_cen.layout.nodes.CENTaskMixIn`</span>
+<span class="sd">    mixin. For example:</span>
+
+<span class="sd">    * To filter execution errors, just define</span>
+<span class="sd">      ``filter_execution_error`` in your Task class:</span>
+<span class="sd">      ``filter_execution_error = CENTaskMixIn.s2moper_filter_execution_error``</span>
+
+<span class="sd">    * To send notification emails about fatal and non-fatal errors:</span>
+<span class="sd">      ``report_execution_warning = CENTaskMixIn.s2moper_report_execution_warning``</span>
+<span class="sd">      and</span>
+<span class="sd">      ``report_execution_errors = CENTaskMixIn.s2moper_report_execution_errors``</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'safrane'</span><span class="p">,</span> <span class="s1">'syrpluie'</span><span class="p">,</span> <span class="s1">'syrmrr'</span><span class="p">,</span> <span class="s1">'sytist'</span><span class="p">,</span> <span class="s1">'sypluie'</span><span class="p">,</span> <span class="s1">'syvapr'</span><span class="p">,</span>
+                            <span class="s1">'syvafi'</span><span class="p">,</span> <span class="s1">'intercep'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">execution</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'analysis'</span><span class="p">,</span> <span class="s1">'forecast'</span><span class="p">],</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">cpl_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="n">cpl_model</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Get the different member's subdirectories.</span>
+
+<span class="sd">        One member is associated to each 'effective input' (inputs that where</span>
+<span class="sd">        actually retrieved during the fetch step) Section with a role matching</span>
+<span class="sd">        the one defined by the **role_ref_namebuilder** method.</span>
+<span class="sd">        """</span>
+        <span class="n">deterministic_member</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_deterministic_namebuilder</span><span class="p">())</span>
+        <span class="c1"># Produce a delayed algo component error if no deterministic member in order to let the members run</span>
+        <span class="c1"># but crash at the end</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">deterministic_member</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s1">'ensmeteonodet'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delayed_exception_add</span><span class="p">(</span><span class="n">S2MMissingDeterministicError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role_deterministic_namebuilder</span><span class="p">()),</span>
+                                       <span class="n">traceback</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="n">deterministic_member</span> <span class="o">+</span>\
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_members_namebuilder</span><span class="p">())</span>
+
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+                <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span>
+
+        <span class="c1"># Add a sytron member (only for child SurfexComponent but done here to test availability of deterministic mb)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"ensmeteo+sytron"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">deterministic_member</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'mb036'</span><span class="p">)</span>
+
+        <span class="c1"># Ca partait d'une bonne idee mais en pratique il y a plein de cas particuliers</span>
+        <span class="c1"># pour lesquels ca pose probleme : reanalyse safran, surfex postes, etc</span>
+        <span class="c1"># self.algoassert(len(set(subdirs)) == len(set([am.rh.provider.member for am in avail_members])))</span>
+
+        <span class="c1"># Crash if subdirs is an empty list (it means that there is not any input available)</span>
+        <span class="c1"># TODO : modifier en python3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algoassert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subdirs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Get the status (essential or secondary) of the different members.</span>
+
+<span class="sd">        Ultimately:</span>
+
+<span class="sd">        * A failure on an essential member automatically leads to the</span>
+<span class="sd">          crash of the whole task (for example the deterministic member of</span>
+<span class="sd">          the PEARP-S2M operational chain)</span>
+<span class="sd">        * A failure on a secondary member is not automatically fatal</span>
+<span class="sd">          for the task (it depends on the number of secondary members that</span>
+<span class="sd">          failed)</span>
+
+<span class="sd">        Each member is associated to a specific input section (see method</span>
+<span class="sd">        :meth:`get_subdirs`) which is also a VORTEX Section object. This method</span>
+<span class="sd">        uses the optional 'source_conf' footprint attribute of this object to</span>
+<span class="sd">        descriminate the essential member(s) (with source_conf='4dvarfr'</span>
+<span class="sd">        whereas for standard PEARP members, source_conf='pearp'</span>
+<span class="sd">        in the case of the PEARP-S2M operational chain).</span>
+
+<span class="sd">        This method returns a list of boolean (with an order matching the one of</span>
+<span class="sd">        the different members) where a `True` value indicates the essential(s)</span>
+<span class="sd">        member(s).</span>
+
+<span class="sd">        In case there is no 'source_conf' attribute, all members are considered</span>
+<span class="sd">        as essential members.</span>
+<span class="sd">        """</span>
+        <span class="n">deterministic_member</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_deterministic_namebuilder</span><span class="p">())</span>
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="n">deterministic_member</span> <span class="o">+</span>\
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_members_namebuilder</span><span class="p">())</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">cpl_model</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+                <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="s1">'source_conf'</span><span class="p">):</span>
+                    <span class="n">cpl_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">source_conf</span> <span class="o">==</span> <span class="s1">'4dvarfr'</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If the origin of the guess is not given the execution is in</span>
+                    <span class="c1"># 'deterministic' mode (monthly reanalysis)</span>
+                    <span class="n">cpl_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cpl_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_deterministic_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Defines the role of the effective inputs to take as reference to define</span>
+<span class="sd">        the deterministic member.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'Ebauche_Deterministic'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_members_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Defines the role of the effective inputs to take as reference to define</span>
+<span class="sd">        the different members.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'Ebauche'</span></div>
+
+
+
+<div class="viewcode-block" id="S2MReanalysis">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.S2MReanalysis">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MReanalysis</span><span class="p">(</span><span class="n">S2MComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that runs several SAFRAN reanalyses in parallel."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">execution</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'reanalysis'</span><span class="p">],</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_ref_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'Observations'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_ref_namebuilder</span><span class="p">())</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subdirs</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_seasons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="n">list_dates_begin_input</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">list_dates_end_input</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="n">datebegin_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">dateend_input</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dateend_input</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+
+        <span class="n">list_dates_begin_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datebegin_input</span><span class="p">)</span>
+        <span class="n">list_dates_end_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dateend_input</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">dateend_input</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">:</span>
+            <span class="n">datebegin_input</span> <span class="o">=</span> <span class="n">dateend_input</span>
+            <span class="n">dateend_input</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">datebegin_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datebegin_input</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+            <span class="n">list_dates_begin_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datebegin_input</span><span class="p">)</span>
+            <span class="n">list_dates_end_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dateend_input</span><span class="p">)</span>
+
+        <span class="n">list_dates_begin_input</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">list_dates_end_input</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">list_dates_begin_input</span><span class="p">,</span> <span class="n">list_dates_end_input</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">S2MComponent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'datebegin'</span><span class="p">,</span> <span class="s1">'dateend'</span><span class="p">]:</span>
+                <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Note: The number of members and the name of the subdirectories could be</span>
+        <span class="c1"># auto-detected using the sequence</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">deterministic</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span>
+        <span class="c1"># WARNING : The current method implies that the different seasons directories are sorted</span>
+        <span class="c1"># One way to ensure that is to use the begin year as directory name.</span>
+        <span class="n">subdirs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="c1"># list_dates_begin, list_dates_end = self.get_list_seasons(rh, opts)</span>
+        <span class="c1"># subdirs must be named yyyymmddhh_YYYYMMDDHH</span>
+        <span class="n">list_dates_begin</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">]</span>
+        <span class="n">list_dates_end</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span>
+                                              <span class="n">datebegin</span><span class="o">=</span><span class="n">list_dates_begin</span><span class="p">,</span>
+                                              <span class="n">dateend</span><span class="o">=</span><span class="n">list_dates_end</span><span class="p">,</span>
+                                              <span class="n">deterministic</span><span class="o">=</span><span class="n">deterministic</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="S2MReforecast">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.S2MReforecast">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2MReforecast</span><span class="p">(</span><span class="n">S2MComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that runs several SAFRAN reforecasts in parallel."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">execution</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'reforecast'</span><span class="p">],</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">S2MComponent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'datebegin'</span><span class="p">,</span> <span class="s1">'dateend'</span><span class="p">]:</span>
+                <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">subdirs</span><span class="p">,</span> <span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_individual_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">deterministic</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span>  <span class="c1"># Each simulation day is important</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span>
+                                              <span class="n">datebegin</span><span class="o">=</span><span class="n">list_dates_begin</span><span class="p">,</span>
+                                              <span class="n">dateend</span><span class="o">=</span><span class="n">list_dates_end</span><span class="p">,</span>
+                                              <span class="n">deterministic</span><span class="o">=</span><span class="n">deterministic</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_individual_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_members_namebuilder</span><span class="p">())</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">list_dates_begin</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">list_dates_end</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">:</span>
+            <span class="c1"># am.rh.container.dirname = YYYYMMDDHH</span>
+            <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="si">}</span><span class="s1">/mb*'</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">subdir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+                    <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span>
+                    <span class="n">list_dates_begin</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">datebegin</span><span class="p">)</span>
+                    <span class="n">list_dates_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">subdirs</span><span class="p">,</span> <span class="n">list_dates_begin</span><span class="p">,</span> <span class="n">list_dates_end</span></div>
+
+
+
+<div class="viewcode-block" id="SurfexComponent">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.SurfexComponent">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfexComponent</span><span class="p">(</span><span class="n">S2MComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that runs several SURFEX executions in parallel."""</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'escroc'</span><span class="p">,</span> <span class="s1">'ensmeteo'</span><span class="p">,</span> <span class="s1">'ensmeteonodet'</span><span class="p">,</span> <span class="s1">'ensmeteo+sytron'</span><span class="p">,</span> <span class="s1">'croco'</span><span class="p">,</span> <span class="s1">'ensmeteo+escroc'</span><span class="p">,</span>
+                          <span class="s1">'prepareforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="c1"># Usages:</span>
+            <span class="c1"># * ensmeteo: S2M oper and prosnow</span>
+            <span class="c1"># * ensmeteonodet: S2M reforecast and prosnow</span>
+            <span class="c1"># * ensmeteo+sytron: S2M oper</span>
+            <span class="c1"># * ensmeteo+escroc seems unsued</span>
+            <span class="n">dateinit</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The initialization date if different from the starting date."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="s1">'[datebegin]'</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Threshold to apply to the snow water equivalent (in kg/m2) each 1st August"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="o">-</span><span class="mi">999</span>
+            <span class="p">),</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The members that will be processed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># WARNING : mandatory if kind in ['escroc', 'croco']</span>
+                <span class="c1"># TODO : faires des algos distincts pour gérer proprement l'aspect non-optionel pour les</span>
+                <span class="c1"># algos croco et escroc</span>
+            <span class="p">),</span>
+            <span class="n">subensemble</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Name of the escroc subensemble (define which physical options are used)"</span><span class="p">,</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"E1"</span><span class="p">,</span> <span class="s2">"E2"</span><span class="p">,</span> <span class="s2">"Crocus"</span><span class="p">,</span> <span class="s2">"E1tartes"</span><span class="p">,</span> <span class="s2">"E1notartes"</span><span class="p">,</span> <span class="s2">"E2open"</span><span class="p">,</span> <span class="s2">"E2MIP"</span><span class="p">,</span> <span class="s2">"E2tartes"</span><span class="p">,</span> <span class="s2">"E2MIPtartes"</span><span class="p">,</span>
+                          <span class="s2">"E2B21"</span><span class="p">,</span> <span class="s2">"E2MIPB21"</span><span class="p">,</span> <span class="s2">"E1B21"</span><span class="p">],</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">geometry_in</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Area information in case of an execution on a massif geometry"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="c1"># S2M (SAFRAN) specific</span>
+            <span class="p">),</span>
+            <span class="n">geometry_out</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"The resource's massif geometry."</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                <span class="c1"># S2M (SAFRAN) specific</span>
+            <span class="p">),</span>
+            <span class="n">daily</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If True, split simulations in daily runs"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dailynamelist</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If daily is True, possibility to provide a list of namelists to change each day"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">list</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="p">[],</span>
+                <span class="c1"># Used in prosnow only</span>
+            <span class="p">),</span>
+            <span class="n">multidates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If True, several dates allowed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+                <span class="c1"># Reforecast-specific</span>
+            <span class="p">),</span>
+            <span class="n">startmbnode</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">'first member rep of the node for example 1,41,81 etc.'</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="c1"># Croco-specific</span>
+                <span class="c1"># Cet argument est utilisé uniquement pour trouver les "membres" des simulations</span>
+                <span class="c1"># dans la méthode 'get_subdirs'.</span>
+                <span class="c1"># --&gt; A remplacer par une méthode plus robuste</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subensemble</span><span class="p">:</span>
+            <span class="n">escroc</span> <span class="o">=</span> <span class="n">ESCROC_subensembles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subensemble</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+            <span class="n">physical_options</span> <span class="o">=</span> <span class="n">escroc</span><span class="o">.</span><span class="n">physical_options</span>
+            <span class="n">snow_parameters</span> <span class="o">=</span> <span class="n">escroc</span><span class="o">.</span><span class="n">snow_parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span>
+                                                  <span class="n">physical_options</span><span class="o">=</span><span class="n">physical_options</span><span class="p">,</span>
+                                                  <span class="n">snow_parameters</span><span class="o">=</span><span class="n">snow_parameters</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"escroc"</span><span class="p">:</span>
+            <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mb</span><span class="si">{:04d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'croco'</span><span class="p">:</span>
+            <span class="c1"># La ligne qui suit est un moyen bien compliqué de renvoyer la liste des "subdirs" des membres à traiter</span>
+            <span class="c1"># lorsque cette liste diffère de self.conf.members (cas d'un tirage aléatoire de membres)</span>
+            <span class="c1"># --&gt; A remplaçer par une méthode plus robuste (par exemple en assurant en amont que les membres tirés</span>
+            <span class="c1"># aléatoirement sont rangés dans des répertoires 1 à N).</span>
+            <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mb</span><span class="si">{:04d}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">startmbnode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">startmbnode</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">))]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># In the case of a postes geometry, there are 3 effective inputs with forcing file role</span>
+                <span class="c1"># (They are concatenated)</span>
+                <span class="c1"># Therefore it is necessary to reduce subdirs to 1 single element for each member</span>
+                <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">subdirs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_members_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'Forcing'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">role_deterministic_namebuilder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'Forcing_Deterministic'</span></div>
+
+
+
+<div class="viewcode-block" id="PrepareForcingComponent">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.PrepareForcingComponent">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrepareForcingComponent</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    AlgoComponent that prepares several forcing files in parallel (changes of geometry).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'prepareforcing'</span><span class="p">,</span> <span class="s1">'extractforcing'</span><span class="p">,</span> <span class="s1">'shadowsforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="c1"># Inutile (parallélisation sur les années) ?</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The list of begin dates of the forcing files"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="c1"># Inutile (parallélisation sur les années) ?</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The list of begin dates of the forcing files"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">geometry_in</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Area information in case of an execution on a massif geometry"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">geometry_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"The resource's massif geometry."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Note: The number of members and the name of the subdirectories could be</span>
+        <span class="c1"># auto-detected using the sequence</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span> <span class="n">datebegin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+                                              <span class="n">dateend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SurfexComponentMultiDates">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.SurfexComponentMultiDates">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SurfexComponentMultiDates</span><span class="p">(</span><span class="n">SurfexComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""AlgoComponent that runs several SURFEX in parallel (including several dates for reforecasts)."""</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">multidates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"If True, several dates allowed"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">):</span>
+
+        <span class="c1"># Pour l'instant je fais le porc parce que le passage de dateend ne marche pas du tout</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">listdatebegin</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">listdateend</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">datebegin_str</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">datebegin_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">listdatebegin</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datebegin</span><span class="p">)</span>
+            <span class="n">listdateend</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datebegin</span> <span class="o">+</span> <span class="n">duration</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">listdatebegin</span><span class="p">,</span> <span class="n">listdateend</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">listdatebegin</span><span class="p">,</span> <span class="n">listdateend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dates</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span>
+        <span class="n">listdateinit</span> <span class="o">=</span> <span class="n">listdatebegin</span><span class="p">[:]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subensemble</span><span class="p">:</span>
+            <span class="n">escroc</span> <span class="o">=</span> <span class="n">ESCROC_subensembles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subensemble</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+            <span class="n">physical_options</span> <span class="o">=</span> <span class="n">escroc</span><span class="o">.</span><span class="n">physical_options</span>
+            <span class="n">snow_parameters</span> <span class="o">=</span> <span class="n">escroc</span><span class="o">.</span><span class="n">snow_parameters</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span>
+                                                  <span class="n">datebegin</span><span class="o">=</span><span class="n">listdatebegin</span><span class="p">,</span>
+                                                  <span class="n">dateinit</span><span class="o">=</span><span class="n">listdateinit</span><span class="p">,</span>
+                                                  <span class="n">dateend</span><span class="o">=</span><span class="n">listdateend</span><span class="p">,</span>
+                                                  <span class="n">physical_options</span><span class="o">=</span><span class="n">physical_options</span><span class="p">,</span>
+                                                  <span class="n">snow_parameters</span><span class="o">=</span><span class="n">snow_parameters</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="n">subdirs</span><span class="p">,</span>
+                                                  <span class="n">datebegin</span><span class="o">=</span><span class="n">listdatebegin</span><span class="p">,</span>
+                                                  <span class="n">dateinit</span><span class="o">=</span><span class="n">listdateinit</span><span class="p">,</span>
+                                                  <span class="n">dateend</span><span class="o">=</span><span class="n">listdateend</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">ddict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'datebegin'</span><span class="p">)</span>
+        <span class="n">ddict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'dateend'</span><span class="p">)</span>
+        <span class="n">ddict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'dateinit'</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ddict</span></div>
+
+
+
+<div class="viewcode-block" id="ShadowsForcingWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.ensemble.ShadowsForcingWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShadowsForcingWorker</span><span class="p">(</span><span class="n">PrepareForcingWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    It only applies shadows to a forcing file without any change of geometry</span>
+<span class="sd">    (worker for 1 member).</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Apply shadows'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'shadowsforcing'</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">geometry_out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span><span class="o">=</span><span class="s2">"The resource's massif geometry."</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span><span class="o">=</span><span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span><span class="o">=</span><span class="n">a_date</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forcing_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="s2">"FORCING_OLD.nc"</span><span class="p">)</span>
+        <span class="n">forcinput_applymask</span><span class="p">([</span><span class="s2">"FORCING_OLD.nc"</span><span class="p">],</span> <span class="s2">"FORCING.nc"</span><span class="p">)</span>
+
+        <span class="n">save_file_period</span><span class="p">(</span><span class="n">thisdir</span><span class="p">,</span> <span class="s2">"FORCING"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.ensemble</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

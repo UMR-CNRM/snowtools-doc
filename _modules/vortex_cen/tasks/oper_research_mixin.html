@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.tasks.oper_research_mixin &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.oper_research_mixin</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.tasks.oper_research_mixin</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">oper_research_mixin.py</span>
+<span class="sd">----------------------</span>
+
+<span class="sd">This modules defines specific CEN common addons for research and operational tasks.</span>
+<span class="sd">Multiple inheritance together with the standard Task class is required to use this module.</span>
+
+<span class="sd">.. autoclass:: CENTaskMixIn</span>
+<span class="sd">   :members:</span>
+<span class="sd">   :show-inheritance:</span>
+<span class="sd">   :noindex:</span>
+
+<span class="sd">"""</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">yesterday</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span><span class="p">,</span> <span class="n">Time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.tools.actions</span><span class="w"> </span><span class="kn">import</span> <span class="n">actiond</span> <span class="k">as</span> <span class="n">ad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelayedAlgoComponentError</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="c1"># from snowtools import __file__ as snowtoolsdir</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_summary_git</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.DATA</span><span class="w"> </span><span class="kn">import</span> <span class="n">SNOWTOOLS_CEN</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CENTaskMixIn">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.oper_research_mixin.CENTaskMixIn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CENTaskMixIn</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Useful methods for any CEN (oper or research) task</span>
+<span class="sd">    """</span>
+
+    <span class="n">nightruntime</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">firstassimruntime</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">secondassimruntime</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">monthly_analysis_time</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ref_reanalysis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">'ref_reanalysis'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">ref_reanalysis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"reanalysis2020.2@prep_reanalysis_CEN"</span>  <span class="c1"># Current version of S2M reanalysis</span>
+
+<div class="viewcode-block" id="CENTaskMixIn.s2moper_filter_execution_error">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.oper_research_mixin.CENTaskMixIn.s2moper_filter_execution_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">s2moper_filter_execution_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Define the behaviour in case of errors.</span>
+
+<span class="sd">        For S2M chain, the errors do not raise exception if the deterministic</span>
+<span class="sd">        run and if less than 5 members produce errors.</span>
+<span class="sd">        Note than unavailability of members do not produce errors managed by effective_inputs), therefore more than</span>
+<span class="sd">        5 errors is a critical anomaly.</span>
+<span class="sd">        """</span>
+
+        <span class="n">warning</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">accept_errors</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">DelayedAlgoComponentError</span><span class="p">):</span>
+            <span class="n">nerrors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">exc</span><span class="p">)))</span>
+            <span class="n">warning</span><span class="p">[</span><span class="s2">"nfail"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nerrors</span>
+            <span class="n">determinitic_error</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'deterministic'</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">deterministic</span><span class="p">:</span>
+                        <span class="n">determinitic_error</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="n">warning</span><span class="p">[</span><span class="s2">"deterministic"</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">deterministic</span>
+
+            <span class="n">accept_errors</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">determinitic_error</span> <span class="ow">and</span> <span class="n">nerrors</span> <span class="o">&lt;</span> <span class="mi">5</span>
+
+        <span class="k">return</span> <span class="n">accept_errors</span><span class="p">,</span> <span class="n">warning</span></div>
+
+
+<div class="viewcode-block" id="CENTaskMixIn.s2moper_report_execution_warning">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.oper_research_mixin.CENTaskMixIn.s2moper_report_execution_warning">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">s2moper_report_execution_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_infos</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Send warning mail in case of non-fatal errors in the oper chain.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'nfail'</span> <span class="ow">in</span> <span class="n">kw_infos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warningmessage</span><span class="p">(</span><span class="n">kw_infos</span><span class="p">[</span><span class="s1">'nfail'</span><span class="p">],</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+
+            <span class="c1"># Add e-mail</span>
+            <span class="n">ad</span><span class="o">.</span><span class="n">cenmail</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">mail_to</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">'s2mdev_warning'</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="n">warning</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CENTaskMixIn.s2moper_report_execution_error">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.oper_research_mixin.CENTaskMixIn.s2moper_report_execution_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">s2moper_report_execution_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="o">**</span><span class="n">kw_infos</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Send error mail in case of fatal errors in the oper chain.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'nfail'</span> <span class="ow">in</span> <span class="n">kw_infos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warningmessage</span><span class="p">(</span><span class="n">kw_infos</span><span class="p">[</span><span class="s1">'nfail'</span><span class="p">],</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+
+            <span class="c1"># Add e-mail</span>
+            <span class="n">ad</span><span class="o">.</span><span class="n">cenmail</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">mail_to</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">'s2mdev_error'</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="n">warning</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CENTaskMixIn.reforecast_filter_execution_error">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-tasks.html#vortex_cen.tasks.oper_research_mixin.CENTaskMixIn.reforecast_filter_execution_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reforecast_filter_execution_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Define the behaviour in case of errors in the reforecast task.</span>
+<span class="sd">        """</span>
+        <span class="n">warning</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">accept_errors</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">DelayedAlgoComponentError</span><span class="p">):</span>
+            <span class="n">nerrors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">exc</span><span class="p">)))</span>
+            <span class="n">warning</span><span class="p">[</span><span class="s2">"nfail"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nerrors</span>
+            <span class="n">accept_errors</span> <span class="o">=</span> <span class="n">nerrors</span> <span class="o">&lt;</span> <span class="mi">5</span>
+            <span class="k">if</span> <span class="n">accept_errors</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">warningmessage</span><span class="p">(</span><span class="n">nerrors</span><span class="p">,</span> <span class="n">exc</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">accept_errors</span><span class="p">,</span> <span class="n">warning</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">warningmessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nerrors</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
+        <span class="n">warningline</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"!"</span> <span class="o">*</span> <span class="mi">40</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">warningmessage</span> <span class="o">=</span> <span class="p">(</span><span class="n">warningline</span> <span class="o">+</span> <span class="s2">"ALERT :"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nerrors</span><span class="p">)</span> <span class="o">+</span>
+                          <span class="s2">" members produced a delayed exception."</span> <span class="o">+</span>
+                          <span class="n">warningline</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span> <span class="o">+</span> <span class="n">warningline</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">warningmessage</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_period</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_analysis_time</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+            <span class="n">dateendanalysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+            <span class="n">dateendanalysis</span> <span class="o">=</span> <span class="n">yesterday</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dateendanalysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'previ'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">dateendanalysis</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="n">dateend</span> <span class="o">=</span> <span class="n">dateendanalysis</span> <span class="o">+</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dateend</span> <span class="o">=</span> <span class="n">dateendanalysis</span> <span class="o">+</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="n">dateendanalysis</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="c1"># The night run performs a 4 day analysis</span>
+                <span class="n">datebegin</span> <span class="o">=</span> <span class="n">dateend</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_analysis_time</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">:</span>
+                    <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">year</span>
+                <span class="n">datebegin</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The daytime runs perform a 1 day analysis</span>
+                <span class="n">datebegin</span> <span class="o">=</span> <span class="n">dateend</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rundate_forcing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># WARNING : oper-only, ne pas utiliser en recherche !</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'previ'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># SAFRAN only generates new forecasts once a day during the night run</span>
+            <span class="n">rundate_forcing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># SAFRAN generates new analyses at each run</span>
+            <span class="n">rundate_forcing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span>
+        <span class="k">return</span> <span class="n">rundate_forcing</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rundate_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># WARNING : oper-only, ne pas utiliser en recherche !</span>
+
+        <span class="n">alternates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">'reinit'</span><span class="p">):</span>
+            <span class="n">reinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">reinit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reinit</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">reinit</span><span class="p">:</span>
+            <span class="n">rundate_prep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">monthly_analysis_time</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'previ'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Standard case: use the analysis of the same runtime</span>
+            <span class="n">rundate_prep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="c1"># First alternate for 09h run: 06h run</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">firstassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="c1"># First alternate for 06h run, second alternate for 09h run: 03h run</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+            <span class="c1"># Very last alternates (and only one for 03h run: forecast J+4 of day J-4</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secondassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span>
+                               <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="s2">"production"</span><span class="p">))</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">firstassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span>
+                               <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="s2">"production"</span><span class="p">))</span>
+            <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span>
+                               <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="s2">"production"</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_analysis_time</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">:</span>
+                    <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">year</span>
+                <span class="n">rundate_prep</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+
+            <span class="c1"># Standard case: use today 03h for 06 et 09h runs, use yesterday 03h for 03h run</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">:</span>
+                <span class="n">rundate_prep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># First alternate : J-2 for night run, J-1 for other runs</span>
+                <span class="c1"># Second alternate : J-3 for night run, J-2 for other runs</span>
+                <span class="c1"># Third alternate : J-4 for night run, J-3 for other runs</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="c1"># Desperate case</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rundate_prep</span> <span class="o">-</span> <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <span class="s2">"production"</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rundate_prep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">secondassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span>
+                                   <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+                <span class="n">alternates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">firstassimruntime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span> <span class="o">-</span>
+                                   <span class="n">Period</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"assimilation"</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">rundate_prep</span><span class="p">,</span> <span class="n">alternates</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sytron</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># WARNING : oper-only, ne pas utiliser !</span>
+
+        <span class="k">if</span> <span class="s1">'nmembers'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nmembers</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># Return empty lists to indicate only a deterministic run must be considered</span>
+        <span class="n">startmember</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">startmember</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s2">"startmember"</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">lastmember</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">nmembers</span><span class="p">)</span> <span class="o">+</span> <span class="n">startmember</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span> <span class="o">==</span> <span class="s2">"postes"</span><span class="p">:</span>
+            <span class="c1"># no sytron members for postes geometry</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">sytron</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">startmember</span><span class="p">,</span> <span class="n">lastmember</span> <span class="o">+</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meteo</span><span class="o">=</span><span class="s2">"safran"</span><span class="p">):</span>
+        <span class="c1"># WARNING : oper-only, ne pas utiliser en recherche !</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s2">"geoin"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geoin</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source_safran</span><span class="p">,</span> <span class="n">block_safran</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_source_safran</span><span class="p">(</span><span class="n">meteo</span><span class="o">=</span><span class="n">meteo</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">source_safran</span> <span class="o">==</span> <span class="s2">"safran"</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span> <span class="o">==</span> <span class="s2">"postes"</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">slopes</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'allslopes'</span><span class="p">,</span> <span class="s1">'flat'</span><span class="p">)]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="c1"># for cases with meteo=safran but unknown area</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_alternate_safran</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># WARNING : ne plus utiliser !</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span> <span class="o">==</span> <span class="s1">'postes'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"safran"</span><span class="p">,</span> <span class="s2">"postes"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">slopes</span><span class="p">:</span>
+                <span class="n">alternate_geo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'allslopes'</span><span class="p">,</span> <span class="s1">'flat'</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">alternate_geo</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span>  <span class="c1"># for cases with meteo=safran but unknown area</span>
+
+            <span class="k">return</span> <span class="s2">"safran"</span><span class="p">,</span> <span class="s2">"massifs"</span><span class="p">,</span> <span class="n">alternate_geo</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_block_safran_from_geometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># WARNING : ne plus utiliser !</span>
+        <span class="c1"># --&gt; utiliser une variable explicite dans le fichier de conf</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">area</span> <span class="o">==</span> <span class="s1">'postes'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'postes'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'massifs'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_source_safran</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meteo</span><span class="o">=</span><span class="s2">"safran"</span><span class="p">):</span>
+        <span class="c1"># WARNING : ne plus utiliser !</span>
+        <span class="c1"># --&gt; utiliser une variable explicite dans le fichier de conf</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">'blockin'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">meteo</span> <span class="o">==</span> <span class="s2">"safran"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">meteo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">blockin</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_block_safran_from_geometry</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">meteo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">blockin</span>
+
+        <span class="k">elif</span> <span class="n">meteo</span> <span class="o">==</span> <span class="s2">"safran"</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">'rundate'</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">meteo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_block_safran_from_geometry</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">rundate</span><span class="o">.</span><span class="n">hour</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nightruntime</span><span class="o">.</span><span class="n">hour</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'previ'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">"s2m"</span><span class="p">,</span> <span class="s2">"meteo"</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">"safran"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_block_safran_from_geometry</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">meteo</span><span class="p">,</span> <span class="s2">"meteo"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_safran_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_datebegin</span><span class="p">,</span> <span class="n">era5</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># WARNING : ne plus utiliser !</span>
+        <span class="c1"># --&gt; utiliser une variable explicite dans le fichier de conf</span>
+
+        <span class="k">if</span> <span class="n">era5</span><span class="p">:</span>
+            <span class="n">source_app</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">datebegin</span><span class="o">=</span><span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">datebegin</span><span class="p">):</span>
+                           <span class="s1">'arpege'</span> <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'ifs'</span> <span class="k">for</span> <span class="n">datebegin</span> <span class="ow">in</span> <span class="n">list_datebegin</span><span class="p">})</span>
+
+            <span class="n">source_conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">datebegin</span><span class="o">=</span><span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">datebegin</span><span class="p">):</span>
+                           <span class="s1">'4dvarfr'</span> <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'era5'</span> <span class="k">for</span> <span class="n">datebegin</span> <span class="ow">in</span> <span class="n">list_datebegin</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source_app</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">datebegin</span><span class="o">=</span><span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">datebegin</span><span class="p">):</span>
+                           <span class="s1">'arpege'</span> <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'ifs'</span> <span class="k">for</span> <span class="n">datebegin</span> <span class="ow">in</span> <span class="n">list_datebegin</span><span class="p">})</span>
+
+            <span class="n">source_conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">datebegin</span><span class="o">=</span><span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">datebegin</span><span class="p">):</span>
+                           <span class="s1">'4dvarfr'</span> <span class="k">if</span> <span class="n">datebegin</span> <span class="o">&gt;=</span> <span class="n">Date</span><span class="p">(</span><span class="mi">2002</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'era40'</span> <span class="k">for</span> <span class="n">datebegin</span> <span class="ow">in</span> <span class="n">list_datebegin</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">source_app</span><span class="p">,</span> <span class="n">source_conf</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_list_seasons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datebegin</span><span class="p">,</span> <span class="n">dateend</span><span class="p">):</span>
+
+        <span class="n">list_dates_begin_input</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">datebegin</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">datebegin_input</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">datebegin_input</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(</span><span class="n">datebegin</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dateend_input</span> <span class="o">=</span> <span class="n">datebegin_input</span>
+        <span class="k">while</span> <span class="n">dateend_input</span> <span class="o">&lt;</span> <span class="n">dateend</span><span class="p">:</span>
+            <span class="n">dateend_input</span> <span class="o">=</span> <span class="n">datebegin_input</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">datebegin_input</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">list_dates_begin_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datebegin_input</span><span class="p">)</span>
+            <span class="n">datebegin_input</span> <span class="o">=</span> <span class="n">dateend_input</span>
+
+        <span class="k">return</span> <span class="n">list_dates_begin_input</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_reprod_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Provide information that should be stored in output files for reproducibility purposes</span>
+<span class="sd">        """</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span>
+
+        <span class="n">reprod_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'vapp'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vapp</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'vconf'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">vconf</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'geometry'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tag</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span>  <span class="c1"># Standard version attribute name that can not be changed</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'task'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'conf'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+
+        <span class="c1"># If snowtools is an editable install, get git info from the target snowtools repository</span>
+        <span class="n">snowtools_commit</span> <span class="o">=</span> <span class="n">get_summary_git</span><span class="p">(</span><span class="n">SNOWTOOLS_CEN</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">snowtools_commit</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
+            <span class="c1"># If snowtools is a non editable install, try to get git info directly from the current virtual environment</span>
+            <span class="c1"># it should be there if snowtools was installed with the installation script</span>
+            <span class="c1"># TODO : find a more way to avoid using 'sys.prefix'</span>
+            <span class="n">snowtools_commit</span> <span class="o">=</span> <span class="n">get_summary_git</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s1">'.snowtools_info'</span><span class="p">))</span>
+
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'snowtools_commit'</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_summary_git</span><span class="p">(</span><span class="n">SNOWTOOLS_CEN</span><span class="p">)</span>
+
+        <span class="c1"># Get commit associated to the configuration file and driver (which can currently be different from</span>
+        <span class="c1"># the snowtools commit in case of non-editable install)</span>
+        <span class="n">iniconf</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">iniconf</span><span class="p">)</span>
+        <span class="c1"># Currently the configuration file in in the snowtools repository</span>
+        <span class="c1"># The following line should be adapted as soon as a better workflow is established</span>
+        <span class="n">reprod_info</span><span class="p">[</span><span class="s1">'configuration_commit'</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_summary_git</span><span class="p">(</span><span class="n">iniconf</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">reprod_info</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.tasks.oper_research_mixin</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

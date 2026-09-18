@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.components &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.components</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.components</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">components.py</span>
+<span class="sd">-------------</span>
+
+<span class="sd">Abstract algo components classes for multiprocessing simulations with an external parallelisation (i.e not MPI).</span>
+<span class="sd">The parallelization is typically over the simulation members or independent sub-periods.</span>
+<span class="sd">All processes share the same executable (if any) but at least partially different IO environments or</span>
+<span class="sd">script arguments.</span>
+
+<span class="sd">These algo components rely on the `taylorism` package. The main process (the `Boss`) acts as a task scheduler to</span>
+<span class="sd">to allocate tasks to a set of independent processes (the `Workers`) working simultaneously.</span>
+
+<span class="sd">Two abstract "Boss" classes are defined here are:</span>
+
+<span class="sd">    * :class:`_CenParaBlindRun`: to launch an executable multiple times in parallel</span>
+<span class="sd">    * :class:`_CenTaylorRun`: to launch a piece of Python code in parallel on several processes</span>
+
+<span class="sd">A third abstract "Boss" class is available in the main vortex-nwp package:</span>
+
+<span class="sd">    * :class:`ParaExpresso`: to launch a script multiple times in parallel</span>
+
+<span class="sd">These abstract classes provide high-level tools such as the identification of the list of workers through</span>
+<span class="sd">the list of sub-directories (via the "role" of the main input resource varying from one simulation to another).</span>
+
+<span class="sd">Each "Boss" is associated to a "Worker", providing the instructions for each individual task / process.</span>
+<span class="sd">Each "Worker" works in its specific sub-directory, which must be filled with the appropriate IOs (when fetching the</span>
+<span class="sd">inputs at the "Task" level).</span>
+<span class="sd">Some IOs can be shared by several or all workers. These IOs must be stored in the main working directory, and a link</span>
+<span class="sd">to these files can be created in the Worker's working directory by the Worker itself.</span>
+
+<span class="sd">Two abstract "Worker" classes are defined here are:</span>
+
+<span class="sd">    * :class:`_CenWorkerBlindRun`: launch an executable without MPI parallelization</span>
+<span class="sd">    * :class:`_CenTaylorVortexWorker`: launch a piece of Python code</span>
+
+<span class="sd">A third abstract "Worker" class is available in the main vortex-nwp package:</span>
+
+<span class="sd">    * :class:`VortexWorkerBlindRun`: to launch a script multiple times in parallel</span>
+
+<span class="sd">Here is the full inheritance diagram of the available meta classes :</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.components</span>
+<span class="sd">   :private-bases:</span>
+<span class="sd">   :parts: 1</span>
+
+<span class="sd">.. autoclass:: _CenParaBlindRun</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: _CenTaylorRun</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: _CenMixIn</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: _CenWorkerBlindRun</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: _CenTaylorVortexWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParaBlindRun</span><span class="p">,</span> <span class="n">TaylorRun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.tools.parallelism</span><span class="w"> </span><span class="kn">import</span> <span class="n">VortexWorkerBlindRun</span><span class="p">,</span> <span class="n">TaylorVortexWorker</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_CenMixIn">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.components._CenMixIn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenMixIn</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">vortex_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># TODO : find a better name for this method ?</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Main method, the first that is executed at the initialization of the</span>
+<span class="sd">        worker.</span>
+
+<span class="sd">        Its purpose is to set the worker's specific sub-environment (move to</span>
+<span class="sd">        the potential corresponding sub-directory) and to return the output</span>
+<span class="sd">        state of the worker (stored in the `rdict` dictionary) to the main Algo</span>
+<span class="sd">        Component.</span>
+
+<span class="sd">        Any overloading of this method or any sub-method called must return</span>
+<span class="sd">        such a dictionary storing potential execution errors (in the `rc` entry</span>
+<span class="sd">        of the dictionary). As a consequence, any part of code within the worker</span>
+<span class="sd">        that might raise a python Exception must be encapsulated in a</span>
+<span class="sd">        try/except instruction in order to catch such exception, put it into</span>
+<span class="sd">        the `rdict` output and return it to the main Algo Component where all</span>
+<span class="sd">        exceptions should be managed properly.</span>
+
+<span class="sd">        :note: Any un-catched exception will cause a (clean) shutdown of the</span>
+<span class="sd">               :mod:`taylorism` system (e.g. All the other workers will be killed</span>
+<span class="sd">               and the main Algo Component will exit).</span>
+<span class="sd">        """</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="c1"># Retrieve the list of available forcings now because it will no longer be available in the</span>
+        <span class="c1"># worker's subcontexts.</span>
+        <span class="c1"># TODO : do that in a specific "preprocess" method ?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avail_forcings</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">rh</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s1">'Forcing'</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">rundir</span><span class="p">):</span>
+            <span class="n">thisdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdir</span><span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cdcontext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subdir</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">rdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commons</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">thisdir</span> <span class="o">=</span> <span class="n">rundir</span>
+            <span class="n">rdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commons</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rdict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">):</span>
+        <span class="c1"># TODO : find a better name for this method ? At least remove the "_"...</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Abstract method called by the main **vortex_task** method to set up the</span>
+<span class="sd">        worker's environment (links to common files, name of execution listings,</span>
+<span class="sd">        ...) and launch the executable, call the method that launches it or</span>
+<span class="sd">        apply algo instructions.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Check if a target file exists."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mv_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Move a file if it exists (intended to deal with output files)."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy_if_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Copy a file if it exists (intended to deal with input files)."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Link a file (the target is cleaned first)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">link_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Link a file if the target does not already exist."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy_ifnotprovided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Link a file if the target does not already exist."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">local</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cp</span><span class="p">(</span><span class="n">local</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">postfix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">subtitle</span><span class="p">(</span><span class="s1">'</span><span class="si">{:s}</span><span class="s1"> : directory listing (post-run)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="_CenWorkerBlindRun">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.components._CenWorkerBlindRun">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenWorkerBlindRun</span><span class="p">(</span><span class="n">_CenMixIn</span><span class="p">,</span> <span class="n">VortexWorkerBlindRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This abstract worker is designed to drive the launch of any script or executable</span>
+<span class="sd">    without MPI parallelization (deterministic or ensemble-like simulations) in</span>
+<span class="sd">    association with an Algo Component inheriting from an :class:`_CenParaBlindRun`</span>
+<span class="sd">    or :class:`ParaExpresso` Algo Component.</span>
+
+<span class="sd">    A single worker is thus a deterministic execution of a given binary or script with a</span>
+<span class="sd">    specific IO environment and/or a specific set of argument.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Worker designed to run a specific member of an ensemble of simulations associated to a script or'</span>
+               <span class="s1">'an executable without MPI parallelization.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">subdir</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">'work in this particular subdirectory'</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="p">),</span>
+            <span class="n">deterministic</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">reprod_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="_CenTaylorVortexWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.components._CenTaylorVortexWorker">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenTaylorVortexWorker</span><span class="p">(</span><span class="n">_CenMixIn</span><span class="p">,</span> <span class="n">TaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This abstract worker is designed to drive the launch a python program.</span>
+<span class="sd">    The parallelisation is typically over the simulation members or</span>
+<span class="sd">    independent sub-periods.</span>
+
+<span class="sd">    A single worker is thus a deterministic execution of a list of python commands in a</span>
+<span class="sd">    specific environment that can be run in parallel with other workers.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Worker designed to run a specific member of an ensemble of simulations NOT associated'</span>
+               <span class="s1">'to an executable'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">subdir</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">'work in this particular subdirectory'</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="_CenParaBlindRun">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.components._CenParaBlindRun">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenParaBlindRun</span><span class="p">(</span><span class="n">ParaBlindRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    This abstract algo component defines common methods for simulations based on an executable without</span>
+<span class="sd">    MPI parallelization.</span>
+<span class="sd">    The parallelization is typically over the simulation members or independent sub-periods, and all processes</span>
+<span class="sd">    share the same executable but different IO environments.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions of an executable in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="c1"># TODO : modification majeure, à discuter avec Matthieu</span>
+                <span class="c1"># Engine should stay 'blind' to indicate that the core of the algo component is</span>
+                <span class="c1"># an executable (thus the Vortex object is 'blind' to the execution)</span>
+                <span class="c1"># This footprint should be used to chose between *_CenParaBlindRun* algo components</span>
+                <span class="c1"># and *_CenTaylorRun* algo components</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'blind'</span><span class="p">,</span> <span class="s1">'s2m'</span><span class="p">]</span>  <span class="c1"># s2m for backward compatibility. TODO : remove the 's2m' engine</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Set some variables according to target definition."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">DR_HOOK_NOT_MPI</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">postfix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="_CenTaylorRun">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.components._CenTaylorRun">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CenTaylorRun</span><span class="p">(</span><span class="n">TaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    TaylorRun derived algo components are not (necessarily) associated to an executable and can simply launch</span>
+<span class="sd">    a piece of python code.</span>
+<span class="sd">    """</span>
+
+    <span class="n">_abstract</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent that runs several executions in parallel.'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s1">'The way the executable should be run.'</span><span class="p">,</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'algo'</span><span class="p">,</span> <span class="p">],</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="s1">'algo'</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="c1"># TODO : find a more explicit name for role_member ?</span>
+            <span class="n">role_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Role of RH inputs to use for members definition"</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">ntasks</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>        <span class="o">=</span> <span class="s1">'The maximum number of parallel tasks'</span><span class="p">,</span>
+                <span class="c1"># WARNING : do not confuse this algo-specific argument with</span>
+                <span class="c1"># the "ntasks" argument of the SBATCH configuration (setting the number</span>
+                <span class="c1"># of tasks per node in case "exclusive=False")</span>
+                <span class="nb">type</span>        <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">access</span>      <span class="o">=</span> <span class="s1">'rwx'</span><span class="p">,</span>  <span class="c1"># Make footprint writable</span>
+                <span class="n">default</span>     <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">optional</span>    <span class="o">=</span> <span class="kc">True</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Loop on the various initial conditions provided."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">subdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subdirs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_pre_execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Various initialisations. In particular it creates the task scheduler (Boss)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subdirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdirs</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># WARNING : overwriting the *ntasks* footprint value can have side effects.</span>
+        <span class="c1"># TODO : add a security to ensure that this value is lower than the number of thread available ?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ntasks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subdirs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the different member's subdirectories.</span>
+
+<span class="sd">        One member is associated to each 'effective input' (inputs that where</span>
+<span class="sd">        actually retrieved during the fetch step) Section with a role matching</span>
+<span class="sd">        the one defined by the **role_members** footprint.</span>
+
+<span class="sd">        WARNING : the use of a footprint attribute instead of a class method to define</span>
+<span class="sd">        the role to use for members identification is a significant difference with other</span>
+<span class="sd">        "_CenTaylorRun" derived algo components.</span>
+<span class="sd">        """</span>
+        <span class="n">avail_members</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">role_members</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'----------------------------------------------------------------------'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'List of Workers :'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'-----------------'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail_members</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">subdirs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="c1"># Retrive the subdirectory asociated to each identified RH</span>
+            <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_members</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subdirs</span><span class="p">:</span>
+                    <span class="n">subdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'* '</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">dirname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'.'</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'* .'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'----------------------------------------------------------------------'</span><span class="p">)</span>
+        <span class="c1"># logger.info('Workers : \n' + '\n'.join(subdirs))</span>
+
+        <span class="k">return</span> <span class="n">subdirs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Set some variables according to target definition."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">DR_HOOK_NOT_MPI</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">postfix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.components</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

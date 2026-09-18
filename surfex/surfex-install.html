@@ -8,13 +8,14 @@
     <title>Install SURFEX &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../_static/snow.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Run a SURFEX-Crocus simulation" href="surfex-run.html" />
+    <link rel="next" title="Run a SURFEX-Crocus PC simulation" href="surfex-run.html" />
     <link rel="prev" title="Surfex documentation" href="surfex-index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
@@ -30,7 +31,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="surfex-run.html" title="Run a SURFEX-Crocus simulation"
+          <a href="surfex-run.html" title="Run a SURFEX-Crocus PC simulation"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="surfex-index.html" title="Surfex documentation"
@@ -115,7 +116,6 @@ module<span class="w"> </span>load<span class="w"> </span>curl
 <li><p>For MPI parallel applications (big domains, deterministic application) : let <code class="docutils literal notranslate"><span class="pre">VER_MPI</span></code> and <code class="docutils literal notranslate"><span class="pre">VER_CDF</span></code> options to default.</p></li>
 <li><p>For sequential ensemble applications associed with a ParaBlindRun AlgoComponent (one member per core through vortex), and only in this case, export the following variables: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">VER_MPI=NOMPI</span></code> and <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">VER_CDF=CDF2020</span></code>.</p></li>
 </ul>
-<p>You will also need to install <a class="reference internal" href="../hpc/vortex-install.html#install-vortex"><span class="std std-ref">Install VORTEX</span></a>.</p>
 </section>
 <section id="common-configuration">
 <h3>Common configuration<a class="headerlink" href="#common-configuration" title="Link to this heading">¶</a></h3>
@@ -169,9 +169,12 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX<
 </div>
 </section>
 <section id="first-test-test-your-snowtools-and-surfex-install">
-<h2>FIRST TEST: test your snowtools and SURFEX install<a class="headerlink" href="#first-test-test-your-snowtools-and-surfex-install" title="Link to this heading">¶</a></h2>
+<span id="surfex-install-first-test"></span><h2>FIRST TEST: test your snowtools and SURFEX install<a class="headerlink" href="#first-test-test-your-snowtools-and-surfex-install" title="Link to this heading">¶</a></h2>
 <p>If you correctly installed the snowtools and SURFEX projects, you must be able to run successfully the following test case:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/FORCING_test_base.nc<span class="w"> </span>-b<span class="w"> </span><span class="m">20100801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20110801</span><span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-g<span class="w"> </span>-s<span class="w"> </span>...yoursurfexdirectory.../exe
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/my_envs/snowtools_env/bin/activate
+<span class="nb">export</span><span class="w"> </span><span class="nv">NOFFLINE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="c1"># necessary if you haven't done export VER_MPI=NOMPI</span>
+s2m<span class="w"> </span>research<span class="w"> </span>-f<span class="w"> </span><span class="nv">$SNOWTOOLS_CEN</span>/snowtools/DATA/FORCING_test_base.nc<span class="w"> </span>-b<span class="w"> </span><span class="m">20100801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20110801</span><span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-g<span class="w"> </span>-s<span class="w"> </span>...yoursurfexdirectory.../exe
+deactivate
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -217,7 +220,7 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX<
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="surfex-run.html"
-                          title="next chapter">Run a SURFEX-Crocus simulation</a></p>
+                          title="next chapter">Run a SURFEX-Crocus PC simulation</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -253,7 +256,7 @@ ln<span class="w"> </span>-s<span class="w"> </span><span class="nv">$EXESURFEX<
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="surfex-run.html" title="Run a SURFEX-Crocus simulation"
+          <a href="surfex-run.html" title="Run a SURFEX-Crocus PC simulation"
              >next</a> |</li>
         <li class="right" >
           <a href="surfex-index.html" title="Surfex documentation"

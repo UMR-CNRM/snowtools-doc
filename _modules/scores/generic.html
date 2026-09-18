@@ -7,6 +7,7 @@
     <title>scores.generic &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,11 +40,11 @@
             
   <h1>Source code for scores.generic</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Created on 19 juin 2018</span>
 
 <span class="sd">@author: cluzetb, adapted from R. Champavier Talagrand_rank class</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
@@ -53,7 +54,7 @@
 <div class="viewcode-block" id="rankDiagram">
 <a class="viewcode-back" href="../../code/scores.html#scores.generic.rankDiagram">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rankDiagram</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">observations</span><span class="p">,</span> <span class="n">isSorted</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">nbins</span> <span class="o">=</span> <span class="mi">36</span><span class="p">,</span> <span class="n">printrank</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">titreFig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pathFig</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    @author : B. Cluzet, june 2018</span>
 <span class="sd">    generic CRPS computation from Cluzet first version, Lafaysse and Champavier talagrand function</span>
 <span class="sd">    Champavier code would be a good source of inspiration for optimisation through pandas (avoiding the for loop)</span>
@@ -67,7 +68,7 @@
 <span class="sd">        - obs: no nan</span>
 <span class="sd">        - ens not necessarily sorted</span>
 <span class="sd">        - nbins better &lt;= NMembers +1  ???</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isSorted</span><span class="p">:</span>
         <span class="c1"># pour chaque date, on trie les membres</span>
@@ -84,15 +85,15 @@
         <span class="n">nObsDate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">obsDate</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nEnsDate</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">nObsDate</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Matthieu :</span>
-            <span class="c1"># P :  n° de la prévision auquelle l&#39;obs est directement inférieure</span>
-            <span class="c1"># on gère le cas où plusieurs membres ont la même valeur que l&#39;obs (0 le + souvent)</span>
+            <span class="c1"># P :  n° de la prévision auquelle l'obs est directement inférieure</span>
+            <span class="c1"># on gère le cas où plusieurs membres ont la même valeur que l'obs (0 le + souvent)</span>
             <span class="c1"># Dans ce cas on attribue une position aléatoire entre les positions PL et PR</span>
-            <span class="c1"># sinon PR=PL+1 donc Randint n&#39;a qu&#39;une possibilité</span>
+            <span class="c1"># sinon PR=PL+1 donc Randint n'a qu'une possibilité</span>
 
-            <span class="n">PL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ensDate</span><span class="p">,</span> <span class="n">obsDate</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">PR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ensDate</span><span class="p">,</span> <span class="n">obsDate</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">PL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ensDate</span><span class="p">,</span> <span class="n">obsDate</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"left"</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">PR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">ensDate</span><span class="p">,</span> <span class="n">obsDate</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">P</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">PL</span><span class="p">,</span> <span class="n">PR</span><span class="p">)</span>
-            <span class="c1"># Conversion d&#39;unité</span>
+            <span class="c1"># Conversion d'unité</span>
             <span class="n">BIN</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">P</span> <span class="o">*</span> <span class="n">fact</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">P</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -102,7 +103,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">nEnsDate</span> <span class="o">==</span> <span class="n">nbMembres</span><span class="p">:</span>
                     <span class="n">rank</span><span class="p">[</span><span class="n">BIN</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span>
-                <span class="k">else</span><span class="p">:</span>  <span class="c1"># on convertit l&#39;histogramme de résolution nEnsDate en résolution nbMembres</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># on convertit l'histogramme de résolution nEnsDate en résolution nbMembres</span>
                     <span class="n">BIN</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">nbMembres</span> <span class="o">/</span> <span class="n">nEnsDate</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span> <span class="o">*</span> <span class="n">fact</span><span class="p">))</span>
                     <span class="n">rank</span><span class="p">[</span><span class="n">BIN</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.</span>
 

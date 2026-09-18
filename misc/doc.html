@@ -8,6 +8,7 @@
     <title>Snowtools code Documentation &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -66,9 +67,14 @@ The documentation will be generated in <code class="docutils literal notranslate
 <li><p>all snowtools dependencies (this includes a correct installation of vortex)</p></li>
 <li><p>Python 3.7 or later</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sphinx</span></code></p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">sphinx-fortran</span></code> extension (installable with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">sphinx-fortran</span></code> but the <code class="docutils literal notranslate"><span class="pre">pipy</span></code> version is quite old, so we encourage you to install the last version available at <a class="reference external" href="https://github.com/VACUMM/sphinx-fortran">https://github.com/VACUMM/sphinx-fortran</a> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/VACUMM/sphinx-fortran</span></code>)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">sphinx-fortran</span></code> and <code class="docutils literal notranslate"><span class="pre">sphinx-toolbox</span></code> extensions</p></li>
 </ul>
 </div></blockquote>
+<p>All these requirements can be installed with the “requirements-doc.txt” file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $SNOWTOOLS_CEN
+pip install -r requirements-doc.txt
+</pre></div>
+</div>
 </section>
 </section>
 <section id="code-documentation">
@@ -84,7 +90,7 @@ The documentation will be generated in <code class="docutils literal notranslate
 </ul>
 <p>Here is an example of documentation as it should take place in snowtools:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClass</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">prosimu</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This is a useful class for doing a lot of things</span>
+<span class="w">    </span><span class="sd">"""This is a useful class for doing a lot of things</span>
 <span class="sd">    It extends the :class:`utils.prosimu` class with</span>
 <span class="sd">    very useful functions.</span>
 
@@ -92,21 +98,21 @@ The documentation will be generated in <code class="docutils literal notranslate
 <span class="sd">    :type fn: path-like (str)</span>
 <span class="sd">    :param n: an integer</span>
 <span class="sd">    :type n: int</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">useful_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        My useful function. Do nothing.</span>
 
 <span class="sd">        :param n: an input parameter</span>
 <span class="sd">        :type n: int</span>
 <span class="sd">        :return: always 0</span>
 <span class="sd">        :rtype: int</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="mi">0</span>
 </pre></div>
 </div>

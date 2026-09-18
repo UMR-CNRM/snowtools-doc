@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Uninstall an old Snowtools 2 installed as a developer &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code organization" href="orga.html" />
+    <link rel="prev" title="Install Snowtools" href="install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="orga.html" title="Code organization"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Install Snowtools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="install.html" accesskey="U">Install Snowtools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Uninstall an old Snowtools 2 installed as a developer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="uninstall-an-old-snowtools-2-installed-as-a-developer">
+<span id="sec-uninstallsnowtools2"></span><h1>Uninstall an old Snowtools 2 installed as a developer<a class="headerlink" href="#uninstall-an-old-snowtools-2-installed-as-a-developer" title="Link to this heading">¶</a></h1>
+<section id="remove-snowtools-from-pythonpath-environment-variable">
+<h2>Remove snowtools from PYTHONPATH environment variable<a class="headerlink" href="#remove-snowtools-from-pythonpath-environment-variable" title="Link to this heading">¶</a></h2>
+<p>If the following command return something:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PYTHONPATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>snowtools
+</pre></div>
+</div>
+<p>Then, look in your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code>, <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.profile</span></code> files for the following lines:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$SNOWTOOLS_CEN</span>
+</pre></div>
+</div>
+<p>and make sure to <strong>delete</strong> this line.</p>
+</section>
+<section id="remove-vortex-from-pythonpath-environment-variable">
+<h2>Remove vortex from PYTHONPATH environment variable<a class="headerlink" href="#remove-vortex-from-pythonpath-environment-variable" title="Link to this heading">¶</a></h2>
+<p>Similarily, if the following command return something:</p>
+<blockquote>
+<div><p>echo $PYTHONPATH | grep vortex</p>
+</div></blockquote>
+<p>remove the corresponding lines from your <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code>, <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or <code class="docutils literal notranslate"><span class="pre">~/.profile</span></code> files</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="nv">$VORTEX</span>
+or
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="o">[</span>...<span class="o">]</span>/vortex/...
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you want to preserve your old installation of snowtools, you can save your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code>, <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> and <code class="docutils literal notranslate"><span class="pre">~/.profile</span></code> files with different
+names and “source” thes new files when you want to activate the old installation of snowtools.</p>
+</div>
+</section>
+<section id="vortex-geometries">
+<h2>Vortex geometries<a class="headerlink" href="#vortex-geometries" title="Link to this heading">¶</a></h2>
+<p>Custom geometries could be defined in <code class="docutils literal notranslate"><span class="pre">~/.vortexrc/geometries.ini</span></code>. This possibility will continue but the standard geometries (both for research and oper) are now automatically loaded by vortex from the snowtools/vortex-cen packages. Hence, you either have to remove completely this file or at least to remove all common geometries from this file.</p>
+</section>
+<section id="ensure-changes-are-taken-into-account">
+<h2>Ensure changes are taken into account<a class="headerlink" href="#ensure-changes-are-taken-into-account" title="Link to this heading">¶</a></h2>
+<p>You may need to reconnect to the machine or restart the PC to apply changes.</p>
+<p>You can check the deletion with the following commands, which should now return nothing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>~/.bashrc<span class="w"> </span><span class="c1"># or ~/.bash_profile or ~/.profile depending on where the PYTHONPATH was</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$PYTHONPATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>snowtools
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$PYTHONPATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>vortex
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Uninstall an old Snowtools 2 installed as a developer</a><ul>
+<li><a class="reference internal" href="#remove-snowtools-from-pythonpath-environment-variable">Remove snowtools from PYTHONPATH environment variable</a></li>
+<li><a class="reference internal" href="#remove-vortex-from-pythonpath-environment-variable">Remove vortex from PYTHONPATH environment variable</a></li>
+<li><a class="reference internal" href="#vortex-geometries">Vortex geometries</a></li>
+<li><a class="reference internal" href="#ensure-changes-are-taken-into-account">Ensure changes are taken into account</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="install.html"
+                          title="previous chapter">Install Snowtools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="orga.html"
+                          title="next chapter">Code organization</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc/uninstall-snowtools2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="orga.html" title="Code organization"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Install Snowtools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="install.html" >Install Snowtools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Uninstall an old Snowtools 2 installed as a developer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

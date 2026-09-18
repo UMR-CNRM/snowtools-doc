@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vortex_cen.algo.postprocessing &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.postprocessing</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vortex_cen.algo.postprocessing</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">"""</span>
+<span class="sd">postprocessing.py</span>
+<span class="sd">-----------------</span>
+
+<span class="sd">Algo Components for S2M post processing.</span>
+
+<span class="sd">.. inheritance-diagram:: vortex_cen.algo.postprocessing</span>
+<span class="sd">   :top-classes: vortex_cen.algo.components._CenParaBlindRun, vortex_cen.algo.components._CenTaylorRun,</span>
+<span class="sd">                 vortex_cen.algo.components._CenTaylorVortexWorker, vortex_cen.algo.components._CenWorkerBlindRun,</span>
+<span class="sd">                 vortex.algo.components.AlgoComponent, vortex.algo.components.Parallel,</span>
+<span class="sd">                 vortex.algo.components.TaylorRun, vortex.tools.parallelism.TaylorVortexWorker</span>
+<span class="sd">   :private-bases:</span>
+
+<span class="sd">.. autoclass:: S2m_ensemble_postprocessing</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: HydroWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: HydroComponent</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ExtractDates</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: ExtractDatesWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SnowCoverDuration</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">.. autoclass:: SnowCoverDurationWorker</span>
+<span class="sd">   :no-members:</span>
+<span class="sd">   :show-inheritance:</span>
+
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bronx.syntax.externalcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalCodeImportChecker</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">footprints.stdtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">FPList</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlgoComponent</span><span class="p">,</span> <span class="n">TaylorRun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.tools.parallelism</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaylorVortexWorker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex.syntax.stdattrs</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_date</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">_CenTaylorRun</span><span class="p">,</span> <span class="n">_CenTaylorVortexWorker</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">echecker</span> <span class="o">=</span> <span class="n">ExternalCodeImportChecker</span><span class="p">(</span><span class="s1">'snowtools'</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">echecker</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.data.ensemble_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsemblePostproc</span><span class="p">,</span> <span class="n">EnsembleHydro</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.tools.hydro</span><span class="w"> </span><span class="kn">import</span> <span class="n">hydro</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scripts.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_dates</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.scripts.post_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_scd</span> <span class="k">as</span> <span class="n">scd</span>
+
+
+<div class="viewcode-block" id="S2m_ensemble_postprocessing">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.S2m_ensemble_postprocessing">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">S2m_ensemble_postprocessing</span><span class="p">(</span><span class="n">AlgoComponent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""S2M ensemble forecast postprocessing.</span>
+
+<span class="sd">    Current use : Get ensemble deciles of "fresh snow" (12-hourly and daily accumulation for the Bulletin 4 saisons)</span>
+<span class="sd">    """</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Algo component for post-processing of s2m ensemble simulations'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m_postproc'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">varnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span> <span class="o">=</span> <span class="s2">"Variable names to be post-processed"</span><span class="p">,</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="n">FPList</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span>        <span class="o">=</span> <span class="s2">"Method used to compute distribution of probabilty"</span><span class="p">,</span>
+                    <span class="n">default</span>     <span class="o">=</span> <span class="s1">'quantiles'</span><span class="p">,</span>
+                    <span class="n">optional</span>    <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">values</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">'quantiles'</span><span class="p">,</span> <span class="s1">'emos'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span>    <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span>     <span class="o">=</span> <span class="s1">'s2m'</span><span class="p">,</span>
+                    <span class="n">values</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m'</span><span class="p">]</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="c1"># get input resources</span>
+        <span class="n">avail_forecasts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s2">"CrocusForecast"</span><span class="p">)</span>
+        <span class="c1"># get list of file names</span>
+        <span class="n">listforcing</span> <span class="o">=</span> <span class="p">[</span><span class="n">am</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">avail_forecasts</span><span class="p">]</span>
+        <span class="c1"># init ensemble postprocessing object</span>
+        <span class="n">ens</span> <span class="o">=</span> <span class="n">EnsemblePostproc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varnames</span><span class="p">,</span> <span class="n">listforcing</span><span class="p">,</span> <span class="n">emosmethod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">emosdatapath</span><span class="o">=</span><span class="s2">"."</span><span class="p">)</span>
+        <span class="c1"># do postprocessing</span>
+        <span class="n">ens</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span>
+
+        <span class="n">outfile</span> <span class="o">=</span> <span class="s1">'PRO_post_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">.nc'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avail_forecasts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">ymdh</span><span class="p">,</span>
+                                               <span class="n">avail_forecasts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">ymdh</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s1">'PRO_post.nc'</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+        <span class="c1">#: variables always written to the output file</span>
+
+
+<div class="viewcode-block" id="HydroWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.HydroWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HydroWorker</span><span class="p">(</span><span class="n">TaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Algo that computes hydrological aggregated diagnostics after a surfex run for 1 member"""</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Algo component for post-processing of s2m ensemble simulations'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m_hydro_deter'</span><span class="p">,</span> <span class="s1">'s2m_hydro_ensemble'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">varnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span> <span class="o">=</span> <span class="s2">"Variable names to be post-processed"</span><span class="p">,</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="n">FPList</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">forcing</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span> <span class="o">=</span> <span class="s1">'Meteorological forcing file'</span><span class="p">,</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">pro</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span><span class="o">=</span><span class="s1">'Surfex PRO file'</span><span class="p">,</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">areas</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span><span class="o">=</span><span class="s1">'areas file'</span><span class="p">,</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">optional</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span>    <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span>     <span class="o">=</span> <span class="s1">'s2m'</span><span class="p">,</span>
+                    <span class="n">values</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                    <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">vortex_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="n">rdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Make the output file depending on date and member</span>
+        <span class="n">hydrooutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro</span><span class="p">),</span> <span class="s1">'HYDRO.nc'</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">hydro</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">forcing</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">areas</span><span class="p">,</span> <span class="n">hydrooutput</span><span class="p">)</span> <span class="k">as</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">integration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varnames</span><span class="p">,</span> <span class="n">var_sca</span><span class="o">=</span><span class="s1">'WSN_T_ISBA'</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rdict</span></div>
+
+
+
+<div class="viewcode-block" id="HydroComponent">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.HydroComponent">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HydroComponent</span><span class="p">(</span><span class="n">TaylorRun</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Algo that computes hydrological aggregated diagnostics after a surfex run for an ensemble"""</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Algo component for post-processing of s2m ensemble simulations'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m_hydro_deter'</span><span class="p">,</span> <span class="s1">'s2m_hydro_ensemble'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">varnames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span> <span class="o">=</span> <span class="s2">"Variable names to be post-processed"</span><span class="p">,</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="n">FPList</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">optional</span>    <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span>     <span class="o">=</span> <span class="s1">'s2m'</span><span class="p">,</span>
+                    <span class="n">values</span>      <span class="o">=</span> <span class="p">[</span><span class="s1">'s2m'</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+                    <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_common_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a common instruction dictionary that will be used by the workers."""</span>
+        <span class="n">ddict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">footprint_attributes</span><span class="p">:</span>
+            <span class="n">ddict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="c1"># Get areas file</span>
+        <span class="n">avail_areas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s1">'HydroAreas'</span><span class="p">)</span>
+        <span class="n">ddict</span><span class="p">[</span><span class="s1">'areas'</span><span class="p">]</span> <span class="o">=</span> <span class="n">avail_areas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">filename</span>
+
+        <span class="k">return</span> <span class="n">ddict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pre_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="n">common_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_common_instructions</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="c1"># Update the common instructions</span>
+        <span class="n">common_i</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">someattribute</span><span class="o">=</span><span class="s1">'Toto'</span><span class="p">,</span> <span class="p">))</span>
+
+        <span class="c1"># Identify available forcing and pro files</span>
+        <span class="n">avail_forcing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s1">'SafranForecast'</span><span class="p">)</span>
+        <span class="n">avail_pro</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s1">'CrocusForecast'</span><span class="p">)</span>
+
+        <span class="n">members_forcing</span> <span class="o">=</span> <span class="p">[</span><span class="n">forcing</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span> <span class="k">for</span> <span class="n">forcing</span> <span class="ow">in</span> <span class="n">avail_forcing</span><span class="p">]</span>
+        <span class="n">members_pro</span> <span class="o">=</span> <span class="p">[</span><span class="n">pro</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span> <span class="k">for</span> <span class="n">pro</span> <span class="ow">in</span> <span class="n">avail_pro</span><span class="p">]</span>
+        <span class="n">members_common</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members_forcing</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members_pro</span><span class="p">]</span>
+
+        <span class="n">avail_forcing_common</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">avail_forcing</span> <span class="k">if</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span> <span class="ow">in</span> <span class="n">members_common</span><span class="p">]</span>
+        <span class="n">avail_pro_common</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">avail_pro</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">member</span> <span class="ow">in</span> <span class="n">members_common</span><span class="p">]</span>
+
+        <span class="c1"># Give some instructions to the boss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_instructions</span><span class="p">(</span><span class="n">common_i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">forcing</span><span class="o">=</span><span class="n">avail_forcing_common</span><span class="p">,</span> <span class="n">pro</span><span class="o">=</span><span class="n">avail_pro_common</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_post_execute</span><span class="p">(</span><span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'s2m_hydro_ensemble'</span><span class="p">:</span>
+            <span class="c1"># Final synthesis</span>
+            <span class="n">listhydro</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pro</span><span class="p">),</span> <span class="s1">'HYDRO.nc'</span><span class="p">)</span> <span class="k">for</span> <span class="n">pro</span> <span class="ow">in</span> <span class="n">avail_pro_common</span><span class="p">]</span>
+
+            <span class="n">ens</span> <span class="o">=</span> <span class="n">EnsembleHydro</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">varnames</span><span class="p">,</span> <span class="n">listhydro</span><span class="p">)</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span>
+
+            <span class="n">outfile</span> <span class="o">=</span> <span class="s1">'HYDRO_</span><span class="si">{0}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">.nc'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avail_pro</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">datebegin</span><span class="o">.</span><span class="n">ymdh</span><span class="p">,</span>
+                    <span class="n">avail_pro</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">dateend</span><span class="o">.</span><span class="n">ymdh</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s1">'PRO_post.nc'</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ExtractDates">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.ExtractDates">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractDates</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent to extract a list of dates from an ensemble of PRO files'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">extract_dates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of dates to extract from the PRO(s) file(s)"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'extract_dates'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">role_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Role of RH inputs to use for members definition"</span><span class="p">,</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'SnowpackSimulation'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ExtractDatesWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.ExtractDatesWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtractDatesWorker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'Worker that extracts a list of dates from a specific PRO file'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">extract_dates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"List of dates to extract from the PRO(s) file(s)"</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">stdtypes</span><span class="o">.</span><span class="n">FPList</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'extract_dates'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method called by the main **vortex_task** method of the **_CenMixIn** class</span>
+<span class="sd">        """</span>
+        <span class="n">subdir</span> <span class="o">=</span> <span class="s1">''</span>  <span class="c1"># TODO : subdir should become optional in the extract_dates.execute method</span>
+        <span class="c1"># Launch "core" algo</span>
+        <span class="n">extract_dates</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">subdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_dates</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SnowCoverDuration">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.SnowCoverDuration">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SnowCoverDuration</span><span class="p">(</span><span class="n">_CenTaylorRun</span><span class="p">):</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent for snow cover duration diagnotics computation from SURFEX-Crocus simulations'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'scd'</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">role_members</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Role of RH inputs to use for members definition"</span><span class="p">,</span>
+                <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'SnowpackSimulation'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SnowCoverDurationWorker">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.postprocessing.SnowCoverDurationWorker">[docs]</a>
+<span class="nd">@echecker</span><span class="o">.</span><span class="n">disabled_if_unavailable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SnowCoverDurationWorker</span><span class="p">(</span><span class="n">_CenTaylorVortexWorker</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Worker associated to the `SnowCoverDuration` algo component and calling various</span>
+<span class="sd">    snowtools methods to compute snow cover duration diagnostics of SURFEX-Crocus simulations :</span>
+<span class="sd">    * SMOD (Snow Melt Out Date)</span>
+<span class="sd">    * SCD (Snow Cover Duration)</span>
+<span class="sd">    * SOD (Snow onset date)</span>
+<span class="sd">    * SD (Total number of days with snow)</span>
+<span class="sd">    """</span>
+
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s1">'AlgoComponent for snow cover duration diagnotics computation from SURFEX-Crocus simulations'</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">dateend</span>   <span class="o">=</span> <span class="n">a_date</span><span class="p">,</span>
+            <span class="n">kind</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span>     <span class="o">=</span> <span class="p">[</span><span class="s1">'scd'</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_commons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">thisdir</span><span class="p">,</span> <span class="n">rdict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method called by the main **vortex_task** method of the **_CenMixIn** class</span>
+<span class="sd">        """</span>
+        <span class="c1"># Launch "core" algo</span>
+        <span class="n">scd</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vortex_cen.algo.postprocessing</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

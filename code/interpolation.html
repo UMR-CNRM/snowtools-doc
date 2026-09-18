@@ -8,6 +8,7 @@
     <title>Interpolation tools &#8212; Snowtools  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -84,7 +85,7 @@ This script also allows to keep the skyline views if you want to check them.</p>
         <span class="o">--</span><span class="n">confirm_overwrite</span> <span class="p">(</span><span class="k">if</span> <span class="n">you</span> <span class="n">have</span> <span class="n">already</span> <span class="n">work</span> <span class="n">on</span> <span class="n">this</span> <span class="n">project</span><span class="p">)</span>
 
 <span class="n">python3</span> <span class="n">shapefile2NetCDF</span><span class="o">.</span><span class="n">py</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">fructusm</span><span class="o">/</span><span class="n">Téléchargements</span><span class="o">/</span><span class="n">Plots2020</span><span class="o">/</span><span class="n">plots</span> <span class="n">codeplot</span> <span class="n">idplot</span> <span class="o">--</span><span class="n">name_alt</span> <span class="n">alti</span>
-        <span class="o">--</span><span class="n">list_skyline</span> <span class="mi">1</span> <span class="mi">34</span> <span class="mi">47</span> <span class="p">(</span><span class="ow">in</span> <span class="n">folder</span> <span class="n">output</span><span class="p">,</span> <span class="n">you</span><span class="s1">&#39;ll have skylines for stations 1, 34 and 47)</span>
+        <span class="o">--</span><span class="n">list_skyline</span> <span class="mi">1</span> <span class="mi">34</span> <span class="mi">47</span> <span class="p">(</span><span class="ow">in</span> <span class="n">folder</span> <span class="n">output</span><span class="p">,</span> <span class="n">you</span><span class="s1">'ll have skylines for stations 1, 34 and 47)</span>
 
 <span class="n">python3</span> <span class="n">shapefile2NetCDF</span><span class="o">.</span><span class="n">py</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">fructusm</span><span class="o">/</span><span class="n">Téléchargements</span><span class="o">/</span><span class="n">Plots2021</span><span class="o">/</span><span class="n">PlotsMaJ2021</span> <span class="n">codeplot</span> <span class="n">idplot</span> 
 
@@ -283,15 +284,15 @@ After the execution you have some infos for the NAM_IGN part of the namelist.</p
 * -rlon Longitude Resolution for 2D grid (250 or 30)
 * -rlat Latitude Resolution for 2D grid (250 or 30)
 * --MNT_alt Path for MNT altitude
-* -m massif method in order to assign massif number (&#39;map&#39;, &#39;one&#39;, &#39;mapfill&#39;, &#39;force&#39;)
-* -n massif number if you have choosen the &#39;force&#39; method
+* -m massif method in order to assign massif number ('map', 'one', 'mapfill', 'force')
+* -n massif number if you have choosen the 'force' method
 </pre></div>
 </div>
 <p>The options for massif method are:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>* &#39;map&#39;: each point gets the massif number it should have (0 if outside all massif)
-* &#39;one&#39;: each point gets the most common massif number
-* &#39;mapfill&#39;: like map, with points outside all massif getting the most common massif number
-* &#39;force&#39;: each point gets the massif number you choose 
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>* 'map': each point gets the massif number it should have (0 if outside all massif)
+* 'one': each point gets the most common massif number
+* 'mapfill': like map, with points outside all massif getting the most common massif number
+* 'force': each point gets the massif number you choose 
 </pre></div>
 </div>
 <p>RQ: Massif number can be found in file <cite>snowtools/DATA/METADATA.xml</cite></p>
@@ -308,7 +309,7 @@ After the execution you have some infos for the NAM_IGN part of the namelist.</p
 </pre></div>
 </div>
 <p>Then s2m command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>--walltime<span class="o">=</span><span class="s1">&#39;2:00:00&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="m">20190801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20200801</span><span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-f<span class="w"> </span>reanalysis2020.2@lafaysse
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>s2m<span class="w"> </span>research<span class="w"> </span>--walltime<span class="o">=</span><span class="s1">'2:00:00'</span><span class="w"> </span>-b<span class="w"> </span><span class="m">20190801</span><span class="w"> </span>-e<span class="w"> </span><span class="m">20200801</span><span class="w"> </span>-m<span class="w"> </span>s2m<span class="w"> </span>-f<span class="w"> </span>reanalysis2020.2@lafaysse
 <span class="w">             </span>-r<span class="w"> </span>alp_flat:Aussois250:/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/NetCDF2D_Aussois.nc
 <span class="w">             </span>-n<span class="w"> </span>/home/cnrm_other/cen/mrns/fructusm/SIMU_TOP2D/Aussois.nam<span class="w"> </span>--geotype<span class="w"> </span>grid<span class="w"> </span>--ntasks<span class="o">=</span><span class="m">52</span>
 <span class="w">             </span>-g<span class="w"> </span>-o<span class="w"> </span>Aussois_2D
@@ -323,7 +324,7 @@ After the execution you have some infos for the NAM_IGN part of the namelist.</p
 * -f forcing files -&gt; -f reanalysis in order to get the forcing from reanalysis
 * -r région: add geometry in vortex/conf/geometries.ini
 * -n namelist (get the same options than reanalysis)
-* -g if you don&#39;t have a prep -&gt; a spinup has to be made
+* -g if you don't have a prep -&gt; a spinup has to be made
 * -a 400 In order to limit Snow Water Equivalent to 400kg/m3 at the end of the year (1rst of august)
 * --geotype grid Type of simulation geometry: grids must be defined in namelist while namelists are automatically
                  updated for unstructured geometries according to the forcing file. (default:

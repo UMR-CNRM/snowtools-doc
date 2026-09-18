@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Short documentation on the Vortex toolbox &#8212; Snowtools  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=e02fdde1" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/snow.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File transfers with Vortex at MF" href="file-transfert.html" />
+    <link rel="prev" title="Vortex and associated tools" href="vortex-index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="file-transfert.html" title="File transfers with Vortex at MF"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vortex-index.html" title="Vortex and associated tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" accesskey="U">Vortex and associated tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Short documentation on the Vortex toolbox</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="short-documentation-on-the-vortex-toolbox">
+<h1>Short documentation on the Vortex toolbox<a class="headerlink" href="#short-documentation-on-the-vortex-toolbox" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p><strong>NB</strong> “vortex” refers to the vortex-nwp Python library (often refered to as “vortex-2”)</p>
+<p>The full vortex documentation is available here : <a class="reference external" href="https://vortex-nwp.readthedocs.io/en/latest/index.html">https://vortex-nwp.readthedocs.io/en/latest/index.html</a>.
+A Meteo-France/CNRM-specific documentation is also available here : <a class="reference external" href="https://cnrm-gmap.gitlab.meteo.fr/vortex-cnrm-docs/">https://cnrm-gmap.gitlab.meteo.fr/vortex-cnrm-docs/</a>.
+Vortex relies heavily on the “footprints” package : <a class="reference external" href="http://intra.cnrm.meteo.fr/algopy/sphinx/vortex/current/technical/footprints_fr.html">http://intra.cnrm.meteo.fr/algopy/sphinx/vortex/current/technical/footprints_fr.html</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The source code is available on git.meteo.fr : <a class="reference external" href="https://git.meteo.fr/cnrm-gmap/vortex">https://git.meteo.fr/cnrm-gmap/vortex</a></p>
+</div>
+<p>The main benefit of the use of vortex in the snowtools package is to standardise data management for snowpack simulation workflows.</p>
+<p>Vortex offers features that allow users to store and share simulation I/Os transparently and optimally by uniformly fetching and writing data to and from an archive.
+It also provides high-level tools for executing sequential and parallel programs with minimal user implementation.</p>
+</section>
+<section id="installing-and-configuring-vortex">
+<h2>Installing and configuring Vortex<a class="headerlink" href="#installing-and-configuring-vortex" title="Link to this heading">¶</a></h2>
+<p>Installing snowtools automatically installs Vortex. Please follow the snowtools installation documentation to ensure a valid installation of Vortex and associated tools.
+For an independent installation, follow the Vortex documentation.</p>
+</section>
+<section id="the-vortex-data-tree">
+<h2>The vortex data tree<a class="headerlink" href="#the-vortex-data-tree" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Introduction<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>The vortex data tree refers to the tree structure used by vortex to store data.
+Vortex data tree documentation : <a class="reference external" href="https://vortex-nwp.readthedocs.io/en/latest/user-guide/data-layout.html">https://vortex-nwp.readthedocs.io/en/latest/user-guide/data-layout.html</a>
+The following sections provides a sumary of this more comprehensive documentation and focuses on the main differences between the standard vortex data tree and the CEN-specific data tree.</p>
+</section>
+<section id="the-application-vapp-and-configuration-vconf-levels">
+<h3>The application (<em>vapp</em>) and configuration (<em>vconf</em>) levels<a class="headerlink" href="#the-application-vapp-and-configuration-vconf-levels" title="Link to this heading">¶</a></h3>
+<p>The complementary notions of application and configuration are central in vortex.
+An application, identified by the <em>vapp</em> footprint (type string), is an arbitrary name describing the first level of the vortex data tree. It encompasses all data produced for a specific purpose.
+A configuration, identified by the <em>vconf</em> footprint (type string) is an arbitrary name describing the second level of the vortex data tree. It corresponds to a specific declination (set of scientific and technical choices) of an application.</p>
+</section>
+<section id="the-experiment-identifier-xpid-level">
+<h3>The experiment identifier (<em>xpid</em>) level<a class="headerlink" href="#the-experiment-identifier-xpid-level" title="Link to this heading">¶</a></h3>
+<p>The <em>experiment</em> footprint (type string), commonly refered to as <em>xpid</em>, is an arbitrary user-defined tag for identifying all simulations associated to a given experiment. The <em>xpid</em> is the third level of the vortex data tree.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>4-digit <em>xpid</em> are saved for operational and OLIVE experiments, so <strong>never use 4-digits xpid values</strong>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you inadvertently used a 4-digit <em>xpid</em>, you will get get an error, with this kind of mysterious log message:</p>
+<p># [2026/04/30-21:34:10][footprints.collectors][find_best:0383][INFO]: no.1 in.5 is &lt;class ‘vortex_olive.data.providers.Olive’&gt;
+no.1 in.5 is &lt;class ‘vortex_olive.data.providers.Olive’&gt;
+# [2026/04/30-21:34:10][footprints.collectors][find_best:0383][INFO]: no.2 in.5 is &lt;class ‘vortex.data.providers.Vortex’&gt;
+no.2 in.5 is &lt;class ‘vortex.data.providers.Vortex’&gt;
+…
+…
+ftplib.error_perm: 553 Directory does not exist</p>
+<p># [2026/04/30-19:37:03][vortex.layout.dataflow][_fatal_wrap:0248][ERROR]: Resource ???
+Resource ???
+# [2026/04/30-19:37:03][vortex.layout.dataflow][_fatal_wrap:0250][CRITICAL]: Fatal error with action get on ???
+Fatal error with action get on ???</p>
+</div>
+</section>
+<section id="notions-of-datebegin-dateend-vs-date-term">
+<span id="datebegin-dateend"></span><h3>Notions of <em>datebegin</em> / <em>dateend</em> vs <em>date</em> / <em>term</em><a class="headerlink" href="#notions-of-datebegin-dateend-vs-date-term" title="Link to this heading">¶</a></h3>
+<p>Snowpack simulations generally cover long time periods (typically entire years) in a single “run”, and input / output files also cover the entire time period.
+These periods are identified by the <em>datebegin</em> and <em>dateend</em> footprints (type “Date” or “YYYYMMDDHH” string or list of the previous types <a class="footnote-reference brackets" href="#footprint-lists" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).
+This is a major difference with the NWP-driven vortex data tree, which rather uses the notions of <em>date</em> (a model run time) and <em>term</em> (a model lead time).</p>
+<p>Consequently, the <em>date</em> footprint, which is central in vortex and constitutes the fourth level of the vortex data tree, is optional for all objects defined in the vortex-cen plugin.</p>
+<p>The <em>namebuild</em> footprint (type string, see section <a class="reference internal" href="#namebuild"><span class="std std-ref">The namebuild footprint</span></a>) allows to switch from a <em>date</em> / <em>term</em> data tree to a <em>datebegin</em> / <em>dateend</em> data tree. In the later case, the <em>datebegin</em> and <em>dateend</em> information appears at the file level (see <a class="reference internal" href="#file-level"><span class="std std-ref">The file level</span></a>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At CEN, the <em>date</em> footprint is only used for data deriving from a real-time / operational usage (when the simulation period depends on the date of the run).</p>
+</div>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footprint-lists" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>When a list is provided to a footprint entry, vortex automatically iterates over all elements of the list.</p>
+</aside>
+</aside>
+</section>
+<section id="the-optional-member-level">
+<h3>The (optional) <em>member</em> level<a class="headerlink" href="#the-optional-member-level" title="Link to this heading">¶</a></h3>
+<p>In case of an ensemble simulation, the ensemble members are identifies by the <strong>optional</strong> <em>member</em> footprint (type int, list or ‘start-end-step’ format string). If provided, this information constitutes the next level of the data tree, with a “mbXXXX” format (“mbXXX” with a standard vortex name builder).</p>
+</section>
+<section id="the-block-level">
+<h3>The <em>block</em> level<a class="headerlink" href="#the-block-level" title="Link to this heading">¶</a></h3>
+<p>The <em>block</em> footprint (type string) is an arbitrary name typically used to group data files that are produced by the same unit task.</p>
+<p>The <em>block</em> corresponds to the latest level of a vortex data tree.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <em>block</em> footprint can be used to define several data tree levels if it contains the “/” character.</p>
+</div>
+</section>
+<section id="the-file-level">
+<span id="file-level"></span><h3>The file level<a class="headerlink" href="#the-file-level" title="Link to this heading">¶</a></h3>
+<p>The file level (the file name) contains several information coming from the footprints of the resource itself.</p>
+<section id="the-resource-s-kind">
+<h4>The resource’s <em>kind</em><a class="headerlink" href="#the-resource-s-kind" title="Link to this heading">¶</a></h4>
+<p>The prefix of the file name is the resource <em>kind</em> footprint (type string) or any alias deriving from it.</p>
+</section>
+<section id="the-resource-s-geometry">
+<span id="vortex-geometries"></span><h4>The resource’s <em>geometry</em><a class="headerlink" href="#the-resource-s-geometry" title="Link to this heading">¶</a></h4>
+<p>The second level of the file name is derived from the <em>geometry</em> footprint (string or list of str type), which is a tag identifying a geometry object describing a given discretisation of space.
+Standard NWP geometries are referenced in the vortex_nwp package, and additional “CEN”-specific geometries are references in the vortex-cen plugin.</p>
+<p>Any “new” geometry not included in these standard geometries must be provided in a <code class="docutils literal notranslate"><span class="pre">geometries.ini</span></code> file stored under $HOME/.vortexrc.
+The <em>geometry</em> footprint is the geometry block/entry name. For example, <em>geometry=’GrandesRousses250m’</em> identifies the following geometry :</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[GrandesRousses250m]</span>
+<span class="na">info</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">250 m lat/lon regular grid</span>
+<span class="na">kind</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">lonlat</span>
+<span class="na">area</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">GrandesRousses</span>
+</pre></div>
+</div>
+<p>The minimum information to provide for the description of a geometry is the geometry <em>kind</em> (“ustructured” for massif-like geometries or “lonlat” for 2D simulations).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This <em>geometry</em> information in the file name is a major difference with the naming convention used at CEN before the migration to vortex-2:
+The <em>geometry</em> used to appear at the <em>vconf</em> level and not in the filename.</p>
+</div>
+</section>
+<section id="the-resource-s-datebegin-and-dateend">
+<h4>The resource’s <em>datebegin</em> and <em>dateend</em><a class="headerlink" href="#the-resource-s-datebegin-and-dateend" title="Link to this heading">¶</a></h4>
+<p>At CEN, file names contain the period covered by the resource as defined by the <em>datebegin</em> and <em>dateend</em> footprints (see section <a class="reference internal" href="#datebegin-dateend"><span class="std std-ref">Notions of datebegin / dateend vs date / term</span></a>).</p>
+</section>
+<section id="the-resource-s-model">
+<h4>The resource’s <em>model</em><a class="headerlink" href="#the-resource-s-model" title="Link to this heading">¶</a></h4>
+<p>The <em>model</em> footprints is an arbitrary name used to indicate the name of the  model who produced the data (the last one in case of a model chain <a class="footnote-reference brackets" href="#f1" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <em>model</em> footprint should not be confused with the (optional) <em>source_app</em> and <em>source_conf</em> footprints</p>
+</div>
+<p><strong>NB</strong> The proper use of the <em>model</em>, <em>source_app</em> and <em>source_conf</em> footprints at CEN remains to be clarified.</p>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>This needs further discussions</p>
+</aside>
+</aside>
+</section>
+<section id="the-resource-s-format">
+<h4>The resource’s <em>format</em><a class="headerlink" href="#the-resource-s-format" title="Link to this heading">¶</a></h4>
+<p>Finaly, the suffix of the file name is defined by the <em>format</em> footprint (type string).</p>
+</section>
+</section>
+<section id="additional-footprints">
+<h3>Additional footprints<a class="headerlink" href="#additional-footprints" title="Link to this heading">¶</a></h3>
+<section id="the-local-or-filename-footprint">
+<h4>The <em>local</em> or <em>filename</em> footprint<a class="headerlink" href="#the-local-or-filename-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>local</em> (or its alias <em>filename</em>) footprint (type string) is the name of the target file in the user’s working directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case the target resource is stored in a sub-directory of the current workdir, the value to provide to the <em>local</em> footprint should be the relative path to the file :
+<em>local</em> = ‘subdir/MyFile.txt’</p>
+</div>
+</section>
+<section id="the-namebuild-footprint">
+<span id="namebuild"></span><h4>The <em>namebuild</em> footprint<a class="headerlink" href="#the-namebuild-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>namebuild</em> footprint (type string) defines the name-builder object to be used. Setting the <em>namebuild</em> footprint to ‘cen’ removes the <em>date</em> level of the data tree.</p>
+</section>
+<section id="the-namespace-footprint">
+<h4>The <em>namespace</em> footprint<a class="headerlink" href="#the-namespace-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>namespace</em> footprint (type string) defines the server(s) where the resources will be fetched or stored.
+The most common values of the <em>namespace</em> footprint at CEN are:
+* ‘vortex.cache.fr’   : local server only
+* ‘vortex.archive.fr’ : Archive server only (Hendrix)
+* ‘vortex.multi.fr’   : local server <strong>and</strong> archive (default value)</p>
+</section>
+<section id="the-username-footprint">
+<h4>The <em>username</em> footprint<a class="headerlink" href="#the-username-footprint" title="Link to this heading">¶</a></h4>
+<p>To access files from another user, simply set the <em>username</em> footprint (type string) to this user’s login name.
+If no <em>username</em> is given (or it set to None), then your own username is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <em>username</em> footprint is useless in the case of a toolbox.output(…)</p>
+</div>
+</section>
+<section id="the-role-footprint">
+<h4>The <em>role</em> footprint<a class="headerlink" href="#the-role-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>role</em> footprint (type string) can be used to access a specific loaded Resource Handler from anywhere in the subsequent code (even outside the method / class where the Resource Handler has been defined). In particular, the <em>role</em> value is used to identify alternative resources fulfilling the same function (see <a class="reference internal" href="#alternate"><span class="std std-ref">The alternate footprint</span></a>).</p>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p>You can access the resource handler of FORCING files retrieved by an earlier call to a vortex.input(role=’Forcing,…) with the following command:</p>
+<p>avail_forcings = t.context.sequence.effective_inputs(role=’Forcing’)</p>
+</div>
+</section>
+<section id="the-source-app-source-conf-footprints">
+<h4>The <em>source_app</em> / <em>source_conf</em> footprints<a class="headerlink" href="#the-source-app-source-conf-footprints" title="Link to this heading">¶</a></h4>
+<p>The optional <em>source_app</em> / <em>source_conf</em> footprints (type string) can be used to extend the file name in the vortex data tree with additional information on the application and configuration that originally produced the resource.</p>
+</section>
+<section id="the-genv-gvar-source-and-domain-footprints">
+<h4>The <em>genv</em>, <em>gvar</em>, <em>source</em> and <em>domain</em> footprints<a class="headerlink" href="#the-genv-gvar-source-and-domain-footprints" title="Link to this heading">¶</a></h4>
+<p>The <em>genv</em>, <em>gvar</em>, <em>source</em> and <em>domain</em> footprints are used to describe a static (time independent) resource stored in a User Environment (independent from the vortex data tree):
+* the <em>genv</em> footprint (type string, mandatory) is the name of the UEnv (or GEnv)
+* the <em>gvar</em> footprint (type string, mandatory) is the key of the target resource in the UEnv / GEnv
+* the <em>domain</em> footprint (type string, optional) is an optional information on the geographical domain of the target resource. The default value is the <em>area</em> of the associated geometry object.</p>
+</section>
+<section id="the-fatal-footprint">
+<h4>The <em>fatal</em> footprint<a class="headerlink" href="#the-fatal-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>fatal</em> footprint (type bool) defines the behavior in case of failure of a vortex.input/output request (crash if <em>fatal</em> = True, continue if <em>fatal</em> = False).</p>
+</section>
+<section id="the-intent-footprint">
+<h4>The <em>intent</em> footprint<a class="headerlink" href="#the-intent-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>intent</em> footprint (type string) allows to set the rights to give the target file in the working directory:
+* <em>intent</em> = ‘in’ for a read-only file
+* <em>intent</em> = ‘inout’ for a read-write file</p>
+</section>
+<section id="the-alternate-footprint">
+<span id="alternate"></span><h4>The <em>alternate</em> footprint<a class="headerlink" href="#the-alternate-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>alternate</em> footprint (type string) is mostly used in real-time application as an alternative / rescue input when the primary input is missing.
+The value of the <em>alternate</em> footprint in the description of the alternative / rescue input must match exactly the value of the <em>role</em> footprint in the description of the primary input.</p>
+</section>
+<section id="the-cutoff-footprint">
+<h4>The <em>cutoff</em> footprint<a class="headerlink" href="#the-cutoff-footprint" title="Link to this heading">¶</a></h4>
+<p>The <em>cutoff</em> footprint (type string) is a (confusing) NWP-derived term to distinguish data coming from an analysis (<em>cutoff</em> = “assimilation”, data from past potentially benefiting from the assimilation of observations) or a forecast (<em>cutoff</em> = “production”).
+The <em>cutoff</em>  footprint is optional for the “cen” namebuilder, but is mandatory for the standard vortex namebuilder (it appears as a letter at the <em>date</em> level, with a format yyyymmddThhmm[<strong>AP</strong>]).</p>
+</section>
+</section>
+</section>
+<section id="get-data-archived-with-vortex-at-cen">
+<h2>Get data archived with vortex at CEN<a class="headerlink" href="#get-data-archived-with-vortex-at-cen" title="Link to this heading">¶</a></h2>
+<p>As mentioned in the introduction, Vortex provides simulation IOs manipulation tools.
+Getting data archived with Vortex requires to provide a valid footprint description of the target file(s).
+Vortex provides the <cite>vtx</cite> command line to fetch (and) store data to/from the vortex data tree from a description writen in a YAML configuration file :
+<a class="reference external" href="https://vortex-nwp.readthedocs.io/en/latest/user-guide/cli.html">https://vortex-nwp.readthedocs.io/en/latest/user-guide/cli.html</a></p>
+<p>An example of such a yaml configuration file to extract a specific file from the S2M reanalysis is provided : vortex_cen/conf/S2MReanalysis.yaml</p>
+<p>Extracting this data can simply be done with :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vtx</span> <span class="n">get</span> <span class="n">S2MReanalysis</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>However, the use of the <cite>vtx</cite> tool to extract the entire S2M dataset is not straightforward due to the annual data storage convention.</p>
+<p>More broadly, using data extractors means that the fetched files are duplicated from the vortex data tree into the user’s working directory and become “wild” files.
+This results in the loss of the benefits to use vortex in the first place.
+In addition, the duplication of potentialy large dataset can lead to very sub-optimal data management.</p>
+<p>Most snow-related simulation IOs are NetCDF files opened with xarray and its extensions provided by the snowtools package (see <a class="reference internal" href="../code/utils-xarray.html#xarray"><span class="std std-ref">Xarray with snowtools</span></a> for more information).
+Among those extensions, a <cite>open_vortex_data</cite> wrapper is provided to fetch files from the vortex data tree and read them with xarray in a single python command.</p>
+<p>The typical use of this wrapper would be to write the vortex/footprint description of the target data in a configuration file. For example:</p>
+<p>And call the <cite>open_vortex_data</cite> with the absolute or relative path to this configuration file to the “configfile” keyword argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.xarray_snowtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_vortex_data</span>
+
+<span class="k">with</span> <span class="n">open_vortex_data</span><span class="p">(</span><span class="n">configfile</span><span class="o">=</span><span class="s1">'description.ini'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="c1"># `ds` is an xarray.Dataset containing the target data</span>
+    <span class="c1"># Do any data manipulation here :</span>
+    <span class="c1"># * apply native xarray methods to `ds`</span>
+    <span class="c1"># * apply xarray_snowtools_accessor methods to `ds`</span>
+    <span class="c1"># * code block</span>
+    <span class="c1"># * call external functions with ds as argument</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>This workflow enables all file transfer and opening operations to be completed discreetly in the background, allowing you to focus on the data itself.</p>
+</section>
+<section id="vortex-glossary">
+<h2>Vortex glossary<a class="headerlink" href="#vortex-glossary" title="Link to this heading">¶</a></h2>
+<p><strong>footprints</strong> The manipulation of vortex objects relies heavily on the “footprints” python package. This package is designed to identify objects (python classes) from a keyword description (a python dictionary, the “footprint” of the target object) instead of a direct python import of the target class.</p>
+<p><strong>Resources</strong> refer to vortex objects encompassing the information related to a given type of file (see <a class="reference internal" href="#file-level"><span class="std std-ref">The file level</span></a>).
+<em>Flow resources</em> refer to all time-dependent resources  (for example “FORCING” or “PRO” files).
+<em>Static resources</em> refer to time-indepent resources (for example Namelists, Executables, Digital Elevation Models,…)</p>
+<p><strong>Providers</strong> refer to vortex objects encompassing the information on the location of a given <em>resource</em> in the vortex world.</p>
+<p><strong>Containers</strong> refer to vortex objects encompassing the information on the location of a given file in the user’s working directory.</p>
+<p><strong>Resource Handlers</strong> consist of an association of a provider, a resource and a container. They establish a bridge between the vortex and the user worlds.</p>
+<p><strong>algo components</strong> refer to the classes outlying the core algorithm to produce a given set of output files from a given set of input files.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Short documentation on the Vortex toolbox</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#installing-and-configuring-vortex">Installing and configuring Vortex</a></li>
+<li><a class="reference internal" href="#the-vortex-data-tree">The vortex data tree</a><ul>
+<li><a class="reference internal" href="#id1">Introduction</a></li>
+<li><a class="reference internal" href="#the-application-vapp-and-configuration-vconf-levels">The application (<em>vapp</em>) and configuration (<em>vconf</em>) levels</a></li>
+<li><a class="reference internal" href="#the-experiment-identifier-xpid-level">The experiment identifier (<em>xpid</em>) level</a></li>
+<li><a class="reference internal" href="#notions-of-datebegin-dateend-vs-date-term">Notions of <em>datebegin</em> / <em>dateend</em> vs <em>date</em> / <em>term</em></a></li>
+<li><a class="reference internal" href="#the-optional-member-level">The (optional) <em>member</em> level</a></li>
+<li><a class="reference internal" href="#the-block-level">The <em>block</em> level</a></li>
+<li><a class="reference internal" href="#the-file-level">The file level</a><ul>
+<li><a class="reference internal" href="#the-resource-s-kind">The resource’s <em>kind</em></a></li>
+<li><a class="reference internal" href="#the-resource-s-geometry">The resource’s <em>geometry</em></a></li>
+<li><a class="reference internal" href="#the-resource-s-datebegin-and-dateend">The resource’s <em>datebegin</em> and <em>dateend</em></a></li>
+<li><a class="reference internal" href="#the-resource-s-model">The resource’s <em>model</em></a></li>
+<li><a class="reference internal" href="#the-resource-s-format">The resource’s <em>format</em></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-footprints">Additional footprints</a><ul>
+<li><a class="reference internal" href="#the-local-or-filename-footprint">The <em>local</em> or <em>filename</em> footprint</a></li>
+<li><a class="reference internal" href="#the-namebuild-footprint">The <em>namebuild</em> footprint</a></li>
+<li><a class="reference internal" href="#the-namespace-footprint">The <em>namespace</em> footprint</a></li>
+<li><a class="reference internal" href="#the-username-footprint">The <em>username</em> footprint</a></li>
+<li><a class="reference internal" href="#the-role-footprint">The <em>role</em> footprint</a></li>
+<li><a class="reference internal" href="#the-source-app-source-conf-footprints">The <em>source_app</em> / <em>source_conf</em> footprints</a></li>
+<li><a class="reference internal" href="#the-genv-gvar-source-and-domain-footprints">The <em>genv</em>, <em>gvar</em>, <em>source</em> and <em>domain</em> footprints</a></li>
+<li><a class="reference internal" href="#the-fatal-footprint">The <em>fatal</em> footprint</a></li>
+<li><a class="reference internal" href="#the-intent-footprint">The <em>intent</em> footprint</a></li>
+<li><a class="reference internal" href="#the-alternate-footprint">The <em>alternate</em> footprint</a></li>
+<li><a class="reference internal" href="#the-cutoff-footprint">The <em>cutoff</em> footprint</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#get-data-archived-with-vortex-at-cen">Get data archived with vortex at CEN</a></li>
+<li><a class="reference internal" href="#vortex-glossary">Vortex glossary</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="vortex-index.html"
+                          title="previous chapter">Vortex and associated tools</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="file-transfert.html"
+                          title="next chapter">File transfers with Vortex at MF</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/vortex/essentials.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../f-modindex.html" title="Fortran Module Index"
+             >fortran modules</a> |</li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="file-transfert.html" title="File transfers with Vortex at MF"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vortex-index.html" title="Vortex and associated tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Snowtools  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="vortex-index.html" >Vortex and associated tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Short documentation on the Vortex toolbox</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2021-2024, Centre d&#39;Études de la Neige, Météo-France, CNRS.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>
