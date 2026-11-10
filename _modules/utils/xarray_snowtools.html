@@ -209,15 +209,20 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">listfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No file matching the provided description"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">listfiles</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
-            <span class="c1"># yield dataset to caller</span>
-            <span class="k">yield</span> <span class="n">ds</span>
-            <span class="c1"># The dataset is automatically closed at exit of `with` statement,</span>
-            <span class="c1"># the files can now be deleted</span>
-            <span class="k">for</span> <span class="n">fic</span> <span class="ow">in</span> <span class="n">listfiles</span><span class="p">:</span>
-                <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fic</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">:</span>
-                <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'checkonly'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">footprint</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'kind'</span><span class="p">,</span> <span class="s1">'vapp'</span><span class="p">,</span> <span class="s1">'vconf'</span><span class="p">,</span> <span class="s1">'experiment'</span><span class="p">,</span> <span class="s1">'username'</span><span class="p">,</span> <span class="s1">'geometry'</span><span class="p">,</span> <span class="s1">'block'</span><span class="p">,</span>
+                    <span class="s1">'member'</span><span class="p">,</span> <span class="s1">'datebegin'</span><span class="p">,</span> <span class="s1">'dateend'</span><span class="p">,</span> <span class="s1">'duration'</span><span class="p">,</span> <span class="s1">'datevalidity'</span><span class="p">,</span> <span class="s1">'checkonly'</span><span class="p">,</span> <span class="s1">'verbose'</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">footprint</span> <span class="ow">in</span> <span class="n">kw</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">footprint</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">listfiles</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+                <span class="c1"># yield dataset to caller</span>
+                <span class="k">yield</span> <span class="n">ds</span>
+                <span class="c1"># The dataset is automatically closed at exit of `with` statement,</span>
+                <span class="c1"># the files can now be deleted</span>
+                <span class="k">for</span> <span class="n">fic</span> <span class="ow">in</span> <span class="n">listfiles</span><span class="p">:</span>
+                    <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fic</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">:</span>
+                    <span class="n">vortex</span><span class="o">.</span><span class="n">ticket</span><span class="p">()</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span></div>
 
 </pre></div>
 

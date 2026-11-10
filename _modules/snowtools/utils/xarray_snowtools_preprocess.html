@@ -45,15 +45,15 @@
 
 <span class="c1"># The following dictionnaries are used to control default variable and dimension names mapping</span>
 <span class="c1"># TODO : Réfléchir à un mapping plus cohérent nettoyer les dicts actuels (cf ticket #295)</span>
-<span class="n">dimension_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">:</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'location'</span><span class="p">:</span> <span class="s1">'Number_of_points'</span><span class="p">,</span> <span class="s1">'Number_of_patches'</span><span class="p">:</span> <span class="s1">'tile'</span><span class="p">,</span>
-        <span class="s1">'valid_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">}</span>
+<span class="n">dimension_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">:</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'lat'</span><span class="p">:</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'latitude'</span><span class="p">:</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'lon'</span><span class="p">:</span> <span class="s1">'xx'</span><span class="p">,</span> <span class="s1">'longitude'</span><span class="p">:</span> <span class="s1">'xx'</span><span class="p">,</span>
+        <span class="s1">'location'</span><span class="p">:</span> <span class="s1">'Number_of_points'</span><span class="p">,</span> <span class="s1">'Number_of_patches'</span><span class="p">:</span> <span class="s1">'tile'</span><span class="p">,</span> <span class="s1">'valid_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">}</span>
 <span class="n">variables_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Rainf_ds'</span><span class="p">:</span> <span class="s1">'Rainf'</span><span class="p">,</span> <span class="s1">'Snowf_ds'</span><span class="p">:</span> <span class="s1">'Snowf'</span><span class="p">,</span> <span class="s1">'band_data'</span><span class="p">:</span> <span class="s1">'ZS'</span><span class="p">,</span> <span class="s1">'prec'</span><span class="p">:</span> <span class="s1">'Precipitation'</span><span class="p">,</span>
-        <span class="s1">'rr'</span><span class="p">:</span> <span class="s1">'Precipitation'</span><span class="p">,</span> <span class="s1">'massif_number'</span><span class="p">:</span> <span class="s1">'massif_num'</span><span class="p">}</span>
+        <span class="s1">'rr'</span><span class="p">:</span> <span class="s1">'Precipitation'</span><span class="p">,</span> <span class="s1">'massif_number'</span><span class="p">:</span> <span class="s1">'massif_num'</span><span class="p">,</span> <span class="s1">'elevation'</span><span class="p">:</span> <span class="s1">'ZS'</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="preprocess">
 <a class="viewcode-back" href="../../../code/utils-xarray.html#utils.xarray_snowtools.preprocess">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">decode_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transpose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_dims</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">decode_time</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transpose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_dims</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    This is the main method to call when opening a SURFEX IO NetCDF file.</span>
@@ -85,7 +85,7 @@
 <span class="sd">    :type mapping: dict</span>
 <span class="sd">    :param decode_time: Manually decode the time variable when xarray fails to do it properly (SURFEX outputs)</span>
 <span class="sd">    :type decode_time: bool</span>
-<span class="sd">    :param transpose: Put time dimension as first dimension in case of data processing through numpy arrays</span>
+<span class="sd">    :param transpose: Order dimensions for data processing through numpy arrays and plotting tools</span>
 <span class="sd">    :type transpose: bool</span>
 <span class="sd">    """</span>
 
@@ -99,9 +99,10 @@
     <span class="k">if</span> <span class="n">decode_time</span><span class="p">:</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">decode_time_dimension</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 
-    <span class="c1"># Ensure that the time dimension is in the first one for numpy-based tools backward compatibility</span>
+    <span class="c1"># Ensure that the time dimensions are always in the same order</span>
+    <span class="c1"># for numpy-based tools backward compatibility</span>
     <span class="k">if</span> <span class="n">transpose</span><span class="p">:</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">sort_dims</span><span class="p">:</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">sort_dimensions</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -158,11 +159,11 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dataarray</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">'_FillValue'</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'missing_value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'_FillValue'</span><span class="p">]</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xarray</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">dataarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">'missing_value'</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">'_FillValue'</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'missing_value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">encoding</span><span class="p">[</span><span class="s1">'_FillValue'</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">ds</span>

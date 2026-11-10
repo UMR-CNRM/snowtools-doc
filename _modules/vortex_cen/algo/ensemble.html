@@ -93,6 +93,7 @@
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bronx.fancies</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Period</span><span class="p">,</span> <span class="n">tomorrow</span>
@@ -115,6 +116,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.infomassifs</span><span class="w"> </span><span class="kn">import</span> <span class="n">infomassifs</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.ESCROCsubensembles</span><span class="w"> </span><span class="kn">import</span> <span class="n">ESCROC_subensembles</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils.FileException</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeListException</span><span class="p">,</span> <span class="n">MultipleValueException</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">snowtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">xarray_snowtools</span>  <span class="c1"># noqa</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">vortex_cen.algo.deterministic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfexMixIn</span>
 
 
@@ -339,15 +341,14 @@
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">dateforcbegin</span><span class="p">,</span> <span class="n">dateforcend</span><span class="p">,</span> <span class="n">forcingname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_forcing</span><span class="p">(</span><span class="n">datebegin_this_run</span><span class="p">,</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">dateend</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">forcingdir</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">),</span> <span class="s1">'FORCING.nc'</span><span class="p">)</span>
                         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">MultipleValueException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                             <span class="n">rdict</span><span class="p">[</span><span class="s1">'rc'</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
                             <span class="k">return</span> <span class="n">rdict</span>  <span class="c1"># Note than in the other case return rdict is at the end</span>
-                        <span class="n">forcingname</span> <span class="o">=</span> <span class="s2">"FORCING_"</span> <span class="o">+</span> <span class="n">massif</span> <span class="o">+</span> <span class="s2">".nc"</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">)</span>
-                        <span class="n">forcinglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">forcingname</span><span class="p">)</span>
+                        <span class="n">newforcingname</span> <span class="o">=</span> <span class="s2">"FORCING_"</span> <span class="o">+</span> <span class="n">massif</span> <span class="o">+</span> <span class="s2">".nc"</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">link_in</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">forcingdir</span><span class="p">,</span> <span class="n">massif</span><span class="p">,</span> <span class="n">forcingname</span><span class="p">),</span> <span class="n">newforcingname</span><span class="p">)</span>
+                        <span class="n">forcinglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newforcingname</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'forcinglist = '</span><span class="p">,</span> <span class="n">forcinglist</span><span class="p">)</span>
 
-                    <span class="nb">print</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">)</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">forcinput_applymask</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">,</span> <span class="s2">"FORCING.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
                     <span class="k">except</span> <span class="n">TimeListException</span><span class="p">:</span>
@@ -526,9 +527,12 @@
             <span class="k">for</span> <span class="n">massif</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry_in</span><span class="p">:</span>
                 <span class="n">forcingname</span> <span class="o">=</span> <span class="s2">"FORCING_"</span> <span class="o">+</span> <span class="n">massif</span> <span class="o">+</span> <span class="s2">".nc"</span>
                 <span class="n">forcinglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">forcingname</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">'nested'</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">'Number_of_points'</span><span class="p">,</span>
+                    <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+                <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">"FORCING_AGG.nc"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"NETCDF4_CLASSIC"</span><span class="p">)</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"FORCING EXTENSION"</span><span class="p">)</span>
-            <span class="n">forcinput_applymask</span><span class="p">(</span><span class="n">forcinglist</span><span class="p">,</span> <span class="s2">"FORCING_OUT.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+            <span class="n">forcinput_applymask</span><span class="p">([</span><span class="s2">"FORCING_AGG.nc"</span><span class="p">],</span> <span class="s2">"FORCING_OUT.nc"</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"FORCING EXTENSION"</span><span class="p">)</span>

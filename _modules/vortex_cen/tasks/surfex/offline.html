@@ -96,6 +96,7 @@
 <span class="sd">   :show-inheritance:</span>
 <span class="sd">"""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">vortex</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bronx.stdtypes.date</span><span class="w"> </span><span class="kn">import</span> <span class="n">daterange</span><span class="p">,</span> <span class="n">tomorrow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">vortex.layout.dataflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">SectionFatalError</span>
@@ -943,12 +944,12 @@
         <span class="c1"># iodef.xml</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Toolbox input iodef.xml"</span><span class="p">)</span>
         <span class="n">iodef_tbi</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
-            <span class="nb">format</span><span class="o">=</span><span class="s2">"ascii"</span><span class="p">,</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">"coverparams"</span><span class="p">,</span>
-            <span class="n">genv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"consts_surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
-            <span class="n">model</span><span class="o">=</span><span class="s2">"surfex"</span><span class="p">,</span>
-            <span class="n">local</span><span class="o">=</span><span class="s2">"iodef.xml"</span><span class="p">,</span>
-            <span class="n">gvar</span><span class="o">=</span><span class="s2">"IODEF"</span><span class="p">,</span>
+            <span class="nb">format</span>  <span class="o">=</span> <span class="s2">"ascii"</span><span class="p">,</span>
+            <span class="n">kind</span>    <span class="o">=</span> <span class="s2">"coverparams"</span><span class="p">,</span>
+            <span class="n">genv</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"consts_surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
+            <span class="n">model</span>   <span class="o">=</span> <span class="s2">"surfex"</span><span class="p">,</span>
+            <span class="n">local</span>   <span class="o">=</span> <span class="s2">"iodef.xml"</span><span class="p">,</span>
+            <span class="n">gvar</span>    <span class="o">=</span> <span class="s2">"IODEF"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"iodef_tbi ="</span><span class="p">,</span> <span class="n">iodef_tbi</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">()</span>
@@ -956,12 +957,12 @@
         <span class="c1"># surfex.xml</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Toolbox input surfex.xml"</span><span class="p">)</span>
         <span class="n">conf_xml_tbi</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">input</span><span class="p">(</span>
-            <span class="nb">format</span><span class="o">=</span><span class="s2">"ascii"</span><span class="p">,</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">"coverparams"</span><span class="p">,</span>
-            <span class="n">genv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"consts_surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
-            <span class="n">model</span><span class="o">=</span><span class="s2">"surfex"</span><span class="p">,</span>
-            <span class="n">local</span><span class="o">=</span><span class="s2">"surfex.xml"</span><span class="p">,</span>
-            <span class="n">gvar</span><span class="o">=</span><span class="s2">"CONF_XML"</span><span class="p">,</span>
+            <span class="nb">format</span>  <span class="o">=</span> <span class="s2">"ascii"</span><span class="p">,</span>
+            <span class="n">kind</span>    <span class="o">=</span> <span class="s2">"coverparams"</span><span class="p">,</span>
+            <span class="n">genv</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"consts_surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
+            <span class="n">model</span>   <span class="o">=</span> <span class="s2">"surfex"</span><span class="p">,</span>
+            <span class="n">local</span>   <span class="o">=</span> <span class="s2">"surfex.xml"</span><span class="p">,</span>
+            <span class="n">gvar</span>    <span class="o">=</span> <span class="s2">"CONF_XML"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"conf_xml_tbi ="</span><span class="p">,</span> <span class="n">conf_xml_tbi</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">()</span>
@@ -969,13 +970,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_executable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Input XIOS executable from uenv"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xios_exe</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">executable</span><span class="p">(</span>
-            <span class="n">role</span><span class="o">=</span><span class="s2">"Binary"</span><span class="p">,</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">"xios"</span><span class="p">,</span>
-            <span class="n">local</span><span class="o">=</span><span class="s2">"XIOS"</span><span class="p">,</span>
-            <span class="n">model</span><span class="o">=</span><span class="s2">"surfex"</span><span class="p">,</span>
-            <span class="n">binopts</span><span class="o">=</span><span class="s2">"--np 6"</span><span class="p">,</span>
-            <span class="n">genv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
-            <span class="n">gvar</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"xios_gvar"</span><span class="p">,</span> <span class="s2">"MASTER_XIOS"</span><span class="p">),</span>
+            <span class="n">role</span>   <span class="o">=</span> <span class="s2">"Binary"</span><span class="p">,</span>
+            <span class="n">kind</span>   <span class="o">=</span> <span class="s2">"xios"</span><span class="p">,</span>
+            <span class="n">local</span>  <span class="o">=</span> <span class="s2">"XIOS"</span><span class="p">,</span>
+            <span class="n">model</span>  <span class="o">=</span> <span class="s2">"surfex"</span><span class="p">,</span>
+            <span class="n">genv</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"surfex_uenv"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">uenv</span><span class="p">),</span>
+            <span class="n">gvar</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"xios_gvar"</span><span class="p">,</span> <span class="s2">"MASTER_XIOS"</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"XIOS executable ="</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xios_exe</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">()</span>
@@ -985,37 +985,33 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Algo component to execute OFFLINE with XIOS</span>
 <span class="sd">        """</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">footprints</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Algo XIOS"</span><span class="p">)</span>
         <span class="n">xios</span> <span class="o">=</span> <span class="n">footprints</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">mpibinary</span><span class="p">(</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">"ioserv"</span><span class="p">,</span>
-            <span class="n">nodes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">io_nodes</span><span class="p">,</span>
-            <span class="n">tasks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">io_tasks</span><span class="p">,</span>
+            <span class="n">kind</span>   <span class="o">=</span> <span class="s2">"ioserv"</span><span class="p">,</span>
+            <span class="n">nodes</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">io_nodes</span><span class="p">,</span>
+            <span class="n">tasks</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">io_tasks</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"Xios ="</span><span class="p">,</span> <span class="n">xios</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">()</span>
-        <span class="c1">#xios.master = self.xios_exe[0].container.localpath()</span>
         <span class="n">xios</span><span class="o">.</span><span class="n">master</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xios_exe</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">abspath</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Algo OFFLINE-XIOS-MPI"</span><span class="p">)</span>
         <span class="n">offline_tba</span> <span class="o">=</span> <span class="n">vortex</span><span class="o">.</span><span class="n">task</span><span class="p">(</span>
-            <span class="n">engine</span><span class="o">=</span><span class="s2">"parallel"</span><span class="p">,</span>
-            <span class="c1"># binary         = 'OFFLINE',  # unused</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">"xios"</span><span class="p">,</span>
-            <span class="n">datebegin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
-            <span class="n">dateend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
-            <span class="c1"># MV : *dateinit* correspond à la date de validité du fichier PREP</span>
-            <span class="n">dateinit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s2">"SnowpackInit"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">datevalidity</span><span class="p">,</span>
+            <span class="n">engine</span>     <span class="o">=</span> <span class="s2">"parallel"</span><span class="p">,</span>
+            <span class="n">kind</span>       <span class="o">=</span> <span class="s2">"xios"</span><span class="p">,</span>
+            <span class="n">datebegin</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">datebegin</span><span class="p">,</span>
+            <span class="n">dateend</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">dateend</span><span class="p">,</span>
+            <span class="n">dateinit</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">sequence</span><span class="o">.</span><span class="n">effective_inputs</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="s2">"SnowpackInit"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rh</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">datevalidity</span><span class="p">,</span>
             <span class="c1"># MV : la valeur par défaut de "threshold" dans la commande s2m est -999</span>
             <span class="c1"># TODO : cette valeur par défaut pourrait être codée directement dans l'algo</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"august_threshold"</span><span class="p">,</span> <span class="o">-</span><span class="mi">999</span><span class="p">),</span>
+            <span class="n">threshold</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"august_threshold"</span><span class="p">,</span> <span class="o">-</span><span class="mi">999</span><span class="p">),</span>
             <span class="c1"># daily          = self.conf.dailyprep,</span>
             <span class="c1"># MV la valeur par défaut de 'drhook' dans la commande s2m est False</span>
             <span class="c1"># TODO : cette valeur par défaut pourrait être codée directement dans l'algo</span>
-            <span class="n">drhookprof</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"drhook"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+            <span class="n">drhookprof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"drhook"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
             <span class="c1"># MV : on traitera les question de reproductibilité dans un 2nd temps.</span>
             <span class="c1"># reprod_info    = self.get_reprod_info,</span>
-            <span class="n">ioserver</span> <span class="o">=</span> <span class="n">xios</span><span class="p">,</span>
+            <span class="n">ioserver</span>   <span class="o">=</span> <span class="n">xios</span><span class="p">,</span>
             <span class="n">iolocation</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"Algo ="</span><span class="p">,</span> <span class="n">offline_tba</span><span class="p">)</span>
@@ -1029,17 +1025,32 @@
         <span class="c1"># Pour un exécution de binaire, il faut donner l'objet "exécutable" associé (récupéré par la commande</span>
         <span class="c1"># vortex.executable(...))</span>
         <span class="c1"># Il est possible de récupérer cet objet avec la ligne suivante :</span>
-        <span class="c1">#executables = [tbx.rh for tbx in self.ticket.context.sequence.executables()]</span>
         <span class="n">executables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offline_exe</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">component_runner</span><span class="p">(</span><span class="n">algo</span><span class="p">,</span> <span class="n">executables</span><span class="p">,</span>
-<span class="c1">#            mpiopts={</span>
-<span class="c1">#                "nnodes": self.conf.nnodes,</span>
-<span class="c1">##                "nprocs": self.conf.nprocs,  # Redondant avec la valeur par défaut dans mkjob</span>
-<span class="c1">#                "ntasks": self.conf.ntasks - self.conf.io_tasks,</span>
-<span class="c1">#                "envelope": True,</span>
-<span class="c1">#            },</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_runner</span><span class="p">(</span><span class="n">algo</span><span class="p">,</span> <span class="n">executables</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">put_pro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Output PRO"</span><span class="p">)</span>
+        <span class="n">pro_tbo</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">vortex</span><span class="o">.</span><span class="n">output</span><span class="p">(</span>
+                <span class="n">kind</span>       <span class="o">=</span> <span class="s2">"SnowpackSimulation"</span><span class="p">,</span>
+                <span class="n">content</span>    <span class="o">=</span> <span class="p">[</span><span class="s2">"SL1"</span><span class="p">,</span> <span class="s2">"SL2"</span><span class="p">,</span> <span class="s2">"NOSL"</span><span class="p">],</span>
+                <span class="n">local</span>      <span class="o">=</span> <span class="s2">"PRO_[content:lower]_[datebegin:ymdh]_[dateend:ymdh].nc"</span><span class="p">,</span>
+                <span class="n">experiment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">xpid</span><span class="p">,</span>
+                <span class="n">geometry</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span>
+                <span class="n">datebegin</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_dates_begin_pro</span><span class="p">,</span>
+                <span class="n">dateend</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_dates_end_pro</span><span class="p">,</span>
+                <span class="n">nativefmt</span>  <span class="o">=</span> <span class="s2">"netcdf"</span><span class="p">,</span>
+                <span class="n">model</span>      <span class="o">=</span> <span class="s2">"surfex"</span><span class="p">,</span>
+                <span class="n">namespace</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace_out</span><span class="p">,</span>
+                <span class="n">namebuild</span>  <span class="o">=</span> <span class="s2">"flat@cen"</span><span class="p">,</span>
+                <span class="n">block</span>      <span class="o">=</span> <span class="s2">"offline"</span><span class="p">,</span>
+                <span class="n">member</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"member"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">),</span>
         <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ticket</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="s2">"pro_tbo ="</span><span class="p">,</span> <span class="n">pro_tbo</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="_Offline_NOMPI">

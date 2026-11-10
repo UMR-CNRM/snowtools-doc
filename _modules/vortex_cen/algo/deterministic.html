@@ -110,28 +110,33 @@
 <span class="sd">    WARNING : this algo should now be used only in the operationnal S2M chain</span>
 <span class="sd">    """</span>
 
-    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF012</span>
-        <span class="s2">"attr"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"kind"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"values"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"surfex_preprocess"</span><span class="p">]},</span>
-            <span class="s2">"engine"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"algo"</span><span class="p">},</span>
-            <span class="s2">"datebegin"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Date in the namelist to run PREP."</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="s2">"dateend"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Date in the namelist to stop OFFLINE."</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="kc">None</span>
-            <span class="p">},</span>
-            <span class="s2">"forcingname"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Name of the first forcing file"</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"surfex_preprocess"</span><span class="p">],</span>
+            <span class="p">),</span>
+            <span class="n">engine</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="s2">"algo"</span>
+            <span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">"Date in the namelist to run PREP."</span><span class="p">,</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Date in the namelist to stop OFFLINE."</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="n">forcingname</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>      <span class="o">=</span> <span class="s2">"Name of the first forcing file"</span><span class="p">,</span>
+                <span class="nb">type</span>      <span class="o">=</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">optional</span>  <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>   <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">find_namelists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Find any namelists candidates in actual context inputs."""</span>
@@ -177,11 +182,13 @@
 <span class="sd">    from surfex meteorological forcing files</span>
 <span class="sd">    """</span>
 
-    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF012</span>
-        <span class="s2">"attr"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">"kind"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"values"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"clim"</span><span class="p">]},</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"clim"</span><span class="p">]</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
 
@@ -371,10 +378,13 @@
         <span class="n">outname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'PRO_</span><span class="si">{</span><span class="n">datebegin_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">dateend_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">.nc'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="s2">"ISBA_PROGNOSTIC.OUT.nc"</span><span class="p">,</span> <span class="n">outname</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">outname</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">'snowtools'</span><span class="p">)</span> <span class="k">as</span> <span class="n">pro</span><span class="p">:</span>
+            <span class="n">pro</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">backtrack_preprocess</span><span class="p">()</span>
             <span class="n">pro</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">surfex</span><span class="o">.</span><span class="n">massif_natural_risk</span><span class="p">()</span>
             <span class="n">pro</span><span class="o">.</span><span class="n">crocus</span><span class="o">.</span><span class="n">GlobalAttributes</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_standard_metadata_section</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">reprod_info</span><span class="p">)</span>
+            <span class="n">pro</span><span class="o">.</span><span class="n">crocus</span><span class="o">.</span><span class="n">get_coord</span><span class="p">()</span>
             <span class="c1"># pro.crocus.add_standard_names()  # Already called by GlobalAttributes</span>
-        <span class="n">pro</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="sa">f</span><span class="s1">'PRO_</span><span class="si">{</span><span class="n">datebegin_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">dateend_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">.nc'</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"NETCDF4_CLASSIC"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
+        <span class="n">pro</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="sa">f</span><span class="s1">'PRO_</span><span class="si">{</span><span class="n">datebegin_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">dateend_this_run</span><span class="o">.</span><span class="n">ymdh</span><span class="si">}</span><span class="s1">.nc'</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"NETCDF4_CLASSIC"</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">"ISBA_DIAGNOSTICS.OUT.nc"</span><span class="p">):</span>
             <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"ISBA_DIAGNOSTICS.OUT"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"DIAG"</span><span class="p">)</span>
@@ -423,35 +433,39 @@
     <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">info</span><span class="o">=</span><span class="s2">"AlgoComponent designed to run SURFEX experiments over large domains with MPI parallelization."</span><span class="p">,</span>
         <span class="n">attr</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="c1"># Unused ?</span>
-            <span class="c1"># binary = dict(</span>
-            <span class="c1">#     values = ['OFFLINE'],</span>
-            <span class="c1"># ),</span>
-            <span class="n">datebegin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="s2">"The first date of the simulation."</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Date</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-            <span class="n">dateend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="s2">"The final date of the simulation."</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">Date</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">datebegin</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dateend</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
             <span class="n">dateinit</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">info</span><span class="o">=</span><span class="s2">"The initialization date if different from the starting date."</span><span class="p">,</span>
-                <span class="nb">type</span><span class="o">=</span><span class="n">Date</span><span class="p">,</span>
-                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="s2">"[datebegin]"</span><span class="p">,</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"The initialization date if different from the starting date."</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="n">Date</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="s2">"[datebegin]"</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">threshold</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">info</span><span class="o">=</span><span class="s2">"Threshold on snow water equivalent on August 1st."</span><span class="p">,</span>
-                <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=-</span><span class="mi">999</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Threshold on snow water equivalent on August 1st."</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="o">-</span><span class="mi">999</span>
             <span class="p">),</span>
             <span class="n">daily</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">info</span><span class="o">=</span><span class="s2">"If True, split simulations in daily runs"</span><span class="p">,</span>
-                <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
-                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"If True, split simulations in daily runs"</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">reprod_info</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">info</span><span class="o">=</span><span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
-                <span class="nb">type</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
-                <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="nb">dict</span><span class="p">(),</span>
             <span class="p">),</span>
         <span class="p">),</span>
     <span class="p">)</span>
@@ -463,55 +477,27 @@
 
 <div class="viewcode-block" id="Surfex_Xios_Parallel">
 <a class="viewcode-back" href="../../../vortex/vortex-cen-algo.html#vortex_cen.algo.deterministic.Surfex_Xios_Parallel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Surfex_Xios_Parallel</span><span class="p">(</span><span class="n">Parallel</span><span class="p">,</span> <span class="n">ParallelIoServerMixin</span><span class="p">,</span> <span class="n">SurfexMixIn</span><span class="p">,</span> <span class="n">DrHookDecoMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Surfex_Xios_Parallel</span><span class="p">(</span><span class="n">Surfex_Parallel</span><span class="p">,</span> <span class="n">ParallelIoServerMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This algo component is designed to run SURFEX experiments over large domains</span>
 <span class="sd">    with MPI parallelization and IO server XIOS</span>
 <span class="sd">    """</span>
 
-    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF012</span>
-        <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"AlgoComponent designed to run SURFEX experiments over large domains with MPI parallelization "</span>
-                <span class="s2">"and IO server XIOS"</span><span class="p">,</span>
-        <span class="s2">"attr"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="c1"># Unused ?</span>
-            <span class="c1"># binary = dict(</span>
-            <span class="c1">#     values = ['OFFLINE'],</span>
-            <span class="c1"># ),</span>
-            <span class="s2">"kind"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"values"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"xios"</span><span class="p">]},</span>
-            <span class="s2">"datebegin"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"info"</span><span class="p">:</span> <span class="s2">"The first date of the simulation."</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span> <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"dateend"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"info"</span><span class="p">:</span> <span class="s2">"The final date of the simulation."</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span> <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-            <span class="s2">"dateinit"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"The initialization date if different from the starting date."</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"[datebegin]"</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="s2">"threshold"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Threshold on snow water equivalent on August 1st."</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="o">-</span><span class="mi">999</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="s2">"daily"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"If True, split simulations in daily runs"</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="s2">"reprod_info"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="p">},</span>
-        <span class="p">},</span>
-    <span class="p">}</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s2">"AlgoComponent designed to run SURFEX experiments over large domains with MPI parallelization "</span>
+        <span class="s2">"and IO server XIOS"</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">values</span><span class="o">=</span> <span class="p">[</span><span class="s2">"xios"</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">offline_postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">):</span>
 
-        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_nosl.nc"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_nosl"</span><span class="p">)</span>
-        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_sl1.nc"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_sl1"</span><span class="p">)</span>
-        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_sl2.nc"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_sl2"</span><span class="p">)</span>
+        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_nosl"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_nosl"</span><span class="p">)</span>
+        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_sl1"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_sl1"</span><span class="p">)</span>
+        <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"PRO_sl2"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"PRO_sl2"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">"ISBA_DIAGNOSTICS.OUT.nc"</span><span class="p">):</span>
             <span class="n">save_file_period</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">"ISBA_DIAGNOSTICS.OUT"</span><span class="p">,</span> <span class="n">datebegin_this_run</span><span class="p">,</span> <span class="n">dateend_this_run</span><span class="p">,</span> <span class="n">newprefix</span><span class="o">=</span><span class="s2">"DIAG"</span><span class="p">)</span>
@@ -531,21 +517,17 @@
 <span class="sd">    with MPI parallelization.</span>
 <span class="sd">    """</span>
 
-    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># noqa: RUF012</span>
-        <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"AlgoComponent designed to interpolate SAFRAN forcings on regular grid with MPI parallelization."</span><span class="p">,</span>
-        <span class="s2">"attr"</span><span class="p">:</span> <span class="p">{</span>
-            <span class="c1"># Unused ?</span>
-            <span class="c1"># binary = dict(</span>
-            <span class="c1">#     values = ['INTERPOL'],</span>
-            <span class="c1"># ),</span>
-            <span class="s2">"reprod_info"</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">"info"</span><span class="p">:</span> <span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
-                <span class="s2">"type"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                <span class="s2">"optional"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s2">"default"</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="p">}</span>
-        <span class="p">},</span>
-    <span class="p">}</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="s2">"AlgoComponent designed to interpolate SAFRAN forcings on regular grid with MPI parallelization."</span><span class="p">,</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">reprod_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">info</span>     <span class="o">=</span> <span class="s2">"Informations that must be stored in output files for reproductibility"</span><span class="p">,</span>
+                <span class="nb">type</span>     <span class="o">=</span> <span class="nb">dict</span><span class="p">,</span>
+                <span class="n">optional</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">default</span>  <span class="o">=</span> <span class="p">{},</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rh</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
 

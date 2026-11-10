@@ -79,6 +79,10 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:UMR-CNRM/snowtools.git
 </pre></div>
 </div>
+<p>for developers, you should start from the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>dev
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If you had a previous verison of snowtools installed as a developper, you first need to uninstall the previous version.</p>
@@ -98,7 +102,7 @@
 <li><p>Install snowtools and all its dependencies available outside of Meteo-France in editable mode : <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.[all]</span> <span class="pre">-e</span></code></p></li>
 </ol>
 <p>That’s all for snowtools.</p>
-<p>Each time you will need snowtools, you will have to activate the python virtual environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>. When you have finissed your work, you can leave the virtual environment by using the <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> command.</p>
+<p>Each time you will need snowtools, you will have to activate the python virtual environment with <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">~/my_envs/snowtools_env/bin/activate</span></code>. When you have finished your work, you can leave the virtual environment by using the <code class="docutils literal notranslate"><span class="pre">deactivate</span></code> command.</p>
 </section>
 </section>
 <section id="snowtools-install-for-meteo-france-cen-staff">
@@ -137,7 +141,20 @@ cenutils/put<span class="w"> </span>snowtools<span class="w"> </span>sxcen
 <ul class="simple">
 <li><p>On HPC you first have to set the correct python version and compiler to use by running : <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">python/3.12.12</span> <span class="pre">gcc/15.2.0</span></code> (<code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">python/3.10.12</span> <span class="pre">gcc/15.2.0</span></code> on taranis)</p></li>
 <li><p>On all Meteo-Frace machines, if you intend to deal with data stored on Meteo-France archive (hendrix), you will have to configure connecton creedentials as explained on page <a class="reference internal" href="../vortex/file-transfert.html#vortex-file-transfer"><span class="std std-ref">File transfers with Vortex at MF</span></a>.</p></li>
-<li><p>You have to configure pip to have an access to the internal repository (nexus) that allow to get internal packages such as <code class="docutils literal notranslate"><span class="pre">vortex-gco</span></code>. To do so, add the following lines to <code class="docutils literal notranslate"><span class="pre">~/.config/pip/pip.conf</span></code>:</p></li>
+<li><p>You have to configure pip to have an access to the internal repository (nexus) that allow to get internal packages such as <code class="docutils literal notranslate"><span class="pre">vortex-gco</span></code>. To do so, add the following lines to <code class="docutils literal notranslate"><span class="pre">~/.config/pip/pip.conf</span></code></p></li>
+</ul>
+<ul class="simple">
+<li><p>On MF HPC:</p></li>
+</ul>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[global]</span>
+<span class="na">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">http://ada2-sihpc.meteo.fr/repository/pypi-proxy/pypi</span>
+<span class="na">index-url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">http://ada2-sihpc.meteo.fr/repository/pypi-proxy/simple</span>
+<span class="na">extra-index-url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">http://ada2-sihpc.meteo.fr/repository/pypi-vortex-releases/simple</span>
+<span class="na">trusted-host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ada2-sihpc.meteo.fr</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>On other servers:</p></li>
 </ul>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[global]</span>
 <span class="na">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://nexus-sidev.meteo.fr/repository/pypi-group/pypi</span>
@@ -145,7 +162,6 @@ cenutils/put<span class="w"> </span>snowtools<span class="w"> </span>sxcen
 <span class="na">extra-index-url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">https://nexus.meteo.fr/pypi-vortex-releases/simple</span>
 </pre></div>
 </div>
-<p>Note that this is not required on HPC because the access to Nexus from HPC is currently blocked.</p>
 </section>
 <section id="id4">
 <h3>Installation<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>

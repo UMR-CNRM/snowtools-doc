@@ -69,6 +69,9 @@
 <span class="sd">.. autoclass:: Pro</span>
 <span class="sd">   :show-inheritance:</span>
 
+<span class="sd">.. autoclass:: Pro_xios</span>
+<span class="sd">   :show-inheritance:</span>
+
 <span class="sd">.. autoclass:: Prep</span>
 <span class="sd">   :show-inheritance:</span>
 
@@ -110,6 +113,29 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">"PRO"</span></div>
+
+
+
+<div class="viewcode-block" id="Pro_xios">
+<a class="viewcode-back" href="../../../vortex/vortex-cen-resources.html#vortex_cen.data.surfex.Pro_xios">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Pro_xios</span><span class="p">(</span><span class="n">Pro</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Class for the SURFEX/Crocus output files produced through an IO server."""</span>
+    <span class="n">_footprint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="s1">'Surfex-simulated snowpack files'</span><span class="p">,</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">values</span>   <span class="o">=</span> <span class="p">[</span><span class="s1">'SL1'</span><span class="p">,</span> <span class="s1">'SL2'</span><span class="p">,</span> <span class="s1">'NOSL'</span><span class="p">],</span>
+                    <span class="n">info</span>     <span class="o">=</span> <span class="s1">'SL1: 1st batch of snow layers ; SL2: 2nd batch of snow layers ; NOSL: No snow layers'</span><span class="p">,</span>
+                    <span class="n">optional</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">realkind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'_'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">"PRO"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">])</span></div>
 
 
 

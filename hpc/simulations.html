@@ -117,17 +117,17 @@ At this point you can start the following pipeline.</p>
 <ul class="simple">
 <li><p>safran : Generation of “raw” SAFRAN meteorological forcing files (“flat” geometry and 1 “postes” FORCING file per domain). For the entire period:</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">cnrm_other</span><span class="o">/</span><span class="n">cen</span><span class="o">/</span><span class="n">mrns</span><span class="o">/</span><span class="n">vernaym</span><span class="o">/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">cnrm_other</span><span class="o">/</span><span class="n">cen</span><span class="o">/</span><span class="n">mrns</span><span class="o">/</span><span class="n">vernaym</span><span class="o">/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">safran</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1940080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">2025080106</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/safran.jobs -a datebegin=1940080106 dateend=2025080106
 </pre></div>
 </div>
-<dl class="simple">
-<dt>For the addition of a new year only:</dt><dd><p>mkjob -c /home/cnrm_other/cen/mrns/vernaym/snowtools/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f /home/cnrm_other/cen/mrns/vernaym/snowtools/vortex_cen/s2m/reanalysis/jobs/safran.jobs -a da  tebegin=2025080106 dateend=2026080106</p>
-</dd>
-</dl>
+<p>For the addition of a new year only, with observations coming directly from the BDClim :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/s2m_reanalysis.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/safran.jobs -a datebegin=2025080106 dateend=2026080106 obs_xpid=extraction_bdclim obs_user=vernaym obs_vapp=s2m obs_vconf=reanalysis obs_xpid=extraction_bdclim
+</pre></div>
+</div>
 <ul class="simple">
 <li><p>add_slopes : Add slopes and aspects to the raw “flat” SAFRAN meteorological forcing files</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">add_slopes</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1940080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">2025080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">addslopes_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/add_slopes.jobs -a datebegin=1940080106 dateend=2025080106 -n addslopes_vog
 </pre></div>
 </div>
 <div class="admonition note">
@@ -137,7 +137,7 @@ At this point you can start the following pipeline.</p>
 <ul class="simple">
 <li><p>concatenation_postes : Concatenate “postes” forcing files from all domains into a single FORCING file and add solar masks</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">concatenation</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1940080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">2025080106</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/concatenation.jobs -a datebegin=1940080106 dateend=2025080106
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
@@ -146,7 +146,7 @@ At this point you can start the following pipeline.</p>
 <ul class="simple">
 <li><p>Generation of ground physiography :</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">pgd</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">forcing_datebegin</span><span class="o">=</span><span class="mi">1950080106</span> <span class="n">forcing_dateend</span><span class="o">=</span><span class="mi">1951080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">pgd_postes</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/pgd.jobs -a forcing_datebegin=1950080106 forcing_dateend=1951080106 -n pgd_postes
 </pre></div>
 </div>
 <div class="admonition note">
@@ -156,7 +156,7 @@ At this point you can start the following pipeline.</p>
 <ul class="simple">
 <li><p>Generation of an initial ground temperature</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">init_TG</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">forcing_datebegin</span><span class="o">=</span><span class="mi">1950080106</span> <span class="n">forcing_dateend</span><span class="o">=</span><span class="mi">1951080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">init_tg_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/init_TG.jobs -a forcing_datebegin=1950080106 forcing_dateend=1951080106 -n init_tg_vog
 </pre></div>
 </div>
 <div class="admonition note">
@@ -167,13 +167,13 @@ TODO : check if really necessary</p>
 <ul class="simple">
 <li><p>Generation of an initial snowpack state (PREP.nc file) for the spinup step</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">prep</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">prep_datevalidity</span><span class="o">=</span><span class="mi">1950080106</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1950080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">1951080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">prep_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/prep.jobs -a prep_datevalidity=1950080106 datebegin=1950080106 dateend=1951080106 -n prep_vog
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>Spinup : generation of more physical initial conditions to use to initialise the actual reanalysis (use prep generated by the previous “prep” step)</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">spinup</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1940080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">1950080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">spinup_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/spinup.jobs -a datebegin=1940080106 dateend=1950080106 -n spinup_vog
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -183,13 +183,13 @@ TODO : check if really necessary</p>
 <ul class="simple">
 <li><p>Entire simulation period :</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">surfex</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">1940080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">2025080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">surfex_reanalysis_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/surfex.jobs -a datebegin=1940080106 dateend=2025080106 -n surfex_reanalysis_vog
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>To add only one year (use prep generated by the last execution of surfex)</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkjob</span> <span class="o">-</span><span class="n">c</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">conf</span><span class="o">/</span><span class="n">release_2026</span><span class="o">.</span><span class="n">ini</span> <span class="o">-</span><span class="n">f</span> <span class="o">~/</span><span class="n">snowtools</span><span class="o">/</span><span class="n">vortex_cen</span><span class="o">/</span><span class="n">s2m</span><span class="o">/</span><span class="n">reanalysis</span><span class="o">/</span><span class="n">jobs</span><span class="o">/</span><span class="n">surfex</span><span class="o">.</span><span class="n">jobs</span> <span class="o">-</span><span class="n">a</span> <span class="n">prep_datevalidity</span><span class="o">=</span><span class="mi">2025080106</span> <span class="n">prep_block</span><span class="o">=</span><span class="n">offline</span> <span class="n">datebegin</span><span class="o">=</span><span class="mi">2025080106</span> <span class="n">dateend</span><span class="o">=</span><span class="mi">2026080106</span> <span class="o">-</span><span class="n">n</span> <span class="n">surfex_reanalysis_vog</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mkjob -c $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/conf/release_2026.ini -f $SNOWTOOLS_CEN/vortex_cen/s2m/reanalysis/jobs/surfex.jobs -a prep_datevalidity=2025080106 prep_block=offline datebegin=2025080106 dateend=2026080106 -n surfex_reanalysis_vog
 </pre></div>
 </div>
 </section>
@@ -242,7 +242,14 @@ post-processing algorithm</p>
 <p>Operational SAFRAN-SURFEX/Crocus-MEPRA (S2M) model chain.
 The actual alp, pyr, cor, mac, vog, jur operational configurations derive from the “oper” configuration :
 * “oper” contains the drivers (common to all domains) and “prepsafran” jobs (common to all domains)
-* [alp|pyr|cor|mac|vog|jur] contains the domain-specific jobs and configuration files</p>
+* [alp|pyr|cor|mac|vog|jur|postes] contains the domain-specific jobs and configuration files</p>
+<p>The file “env_s2m_oper.txt” allows to reproduce the latest operational environment.
+This environment was obtained by installing first a local clone of the packages distributed on Nexus (mkjob, vortex-gco and vortex-olive).
+The snowtools was installed with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">snowtools</span><span class="p">[</span><span class="n">hpc</span><span class="p">]</span><span class="o">==</span><span class="mf">3.0.0</span><span class="n">b0</span>
+</pre></div>
+</div>
+<p>The file “cron.txt” can directly be install as crontab to operate a real-time s2m chain.</p>
 <section id="id3">
 <h5>Workflow :<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h5>
 <ol class="arabic simple">

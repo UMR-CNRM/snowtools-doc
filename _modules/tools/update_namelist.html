@@ -181,7 +181,8 @@
     <span class="n">check_or_create_block</span><span class="p">(</span><span class="n">NamelistObject</span><span class="p">,</span> <span class="s2">"NAM_IO_OFFLINE"</span><span class="p">)</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CSURF_FILETYPE</span> <span class="o">=</span> <span class="s2">"NC "</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CFORCING_FILETYPE</span> <span class="o">=</span> <span class="s2">"NETCDF"</span>
-    <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">=</span> <span class="s2">"NETCDF"</span>
+    <span class="k">if</span> <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">!=</span> <span class="s2">"XIOS"</span><span class="p">:</span>
+        <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">CTIMESERIES_FILETYPE</span> <span class="o">=</span> <span class="s2">"NETCDF"</span>
     <span class="n">NamelistObject</span><span class="p">[</span><span class="s2">"NAM_IO_OFFLINE"</span><span class="p">]</span><span class="o">.</span><span class="n">LRESTART</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="w">    </span><span class="sd">'''The following options are necessary to output homogeneous fluxes among the Crocus community'''</span>

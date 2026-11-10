@@ -158,18 +158,27 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xarray_obj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">xarray_obj</span>
 
+<div class="viewcode-block" id="SnowtoolsAccessor.to_netcdf">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.to_netcdf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_netcdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Undo dimensions / variable renaming from the preprocessing step before writing the dataset into NetCDF file.</span>
+<span class="sd">        Takes the exact same arguments than the xarray native 'to_netcdf' method.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">snowtools</span><span class="o">.</span><span class="n">backtrack_preprocess</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="SnowtoolsAccessor.transpose">
 <a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.SnowtoolsAccessor.transpose">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Put time dimension as first dimension in case of data processing through numpy arrays</span>
-
+<span class="sd">        Order dimensions for data processing through numpy arrays and plotting tools</span>
 <span class="sd">        """</span>
 
-        <span class="k">if</span> <span class="s1">'time'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="s1">'time'</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
+        <span class="n">ordered_dims</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'time'</span><span class="p">,</span> <span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">]</span>
+        <span class="n">actual_ordered_dims</span> <span class="o">=</span> <span class="p">[</span><span class="n">dim</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">ordered_dims</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">*</span><span class="n">actual_ordered_dims</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SnowtoolsAccessor.squeeze">
@@ -637,17 +646,17 @@
 <span class="sd">            ds.distributed.sel_stations(df.lons.values, df.lats.values, station_numbers=df.num_poste.values)</span>
 
 <span class="sd">        :param lons: List of longitudes of the points to be extracted</span>
-<span class="sd">        :param lons: array_like</span>
+<span class="sd">        :typ lons: array_like</span>
 <span class="sd">        :param lats: List of latitudes of the points to be extracted</span>
-<span class="sd">        :param lats: array_like</span>
+<span class="sd">        :type lats: array_like</span>
 <span class="sd">        :param station_numbers: List of station numbers to use as new coordinate</span>
-<span class="sd">        :param station_numbers: array_like</span>
+<span class="sd">        :type station_numbers: array_like</span>
 <span class="sd">        :param x_dim: Name of the 'X' dimension in the dataset</span>
-<span class="sd">        :param x_dim: str</span>
+<span class="sd">        :type x_dim: str</span>
 <span class="sd">        :param y_dim: Name of the 'Y' dimension in the dataset</span>
-<span class="sd">        :param y_dim: str</span>
+<span class="sd">        :type y_dim: str</span>
 <span class="sd">        :param method: Method to use for inexact matches (see xarray 'sel' method)</span>
-<span class="sd">        :param method: str</span>
+<span class="sd">        :type method: str</span>
 
 <span class="sd">        """</span>
 
@@ -663,6 +672,156 @@
             <span class="n">out</span><span class="p">[</span><span class="s1">'station'</span><span class="p">]</span> <span class="o">=</span> <span class="n">station_numbers</span>
 
         <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="DistributedAccessor.add_slope_and_aspect">
+<a class="viewcode-back" href="../../code/utils-xarray.html#utils.xarray_snowtools_accessor.DistributedAccessor.add_slope_and_aspect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_slope_and_aspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varname</span><span class="o">=</span><span class="s1">'ZS'</span><span class="p">,</span> <span class="n">x_dim</span><span class="o">=</span><span class="s1">'xx'</span><span class="p">,</span> <span class="n">y_dim</span><span class="o">=</span><span class="s1">'yy'</span><span class="p">,</span> <span class="n">aspect_classes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Compute and 'slope' and 'aspect' variables from a DEM according to the Zevenbergen and Thorne (1987)</span>
+<span class="sd">        algorithm, and add these variables to the input dataset.</span>
+
+<span class="sd">        Usage example (compute slope and aspect of the reference 'GrandesRousses250m' DEM):</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import vortex</span>
+<span class="sd">            from snowtools.utils import xarray_snowtools</span>
+
+<span class="sd">            vortex.input(</span>
+<span class="sd">                kind       = 'relief',</span>
+<span class="sd">                filename   = 'TARGET_RELIEF.nc',</span>
+<span class="sd">                gvar       = 'RELIEF_GRANDESROUSSES250M_L93',</span>
+<span class="sd">                genv       = "uenv:dem.2@vernaym",</span>
+<span class="sd">                geometry   = 'GrandesRousses250m',</span>
+<span class="sd">            )</span>
+
+<span class="sd">            dem = xr.open_dataset('TARGET_RELIEF.nc', engine='snowtools')</span>
+<span class="sd">            # Compute slope and aspect</span>
+<span class="sd">            dem = dem.distributed.add_slope_and_aspect(varname='elevation')</span>
+
+<span class="sd">        :param varname: Name of the variable containing the elevation information</span>
+<span class="sd">        :type varname: str</span>
+<span class="sd">        :param x_dim: Name of the dimension describing the 'x' coordinates in the input dataset / dataarray</span>
+<span class="sd">        :type x_dim: str</span>
+<span class="sd">        :param y_dim: Name of the dimension describing the 'y' coordinates in the input dataset / dataarray</span>
+<span class="sd">        :type y_dim: str</span>
+<span class="sd">        :param aspect_classes: Group computed aspects into the 8 main aspect classes (N, NE, E, SE, S, SW, W, NW)</span>
+<span class="sd">        :type aspect_classes: bool</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Variable </span><span class="si">{</span><span class="n">varname</span><span class="si">}</span><span class="s2"> not in Dataset"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">()</span>
+
+        <span class="n">dem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+
+        <span class="c1"># Extract dem values as numpy array and compute reolution (assuming regular grid)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">dem</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">resolution_x</span> <span class="o">=</span> <span class="n">dem</span><span class="p">[</span><span class="n">x_dim</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dem</span><span class="p">[</span><span class="n">x_dim</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">resolution_y</span> <span class="o">=</span> <span class="n">dem</span><span class="p">[</span><span class="n">y_dim</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dem</span><span class="p">[</span><span class="n">y_dim</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Initialisation of output arrays</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">dz_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">dz_dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="c1"># For each pixel, a 3x3 grid centered on the target pixel is used to compute partial spatial derivatives</span>
+        <span class="c1"># according according to the Zevenbergen &amp; Thorne (1987) algorithm</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">dz_dx</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">resolution_x</span><span class="p">)</span>
+                <span class="n">dz_dy</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">resolution_y</span><span class="p">)</span>
+
+        <span class="c1"># Compute slope (in degrees)</span>
+        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dz_dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dz_dy</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="c1"># Compute aspect (in degrees)</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">-</span><span class="n">dz_dx</span><span class="p">,</span> <span class="o">-</span><span class="n">dz_dy</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>  <span class="c1"># convention 0° = Nord</span>
+        <span class="c1"># convert in interval [0, 359[</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">aspect</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">aspect</span> <span class="o">+</span> <span class="mi">360</span><span class="p">,</span> <span class="n">aspect</span><span class="p">)</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">aspect</span> <span class="o">==</span> <span class="mi">360</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">aspect</span><span class="p">)</span>
+
+        <span class="c1"># Mask border pixels where the spatial derivatives can not be computed</span>
+        <span class="n">slope</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">slope</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">slope</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">slope</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="n">aspect</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">aspect</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">aspect</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">aspect</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="c1"># Create xarray DataArrays for slope and aspect</span>
+        <span class="n">slope_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">slope</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s2">"yy"</span><span class="p">,</span> <span class="s2">"xx"</span><span class="p">),</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">"yy"</span><span class="p">:</span> <span class="n">dem</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="s2">"xx"</span><span class="p">:</span> <span class="n">dem</span><span class="o">.</span><span class="n">xx</span><span class="p">},</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'unit'</span><span class="p">:</span> <span class="s1">'degrees'</span><span class="p">,</span>
+                <span class="s2">"long_name"</span><span class="p">:</span> <span class="s2">"slope angle"</span><span class="p">,</span>
+                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Slope computed according to the "Zevenbergen and Thorne" algorithm'</span><span class="p">,</span>
+                <span class="s1">'algorithm'</span><span class="p">:</span> <span class="s1">'Zevenbergen &amp; Thorne (1987)'</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">aspect_da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">aspect</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s2">"yy"</span><span class="p">,</span> <span class="s2">"xx"</span><span class="p">),</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">"yy"</span><span class="p">:</span> <span class="n">dem</span><span class="o">.</span><span class="n">yy</span><span class="p">,</span> <span class="s2">"xx"</span><span class="p">:</span> <span class="n">dem</span><span class="o">.</span><span class="n">xx</span><span class="p">},</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'units'</span><span class="p">:</span> <span class="s1">'degrees'</span><span class="p">,</span>
+                <span class="s2">"long_name"</span><span class="p">:</span> <span class="s2">"aspect angle"</span><span class="p">,</span>
+                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Aspect computed according to the "Zevenbergen and Thorne" algorithm'</span><span class="p">,</span>
+                <span class="s1">'algorithm'</span><span class="p">:</span> <span class="s1">'Zevenbergen &amp; Thorne (1987)'</span><span class="p">,</span>
+                <span class="s1">'convention'</span><span class="p">:</span> <span class="s1">'0=N, 90=E, 180=S, 270=W'</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add slope and aspect to initial dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'slope'</span><span class="p">]</span> <span class="o">=</span> <span class="n">slope_da</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'aspect'</span><span class="p">]</span> <span class="o">=</span> <span class="n">aspect_da</span>
+
+        <span class="k">if</span> <span class="n">aspect_classes</span><span class="p">:</span>
+            <span class="c1"># Class aspect values into 8 discrete classes</span>
+
+            <span class="c1"># bins = [0, 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5, 360]</span>
+            <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">315</span><span class="p">]</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'N'</span><span class="p">,</span> <span class="s1">'NE'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">,</span> <span class="s1">'SE'</span><span class="p">,</span> <span class="s1">'S'</span><span class="p">,</span> <span class="s1">'SW'</span><span class="p">,</span> <span class="s1">'W'</span><span class="p">,</span> <span class="s1">'NW'</span><span class="p">]</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">classify_aspect</span><span class="p">(</span><span class="n">aspect_array</span><span class="p">):</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">aspect_array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+                <span class="c1"># Specific processing for the North class</span>
+                <span class="n">mask_N</span> <span class="o">=</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">&gt;=</span> <span class="mf">337.5</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">&lt;=</span> <span class="mf">22.5</span><span class="p">)</span>
+                <span class="n">indices</span><span class="p">[</span><span class="n">mask_N</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="c1"># Other classes</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">aspect</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">aspect</span> <span class="o">-</span> <span class="mf">22.5</span>
+                    <span class="n">upper</span> <span class="o">=</span> <span class="n">aspect</span> <span class="o">+</span> <span class="mf">22.5</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">&gt;</span> <span class="n">lower</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">&lt;=</span> <span class="n">upper</span><span class="p">)</span>
+                    <span class="n">indices</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bins</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span>
+
+            <span class="n">aspect_class</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">apply_ufunc</span><span class="p">(</span>
+                <span class="n">classify_aspect</span><span class="p">,</span>
+                <span class="n">aspect</span><span class="p">,</span>
+                <span class="n">input_core_dims</span><span class="o">=</span><span class="p">[[</span><span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">]],</span>
+                <span class="n">output_core_dims</span><span class="o">=</span><span class="p">[[</span><span class="s1">'yy'</span><span class="p">,</span> <span class="s1">'xx'</span><span class="p">]],</span>
+                <span class="n">vectorize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">dask</span><span class="o">=</span><span class="s1">'parallelized'</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'aspect_class'</span><span class="p">]</span> <span class="o">=</span> <span class="n">aspect_class</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'aspect_class'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'long_name'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Aspect"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'aspect_class'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'unit'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">'aspect_class'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'labels'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span></div>
 
 
 <div class="viewcode-block" id="DistributedAccessor.plot_ensemble">
@@ -726,7 +885,7 @@
                 <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">mb</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
                     <span class="n">tmp</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="s1">'member'</span><span class="p">:</span> <span class="n">mb</span><span class="p">})</span>
-                    <span class="n">im</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
+                    <span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">plot2D</span><span class="o">.</span><span class="n">plot_field</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
                             <span class="n">isolevels</span><span class="o">=</span><span class="n">isolevels</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                     <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
                     <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
